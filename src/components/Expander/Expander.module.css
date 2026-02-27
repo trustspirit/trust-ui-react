@@ -1,0 +1,125 @@
+/* ── Root ── */
+.expander {
+  font-family: var(--tui-font-family);
+  width: 100%;
+}
+
+/* ── Variant: default ── */
+.variantDefault .item {
+  border-bottom: 1px solid var(--tui-border);
+}
+
+.variantDefault .item:last-child {
+  border-bottom: none;
+}
+
+/* ── Variant: bordered ── */
+.variantBordered {
+  border: 1px solid var(--tui-border);
+  border-radius: var(--tui-radius-lg);
+  overflow: hidden;
+}
+
+.variantBordered .item {
+  border-bottom: 1px solid var(--tui-border);
+}
+
+.variantBordered .item:last-child {
+  border-bottom: none;
+}
+
+/* ── Variant: separated ── */
+.variantSeparated {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tui-spacing-sm);
+}
+
+.variantSeparated .item {
+  border: 1px solid var(--tui-border);
+  border-radius: var(--tui-radius-lg);
+  overflow: hidden;
+}
+
+/* ── Item ── */
+.item {
+  /* nothing by default, variants handle borders */
+}
+
+.itemDisabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ── Trigger ── */
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--tui-spacing-md);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--tui-font-family);
+  font-size: var(--tui-font-size-md);
+  font-weight: var(--tui-font-weight-medium);
+  color: var(--tui-text);
+  text-align: left;
+  line-height: var(--tui-line-height);
+  transition: background-color var(--tui-transition-fast);
+}
+
+.trigger:hover {
+  background-color: var(--tui-bg-subtle);
+}
+
+.trigger:focus-visible {
+  outline: none;
+  box-shadow: var(--tui-focus-ring);
+  position: relative;
+  z-index: 1;
+}
+
+.triggerContent {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Chevron icon ── */
+.chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--tui-text-muted);
+  transition: transform var(--tui-transition);
+  transform: rotate(0deg);
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+/* ── Content wrapper (for animation) ── */
+.contentWrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--tui-transition-slow);
+}
+
+.contentWrapperOpen {
+  grid-template-rows: 1fr;
+}
+
+.contentInner {
+  overflow: hidden;
+}
+
+/* ── Content ── */
+.content {
+  padding: 0 var(--tui-spacing-md) var(--tui-spacing-md);
+  font-size: var(--tui-font-size-md);
+  line-height: var(--tui-line-height);
+  color: var(--tui-text-secondary);
+}
