@@ -1,0 +1,141 @@
+/* ── Pagination nav ── */
+.pagination {
+  font-family: var(--tui-font-family);
+}
+
+/* ── List ── */
+.list {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-spacing-xs);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Base button ── */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--tui-border);
+  border-radius: var(--tui-radius-md);
+  background-color: var(--tui-bg);
+  color: var(--tui-text);
+  font-family: var(--tui-font-family);
+  font-weight: var(--tui-font-weight-medium);
+  cursor: pointer;
+  transition:
+    background-color var(--tui-transition),
+    border-color var(--tui-transition),
+    color var(--tui-transition),
+    box-shadow var(--tui-transition);
+  user-select: none;
+}
+
+.button:hover:not(:disabled) {
+  background-color: var(--tui-bg-hover);
+  border-color: var(--tui-border-hover);
+}
+
+.button:focus-visible {
+  outline: none;
+  box-shadow: var(--tui-focus-ring);
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Page button ── */
+.pageButton {
+  min-width: 2em;
+}
+
+/* ── Active page ── */
+.active {
+  background-color: var(--tui-primary);
+  border-color: var(--tui-primary);
+  color: var(--tui-primary-text);
+}
+
+.active:hover:not(:disabled) {
+  background-color: var(--tui-primary-hover);
+  border-color: var(--tui-primary-hover);
+  color: var(--tui-primary-text);
+}
+
+/* ── Nav button ── */
+.navButton {
+  gap: var(--tui-spacing-xs);
+}
+
+/* ── Ellipsis ── */
+.ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tui-text-muted);
+  font-weight: var(--tui-font-weight-medium);
+  user-select: none;
+  letter-spacing: 2px;
+}
+
+/* ── Page info (simple variant) ── */
+.pageInfo {
+  display: inline-flex;
+  align-items: center;
+  color: var(--tui-text-secondary);
+  font-weight: var(--tui-font-weight-medium);
+  white-space: nowrap;
+}
+
+/* ── Sizes ── */
+.sm .button {
+  height: 28px;
+  padding: 0 var(--tui-spacing-xs);
+  font-size: var(--tui-font-size-xs);
+}
+
+.sm .pageButton {
+  min-width: 28px;
+}
+
+.sm .ellipsis,
+.sm .pageInfo {
+  font-size: var(--tui-font-size-xs);
+  padding: 0 var(--tui-spacing-xs);
+}
+
+.md .button {
+  height: 36px;
+  padding: 0 var(--tui-spacing-sm);
+  font-size: var(--tui-font-size-sm);
+}
+
+.md .pageButton {
+  min-width: 36px;
+}
+
+.md .ellipsis,
+.md .pageInfo {
+  font-size: var(--tui-font-size-sm);
+  padding: 0 var(--tui-spacing-xs);
+}
+
+.lg .button {
+  height: 44px;
+  padding: 0 var(--tui-spacing-md);
+  font-size: var(--tui-font-size-md);
+}
+
+.lg .pageButton {
+  min-width: 44px;
+}
+
+.lg .ellipsis,
+.lg .pageInfo {
+  font-size: var(--tui-font-size-md);
+  padding: 0 var(--tui-spacing-sm);
+}

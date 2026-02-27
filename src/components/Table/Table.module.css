@@ -1,0 +1,131 @@
+/* ── Wrapper ── */
+.wrapper {
+  width: 100%;
+  overflow-x: auto;
+  font-family: var(--tui-font-family);
+}
+
+.stickyWrapper {
+  overflow-y: auto;
+}
+
+/* ── Table ── */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  color: var(--tui-text);
+}
+
+/* ── Header ── */
+.th {
+  text-align: left;
+  font-weight: var(--tui-font-weight-semibold);
+  color: var(--tui-text);
+  background-color: var(--tui-bg-subtle);
+  border-bottom: 2px solid var(--tui-border);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.headerContent {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tui-spacing-xs);
+}
+
+/* ── Sortable ── */
+.sortable {
+  cursor: pointer;
+  transition: color var(--tui-transition);
+}
+
+.sortable:hover {
+  color: var(--tui-primary);
+}
+
+.sorted {
+  color: var(--tui-primary);
+}
+
+.sortIndicator {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ── Sticky Header ── */
+.stickyHeader th {
+  position: sticky;
+  top: 0;
+  z-index: var(--tui-z-sticky);
+  background-color: var(--tui-bg-subtle);
+}
+
+/* ── Cell ── */
+.td {
+  color: var(--tui-text-secondary);
+  border-bottom: 1px solid var(--tui-border);
+}
+
+/* ── Empty state ── */
+.emptyCell {
+  text-align: center;
+  color: var(--tui-text-muted);
+  font-style: italic;
+  border-bottom: 1px solid var(--tui-border);
+}
+
+/* ── Clickable row ── */
+.clickableRow {
+  cursor: pointer;
+}
+
+/* ── Hoverable ── */
+.hoverable tbody tr:hover {
+  background-color: var(--tui-bg-hover);
+}
+
+/* ── Sizes ── */
+.sm .th,
+.sm .td,
+.sm .emptyCell {
+  padding: var(--tui-spacing-xs) var(--tui-spacing-sm);
+  font-size: var(--tui-font-size-sm);
+}
+
+.md .th,
+.md .td,
+.md .emptyCell {
+  padding: var(--tui-spacing-sm) var(--tui-spacing-md);
+  font-size: var(--tui-font-size-md);
+}
+
+.lg .th,
+.lg .td,
+.lg .emptyCell {
+  padding: var(--tui-spacing-md) var(--tui-spacing-lg);
+  font-size: var(--tui-font-size-lg);
+}
+
+/* ── Variant: striped ── */
+.striped tbody tr:nth-child(even) {
+  background-color: var(--tui-bg-subtle);
+}
+
+.striped.hoverable tbody tr:hover {
+  background-color: var(--tui-bg-hover);
+}
+
+/* ── Variant: bordered ── */
+.bordered {
+  border: 1px solid var(--tui-border);
+}
+
+.bordered .th,
+.bordered .td {
+  border: 1px solid var(--tui-border);
+}
+
+/* ── Variant: default ── */
+/* default styling uses only bottom borders, already set above */
