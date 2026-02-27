@@ -1,0 +1,144 @@
+/* ── Dialog element ── */
+.dialog {
+  position: fixed;
+  margin: auto;
+  border: none;
+  border-radius: var(--tui-radius-xl);
+  padding: 0;
+  background-color: var(--tui-bg);
+  color: var(--tui-text);
+  font-family: var(--tui-font-family);
+  box-shadow: var(--tui-shadow-xl);
+  max-height: 85vh;
+  overflow: hidden;
+  opacity: 0;
+  transform: scale(0.95);
+  transition:
+    opacity var(--tui-transition-slow),
+    transform var(--tui-transition-slow);
+}
+
+.dialog[open] {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Allow animation on close via starting style (progressive enhancement) */
+@starting-style {
+  .dialog[open] {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* ── Backdrop ── */
+.dialog::backdrop {
+  background-color: var(--tui-overlay);
+  opacity: 0;
+  transition: opacity var(--tui-transition-slow);
+}
+
+.dialog[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .dialog[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+/* ── Sizes ── */
+.sm {
+  width: min(400px, calc(100vw - 32px));
+}
+
+.md {
+  width: min(560px, calc(100vw - 32px));
+}
+
+.lg {
+  width: min(720px, calc(100vw - 32px));
+}
+
+.fullscreen {
+  width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  border-radius: 0;
+}
+
+/* ── Inner wrapper ── */
+.inner {
+  display: flex;
+  flex-direction: column;
+  max-height: 85vh;
+}
+
+.fullscreen .inner {
+  max-height: 100vh;
+}
+
+/* ── Title bar ── */
+.titleBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--tui-spacing-lg) var(--tui-spacing-lg) var(--tui-spacing-md);
+  flex-shrink: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--tui-font-size-lg);
+  font-weight: var(--tui-font-weight-semibold);
+  color: var(--tui-text);
+  line-height: var(--tui-line-height);
+}
+
+/* ── Close button ── */
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--tui-radius-md);
+  background: transparent;
+  color: var(--tui-text-muted);
+  cursor: pointer;
+  transition: background-color var(--tui-transition), color var(--tui-transition);
+  flex-shrink: 0;
+}
+
+.closeButton:hover {
+  background-color: var(--tui-bg-hover);
+  color: var(--tui-text);
+}
+
+.closeButton:focus-visible {
+  outline: none;
+  box-shadow: var(--tui-focus-ring);
+}
+
+/* ── Content ── */
+.content {
+  flex: 1;
+  padding: 0 var(--tui-spacing-lg);
+  overflow-y: auto;
+  font-size: var(--tui-font-size-md);
+  line-height: var(--tui-line-height);
+  color: var(--tui-text-secondary);
+}
+
+/* ── Actions ── */
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--tui-spacing-sm);
+  padding: var(--tui-spacing-md) var(--tui-spacing-lg) var(--tui-spacing-lg);
+  flex-shrink: 0;
+}

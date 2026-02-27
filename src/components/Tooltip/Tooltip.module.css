@@ -1,0 +1,107 @@
+/* ── Base ── */
+.tooltip {
+  position: absolute;
+  z-index: var(--tui-z-tooltip);
+  padding: var(--tui-spacing-xs) var(--tui-spacing-sm);
+  border-radius: var(--tui-radius-md);
+  font-family: var(--tui-font-family);
+  font-size: var(--tui-font-size-sm);
+  line-height: var(--tui-line-height);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--tui-transition);
+  word-wrap: break-word;
+}
+
+.visible {
+  opacity: 1;
+}
+
+/* ── Variants ── */
+.dark {
+  background-color: var(--tui-text);
+  color: var(--tui-text-inverse);
+  box-shadow: var(--tui-shadow-md);
+}
+
+.light {
+  background-color: var(--tui-bg);
+  color: var(--tui-text);
+  border: 1px solid var(--tui-border);
+  box-shadow: var(--tui-shadow-md);
+}
+
+/* ── Arrow ── */
+.arrow {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+}
+
+/* Top placement: arrow at bottom */
+.top .arrow {
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.top.dark .arrow {
+  background-color: var(--tui-text);
+}
+
+.top.light .arrow {
+  background-color: var(--tui-bg);
+  border-right: 1px solid var(--tui-border);
+  border-bottom: 1px solid var(--tui-border);
+}
+
+/* Bottom placement: arrow at top */
+.bottom .arrow {
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+}
+
+.bottom.dark .arrow {
+  background-color: var(--tui-text);
+}
+
+.bottom.light .arrow {
+  background-color: var(--tui-bg);
+  border-left: 1px solid var(--tui-border);
+  border-top: 1px solid var(--tui-border);
+}
+
+/* Left placement: arrow at right */
+.left .arrow {
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.left.dark .arrow {
+  background-color: var(--tui-text);
+}
+
+.left.light .arrow {
+  background-color: var(--tui-bg);
+  border-right: 1px solid var(--tui-border);
+  border-top: 1px solid var(--tui-border);
+}
+
+/* Right placement: arrow at left */
+.right .arrow {
+  left: -4px;
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.right.dark .arrow {
+  background-color: var(--tui-text);
+}
+
+.right.light .arrow {
+  background-color: var(--tui-bg);
+  border-left: 1px solid var(--tui-border);
+  border-bottom: 1px solid var(--tui-border);
+}

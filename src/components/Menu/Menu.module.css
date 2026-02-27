@@ -1,0 +1,99 @@
+/* ── Root ── */
+.menu {
+  position: relative;
+  display: inline-flex;
+}
+
+/* ── Content (dropdown) ── */
+.content {
+  position: absolute;
+  z-index: var(--tui-z-dropdown);
+  min-width: 180px;
+  padding: var(--tui-spacing-xs) 0;
+  border: 1px solid var(--tui-border);
+  border-radius: var(--tui-radius-lg);
+  background-color: var(--tui-bg);
+  box-shadow: var(--tui-shadow-lg);
+  font-family: var(--tui-font-family);
+  animation: menuFadeIn var(--tui-transition) ease;
+}
+
+/* ── Menu item ── */
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-spacing-sm);
+  width: 100%;
+  padding: var(--tui-spacing-sm) var(--tui-spacing-md);
+  border: none;
+  background: transparent;
+  color: var(--tui-text);
+  font-size: var(--tui-font-size-sm);
+  font-family: var(--tui-font-family);
+  line-height: var(--tui-line-height);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--tui-transition-fast);
+  outline: none;
+}
+
+.item:hover:not(.disabled),
+.item:focus-visible:not(.disabled) {
+  background-color: var(--tui-bg-hover);
+}
+
+.item:focus-visible {
+  box-shadow: inset var(--tui-focus-ring);
+}
+
+/* ── Danger item ── */
+.danger {
+  color: var(--tui-danger);
+}
+
+.danger:hover:not(.disabled),
+.danger:focus-visible:not(.disabled) {
+  background-color: var(--tui-danger-subtle);
+}
+
+/* ── Disabled item ── */
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Item icon ── */
+.itemIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: inherit;
+}
+
+/* ── Item label ── */
+.itemLabel {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Divider ── */
+.divider {
+  margin: var(--tui-spacing-xs) 0;
+  border: none;
+  border-top: 1px solid var(--tui-border);
+}
+
+/* ── Animations ── */
+@keyframes menuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
