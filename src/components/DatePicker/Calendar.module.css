@@ -1,0 +1,127 @@
+/* ── Calendar grid ── */
+.calendar {
+  font-family: var(--tui-font-family);
+  user-select: none;
+}
+
+/* ── Day-of-week header ── */
+.weekHeader {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: var(--tui-spacing-xs);
+}
+
+.weekLabel {
+  padding: var(--tui-spacing-xs) 0;
+  font-size: var(--tui-font-size-xs);
+  font-weight: var(--tui-font-weight-medium);
+  color: var(--tui-text-muted);
+}
+
+/* ── Days grid ── */
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+}
+
+/* ── Day cell ── */
+.day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin: 0 auto;
+  border-radius: var(--tui-radius-full);
+  font-size: var(--tui-font-size-sm);
+  cursor: pointer;
+  transition:
+    background-color var(--tui-transition-fast),
+    color var(--tui-transition-fast);
+  color: var(--tui-text);
+  position: relative;
+}
+
+.day:hover:not(.dayDisabled):not(.daySelected) {
+  background-color: var(--tui-bg-muted);
+}
+
+/* ── Outside current month ── */
+.dayOutside {
+  color: var(--tui-text-muted);
+  opacity: 0.4;
+}
+
+/* ── Today indicator ── */
+.dayToday {
+  font-weight: var(--tui-font-weight-semibold);
+  box-shadow: inset 0 0 0 1px var(--tui-primary);
+}
+
+/* ── Selected day ── */
+.daySelected {
+  background-color: var(--tui-primary);
+  color: var(--tui-primary-text);
+  font-weight: var(--tui-font-weight-medium);
+}
+
+.daySelected:hover {
+  background-color: var(--tui-primary-hover);
+}
+
+/* ── Disabled day ── */
+.dayDisabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ── Range styles ── */
+.dayRangeStart {
+  background-color: var(--tui-primary);
+  color: var(--tui-primary-text);
+  font-weight: var(--tui-font-weight-medium);
+  border-radius: var(--tui-radius-full);
+}
+
+.dayRangeEnd {
+  background-color: var(--tui-primary);
+  color: var(--tui-primary-text);
+  font-weight: var(--tui-font-weight-medium);
+  border-radius: var(--tui-radius-full);
+}
+
+.dayInRange {
+  background-color: var(--tui-primary-subtle);
+  color: var(--tui-primary);
+  border-radius: 0;
+}
+
+.dayInRange:hover {
+  background-color: var(--tui-primary-subtle);
+}
+
+/* ── Range row cell container for continuous highlight ── */
+.dayCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.dayCellRangeMiddle {
+  background-color: var(--tui-primary-subtle);
+}
+
+.dayCellRangeStart {
+  background: linear-gradient(to right, transparent 50%, var(--tui-primary-subtle) 50%);
+}
+
+.dayCellRangeEnd {
+  background: linear-gradient(to left, transparent 50%, var(--tui-primary-subtle) 50%);
+}
+
+.dayCellRangeStartEnd {
+  background: transparent;
+}

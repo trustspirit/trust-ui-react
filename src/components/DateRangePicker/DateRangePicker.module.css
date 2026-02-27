@@ -1,0 +1,251 @@
+/* ── Container ── */
+.container {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--tui-spacing-xs);
+  font-family: var(--tui-font-family);
+  position: relative;
+}
+
+/* ── Label ── */
+.label {
+  display: block;
+  font-size: var(--tui-font-size-sm);
+  font-weight: var(--tui-font-weight-medium);
+  color: var(--tui-text);
+  margin-bottom: 2px;
+}
+
+.labelError {
+  color: var(--tui-danger);
+}
+
+.labelDisabled {
+  opacity: 0.5;
+}
+
+/* ── Input wrapper ── */
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  border-radius: var(--tui-radius-md);
+  cursor: pointer;
+  transition:
+    border-color var(--tui-transition),
+    background-color var(--tui-transition),
+    box-shadow var(--tui-transition);
+  width: 100%;
+}
+
+/* ── Sizes ── */
+.sm .inputWrapper {
+  height: 32px;
+  padding: 0 var(--tui-spacing-sm);
+  font-size: var(--tui-font-size-sm);
+}
+
+.md .inputWrapper {
+  height: 40px;
+  padding: 0 var(--tui-spacing-md);
+  font-size: var(--tui-font-size-md);
+}
+
+.lg .inputWrapper {
+  height: 48px;
+  padding: 0 var(--tui-spacing-md);
+  font-size: var(--tui-font-size-lg);
+}
+
+/* ── Outlined variant ── */
+.outlined .inputWrapper {
+  border: 1px solid var(--tui-border);
+  background-color: var(--tui-bg);
+}
+
+.outlined .inputWrapper:hover:not(.disabled) {
+  border-color: var(--tui-border-hover);
+}
+
+.outlined .inputWrapper.focused:not(.error) {
+  border-color: var(--tui-border-focus);
+  box-shadow: 0 0 0 1px var(--tui-border-focus);
+}
+
+/* ── Filled variant ── */
+.filled .inputWrapper {
+  border: 1px solid transparent;
+  background-color: var(--tui-bg-muted);
+}
+
+.filled .inputWrapper:hover:not(.disabled) {
+  background-color: var(--tui-bg-hover);
+}
+
+.filled .inputWrapper.focused:not(.error) {
+  border-color: var(--tui-border-focus);
+  box-shadow: 0 0 0 1px var(--tui-border-focus);
+  background-color: var(--tui-bg);
+}
+
+/* ── Error state ── */
+.error .inputWrapper {
+  border-color: var(--tui-danger);
+}
+
+.error .inputWrapper.focused {
+  box-shadow: 0 0 0 1px var(--tui-danger);
+}
+
+/* ── Disabled ── */
+.disabled .inputWrapper {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Input ── */
+.input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--tui-text);
+  font-family: var(--tui-font-family);
+  font-size: inherit;
+  line-height: var(--tui-line-height);
+  width: 100%;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.input::placeholder {
+  color: var(--tui-text-muted);
+}
+
+.input:disabled {
+  cursor: not-allowed;
+}
+
+/* ── Calendar icon ── */
+.calendarIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--tui-text-muted);
+  padding: 4px;
+}
+
+/* ── Popup ── */
+.popup {
+  position: fixed;
+  z-index: var(--tui-z-dropdown);
+  background-color: var(--tui-bg);
+  border: 1px solid var(--tui-border);
+  border-radius: var(--tui-radius-lg);
+  box-shadow: var(--tui-shadow-lg);
+  padding: var(--tui-spacing-md);
+  display: flex;
+  gap: 0;
+}
+
+/* ── Presets sidebar ── */
+.presetsSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tui-spacing-xs);
+  padding-right: var(--tui-spacing-md);
+  border-right: 1px solid var(--tui-border);
+  margin-right: var(--tui-spacing-md);
+  min-width: 140px;
+}
+
+.presetButton {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--tui-spacing-sm) var(--tui-spacing-sm);
+  border: none;
+  background: none;
+  border-radius: var(--tui-radius-md);
+  cursor: pointer;
+  font-size: var(--tui-font-size-sm);
+  font-family: var(--tui-font-family);
+  color: var(--tui-text-secondary);
+  transition:
+    background-color var(--tui-transition-fast),
+    color var(--tui-transition-fast);
+  white-space: nowrap;
+}
+
+.presetButton:hover {
+  background-color: var(--tui-bg-muted);
+  color: var(--tui-text);
+}
+
+.presetButton:focus-visible {
+  outline: none;
+  box-shadow: var(--tui-focus-ring);
+}
+
+/* ── Calendars container ── */
+.calendarsContainer {
+  display: flex;
+  gap: var(--tui-spacing-lg);
+}
+
+/* ── Single calendar column ── */
+.calendarColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Navigation header ── */
+.navHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--tui-spacing-sm);
+}
+
+.navButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  border-radius: var(--tui-radius-md);
+  cursor: pointer;
+  color: var(--tui-text-secondary);
+  transition:
+    background-color var(--tui-transition-fast),
+    color var(--tui-transition-fast);
+}
+
+.navButton:hover {
+  background-color: var(--tui-bg-muted);
+  color: var(--tui-text);
+}
+
+.navButton:focus-visible {
+  outline: none;
+  box-shadow: var(--tui-focus-ring);
+}
+
+.navButtonHidden {
+  visibility: hidden;
+}
+
+.monthYearLabel {
+  font-size: var(--tui-font-size-md);
+  font-weight: var(--tui-font-weight-semibold);
+  color: var(--tui-text);
+}
+
+/* ── Error message ── */
+.errorMessage {
+  font-size: var(--tui-font-size-xs);
+  color: var(--tui-danger);
+  margin: 0;
+}
