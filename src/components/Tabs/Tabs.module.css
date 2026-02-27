@@ -1,0 +1,98 @@
+/* ── Root ── */
+.tabs {
+  font-family: var(--tui-font-family);
+  width: 100%;
+}
+
+/* ── List ── */
+.list {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-spacing-xs);
+}
+
+/* ── List: underline variant ── */
+.listUnderline {
+  border-bottom: 1px solid var(--tui-border);
+  gap: 0;
+}
+
+/* ── List: pill variant ── */
+.listPill {
+  background-color: var(--tui-bg-muted);
+  border-radius: var(--tui-radius-lg);
+  padding: var(--tui-spacing-xs);
+  gap: var(--tui-spacing-xs);
+}
+
+/* ── Trigger base ── */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  font-family: var(--tui-font-family);
+  font-size: var(--tui-font-size-sm);
+  font-weight: var(--tui-font-weight-medium);
+  color: var(--tui-text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color var(--tui-transition),
+    background-color var(--tui-transition),
+    border-color var(--tui-transition),
+    box-shadow var(--tui-transition);
+  user-select: none;
+}
+
+.trigger:hover:not(:disabled) {
+  color: var(--tui-text);
+}
+
+.trigger:focus-visible {
+  outline: none;
+  box-shadow: var(--tui-focus-ring);
+}
+
+.trigger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Trigger: underline variant ── */
+.triggerUnderline {
+  padding: var(--tui-spacing-sm) var(--tui-spacing-md);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  border-radius: 0;
+}
+
+.triggerUnderline.triggerActive {
+  color: var(--tui-primary);
+  border-bottom-color: var(--tui-primary);
+}
+
+/* ── Trigger: pill variant ── */
+.triggerPill {
+  padding: var(--tui-spacing-xs) var(--tui-spacing-md);
+  border-radius: var(--tui-radius-md);
+}
+
+.triggerPill.triggerActive {
+  background-color: var(--tui-bg);
+  color: var(--tui-text);
+  box-shadow: var(--tui-shadow-sm);
+}
+
+/* ── Content ── */
+.content {
+  padding: var(--tui-spacing-md) 0;
+  font-size: var(--tui-font-size-md);
+  line-height: var(--tui-line-height);
+  color: var(--tui-text-secondary);
+}
+
+.content:focus-visible {
+  outline: none;
+}
