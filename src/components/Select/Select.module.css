@@ -1,0 +1,282 @@
+/* ── Container ── */
+.container {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--tui-spacing-xs);
+  font-family: var(--tui-font-family);
+  position: relative;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* ── Trigger ── */
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tui-spacing-sm);
+  border-radius: var(--tui-radius-md);
+  cursor: pointer;
+  transition:
+    border-color var(--tui-transition),
+    background-color var(--tui-transition),
+    box-shadow var(--tui-transition);
+  user-select: none;
+  width: 100%;
+  min-width: 200px;
+}
+
+/* ── Sizes ── */
+.sm .trigger {
+  height: 32px;
+  padding: 0 var(--tui-spacing-sm);
+  font-size: var(--tui-font-size-sm);
+}
+
+.md .trigger {
+  height: 40px;
+  padding: 0 var(--tui-spacing-md);
+  font-size: var(--tui-font-size-md);
+}
+
+.lg .trigger {
+  height: 48px;
+  padding: 0 var(--tui-spacing-md);
+  font-size: var(--tui-font-size-lg);
+}
+
+/* ── Outlined variant ── */
+.outlined .trigger {
+  border: 1px solid var(--tui-border);
+  background-color: var(--tui-bg);
+}
+
+.outlined .trigger:hover:not(.triggerDisabled) {
+  border-color: var(--tui-border-hover);
+}
+
+.outlined .trigger.triggerOpen:not(.triggerError) {
+  border-color: var(--tui-border-focus);
+  box-shadow: 0 0 0 1px var(--tui-border-focus);
+}
+
+/* ── Filled variant ── */
+.filled .trigger {
+  border: 1px solid transparent;
+  background-color: var(--tui-bg-muted);
+}
+
+.filled .trigger:hover:not(.triggerDisabled) {
+  background-color: var(--tui-bg-hover);
+}
+
+.filled .trigger.triggerOpen:not(.triggerError) {
+  border-color: var(--tui-border-focus);
+  box-shadow: 0 0 0 1px var(--tui-border-focus);
+  background-color: var(--tui-bg);
+}
+
+/* ── Error state ── */
+.triggerError {
+  border-color: var(--tui-danger) !important;
+}
+
+.triggerError.triggerOpen {
+  box-shadow: 0 0 0 1px var(--tui-danger) !important;
+}
+
+/* ── Disabled ── */
+.triggerDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Focus visible ── */
+.trigger:focus-visible {
+  outline: none;
+  box-shadow: var(--tui-focus-ring);
+}
+
+/* ── Trigger value ── */
+.triggerValue {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--tui-text);
+}
+
+.triggerPlaceholder {
+  color: var(--tui-text-muted);
+}
+
+/* ── Multi-select chips area ── */
+.triggerChips {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  overflow: hidden;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 6px;
+  border-radius: var(--tui-radius-sm);
+  background-color: var(--tui-bg-muted);
+  font-size: var(--tui-font-size-xs);
+  color: var(--tui-text);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chipRemove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: var(--tui-text-muted);
+  flex-shrink: 0;
+}
+
+.chipRemove:hover {
+  color: var(--tui-text);
+}
+
+/* ── Arrow icon ── */
+.arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--tui-text-muted);
+  transition: transform var(--tui-transition);
+}
+
+.arrowOpen {
+  transform: rotate(180deg);
+}
+
+/* ── Search input in dropdown ── */
+.searchWrapper {
+  padding: var(--tui-spacing-sm);
+  border-bottom: 1px solid var(--tui-border);
+}
+
+.searchInput {
+  width: 100%;
+  border: 1px solid var(--tui-border);
+  border-radius: var(--tui-radius-sm);
+  padding: 6px var(--tui-spacing-sm);
+  font-size: var(--tui-font-size-sm);
+  font-family: var(--tui-font-family);
+  background-color: var(--tui-bg);
+  color: var(--tui-text);
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: var(--tui-border-focus);
+}
+
+.searchInput::placeholder {
+  color: var(--tui-text-muted);
+}
+
+/* ── Dropdown ── */
+.dropdown {
+  position: absolute;
+  z-index: var(--tui-z-dropdown);
+  min-width: 200px;
+  border: 1px solid var(--tui-border);
+  border-radius: var(--tui-radius-md);
+  background-color: var(--tui-bg);
+  box-shadow: var(--tui-shadow-lg);
+  overflow: hidden;
+}
+
+.optionsList {
+  max-height: 240px;
+  overflow-y: auto;
+  padding: var(--tui-spacing-xs) 0;
+}
+
+/* ── Option ── */
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-spacing-sm);
+  padding: var(--tui-spacing-sm) var(--tui-spacing-md);
+  cursor: pointer;
+  transition:
+    background-color var(--tui-transition-fast),
+    color var(--tui-transition-fast);
+  font-size: var(--tui-font-size-md);
+  color: var(--tui-text);
+  user-select: none;
+}
+
+.option:hover,
+.optionHighlighted {
+  background-color: var(--tui-bg-muted);
+}
+
+.optionSelected {
+  background-color: var(--tui-primary-subtle);
+  color: var(--tui-primary);
+  font-weight: var(--tui-font-weight-medium);
+}
+
+.optionSelected:hover,
+.optionSelected.optionHighlighted {
+  background-color: var(--tui-primary-subtle);
+}
+
+.optionDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.optionDisabled:hover {
+  background-color: transparent;
+}
+
+/* ── Checkmark icon ── */
+.checkmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--tui-primary);
+}
+
+.checkmarkHidden {
+  visibility: hidden;
+}
+
+/* ── No results ── */
+.noResults {
+  padding: var(--tui-spacing-md);
+  text-align: center;
+  color: var(--tui-text-muted);
+  font-size: var(--tui-font-size-sm);
+}
+
+/* ── Error message ── */
+.errorMessage {
+  font-size: var(--tui-font-size-xs);
+  color: var(--tui-danger);
+  margin: 0;
+}
