@@ -1,0 +1,121 @@
+/* ── Radio container ── */
+.container {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tui-spacing-sm);
+  cursor: pointer;
+  font-family: var(--tui-font-family);
+  user-select: none;
+}
+
+.container.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Hidden native input ── */
+.hiddenInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Custom radio indicator ── */
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--tui-border);
+  border-radius: var(--tui-radius-full);
+  background-color: var(--tui-bg);
+  transition:
+    background-color var(--tui-transition),
+    border-color var(--tui-transition),
+    box-shadow var(--tui-transition);
+  flex-shrink: 0;
+}
+
+/* ── Inner dot ── */
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: var(--tui-radius-full);
+  transform: scale(0);
+  transition: transform var(--tui-transition);
+}
+
+/* Focus visible */
+.hiddenInput:focus-visible + .indicator {
+  box-shadow: var(--tui-focus-ring);
+}
+
+/* Hover */
+.container:hover:not(.disabled) .indicator {
+  border-color: var(--tui-border-hover);
+}
+
+/* ── Checked state - Primary ── */
+.hiddenInput:checked + .indicator.primary {
+  border-color: var(--tui-primary);
+}
+
+.hiddenInput:checked + .indicator.primary .dot {
+  background-color: var(--tui-primary);
+  transform: scale(1);
+}
+
+.container:hover:not(.disabled) .hiddenInput:checked + .indicator.primary {
+  border-color: var(--tui-primary-hover);
+}
+
+.container:hover:not(.disabled) .hiddenInput:checked + .indicator.primary .dot {
+  background-color: var(--tui-primary-hover);
+}
+
+/* ── Checked state - Secondary ── */
+.hiddenInput:checked + .indicator.secondary {
+  border-color: var(--tui-secondary);
+}
+
+.hiddenInput:checked + .indicator.secondary .dot {
+  background-color: var(--tui-secondary);
+  transform: scale(1);
+}
+
+.container:hover:not(.disabled) .hiddenInput:checked + .indicator.secondary {
+  border-color: var(--tui-secondary-hover);
+}
+
+.container:hover:not(.disabled) .hiddenInput:checked + .indicator.secondary .dot {
+  background-color: var(--tui-secondary-hover);
+}
+
+/* ── Label text ── */
+.label {
+  font-size: var(--tui-font-size-md);
+  color: var(--tui-text);
+  line-height: var(--tui-line-height);
+}
+
+/* ── RadioGroup ── */
+.group {
+  display: flex;
+  gap: var(--tui-spacing-sm);
+}
+
+.vertical {
+  flex-direction: column;
+}
+
+.horizontal {
+  flex-direction: row;
+  gap: var(--tui-spacing-lg);
+}
