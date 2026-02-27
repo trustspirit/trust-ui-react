@@ -1,0 +1,123 @@
+/* ── Container ── */
+.container {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tui-spacing-sm);
+  font-family: var(--tui-font-family);
+}
+
+/* ── Switch button ── */
+.switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  border-radius: var(--tui-radius-full);
+  background-color: var(--tui-bg-hover);
+  cursor: pointer;
+  padding: 2px;
+  transition:
+    background-color var(--tui-transition-slow),
+    box-shadow var(--tui-transition);
+  flex-shrink: 0;
+}
+
+.switch:focus-visible {
+  outline: none;
+  box-shadow: var(--tui-focus-ring);
+}
+
+.switch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Sizes ── */
+.sm {
+  width: 36px;
+  height: 20px;
+}
+
+.md {
+  width: 44px;
+  height: 24px;
+}
+
+.lg {
+  width: 52px;
+  height: 28px;
+}
+
+/* ── Thumb ── */
+.thumb {
+  display: block;
+  background-color: white;
+  border-radius: var(--tui-radius-full);
+  box-shadow: var(--tui-shadow-sm);
+  transition: transform var(--tui-transition-slow);
+}
+
+.sm .thumb {
+  width: 16px;
+  height: 16px;
+}
+
+.md .thumb {
+  width: 20px;
+  height: 20px;
+}
+
+.lg .thumb {
+  width: 24px;
+  height: 24px;
+}
+
+/* ── Checked: move thumb right ── */
+.checked.sm .thumb {
+  transform: translateX(16px);
+}
+
+.checked.md .thumb {
+  transform: translateX(20px);
+}
+
+.checked.lg .thumb {
+  transform: translateX(24px);
+}
+
+/* ── Checked state - Primary ── */
+.checked.primary {
+  background-color: var(--tui-primary);
+}
+
+.checked.primary:hover:not(:disabled) {
+  background-color: var(--tui-primary-hover);
+}
+
+/* ── Checked state - Secondary ── */
+.checked.secondary {
+  background-color: var(--tui-secondary);
+}
+
+.checked.secondary:hover:not(:disabled) {
+  background-color: var(--tui-secondary-hover);
+}
+
+/* ── Unchecked hover ── */
+.switch:hover:not(:disabled):not(.checked) {
+  background-color: var(--tui-border-hover);
+}
+
+/* ── Label ── */
+.label {
+  font-size: var(--tui-font-size-md);
+  color: var(--tui-text);
+  line-height: var(--tui-line-height);
+  cursor: pointer;
+  user-select: none;
+}
+
+.switch:disabled + .label {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
