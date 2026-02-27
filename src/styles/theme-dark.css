@@ -1,0 +1,50 @@
+[data-theme='dark'] {
+  --tui-bg: #0f172a;
+  --tui-bg-subtle: #1e293b;
+  --tui-bg-muted: #334155;
+  --tui-bg-hover: #475569;
+
+  --tui-text: #f1f5f9;
+  --tui-text-secondary: #cbd5e1;
+  --tui-text-muted: #64748b;
+  --tui-text-inverse: #0f172a;
+
+  --tui-border: #334155;
+  --tui-border-hover: #475569;
+  --tui-border-focus: #60a5fa;
+
+  --tui-primary: #3b82f6;
+  --tui-primary-hover: #60a5fa;
+  --tui-primary-active: #93bbfd;
+  --tui-primary-subtle: #1e293b;
+  --tui-primary-text: #ffffff;
+
+  --tui-secondary: #94a3b8;
+  --tui-secondary-hover: #cbd5e1;
+  --tui-secondary-active: #e2e8f0;
+  --tui-secondary-subtle: #1e293b;
+  --tui-secondary-text: #0f172a;
+
+  --tui-success: #22c55e;
+  --tui-success-hover: #4ade80;
+  --tui-success-subtle: #052e16;
+  --tui-success-text: #0f172a;
+
+  --tui-danger: #ef4444;
+  --tui-danger-hover: #f87171;
+  --tui-danger-subtle: #450a0a;
+  --tui-danger-text: #ffffff;
+
+  --tui-warning: #f59e0b;
+  --tui-warning-hover: #fbbf24;
+  --tui-warning-subtle: #451a03;
+  --tui-warning-text: #0f172a;
+
+  --tui-info: #38bdf8;
+  --tui-info-hover: #7dd3fc;
+  --tui-info-subtle: #0c4a6e;
+  --tui-info-text: #0f172a;
+
+  --tui-focus-ring: 0 0 0 2px #0f172a, 0 0 0 4px #60a5fa;
+  --tui-overlay: rgba(0, 0, 0, 0.7);
+}

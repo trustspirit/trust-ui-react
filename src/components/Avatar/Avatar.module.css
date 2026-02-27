@@ -1,0 +1,58 @@
+/* ── Base ── */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* ── Sizes ── */
+.sm {
+  width: 32px;
+  height: 32px;
+  font-size: var(--tui-font-size-xs);
+}
+
+.md {
+  width: 40px;
+  height: 40px;
+  font-size: var(--tui-font-size-sm);
+}
+
+.lg {
+  width: 48px;
+  height: 48px;
+  font-size: var(--tui-font-size-md);
+}
+
+/* ── Shapes ── */
+.circle {
+  border-radius: var(--tui-radius-full);
+}
+
+.square {
+  border-radius: var(--tui-radius-lg);
+}
+
+/* ── Image ── */
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── Fallback ── */
+.fallback {
+  background-color: var(--tui-primary-subtle);
+  color: var(--tui-primary);
+}
+
+/* ── Initials ── */
+.initials {
+  font-family: var(--tui-font-family);
+  font-weight: var(--tui-font-weight-semibold);
+  line-height: 1;
+  user-select: none;
+}

@@ -1,0 +1,256 @@
+/* ── Container ── */
+.container {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--tui-spacing-xs);
+  font-family: var(--tui-font-family);
+  position: relative;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* ── Label ── */
+.label {
+  display: block;
+  font-size: var(--tui-font-size-sm);
+  font-weight: var(--tui-font-weight-medium);
+  color: var(--tui-text);
+  margin-bottom: 2px;
+}
+
+.labelError {
+  color: var(--tui-danger);
+}
+
+.labelDisabled {
+  opacity: 0.5;
+}
+
+/* ── Input Wrapper ── */
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  border-radius: var(--tui-radius-md);
+  transition:
+    border-color var(--tui-transition),
+    background-color var(--tui-transition),
+    box-shadow var(--tui-transition);
+  overflow: hidden;
+}
+
+.inputWrapperMultiline {
+  align-items: flex-start;
+}
+
+/* ── Outlined variant ── */
+.outlined {
+  border: 1px solid var(--tui-border);
+  background-color: var(--tui-bg);
+}
+
+.outlined:hover:not(.disabled):not(.error) {
+  border-color: var(--tui-border-hover);
+}
+
+.outlined.focused:not(.error) {
+  border-color: var(--tui-border-focus);
+  box-shadow: 0 0 0 1px var(--tui-border-focus);
+}
+
+/* ── Filled variant ── */
+.filled {
+  border: 1px solid transparent;
+  background-color: var(--tui-bg-muted);
+}
+
+.filled:hover:not(.disabled):not(.error) {
+  background-color: var(--tui-bg-hover);
+}
+
+.filled.focused:not(.error) {
+  border-color: var(--tui-border-focus);
+  box-shadow: 0 0 0 1px var(--tui-border-focus);
+  background-color: var(--tui-bg);
+}
+
+/* ── Error state ── */
+.error {
+  border-color: var(--tui-danger);
+}
+
+.error.focused {
+  box-shadow: 0 0 0 1px var(--tui-danger);
+}
+
+/* ── Disabled state ── */
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Sizes ── */
+.sm .input {
+  height: 32px;
+  font-size: var(--tui-font-size-sm);
+  padding: 0 var(--tui-spacing-sm);
+}
+
+.md .input {
+  height: 40px;
+  font-size: var(--tui-font-size-md);
+  padding: 0 var(--tui-spacing-md);
+}
+
+.lg .input {
+  height: 48px;
+  font-size: var(--tui-font-size-lg);
+  padding: 0 var(--tui-spacing-md);
+}
+
+/* ── Input element ── */
+.input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--tui-text);
+  font-family: var(--tui-font-family);
+  line-height: var(--tui-line-height);
+  width: 100%;
+  min-width: 0;
+}
+
+.input::placeholder {
+  color: var(--tui-text-muted);
+}
+
+.input:disabled {
+  cursor: not-allowed;
+}
+
+/* ── Textarea ── */
+.textarea {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--tui-text);
+  font-family: var(--tui-font-family);
+  line-height: var(--tui-line-height);
+  width: 100%;
+  min-width: 0;
+  resize: vertical;
+}
+
+.sm .textarea {
+  font-size: var(--tui-font-size-sm);
+  padding: var(--tui-spacing-sm);
+}
+
+.md .textarea {
+  font-size: var(--tui-font-size-md);
+  padding: var(--tui-spacing-md);
+}
+
+.lg .textarea {
+  font-size: var(--tui-font-size-lg);
+  padding: var(--tui-spacing-md);
+}
+
+.textarea::placeholder {
+  color: var(--tui-text-muted);
+}
+
+.textarea:disabled {
+  cursor: not-allowed;
+}
+
+/* ── Prefix / Suffix ── */
+.prefix {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--tui-text-secondary);
+}
+
+.sm .prefix {
+  padding-left: var(--tui-spacing-sm);
+}
+
+.md .prefix,
+.lg .prefix {
+  padding-left: var(--tui-spacing-md);
+}
+
+.suffix {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--tui-text-secondary);
+}
+
+.sm .suffix {
+  padding-right: var(--tui-spacing-sm);
+}
+
+.md .suffix,
+.lg .suffix {
+  padding-right: var(--tui-spacing-md);
+}
+
+/* ── Visibility toggle ── */
+.visibilityToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--tui-text-muted);
+  padding: 4px;
+  border-radius: var(--tui-radius-sm);
+  transition: color var(--tui-transition);
+}
+
+.visibilityToggle:hover {
+  color: var(--tui-text-secondary);
+}
+
+.visibilityToggle:focus-visible {
+  outline: none;
+  box-shadow: var(--tui-focus-ring);
+}
+
+/* ── Helper text / Error message ── */
+.helperText {
+  font-size: var(--tui-font-size-xs);
+  color: var(--tui-text-secondary);
+  margin: 0;
+}
+
+.errorMessage {
+  font-size: var(--tui-font-size-xs);
+  color: var(--tui-danger);
+  margin: 0;
+}
+
+/* ── Character count ── */
+.characterCount {
+  font-size: var(--tui-font-size-xs);
+  color: var(--tui-text-muted);
+  text-align: right;
+}
+
+.characterCountOver {
+  color: var(--tui-danger);
+}
+
+/* ── Footer row ── */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--tui-spacing-sm);
+}

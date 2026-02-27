@@ -1,0 +1,157 @@
+/* ── Base ── */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tui-spacing-xs);
+  border: 1px solid transparent;
+  border-radius: var(--tui-radius-md);
+  font-family: var(--tui-font-family);
+  font-weight: var(--tui-font-weight-medium);
+  line-height: var(--tui-line-height);
+  cursor: pointer;
+  transition:
+    background-color var(--tui-transition),
+    border-color var(--tui-transition),
+    color var(--tui-transition),
+    box-shadow var(--tui-transition);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.button:focus-visible {
+  outline: none;
+  box-shadow: var(--tui-focus-ring);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Sizes ── */
+.sm {
+  height: 32px;
+  padding: 0 var(--tui-spacing-sm);
+  font-size: var(--tui-font-size-sm);
+}
+
+.md {
+  height: 40px;
+  padding: 0 var(--tui-spacing-md);
+  font-size: var(--tui-font-size-md);
+}
+
+.lg {
+  height: 48px;
+  padding: 0 var(--tui-spacing-lg);
+  font-size: var(--tui-font-size-lg);
+}
+
+/* ── Variants ── */
+.primary {
+  background-color: var(--tui-primary);
+  color: var(--tui-primary-text);
+}
+
+.primary:hover:not(:disabled) {
+  background-color: var(--tui-primary-hover);
+}
+
+.primary:active:not(:disabled) {
+  background-color: var(--tui-primary-active);
+}
+
+.secondary {
+  background-color: var(--tui-secondary);
+  color: var(--tui-secondary-text);
+}
+
+.secondary:hover:not(:disabled) {
+  background-color: var(--tui-secondary-hover);
+}
+
+.secondary:active:not(:disabled) {
+  background-color: var(--tui-secondary-active);
+}
+
+.outline {
+  background-color: transparent;
+  border-color: var(--tui-border);
+  color: var(--tui-text);
+}
+
+.outline:hover:not(:disabled) {
+  background-color: var(--tui-bg-hover);
+  border-color: var(--tui-border-hover);
+}
+
+.outline:active:not(:disabled) {
+  background-color: var(--tui-bg-muted);
+}
+
+.ghost {
+  background-color: transparent;
+  color: var(--tui-text);
+}
+
+.ghost:hover:not(:disabled) {
+  background-color: var(--tui-bg-hover);
+}
+
+.ghost:active:not(:disabled) {
+  background-color: var(--tui-bg-muted);
+}
+
+.danger {
+  background-color: var(--tui-danger);
+  color: var(--tui-danger-text);
+}
+
+.danger:hover:not(:disabled) {
+  background-color: var(--tui-danger-hover);
+}
+
+.danger:active:not(:disabled) {
+  background-color: var(--tui-danger-hover);
+}
+
+/* ── Full-width ── */
+.fullWidth {
+  width: 100%;
+}
+
+/* ── Icon ── */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Label ── */
+.label {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ── Spinner ── */
+.spinner {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--tui-radius-full);
+  animation: spin 0.6s linear infinite;
+}
+
+.loading .label {
+  opacity: 0.7;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

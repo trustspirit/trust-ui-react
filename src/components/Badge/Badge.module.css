@@ -1,0 +1,67 @@
+/* ── Base ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--tui-radius-full);
+  font-family: var(--tui-font-family);
+  font-weight: var(--tui-font-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* ── Sizes ── */
+.sm {
+  height: 20px;
+  min-width: 20px;
+  padding: 0 6px;
+  font-size: var(--tui-font-size-xs);
+}
+
+.md {
+  height: 24px;
+  min-width: 24px;
+  padding: 0 var(--tui-spacing-sm);
+  font-size: var(--tui-font-size-sm);
+}
+
+/* ── Dot ── */
+.dot {
+  width: 8px;
+  height: 8px;
+  min-width: 8px;
+  padding: 0;
+  border-radius: var(--tui-radius-full);
+}
+
+/* ── Variants ── */
+.primary {
+  background-color: var(--tui-primary);
+  color: var(--tui-primary-text);
+}
+
+.secondary {
+  background-color: var(--tui-secondary);
+  color: var(--tui-secondary-text);
+}
+
+.success {
+  background-color: var(--tui-success);
+  color: var(--tui-success-text);
+}
+
+.danger {
+  background-color: var(--tui-danger);
+  color: var(--tui-danger-text);
+}
+
+.warning {
+  background-color: var(--tui-warning);
+  color: var(--tui-warning-text);
+}
+
+.info {
+  background-color: var(--tui-info);
+  color: var(--tui-info-text);
+}

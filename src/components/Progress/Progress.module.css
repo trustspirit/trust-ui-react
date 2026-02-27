@@ -1,0 +1,151 @@
+/* ── Wrapper ── */
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-spacing-sm);
+  width: 100%;
+}
+
+/* ── Progress element ── */
+.progress {
+  flex: 1;
+  width: 100%;
+  border: none;
+  border-radius: var(--tui-radius-full);
+  overflow: hidden;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* ── Sizes ── */
+.sm {
+  height: 4px;
+}
+
+.md {
+  height: 8px;
+}
+
+.lg {
+  height: 12px;
+}
+
+/* ── Track (WebKit) ── */
+.progress::-webkit-progress-bar {
+  background-color: var(--tui-bg-muted);
+  border-radius: var(--tui-radius-full);
+}
+
+/* ── Value bar (WebKit) ── */
+.progress::-webkit-progress-value {
+  border-radius: var(--tui-radius-full);
+  transition: width var(--tui-transition-slow);
+}
+
+/* ── Value bar (Firefox) ── */
+.progress::-moz-progress-bar {
+  border-radius: var(--tui-radius-full);
+  transition: width var(--tui-transition-slow);
+}
+
+/* ── Variant colors (WebKit value) ── */
+.primary::-webkit-progress-value {
+  background-color: var(--tui-primary);
+}
+
+.secondary::-webkit-progress-value {
+  background-color: var(--tui-secondary);
+}
+
+.success::-webkit-progress-value {
+  background-color: var(--tui-success);
+}
+
+.danger::-webkit-progress-value {
+  background-color: var(--tui-danger);
+}
+
+/* ── Variant colors (Firefox) ── */
+.primary::-moz-progress-bar {
+  background-color: var(--tui-primary);
+}
+
+.secondary::-moz-progress-bar {
+  background-color: var(--tui-secondary);
+}
+
+.success::-moz-progress-bar {
+  background-color: var(--tui-success);
+}
+
+.danger::-moz-progress-bar {
+  background-color: var(--tui-danger);
+}
+
+/* ── Indeterminate ── */
+.indeterminate::-webkit-progress-bar {
+  background-color: var(--tui-bg-muted);
+  border-radius: var(--tui-radius-full);
+  overflow: hidden;
+}
+
+.indeterminate::-webkit-progress-value {
+  background-color: transparent;
+}
+
+.indeterminate::-moz-progress-bar {
+  background-color: transparent;
+}
+
+.indeterminate {
+  position: relative;
+  background-color: var(--tui-bg-muted);
+}
+
+.indeterminate::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 40%;
+  border-radius: var(--tui-radius-full);
+  animation: indeterminate 1.5s ease-in-out infinite;
+}
+
+.indeterminate.primary::after {
+  background-color: var(--tui-primary);
+}
+
+.indeterminate.secondary::after {
+  background-color: var(--tui-secondary);
+}
+
+.indeterminate.success::after {
+  background-color: var(--tui-success);
+}
+
+.indeterminate.danger::after {
+  background-color: var(--tui-danger);
+}
+
+@keyframes indeterminate {
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* ── Label ── */
+.label {
+  font-family: var(--tui-font-family);
+  font-size: var(--tui-font-size-sm);
+  font-weight: var(--tui-font-weight-medium);
+  color: var(--tui-text-secondary);
+  white-space: nowrap;
+  min-width: 3ch;
+  text-align: right;
+}

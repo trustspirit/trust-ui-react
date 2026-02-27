@@ -1,0 +1,7 @@
+src/
+.storybook/
+**/*.stories.tsx
+docs/
+.gitignore
+tsconfig.json
+vite.config.ts

@@ -1,0 +1,48 @@
+:root {
+  /* Font */
+  --tui-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --tui-font-size-xs: 0.75rem;
+  --tui-font-size-sm: 0.875rem;
+  --tui-font-size-md: 1rem;
+  --tui-font-size-lg: 1.125rem;
+  --tui-font-size-xl: 1.25rem;
+  --tui-font-weight-normal: 400;
+  --tui-font-weight-medium: 500;
+  --tui-font-weight-semibold: 600;
+  --tui-font-weight-bold: 700;
+  --tui-line-height: 1.5;
+
+  /* Spacing */
+  --tui-spacing-xs: 4px;
+  --tui-spacing-sm: 8px;
+  --tui-spacing-md: 16px;
+  --tui-spacing-lg: 24px;
+  --tui-spacing-xl: 32px;
+  --tui-spacing-2xl: 48px;
+
+  /* Radius */
+  --tui-radius-sm: 4px;
+  --tui-radius-md: 6px;
+  --tui-radius-lg: 8px;
+  --tui-radius-xl: 12px;
+  --tui-radius-full: 9999px;
+
+  /* Shadows */
+  --tui-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --tui-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --tui-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --tui-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+  /* Transition */
+  --tui-transition-fast: 100ms ease;
+  --tui-transition: 150ms ease;
+  --tui-transition-slow: 300ms ease;
+
+  /* Z-index */
+  --tui-z-dropdown: 1000;
+  --tui-z-sticky: 1020;
+  --tui-z-modal: 1030;
+  --tui-z-popover: 1040;
+  --tui-z-tooltip: 1050;
+  --tui-z-toast: 1060;
+}
