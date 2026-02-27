@@ -1,0 +1,124 @@
+/* ── Container ── */
+.container {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tui-spacing-sm);
+  cursor: pointer;
+  font-family: var(--tui-font-family);
+  user-select: none;
+}
+
+.container.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Hidden native input ── */
+.hiddenInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Custom checkbox indicator ── */
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--tui-border);
+  border-radius: var(--tui-radius-sm);
+  background-color: var(--tui-bg);
+  transition:
+    background-color var(--tui-transition),
+    border-color var(--tui-transition),
+    box-shadow var(--tui-transition);
+  flex-shrink: 0;
+}
+
+/* Focus visible */
+.hiddenInput:focus-visible + .indicator {
+  box-shadow: var(--tui-focus-ring);
+}
+
+/* Hover */
+.container:hover:not(.disabled) .indicator {
+  border-color: var(--tui-border-hover);
+}
+
+/* ── Checked state - Primary ── */
+.hiddenInput:checked + .indicator.primary {
+  background-color: var(--tui-primary);
+  border-color: var(--tui-primary);
+}
+
+.container:hover:not(.disabled) .hiddenInput:checked + .indicator.primary {
+  background-color: var(--tui-primary-hover);
+  border-color: var(--tui-primary-hover);
+}
+
+/* ── Checked state - Secondary ── */
+.hiddenInput:checked + .indicator.secondary {
+  background-color: var(--tui-secondary);
+  border-color: var(--tui-secondary);
+}
+
+.container:hover:not(.disabled) .hiddenInput:checked + .indicator.secondary {
+  background-color: var(--tui-secondary-hover);
+  border-color: var(--tui-secondary-hover);
+}
+
+/* ── Indeterminate state - Primary ── */
+.indicator.indeterminate.primary {
+  background-color: var(--tui-primary);
+  border-color: var(--tui-primary);
+}
+
+/* ── Indeterminate state - Secondary ── */
+.indicator.indeterminate.secondary {
+  background-color: var(--tui-secondary);
+  border-color: var(--tui-secondary);
+}
+
+/* ── Check mark icon ── */
+.checkIcon {
+  display: none;
+  color: var(--tui-primary-text);
+}
+
+.hiddenInput:checked ~ .indicator .checkIcon {
+  display: block;
+}
+
+/* Alternative approach using sibling selector for the icon inside indicator */
+.indicator .checkIcon {
+  display: none;
+}
+
+.indicator.checked .checkIcon {
+  display: block;
+}
+
+/* ── Indeterminate dash icon ── */
+.dashIcon {
+  display: none;
+  color: var(--tui-primary-text);
+}
+
+.indicator.indeterminate .dashIcon {
+  display: block;
+}
+
+/* ── Label text ── */
+.label {
+  font-size: var(--tui-font-size-md);
+  color: var(--tui-text);
+  line-height: var(--tui-line-height);
+}
