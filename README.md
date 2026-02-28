@@ -1,8 +1,8 @@
-# @trust-ui/react
+# trust-ui-react
 
 A lightweight, themeable React UI component library built with TypeScript and CSS Modules.
 
-`@trust-ui/react` provides 21 production-ready components with built-in dark/light mode support, CSS Custom Properties for easy theming, and full TypeScript type definitions. Every component is designed with accessibility in mind and follows consistent API patterns.
+`trust-ui-react` provides 21 production-ready components with built-in dark/light mode support, CSS Custom Properties for easy theming, and full TypeScript type definitions. Every component is designed with accessibility in mind and follows consistent API patterns.
 
 ---
 
@@ -24,11 +24,11 @@ A lightweight, themeable React UI component library built with TypeScript and CS
 ## Installation
 
 ```bash
-npm install @trust-ui/react
+npm install trust-ui-react
 # or
-pnpm add @trust-ui/react
+pnpm add trust-ui-react
 # or
-yarn add @trust-ui/react
+yarn add trust-ui-react
 ```
 
 ### Peer dependencies
@@ -46,8 +46,8 @@ npm install react react-dom
 Import the stylesheet **once** at the root of your application, wrap your app with `ThemeProvider` (and optionally `ToastProvider`), then start using components.
 
 ```tsx
-import { ThemeProvider, ToastProvider, Button } from '@trust-ui/react';
-import '@trust-ui/react/styles.css';
+import { ThemeProvider, ToastProvider, Button } from 'trust-ui-react';
+import 'trust-ui-react/styles.css';
 
 function App() {
   return (
@@ -133,7 +133,7 @@ export default App;
 Wrap your application with `ThemeProvider` to enable dark/light mode. It sets the `data-theme` attribute on `<html>` and auto-detects the user's system preference when no `defaultTheme` is provided.
 
 ```tsx
-import { ThemeProvider } from '@trust-ui/react';
+import { ThemeProvider } from 'trust-ui-react';
 
 <ThemeProvider defaultTheme="light">
   {/* your app */}
@@ -145,7 +145,7 @@ import { ThemeProvider } from '@trust-ui/react';
 Access and control the current theme from any component:
 
 ```tsx
-import { useTheme } from '@trust-ui/react';
+import { useTheme } from 'trust-ui-react';
 
 function ThemeToggle() {
   const { theme, setTheme, toggleTheme } = useTheme();
@@ -210,7 +210,7 @@ Available token categories include:
 ### Button
 
 ```tsx
-import { Button } from '@trust-ui/react';
+import { Button } from 'trust-ui-react';
 
 // Variants
 <Button variant="primary">Primary</Button>
@@ -243,7 +243,7 @@ import { Button } from '@trust-ui/react';
 ### TextField
 
 ```tsx
-import { TextField } from '@trust-ui/react';
+import { TextField } from 'trust-ui-react';
 
 // Basic usage
 <TextField label="Email" type="email" placeholder="you@example.com" />
@@ -289,7 +289,7 @@ import { TextField } from '@trust-ui/react';
 ### Select
 
 ```tsx
-import { Select } from '@trust-ui/react';
+import { Select } from 'trust-ui-react';
 
 const options = [
   { value: 'react', label: 'React' },
@@ -326,7 +326,7 @@ Uses the compound component pattern with `Dialog.Title`, `Dialog.Content`, and `
 
 ```tsx
 import { useState } from 'react';
-import { Dialog, Button } from '@trust-ui/react';
+import { Dialog, Button } from 'trust-ui-react';
 
 function ConfirmDialog() {
   const [open, setOpen] = useState(false);
@@ -363,7 +363,7 @@ The `size` prop accepts `'sm'`, `'md'`, `'lg'`, or `'fullscreen'`. Pass `closeOn
 Use `ToastProvider` at the app root and the `useToast` hook anywhere in your tree.
 
 ```tsx
-import { ToastProvider, useToast, Button } from '@trust-ui/react';
+import { ToastProvider, useToast, Button } from 'trust-ui-react';
 
 // Wrap your app
 <ToastProvider position="top-right">
@@ -395,7 +395,7 @@ Position options: `'top-right'`, `'top-left'`, `'top-center'`, `'bottom-right'`,
 Compound component with `Tabs.List`, `Tabs.Trigger`, and `Tabs.Content`.
 
 ```tsx
-import { Tabs } from '@trust-ui/react';
+import { Tabs } from 'trust-ui-react';
 
 <Tabs defaultValue="overview" variant="underline">
   <Tabs.List>
@@ -421,7 +421,7 @@ Variant options: `'underline'` (default) or `'pill'`.
 ### Table
 
 ```tsx
-import { Table, type Column } from '@trust-ui/react';
+import { Table, type Column } from 'trust-ui-react';
 
 interface User {
   id: number;
@@ -463,7 +463,7 @@ Table variants: `'default'`, `'striped'`, `'bordered'`. Sorting is built-in -- j
 
 ```tsx
 import { useState } from 'react';
-import { DatePicker, DateRangePicker, type DateRange } from '@trust-ui/react';
+import { DatePicker, DateRangePicker, type DateRange } from 'trust-ui-react';
 
 // Single date
 function SingleDate() {
@@ -520,7 +520,7 @@ function RangeDate() {
 Compound component with `Expander.Item`, `Expander.Trigger`, and `Expander.Content`.
 
 ```tsx
-import { Expander } from '@trust-ui/react';
+import { Expander } from 'trust-ui-react';
 
 // Accordion (single open)
 <Expander type="single" defaultValue="faq-1" variant="bordered">

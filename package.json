@@ -1,7 +1,7 @@
 {
-  "name": "@trust-ui/react",
+  "name": "trust-ui-react",
   "version": "0.1.0",
-  "description": "",
+  "description": "A lightweight, themeable React UI component library with dark/light mode, CSS Custom Properties, and 21 production-ready components.",
   "type": "module",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.es.js",
@@ -23,9 +23,13 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["react", "ui", "components", "typescript", "dark-mode", "css-modules", "design-system"],
+  "author": "shinyoung",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
   "packageManager": "pnpm@10.9.0",
   "peerDependencies": {
     "react": ">=18.0.0",
