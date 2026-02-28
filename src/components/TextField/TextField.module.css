@@ -28,11 +28,23 @@
   opacity: 0.5;
 }
 
+/* ── Shapes ── */
+.shape_square .inputWrapper {
+  border-radius: var(--tui-radius-md);
+}
+
+.shape_rounded .inputWrapper {
+  border-radius: var(--tui-radius-xl);
+}
+
+.shape_pill .inputWrapper {
+  border-radius: var(--tui-radius-full);
+}
+
 /* ── Input Wrapper ── */
 .inputWrapper {
   display: flex;
   align-items: center;
-  border-radius: var(--tui-radius-md);
   transition:
     border-color var(--tui-transition),
     background-color var(--tui-transition),

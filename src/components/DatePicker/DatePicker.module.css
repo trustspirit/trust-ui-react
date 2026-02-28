@@ -5,6 +5,7 @@
   gap: var(--tui-spacing-xs);
   font-family: var(--tui-font-family);
   position: relative;
+  min-width: 180px;
 }
 
 /* ── Label ── */
@@ -35,6 +36,8 @@
     background-color var(--tui-transition),
     box-shadow var(--tui-transition);
   width: 100%;
+  overflow: hidden;
+  gap: var(--tui-spacing-sm);
 }
 
 /* ── Sizes ── */
@@ -112,9 +115,11 @@
   font-family: var(--tui-font-family);
   font-size: inherit;
   line-height: var(--tui-line-height);
-  width: 100%;
   min-width: 0;
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .input::placeholder {

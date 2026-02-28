@@ -21,7 +21,7 @@ type Story = StoryObj<typeof Avatar>;
 
 export const WithImage: Story = {
   args: {
-    src: 'https://i.pravatar.cc/150?u=avatar-story',
+    src: 'https://i.pravatar.cc/150?img=32',
     alt: 'User avatar',
   },
 };

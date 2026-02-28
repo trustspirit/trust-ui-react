@@ -6,6 +6,8 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
   /** Size of the button */
   size?: 'sm' | 'md' | 'lg';
+  /** Shape of the button */
+  shape?: 'square' | 'rounded' | 'pill';
   /** Shows a spinner and disables the button */
   loading?: boolean;
   /** Icon placed before the children */
@@ -21,6 +23,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     {
       variant = 'primary',
       size = 'md',
+      shape = 'square',
       loading = false,
       disabled = false,
       startIcon,
@@ -37,6 +40,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       styles.button,
       styles[variant],
       styles[size],
+      styles[shape],
       fullWidth ? styles.fullWidth : '',
       loading ? styles.loading : '',
       className ?? '',

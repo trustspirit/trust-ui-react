@@ -35,6 +35,8 @@ export interface TextFieldProps extends InputBaseProps {
   variant?: 'outlined' | 'filled';
   /** Size of the field */
   size?: 'sm' | 'md' | 'lg';
+  /** Shape of the input border */
+  shape?: 'square' | 'rounded' | 'pill';
   /** Label displayed above the input */
   label?: string;
   /** Placeholder text */
@@ -116,6 +118,7 @@ export const TextField = forwardRef<
       type = 'text',
       variant = 'outlined',
       size = 'md',
+      shape = 'square',
       label,
       placeholder,
       helperText,
@@ -268,6 +271,7 @@ export const TextField = forwardRef<
       styles.inputWrapper,
       styles[variant],
       styles[size],
+      styles[`shape_${shape}`],
       focused ? styles.focused : '',
       isError ? styles.error : '',
       disabled ? styles.disabled : '',

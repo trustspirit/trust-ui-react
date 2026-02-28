@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -124,14 +125,14 @@ function MenuContent({
 }: MenuContentProps) {
   const { open, setOpen, triggerRef } = useMenuContext();
   const contentRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState<{ top: number; left: number }>({
-    top: 0,
-    left: 0,
-  });
+  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
 
-  // Position the menu below the trigger
-  useEffect(() => {
-    if (!open) return;
+  // Position the menu below the trigger (useLayoutEffect to prevent flash)
+  useLayoutEffect(() => {
+    if (!open) {
+      setPosition(null);
+      return;
+    }
 
     const trigger = triggerRef.current;
     const content = contentRef.current;
@@ -250,8 +251,9 @@ function MenuContent({
 
   const contentStyle: CSSProperties = {
     ...style,
-    top: position.top,
-    left: position.left,
+    top: position?.top ?? 0,
+    left: position?.left ?? 0,
+    visibility: position ? 'visible' : 'hidden',
   };
 
   return typeof document !== 'undefined'

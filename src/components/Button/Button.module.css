@@ -5,7 +5,6 @@
   justify-content: center;
   gap: var(--tui-spacing-xs);
   border: 1px solid transparent;
-  border-radius: var(--tui-radius-md);
   font-family: var(--tui-font-family);
   font-weight: var(--tui-font-weight-medium);
   line-height: var(--tui-line-height);
@@ -114,6 +113,19 @@
 
 .danger:active:not(:disabled) {
   background-color: var(--tui-danger-hover);
+}
+
+/* ── Shapes ── */
+.square {
+  border-radius: var(--tui-radius-md);
+}
+
+.rounded {
+  border-radius: var(--tui-radius-xl);
+}
+
+.pill {
+  border-radius: var(--tui-radius-full);
 }
 
 /* ── Full-width ── */

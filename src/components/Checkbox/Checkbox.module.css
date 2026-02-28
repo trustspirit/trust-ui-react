@@ -116,6 +116,11 @@
   display: block;
 }
 
+/* Indeterminate takes priority over checked — hide check icon */
+.indicator.indeterminate .checkIcon {
+  display: none;
+}
+
 /* ── Label text ── */
 .label {
   font-size: var(--tui-font-size-md);

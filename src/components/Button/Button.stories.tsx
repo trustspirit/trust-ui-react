@@ -13,6 +13,10 @@ const meta: Meta<typeof Button> = {
       control: 'select',
       options: ['sm', 'md', 'lg'],
     },
+    shape: {
+      control: 'select',
+      options: ['square', 'rounded', 'pill'],
+    },
     loading: { control: 'boolean' },
     disabled: { control: 'boolean' },
     fullWidth: { control: 'boolean' },
@@ -88,6 +92,16 @@ export const Disabled: Story = {
       <Button disabled variant="outline">Outline</Button>
       <Button disabled variant="ghost">Ghost</Button>
       <Button disabled variant="danger">Danger</Button>
+    </div>
+  ),
+};
+
+export const Shapes: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+      <Button shape="square">Square</Button>
+      <Button shape="rounded">Rounded</Button>
+      <Button shape="pill">Pill</Button>
     </div>
   ),
 };
