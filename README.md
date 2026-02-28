@@ -224,6 +224,11 @@ import { Button } from '@trust-ui/react';
 <Button size="md">Medium</Button>
 <Button size="lg">Large</Button>
 
+// Shapes
+<Button shape="square">Square</Button>
+<Button shape="rounded">Rounded</Button>
+<Button shape="pill">Pill</Button>
+
 // Loading state
 <Button loading>Submitting...</Button>
 
@@ -242,6 +247,11 @@ import { TextField } from '@trust-ui/react';
 
 // Basic usage
 <TextField label="Email" type="email" placeholder="you@example.com" />
+
+// Shapes
+<TextField label="Square" shape="square" />
+<TextField label="Rounded" shape="rounded" />
+<TextField label="Pill" shape="pill" />
 
 // Validation
 <TextField
@@ -603,6 +613,7 @@ All components follow a consistent API pattern:
 
 - **`variant`** -- visual style variant (e.g., `'primary'`, `'outlined'`, `'ghost'`)
 - **`size`** -- component size (`'sm'`, `'md'`, `'lg'`)
+- **`shape`** -- border radius shape (`'square'`, `'rounded'`, `'pill'`) on Button and TextField
 - **`disabled`** -- disables the component
 - **`className`** -- additional CSS class names
 - **`style`** -- inline React CSS properties
