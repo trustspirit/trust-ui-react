@@ -8,7 +8,7 @@ A lightweight, themeable React UI component library built with TypeScript and CS
 
 ## Features
 
-- **21 ready-to-use components** -- buttons, forms, data display, dialogs, date pickers, and more
+- **22 ready-to-use components** -- buttons, forms, file upload, data display, dialogs, date pickers, and more
 - **Dark / Light mode** -- toggle themes via `data-theme` attribute with `ThemeProvider`
 - **CSS Custom Properties** -- all visual tokens (`--tui-*`) are overridable for full brand customization
 - **TypeScript first** -- every component exports its prop types for a great DX
@@ -78,7 +78,7 @@ export default App;
 | `Button`     | Clickable button with variants, sizes, loading spinner, and icons  |
 | `Badge`      | Small status indicator label or colored dot                        |
 | `Avatar`     | User image with initials fallback and circle/square shape          |
-| `Chip`       | Compact tag element with optional delete button and click handler  |
+| `Chip`       | Compact tag element with color variants (primary, secondary, success, danger, warning, info) and optional delete button |
 | `Progress`   | Determinate or indeterminate progress bar with percentage label    |
 | `Tooltip`    | Floating tooltip that appears on hover/focus around a trigger      |
 
@@ -93,6 +93,7 @@ export default App;
 | `Switch`     | Toggle switch with label and size options                          |
 | `Select`     | Dropdown select with searchable and multi-select modes             |
 | `Slider`     | Range input with value label, min/max/step support                 |
+| `FileUpload` | Drag-and-drop file upload with list/grid display, image preview, and validation |
 
 ### Feedback
 
@@ -554,6 +555,51 @@ import { Expander } from 'trust-ui-react';
 
 Type options: `'single'` (accordion, default) or `'multiple'`.
 Variant options: `'default'`, `'bordered'`, `'separated'`.
+
+### FileUpload
+
+```tsx
+import { useState } from 'react';
+import { FileUpload, type FileUploadFile } from 'trust-ui-react';
+
+function UploadExample() {
+  const [files, setFiles] = useState<FileUploadFile[]>([]);
+
+  const handleFilesChange = (newFiles: File[]) => {
+    const uploadFiles: FileUploadFile[] = newFiles.map((f, i) => ({
+      id: `${Date.now()}-${i}`,
+      name: f.name,
+      size: f.size,
+      type: f.type,
+      status: 'pending' as const,
+      file: f,
+    }));
+    setFiles((prev) => [...prev, ...uploadFiles]);
+  };
+
+  return (
+    <FileUpload
+      multiple
+      accept="image/*,.pdf"
+      maxFiles={5}
+      maxFileSize={10 * 1024 * 1024}
+      fileList={files}
+      onFilesChange={handleFilesChange}
+      onRemove={(f) => setFiles((prev) => prev.filter((p) => p.id !== f.id))}
+      onValidationError={(errors) => console.log(errors)}
+    />
+  );
+}
+
+// Grid mode with image thumbnails
+<FileUpload multiple listType="grid" accept="image/*" />
+
+// Inline variant
+<FileUpload variant="inline" />
+```
+
+Variant options: `'area'` (default, large dropzone) or `'inline'` (compact single row).
+List type options: `'list'` (default) or `'grid'` (cards with image preview).
 
 ---
 
