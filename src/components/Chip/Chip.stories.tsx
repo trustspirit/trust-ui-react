@@ -11,7 +11,7 @@ const meta: Meta<typeof Chip> = {
     },
     color: {
       control: 'select',
-      options: ['primary', 'secondary', 'success', 'danger'],
+      options: ['primary', 'secondary', 'success', 'danger', 'warning', 'info'],
     },
     size: {
       control: 'select',
@@ -44,10 +44,14 @@ export const Colors: Story = {
       <Chip color="secondary">Secondary</Chip>
       <Chip color="success">Success</Chip>
       <Chip color="danger">Danger</Chip>
+      <Chip color="warning">Warning</Chip>
+      <Chip color="info">Info</Chip>
       <Chip variant="outlined" color="primary">Primary</Chip>
       <Chip variant="outlined" color="secondary">Secondary</Chip>
       <Chip variant="outlined" color="success">Success</Chip>
       <Chip variant="outlined" color="danger">Danger</Chip>
+      <Chip variant="outlined" color="warning">Warning</Chip>
+      <Chip variant="outlined" color="info">Info</Chip>
     </div>
   ),
 };

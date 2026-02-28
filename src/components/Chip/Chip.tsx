@@ -5,7 +5,7 @@ export interface ChipProps {
   /** Visual style variant */
   variant?: 'filled' | 'outlined';
   /** Color scheme */
-  color?: 'primary' | 'secondary' | 'success' | 'danger';
+  color?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info';
   /** Size of the chip */
   size?: 'sm' | 'md';
   /** Callback when the delete icon is clicked; shows the delete button when provided */

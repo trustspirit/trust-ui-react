@@ -1,0 +1,338 @@
+/* ── Container ── */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tui-spacing-md);
+  width: 100%;
+  font-family: var(--tui-font-family);
+}
+
+/* ── Dropzone ── */
+.dropzone {
+  display: flex;
+  align-items: center;
+  border: 2px dashed var(--tui-border);
+  border-radius: var(--tui-radius-lg);
+  cursor: pointer;
+  background-color: var(--tui-bg);
+  transition:
+    border-color var(--tui-transition),
+    background-color var(--tui-transition);
+}
+
+.dropzone:hover {
+  border-color: var(--tui-border-hover);
+  background-color: var(--tui-bg-subtle);
+}
+
+.dropzone:focus-visible {
+  outline: none;
+  box-shadow: var(--tui-focus-ring);
+}
+
+/* ── Dropzone: area variant ── */
+.area {
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  gap: var(--tui-spacing-sm);
+}
+
+/* ── Dropzone: inline variant ── */
+.inline {
+  flex-direction: row;
+  justify-content: center;
+  gap: var(--tui-spacing-sm);
+}
+
+/* ── Dropzone: sizes ── */
+.dropzoneSm {
+  padding: var(--tui-spacing-md);
+  font-size: var(--tui-font-size-sm);
+}
+
+.dropzoneMd {
+  padding: var(--tui-spacing-lg);
+  font-size: var(--tui-font-size-md);
+}
+
+.dropzoneLg {
+  padding: var(--tui-spacing-xl);
+  font-size: var(--tui-font-size-md);
+}
+
+/* ── Dropzone: drag over state ── */
+.dragOver {
+  border-color: var(--tui-primary);
+  background-color: var(--tui-primary-subtle);
+}
+
+/* ── Dropzone: disabled ── */
+.dropzoneDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Upload icon ── */
+.uploadIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tui-text-muted);
+}
+
+/* ── Text elements ── */
+.dropzoneText {
+  color: var(--tui-text-secondary);
+  font-size: inherit;
+  line-height: 1.4;
+}
+
+/* ── Browse button ── */
+.browseText {
+  color: var(--tui-primary);
+  font-weight: var(--tui-font-weight-semibold);
+  cursor: pointer;
+}
+
+.browseText:hover {
+  text-decoration: underline;
+}
+
+/* ── File List (list mode) ── */
+.fileListList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tui-spacing-xs);
+}
+
+/* ── File List (grid mode) ── */
+.fileListGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--tui-spacing-sm);
+}
+
+/* ── File Item (list) ── */
+.fileItem {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-spacing-sm);
+  padding: var(--tui-spacing-sm) var(--tui-spacing-md);
+  border: 1px solid var(--tui-border);
+  border-radius: var(--tui-radius-md);
+  background-color: var(--tui-bg);
+  font-family: var(--tui-font-family);
+  font-size: var(--tui-font-size-sm);
+  transition: border-color var(--tui-transition);
+}
+
+.fileItemError {
+  border-color: var(--tui-danger);
+}
+
+.fileItemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--tui-text-muted);
+}
+
+.fileItemName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--tui-text);
+  font-weight: var(--tui-font-weight-medium);
+}
+
+.fileItemSize {
+  flex-shrink: 0;
+  color: var(--tui-text-muted);
+  font-size: var(--tui-font-size-xs);
+}
+
+.fileItemMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-spacing-sm);
+  flex-shrink: 0;
+}
+
+/* ── File Item: progress bar ── */
+.fileItemProgress {
+  width: 80px;
+  height: 4px;
+  border: none;
+  border-radius: var(--tui-radius-full);
+  overflow: hidden;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.fileItemProgress::-webkit-progress-bar {
+  background-color: var(--tui-bg-muted);
+  border-radius: var(--tui-radius-full);
+}
+
+.fileItemProgress::-webkit-progress-value {
+  background-color: var(--tui-primary);
+  border-radius: var(--tui-radius-full);
+  transition: width var(--tui-transition-slow);
+}
+
+.fileItemProgress::-moz-progress-bar {
+  background-color: var(--tui-primary);
+  border-radius: var(--tui-radius-full);
+  transition: width var(--tui-transition-slow);
+}
+
+/* ── File Item: status icons ── */
+.statusSuccess {
+  display: flex;
+  align-items: center;
+  color: var(--tui-success);
+}
+
+.statusError {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-spacing-xs);
+  color: var(--tui-danger);
+  font-size: var(--tui-font-size-xs);
+}
+
+/* ── Remove button ── */
+.removeButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 2px;
+  margin: 0;
+  cursor: pointer;
+  color: var(--tui-text-muted);
+  opacity: 0.7;
+  border-radius: var(--tui-radius-full);
+  transition: opacity var(--tui-transition);
+  flex-shrink: 0;
+}
+
+.removeButton:hover {
+  opacity: 1;
+}
+
+.removeButton:focus-visible {
+  outline: none;
+  box-shadow: var(--tui-focus-ring);
+}
+
+/* ── Grid Item (card) ── */
+.gridItem {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--tui-border);
+  border-radius: var(--tui-radius-md);
+  background-color: var(--tui-bg);
+  overflow: hidden;
+  font-family: var(--tui-font-family);
+  transition: border-color var(--tui-transition);
+}
+
+.gridItemError {
+  border-color: var(--tui-danger);
+}
+
+/* ── Grid Item: preview ── */
+.gridItemPreview {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--tui-bg-subtle);
+  overflow: hidden;
+}
+
+.gridItemPreviewImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gridItemPreviewIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tui-text-muted);
+}
+
+/* ── Grid Item: footer ── */
+.gridItemFooter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tui-spacing-xs);
+  padding: var(--tui-spacing-sm);
+}
+
+.gridItemFooterRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tui-spacing-xs);
+}
+
+.gridItemName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--tui-font-size-xs);
+  font-weight: var(--tui-font-weight-medium);
+  color: var(--tui-text);
+}
+
+.gridItemSize {
+  font-size: var(--tui-font-size-xs);
+  color: var(--tui-text-muted);
+  flex-shrink: 0;
+}
+
+.gridItemProgress {
+  width: 100%;
+  height: 3px;
+  border: none;
+  border-radius: var(--tui-radius-full);
+  overflow: hidden;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.gridItemProgress::-webkit-progress-bar {
+  background-color: var(--tui-bg-muted);
+  border-radius: var(--tui-radius-full);
+}
+
+.gridItemProgress::-webkit-progress-value {
+  background-color: var(--tui-primary);
+  border-radius: var(--tui-radius-full);
+  transition: width var(--tui-transition-slow);
+}
+
+.gridItemProgress::-moz-progress-bar {
+  background-color: var(--tui-primary);
+  border-radius: var(--tui-radius-full);
+  transition: width var(--tui-transition-slow);
+}
+
+.gridItemStatus {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}

@@ -77,6 +77,26 @@
   background-color: var(--tui-danger-hover);
 }
 
+/* ── Filled: warning ── */
+.filled.warning {
+  background-color: var(--tui-warning);
+  color: var(--tui-warning-text);
+}
+
+.filled.warning.clickable:hover {
+  background-color: var(--tui-warning-hover);
+}
+
+/* ── Filled: info ── */
+.filled.info {
+  background-color: var(--tui-info);
+  color: var(--tui-info-text);
+}
+
+.filled.info.clickable:hover {
+  background-color: var(--tui-info-hover);
+}
+
 /* ── Outlined variants ── */
 .outlined.primary {
   background-color: transparent;
@@ -116,6 +136,28 @@
 
 .outlined.danger.clickable:hover {
   background-color: var(--tui-danger-subtle);
+}
+
+/* ── Outlined: warning ── */
+.outlined.warning {
+  background-color: transparent;
+  border-color: var(--tui-warning);
+  color: var(--tui-warning);
+}
+
+.outlined.warning.clickable:hover {
+  background-color: var(--tui-warning-subtle);
+}
+
+/* ── Outlined: info ── */
+.outlined.info {
+  background-color: transparent;
+  border-color: var(--tui-info);
+  color: var(--tui-info);
+}
+
+.outlined.info.clickable:hover {
+  background-color: var(--tui-info-subtle);
 }
 
 /* ── Icon ── */

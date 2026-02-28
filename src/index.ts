@@ -60,3 +60,5 @@ export { DateRangePicker } from './components/DateRangePicker';
 export type { DateRangePickerProps, DateRange } from './components/DateRangePicker/DateRangePicker';
 export { Expander } from './components/Expander';
 export type { ExpanderProps } from './components/Expander/Expander';
+export { FileUpload } from './components/FileUpload';
+export type { FileUploadProps, FileUploadFile, ValidationError } from './components/FileUpload/types';
