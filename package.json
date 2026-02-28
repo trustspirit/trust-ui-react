@@ -1,7 +1,7 @@
 {
   "name": "trust-ui-react",
-  "version": "0.1.0",
-  "description": "A lightweight, themeable React UI component library with dark/light mode, CSS Custom Properties, and 21 production-ready components.",
+  "version": "0.2.0",
+  "description": "A lightweight, themeable React UI component library with dark/light mode, CSS Custom Properties, and 22 production-ready components.",
   "type": "module",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.es.js",
