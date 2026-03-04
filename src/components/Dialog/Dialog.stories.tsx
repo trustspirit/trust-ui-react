@@ -6,6 +6,7 @@ import { Button } from '../Button';
 const meta: Meta<typeof Dialog> = {
   title: 'Overlay/Dialog',
   component: Dialog,
+  tags: ['autodocs'],
   argTypes: {
     size: {
       control: 'select',

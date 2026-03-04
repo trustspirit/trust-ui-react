@@ -4,6 +4,7 @@ import { Slider } from './Slider';
 export default {
   title: 'Form/Slider',
   component: Slider,
+  tags: ['autodocs'],
 };
 
 export const Default = () => {

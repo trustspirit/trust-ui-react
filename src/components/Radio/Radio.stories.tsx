@@ -5,6 +5,7 @@ import { RadioGroup } from './RadioGroup';
 export default {
   title: 'Form/Radio',
   component: Radio,
+  tags: ['autodocs'],
 };
 
 export const Default = () => {

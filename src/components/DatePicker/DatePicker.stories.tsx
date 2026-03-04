@@ -4,6 +4,7 @@ import { DatePicker } from './DatePicker';
 export default {
   title: 'Form/DatePicker',
   component: DatePicker,
+  tags: ['autodocs'],
 };
 
 export const Default = () => <DatePicker label="Date" />;

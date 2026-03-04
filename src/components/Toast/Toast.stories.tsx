@@ -7,6 +7,7 @@ import { Toast } from './Toast';
 const meta: Meta<typeof Toast> = {
   title: 'Overlay/Toast',
   component: Toast,
+  tags: ['autodocs'],
   decorators: [
     (Story) => (
       <ToastProvider>

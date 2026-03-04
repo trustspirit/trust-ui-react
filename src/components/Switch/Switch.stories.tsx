@@ -4,6 +4,7 @@ import { Switch } from './Switch';
 export default {
   title: 'Form/Switch',
   component: Switch,
+  tags: ['autodocs'],
 };
 
 export const Default = () => {

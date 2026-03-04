@@ -5,6 +5,7 @@ import { Button } from '../Button';
 const meta: Meta<typeof Tooltip> = {
   title: 'Overlay/Tooltip',
   component: Tooltip,
+  tags: ['autodocs'],
   argTypes: {
     placement: {
       control: 'select',

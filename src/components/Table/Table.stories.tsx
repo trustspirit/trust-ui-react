@@ -29,6 +29,7 @@ const columns = [
 
 const meta: Meta = {
   title: 'Data/Table',
+  tags: ['autodocs'],
   decorators: [
     (Story) => (
       <div style={{ padding: 24 }}>

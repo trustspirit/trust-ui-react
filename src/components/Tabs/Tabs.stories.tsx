@@ -4,6 +4,7 @@ import { Tabs } from './Tabs';
 
 const meta: Meta = {
   title: 'Navigation/Tabs',
+  tags: ['autodocs'],
   decorators: [
     (Story) => (
       <div style={{ padding: 24, maxWidth: 600 }}>

@@ -5,6 +5,7 @@ import type { DateRange } from './DateRangePicker';
 export default {
   title: 'Form/DateRangePicker',
   component: DateRangePicker,
+  tags: ['autodocs'],
 };
 
 export const Default = () => <DateRangePicker label="Date Range" />;

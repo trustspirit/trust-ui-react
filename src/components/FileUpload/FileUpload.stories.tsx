@@ -6,6 +6,7 @@ import type { FileUploadFile } from './types';
 const meta: Meta<typeof FileUpload> = {
   title: 'Components/FileUpload',
   component: FileUpload,
+  tags: ['autodocs'],
   argTypes: {
     variant: { control: 'select', options: ['area', 'inline'] },
     listType: { control: 'select', options: ['list', 'grid'] },

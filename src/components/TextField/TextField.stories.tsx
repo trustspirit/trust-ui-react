@@ -4,6 +4,7 @@ import { TextField } from './TextField';
 export default {
   title: 'Form/TextField',
   component: TextField,
+  tags: ['autodocs'],
 };
 
 export const Default = () => <TextField label="Name" placeholder="Enter your name" />;

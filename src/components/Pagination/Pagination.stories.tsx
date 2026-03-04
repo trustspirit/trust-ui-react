@@ -5,6 +5,7 @@ import { Pagination } from './Pagination';
 const meta: Meta<typeof Pagination> = {
   title: 'Navigation/Pagination',
   component: Pagination,
+  tags: ['autodocs'],
   decorators: [
     (Story) => (
       <div style={{ padding: 24 }}>

@@ -4,6 +4,7 @@ import { Button } from '../Button';
 
 const meta: Meta = {
   title: 'Overlay/Menu',
+  tags: ['autodocs'],
   decorators: [
     (Story) => (
       <div style={{ padding: 40 }}>

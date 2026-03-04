@@ -4,6 +4,7 @@ import { Select } from './Select';
 export default {
   title: 'Form/Select',
   component: Select,
+  tags: ['autodocs'],
 };
 
 const fruitOptions = [

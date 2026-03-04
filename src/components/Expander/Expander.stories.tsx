@@ -4,6 +4,7 @@ import { Expander } from './Expander';
 export default {
   title: 'Components/Expander',
   component: Expander,
+  tags: ['autodocs'],
 };
 
 export const Default = () => (

@@ -4,6 +4,7 @@ import { Chip } from './Chip';
 const meta: Meta<typeof Chip> = {
   title: 'Components/Chip',
   component: Chip,
+  tags: ['autodocs'],
   argTypes: {
     variant: {
       control: 'select',
