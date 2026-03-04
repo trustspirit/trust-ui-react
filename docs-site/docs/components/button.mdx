@@ -1,0 +1,75 @@
+---
+sidebar_position: 1
+title: Button
+---
+
+import { Button } from '../../../src/components/Button';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Button
+
+A clickable button with multiple variants, sizes, shapes, and loading state.
+
+## Variants
+
+<ComponentPreview code={`<Button variant="primary">Primary</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="danger">Danger</Button>`}>
+  <Button variant="primary">Primary</Button>
+  <Button variant="secondary">Secondary</Button>
+  <Button variant="outline">Outline</Button>
+  <Button variant="ghost">Ghost</Button>
+  <Button variant="danger">Danger</Button>
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<Button size="sm">Small</Button>
+<Button size="md">Medium</Button>
+<Button size="lg">Large</Button>`}>
+  <Button size="sm">Small</Button>
+  <Button size="md">Medium</Button>
+  <Button size="lg">Large</Button>
+</ComponentPreview>
+
+## Shapes
+
+<ComponentPreview code={`<Button shape="square">Square</Button>
+<Button shape="rounded">Rounded</Button>
+<Button shape="pill">Pill</Button>`}>
+  <Button shape="square">Square</Button>
+  <Button shape="rounded">Rounded</Button>
+  <Button shape="pill">Pill</Button>
+</ComponentPreview>
+
+## Loading
+
+<ComponentPreview code={`<Button loading>Loading</Button>`}>
+  <Button loading>Loading</Button>
+</ComponentPreview>
+
+## Full Width
+
+<ComponentPreview code={`<Button fullWidth>Full Width Button</Button>`}>
+  <div style={{ width: '100%', maxWidth: 400 }}>
+    <Button fullWidth>Full Width Button</Button>
+  </div>
+</ComponentPreview>
+
+## Props
+
+<PropsTable props={[
+  { name: 'variant', type: "'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'", default: "'primary'", description: 'Visual style variant' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size of the button' },
+  { name: 'shape', type: "'square' | 'rounded' | 'pill'", default: "'square'", description: 'Shape of the button' },
+  { name: 'loading', type: 'boolean', default: 'false', description: 'Shows a spinner and disables the button' },
+  { name: 'startIcon', type: 'ReactNode', description: 'Icon placed before the children' },
+  { name: 'endIcon', type: 'ReactNode', description: 'Icon placed after the children' },
+  { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Stretches the button to fill its container' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Disables the button' },
+]} />
+
+Also accepts all standard `<button>` HTML attributes.

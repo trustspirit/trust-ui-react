@@ -21,7 +21,10 @@
     "dev": "storybook dev -p 6006",
     "build": "vite build",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "docs:dev": "cd docs-site && pnpm start",
+    "docs:build": "cd docs-site && pnpm build",
+    "docs:serve": "cd docs-site && pnpm serve"
   },
   "keywords": ["react", "ui", "components", "typescript", "dark-mode", "css-modules", "design-system"],
   "author": "shinyoung",

@@ -1,0 +1,99 @@
+---
+sidebar_position: 9
+title: Radio
+---
+
+import { Radio, RadioGroup } from '../../../src/components/Radio';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Radio
+
+A set of mutually exclusive options. Use `RadioGroup` to wrap multiple `Radio` components.
+
+## Basic Usage
+
+<ComponentPreview code={`<RadioGroup name="fruit" defaultValue="apple">
+  <Radio value="apple" label="Apple" />
+  <Radio value="banana" label="Banana" />
+  <Radio value="cherry" label="Cherry" />
+</RadioGroup>`}>
+  <RadioGroup name="fruit" defaultValue="apple">
+    <Radio value="apple" label="Apple" />
+    <Radio value="banana" label="Banana" />
+    <Radio value="cherry" label="Cherry" />
+  </RadioGroup>
+</ComponentPreview>
+
+## Horizontal Layout
+
+<ComponentPreview code={`<RadioGroup name="size" defaultValue="md" direction="horizontal">
+  <Radio value="sm" label="Small" />
+  <Radio value="md" label="Medium" />
+  <Radio value="lg" label="Large" />
+</RadioGroup>`}>
+  <RadioGroup name="size" defaultValue="md" direction="horizontal">
+    <Radio value="sm" label="Small" />
+    <Radio value="md" label="Medium" />
+    <Radio value="lg" label="Large" />
+  </RadioGroup>
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<RadioGroup name="v1" defaultValue="a" variant="primary">
+  <Radio value="a" label="Primary A" />
+  <Radio value="b" label="Primary B" />
+</RadioGroup>
+<RadioGroup name="v2" defaultValue="a" variant="secondary">
+  <Radio value="a" label="Secondary A" />
+  <Radio value="b" label="Secondary B" />
+</RadioGroup>`}>
+  <div style={{ display: 'flex', gap: 32 }}>
+    <RadioGroup name="v1" defaultValue="a" variant="primary">
+      <Radio value="a" label="Primary A" />
+      <Radio value="b" label="Primary B" />
+    </RadioGroup>
+    <RadioGroup name="v2" defaultValue="a" variant="secondary">
+      <Radio value="a" label="Secondary A" />
+      <Radio value="b" label="Secondary B" />
+    </RadioGroup>
+  </div>
+</ComponentPreview>
+
+## Disabled
+
+<ComponentPreview code={`<RadioGroup name="disabled" defaultValue="a" disabled>
+  <Radio value="a" label="Option A" />
+  <Radio value="b" label="Option B" />
+</RadioGroup>`}>
+  <RadioGroup name="disabled" defaultValue="a" disabled>
+    <Radio value="a" label="Option A" />
+    <Radio value="b" label="Option B" />
+  </RadioGroup>
+</ComponentPreview>
+
+## RadioGroup Props
+
+<PropsTable props={[
+  { name: 'name', type: 'string', description: 'Name attribute for all radios in this group' },
+  { name: 'value', type: 'string', description: 'Controlled selected value' },
+  { name: 'defaultValue', type: 'string', description: 'Default selected value (uncontrolled)' },
+  { name: 'onChange', type: '(value: string) => void', description: 'Callback when the selected value changes' },
+  { name: 'variant', type: "'primary' | 'secondary'", default: "'primary'", description: 'Color variant' },
+  { name: 'direction', type: "'horizontal' | 'vertical'", default: "'vertical'", description: 'Layout direction' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether all radios are disabled' },
+  { name: 'children', type: 'ReactNode', description: 'Radio elements' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+## Radio Props
+
+<PropsTable props={[
+  { name: 'value', type: 'string', description: 'Value of this radio option' },
+  { name: 'label', type: 'string', description: 'Text label' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the radio is disabled' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

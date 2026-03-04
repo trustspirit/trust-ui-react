@@ -1,0 +1,47 @@
+---
+sidebar_position: 2
+title: Theming
+---
+
+# Theming
+
+trust-ui uses CSS Custom Properties for theming with built-in light and dark modes.
+
+## Theme Switching
+
+Use `useTheme` hook to toggle themes:
+
+```tsx
+import { useTheme } from 'trust-ui-react';
+
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  return (
+    <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+      Current: {theme}
+    </button>
+  );
+}
+```
+
+## Custom Tokens
+
+Override CSS Custom Properties to customize the design:
+
+```css
+:root {
+  --tui-primary: #your-brand-color;
+  --tui-primary-hover: #your-brand-hover;
+  --tui-radius-md: 8px;
+}
+```
+
+## Available Token Categories
+
+- **Colors**: `--tui-primary`, `--tui-bg`, `--tui-text`, etc.
+- **Spacing**: `--tui-spacing-xs` through `--tui-spacing-2xl`
+- **Typography**: `--tui-font-size-xs` through `--tui-font-size-xl`
+- **Radius**: `--tui-radius-sm` through `--tui-radius-full`
+- **Shadows**: `--tui-shadow-sm` through `--tui-shadow-xl`
+
+See the [Design Tokens](/design-tokens/colors) section for the full list.

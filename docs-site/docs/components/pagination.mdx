@@ -1,0 +1,56 @@
+---
+sidebar_position: 18
+title: Pagination
+---
+
+import { Pagination } from '../../../src/components/Pagination';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Pagination
+
+Navigation controls for paging through data. Supports numbered pages and a simple previous/next variant.
+
+## Basic Usage
+
+<ComponentPreview code={`<Pagination totalPages={10} currentPage={5} onChange={() => {}} />`}>
+  <Pagination totalPages={10} currentPage={5} onChange={() => {}} />
+</ComponentPreview>
+
+## Simple Variant
+
+<ComponentPreview code={`<Pagination variant="simple" totalPages={10} currentPage={3} onChange={() => {}} />`}>
+  <Pagination variant="simple" totalPages={10} currentPage={3} onChange={() => {}} />
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<Pagination size="sm" totalPages={5} currentPage={2} onChange={() => {}} />
+<Pagination size="md" totalPages={5} currentPage={2} onChange={() => {}} />
+<Pagination size="lg" totalPages={5} currentPage={2} onChange={() => {}} />`}>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <Pagination size="sm" totalPages={5} currentPage={2} onChange={() => {}} />
+    <Pagination size="md" totalPages={5} currentPage={2} onChange={() => {}} />
+    <Pagination size="lg" totalPages={5} currentPage={2} onChange={() => {}} />
+  </div>
+</ComponentPreview>
+
+## Disabled
+
+<ComponentPreview code={`<Pagination totalPages={10} currentPage={5} onChange={() => {}} disabled />`}>
+  <Pagination totalPages={10} currentPage={5} onChange={() => {}} disabled />
+</ComponentPreview>
+
+## Props
+
+<PropsTable props={[
+  { name: 'totalPages', type: 'number', description: 'Total number of pages' },
+  { name: 'currentPage', type: 'number', description: 'Currently active page (1-indexed)' },
+  { name: 'onChange', type: '(page: number) => void', description: 'Callback when page changes' },
+  { name: 'siblingCount', type: 'number', default: '1', description: 'Number of sibling pages to show around current' },
+  { name: 'variant', type: "'default' | 'simple'", default: "'default'", description: 'Visual variant' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size preset' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Disable all pagination controls' },
+  { name: 'className', type: 'string', description: 'Additional CSS class name' },
+  { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },
+]} />

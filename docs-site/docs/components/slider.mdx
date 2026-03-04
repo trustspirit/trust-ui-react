@@ -1,0 +1,83 @@
+---
+sidebar_position: 12
+title: Slider
+---
+
+import { Slider } from '../../../src/components/Slider';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Slider
+
+A range input for selecting a numeric value within a given range.
+
+## Basic Usage
+
+<ComponentPreview code={`<Slider defaultValue={50} />`}>
+  <div style={{ width: '100%', maxWidth: 320 }}>
+    <Slider defaultValue={50} />
+  </div>
+</ComponentPreview>
+
+## With Value Label
+
+<ComponentPreview code={`<Slider defaultValue={40} showValue />`}>
+  <div style={{ width: '100%', maxWidth: 320 }}>
+    <Slider defaultValue={40} showValue />
+  </div>
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<Slider defaultValue={60} variant="primary" showValue />
+<Slider defaultValue={60} variant="secondary" showValue />`}>
+  <div style={{ width: '100%', maxWidth: 320, display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <Slider defaultValue={60} variant="primary" showValue />
+    <Slider defaultValue={60} variant="secondary" showValue />
+  </div>
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<Slider defaultValue={50} size="sm" />
+<Slider defaultValue={50} size="md" />
+<Slider defaultValue={50} size="lg" />`}>
+  <div style={{ width: '100%', maxWidth: 320, display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <Slider defaultValue={50} size="sm" />
+    <Slider defaultValue={50} size="md" />
+    <Slider defaultValue={50} size="lg" />
+  </div>
+</ComponentPreview>
+
+## Custom Range and Step
+
+<ComponentPreview code={`<Slider defaultValue={25} min={0} max={100} step={25} showValue />`}>
+  <div style={{ width: '100%', maxWidth: 320 }}>
+    <Slider defaultValue={25} min={0} max={100} step={25} showValue />
+  </div>
+</ComponentPreview>
+
+## Disabled
+
+<ComponentPreview code={`<Slider defaultValue={50} disabled />`}>
+  <div style={{ width: '100%', maxWidth: 320 }}>
+    <Slider defaultValue={50} disabled />
+  </div>
+</ComponentPreview>
+
+## Props
+
+<PropsTable props={[
+  { name: 'value', type: 'number', description: 'Controlled value' },
+  { name: 'defaultValue', type: 'number', description: 'Default value (uncontrolled)' },
+  { name: 'min', type: 'number', default: '0', description: 'Minimum value' },
+  { name: 'max', type: 'number', default: '100', description: 'Maximum value' },
+  { name: 'step', type: 'number', default: '1', description: 'Step increment' },
+  { name: 'onChange', type: '(value: number) => void', description: 'Change callback' },
+  { name: 'variant', type: "'primary' | 'secondary'", default: "'primary'", description: 'Color variant' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size' },
+  { name: 'showValue', type: 'boolean', default: 'false', description: 'Show the current value label' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the slider is disabled' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

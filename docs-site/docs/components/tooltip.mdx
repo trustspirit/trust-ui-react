@@ -1,0 +1,79 @@
+---
+sidebar_position: 6
+title: Tooltip
+---
+
+import { Tooltip } from '../../../src/components/Tooltip';
+import { Button } from '../../../src/components/Button';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Tooltip
+
+A popup that displays informative text when hovering or focusing on a trigger element.
+
+## Basic Usage
+
+<ComponentPreview code={`<Tooltip content="Hello from tooltip!">
+  <Button>Hover me</Button>
+</Tooltip>`}>
+  <Tooltip content="Hello from tooltip!">
+    <Button>Hover me</Button>
+  </Tooltip>
+</ComponentPreview>
+
+## Placement
+
+<ComponentPreview code={`<Tooltip content="Top" placement="top">
+  <Button variant="outline">Top</Button>
+</Tooltip>
+<Tooltip content="Bottom" placement="bottom">
+  <Button variant="outline">Bottom</Button>
+</Tooltip>
+<Tooltip content="Left" placement="left">
+  <Button variant="outline">Left</Button>
+</Tooltip>
+<Tooltip content="Right" placement="right">
+  <Button variant="outline">Right</Button>
+</Tooltip>`}>
+  <Tooltip content="Top" placement="top">
+    <Button variant="outline">Top</Button>
+  </Tooltip>
+  <Tooltip content="Bottom" placement="bottom">
+    <Button variant="outline">Bottom</Button>
+  </Tooltip>
+  <Tooltip content="Left" placement="left">
+    <Button variant="outline">Left</Button>
+  </Tooltip>
+  <Tooltip content="Right" placement="right">
+    <Button variant="outline">Right</Button>
+  </Tooltip>
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<Tooltip content="Dark tooltip" variant="dark">
+  <Button variant="outline">Dark</Button>
+</Tooltip>
+<Tooltip content="Light tooltip" variant="light">
+  <Button variant="outline">Light</Button>
+</Tooltip>`}>
+  <Tooltip content="Dark tooltip" variant="dark">
+    <Button variant="outline">Dark</Button>
+  </Tooltip>
+  <Tooltip content="Light tooltip" variant="light">
+    <Button variant="outline">Light</Button>
+  </Tooltip>
+</ComponentPreview>
+
+## Props
+
+<PropsTable props={[
+  { name: 'content', type: 'ReactNode', description: 'Content to display inside the tooltip' },
+  { name: 'placement', type: "'top' | 'bottom' | 'left' | 'right'", default: "'top'", description: 'Placement relative to the trigger' },
+  { name: 'variant', type: "'dark' | 'light'", default: "'dark'", description: 'Visual variant' },
+  { name: 'delay', type: 'number', default: '200', description: 'Delay in milliseconds before showing' },
+  { name: 'maxWidth', type: 'number', default: '250', description: 'Maximum width in pixels' },
+  { name: 'children', type: 'ReactElement', description: 'Trigger element' },
+  { name: 'className', type: 'string', description: 'Additional CSS class name' },
+]} />

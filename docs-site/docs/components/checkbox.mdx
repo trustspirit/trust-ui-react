@@ -1,0 +1,56 @@
+---
+sidebar_position: 8
+title: Checkbox
+---
+
+import { Checkbox } from '../../../src/components/Checkbox';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Checkbox
+
+A toggle control that allows users to select one or more options.
+
+## Basic Usage
+
+<ComponentPreview code={`<Checkbox label="Accept terms and conditions" />`}>
+  <Checkbox label="Accept terms and conditions" />
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<Checkbox label="Primary" variant="primary" defaultChecked />
+<Checkbox label="Secondary" variant="secondary" defaultChecked />`}>
+  <Checkbox label="Primary" variant="primary" defaultChecked />
+  <Checkbox label="Secondary" variant="secondary" defaultChecked />
+</ComponentPreview>
+
+## Indeterminate
+
+<ComponentPreview code={`<Checkbox label="Select all" indeterminate />`}>
+  <Checkbox label="Select all" indeterminate />
+</ComponentPreview>
+
+## Disabled
+
+<ComponentPreview code={`<Checkbox label="Disabled unchecked" disabled />
+<Checkbox label="Disabled checked" disabled defaultChecked />`}>
+  <Checkbox label="Disabled unchecked" disabled />
+  <Checkbox label="Disabled checked" disabled defaultChecked />
+</ComponentPreview>
+
+## Props
+
+<PropsTable props={[
+  { name: 'checked', type: 'boolean', description: 'Whether the checkbox is checked (controlled)' },
+  { name: 'defaultChecked', type: 'boolean', description: 'Initial checked state (uncontrolled)' },
+  { name: 'indeterminate', type: 'boolean', default: 'false', description: 'Whether the checkbox shows an indeterminate state' },
+  { name: 'onChange', type: '(e: ChangeEvent) => void', description: 'Change handler' },
+  { name: 'variant', type: "'primary' | 'secondary'", default: "'primary'", description: 'Color variant' },
+  { name: 'label', type: 'string', description: 'Text label' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the checkbox is disabled' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+Also accepts all standard `<input>` HTML attributes (except `type` and `size`).

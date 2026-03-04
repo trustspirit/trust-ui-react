@@ -1,0 +1,64 @@
+---
+sidebar_position: 4
+title: Chip
+---
+
+import { Chip } from '../../../src/components/Chip';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Chip
+
+A compact element for tags, filters, or selections. Supports delete and click actions.
+
+## Variants
+
+<ComponentPreview code={`<Chip variant="filled">Filled</Chip>
+<Chip variant="outlined">Outlined</Chip>`}>
+  <Chip variant="filled">Filled</Chip>
+  <Chip variant="outlined">Outlined</Chip>
+</ComponentPreview>
+
+## Colors
+
+<ComponentPreview code={`<Chip color="primary">Primary</Chip>
+<Chip color="secondary">Secondary</Chip>
+<Chip color="success">Success</Chip>
+<Chip color="danger">Danger</Chip>
+<Chip color="warning">Warning</Chip>
+<Chip color="info">Info</Chip>`}>
+  <Chip color="primary">Primary</Chip>
+  <Chip color="secondary">Secondary</Chip>
+  <Chip color="success">Success</Chip>
+  <Chip color="danger">Danger</Chip>
+  <Chip color="warning">Warning</Chip>
+  <Chip color="info">Info</Chip>
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<Chip size="sm">Small</Chip>
+<Chip size="md">Medium</Chip>`}>
+  <Chip size="sm">Small</Chip>
+  <Chip size="md">Medium</Chip>
+</ComponentPreview>
+
+## Deletable
+
+<ComponentPreview code={`<Chip onDelete={() => {}}>Deletable</Chip>`}>
+  <Chip onDelete={() => {}}>Deletable</Chip>
+</ComponentPreview>
+
+## Props
+
+<PropsTable props={[
+  { name: 'variant', type: "'filled' | 'outlined'", default: "'filled'", description: 'Visual style variant' },
+  { name: 'color', type: "'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info'", default: "'primary'", description: 'Color scheme' },
+  { name: 'size', type: "'sm' | 'md'", default: "'md'", description: 'Size of the chip' },
+  { name: 'onDelete', type: '() => void', description: 'Callback when the delete icon is clicked; shows the delete button when provided' },
+  { name: 'onClick', type: '() => void', description: 'Makes the chip clickable' },
+  { name: 'startIcon', type: 'ReactNode', description: 'Icon placed before the label' },
+  { name: 'children', type: 'ReactNode', description: 'Chip label content' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

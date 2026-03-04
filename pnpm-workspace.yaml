@@ -1,1 +1,3 @@
 approveBuilds: true
+packages:
+  - 'docs-site'

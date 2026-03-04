@@ -1,0 +1,152 @@
+---
+sidebar_position: 23
+title: Expander
+---
+
+import { Expander } from '../../../src/components/Expander';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Expander
+
+An accordion component for collapsible content sections. Supports single and multiple expansion modes.
+
+## Single (Accordion)
+
+<ComponentPreview code={`<Expander type="single" defaultValue="item1">
+  <Expander.Item value="item1">
+    <Expander.Trigger>What is trust-ui?</Expander.Trigger>
+    <Expander.Content>A React component library with accessible, customizable UI components.</Expander.Content>
+  </Expander.Item>
+  <Expander.Item value="item2">
+    <Expander.Trigger>How do I install it?</Expander.Trigger>
+    <Expander.Content>Run npm install trust-ui in your project.</Expander.Content>
+  </Expander.Item>
+  <Expander.Item value="item3">
+    <Expander.Trigger>Is it accessible?</Expander.Trigger>
+    <Expander.Content>Yes, all components follow WAI-ARIA patterns.</Expander.Content>
+  </Expander.Item>
+</Expander>`}>
+  <Expander type="single" defaultValue="item1">
+    <Expander.Item value="item1">
+      <Expander.Trigger>What is trust-ui?</Expander.Trigger>
+      <Expander.Content>A React component library with accessible, customizable UI components.</Expander.Content>
+    </Expander.Item>
+    <Expander.Item value="item2">
+      <Expander.Trigger>How do I install it?</Expander.Trigger>
+      <Expander.Content>Run npm install trust-ui in your project.</Expander.Content>
+    </Expander.Item>
+    <Expander.Item value="item3">
+      <Expander.Trigger>Is it accessible?</Expander.Trigger>
+      <Expander.Content>Yes, all components follow WAI-ARIA patterns.</Expander.Content>
+    </Expander.Item>
+  </Expander>
+</ComponentPreview>
+
+## Multiple
+
+<ComponentPreview code={`<Expander type="multiple" defaultValue={["a", "b"]}>
+  <Expander.Item value="a">
+    <Expander.Trigger>Section A</Expander.Trigger>
+    <Expander.Content>Content for section A.</Expander.Content>
+  </Expander.Item>
+  <Expander.Item value="b">
+    <Expander.Trigger>Section B</Expander.Trigger>
+    <Expander.Content>Content for section B.</Expander.Content>
+  </Expander.Item>
+  <Expander.Item value="c">
+    <Expander.Trigger>Section C</Expander.Trigger>
+    <Expander.Content>Content for section C.</Expander.Content>
+  </Expander.Item>
+</Expander>`}>
+  <Expander type="multiple" defaultValue={["a", "b"]}>
+    <Expander.Item value="a">
+      <Expander.Trigger>Section A</Expander.Trigger>
+      <Expander.Content>Content for section A.</Expander.Content>
+    </Expander.Item>
+    <Expander.Item value="b">
+      <Expander.Trigger>Section B</Expander.Trigger>
+      <Expander.Content>Content for section B.</Expander.Content>
+    </Expander.Item>
+    <Expander.Item value="c">
+      <Expander.Trigger>Section C</Expander.Trigger>
+      <Expander.Content>Content for section C.</Expander.Content>
+    </Expander.Item>
+  </Expander>
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<Expander variant="bordered" type="single">
+  <Expander.Item value="1">
+    <Expander.Trigger>Bordered variant</Expander.Trigger>
+    <Expander.Content>Content inside a bordered expander.</Expander.Content>
+  </Expander.Item>
+</Expander>`}>
+  <Expander variant="bordered" type="single">
+    <Expander.Item value="1">
+      <Expander.Trigger>Bordered variant</Expander.Trigger>
+      <Expander.Content>Content inside a bordered expander.</Expander.Content>
+    </Expander.Item>
+  </Expander>
+</ComponentPreview>
+
+## Disabled Item
+
+<ComponentPreview code={`<Expander type="single">
+  <Expander.Item value="1">
+    <Expander.Trigger>Enabled item</Expander.Trigger>
+    <Expander.Content>This item can be expanded.</Expander.Content>
+  </Expander.Item>
+  <Expander.Item value="2" disabled>
+    <Expander.Trigger>Disabled item</Expander.Trigger>
+    <Expander.Content>This content is hidden.</Expander.Content>
+  </Expander.Item>
+</Expander>`}>
+  <Expander type="single">
+    <Expander.Item value="1">
+      <Expander.Trigger>Enabled item</Expander.Trigger>
+      <Expander.Content>This item can be expanded.</Expander.Content>
+    </Expander.Item>
+    <Expander.Item value="2" disabled>
+      <Expander.Trigger>Disabled item</Expander.Trigger>
+      <Expander.Content>This content is hidden.</Expander.Content>
+    </Expander.Item>
+  </Expander>
+</ComponentPreview>
+
+## Expander Props
+
+<PropsTable props={[
+  { name: 'type', type: "'single' | 'multiple'", default: "'single'", description: 'Single (accordion) or multiple items open at once' },
+  { name: 'defaultValue', type: 'string | string[]', description: 'Initially open item(s) (uncontrolled)' },
+  { name: 'value', type: 'string | string[]', description: 'Controlled open item(s)' },
+  { name: 'onChange', type: '(value: string | string[]) => void', description: 'Callback when open items change' },
+  { name: 'variant', type: "'default' | 'bordered' | 'separated'", default: "'default'", description: 'Visual variant' },
+  { name: 'children', type: 'ReactNode', description: 'Children' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+## Expander.Item Props
+
+<PropsTable props={[
+  { name: 'value', type: 'string', description: 'Unique value identifying this item' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Disabled state' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'children', type: 'ReactNode', description: 'Children (Trigger + Content)' },
+]} />
+
+## Expander.Trigger Props
+
+<PropsTable props={[
+  { name: 'children', type: 'ReactNode', description: 'Trigger label' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+]} />
+
+## Expander.Content Props
+
+<PropsTable props={[
+  { name: 'children', type: 'ReactNode', description: 'Content' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+]} />

@@ -1,0 +1,128 @@
+---
+sidebar_position: 17
+title: Table
+---
+
+import { Table } from '../../../src/components/Table';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Table
+
+A data table with sorting, custom cell rendering, and multiple visual variants.
+
+## Basic Usage
+
+<ComponentPreview code={`<Table
+  columns={[
+    { key: 'name', header: 'Name' },
+    { key: 'role', header: 'Role' },
+    { key: 'status', header: 'Status' },
+  ]}
+  data={[
+    { name: 'Alice', role: 'Engineer', status: 'Active' },
+    { name: 'Bob', role: 'Designer', status: 'Inactive' },
+    { name: 'Charlie', role: 'Manager', status: 'Active' },
+  ]}
+/>`}>
+  <Table
+    columns={[
+      { key: 'name', header: 'Name' },
+      { key: 'role', header: 'Role' },
+      { key: 'status', header: 'Status' },
+    ]}
+    data={[
+      { name: 'Alice', role: 'Engineer', status: 'Active' },
+      { name: 'Bob', role: 'Designer', status: 'Inactive' },
+      { name: 'Charlie', role: 'Manager', status: 'Active' },
+    ]}
+  />
+</ComponentPreview>
+
+## Sortable Columns
+
+<ComponentPreview code={`<Table
+  columns={[
+    { key: 'name', header: 'Name', sortable: true },
+    { key: 'age', header: 'Age', sortable: true },
+    { key: 'city', header: 'City' },
+  ]}
+  data={[
+    { name: 'Alice', age: 30, city: 'Seoul' },
+    { name: 'Bob', age: 25, city: 'Tokyo' },
+    { name: 'Charlie', age: 35, city: 'London' },
+  ]}
+/>`}>
+  <Table
+    columns={[
+      { key: 'name', header: 'Name', sortable: true },
+      { key: 'age', header: 'Age', sortable: true },
+      { key: 'city', header: 'City' },
+    ]}
+    data={[
+      { name: 'Alice', age: 30, city: 'Seoul' },
+      { name: 'Bob', age: 25, city: 'Tokyo' },
+      { name: 'Charlie', age: 35, city: 'London' },
+    ]}
+  />
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<Table
+  variant="striped"
+  columns={[
+    { key: 'name', header: 'Name' },
+    { key: 'value', header: 'Value' },
+  ]}
+  data={[
+    { name: 'Item A', value: '100' },
+    { name: 'Item B', value: '200' },
+    { name: 'Item C', value: '300' },
+    { name: 'Item D', value: '400' },
+  ]}
+/>`}>
+  <Table
+    variant="striped"
+    columns={[
+      { key: 'name', header: 'Name' },
+      { key: 'value', header: 'Value' },
+    ]}
+    data={[
+      { name: 'Item A', value: '100' },
+      { name: 'Item B', value: '200' },
+      { name: 'Item C', value: '300' },
+      { name: 'Item D', value: '400' },
+    ]}
+  />
+</ComponentPreview>
+
+## Empty State
+
+<ComponentPreview code={`<Table
+  columns={[{ key: 'name', header: 'Name' }]}
+  data={[]}
+  emptyText="No records found"
+/>`}>
+  <Table
+    columns={[{ key: 'name', header: 'Name' }]}
+    data={[]}
+    emptyText="No records found"
+  />
+</ComponentPreview>
+
+## Table Props
+
+<PropsTable props={[
+  { name: 'columns', type: 'Column<T>[]', description: 'Column definitions ({ key, header, render?, sortable?, width?, align? })' },
+  { name: 'data', type: 'T[]', description: 'Data rows' },
+  { name: 'variant', type: "'default' | 'striped' | 'bordered'", default: "'default'", description: 'Visual variant' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size preset' },
+  { name: 'stickyHeader', type: 'boolean', default: 'false', description: 'Sticky header on scroll' },
+  { name: 'hoverable', type: 'boolean', default: 'true', description: 'Highlight rows on hover' },
+  { name: 'emptyText', type: 'string', default: "'No data available'", description: 'Text shown when data is empty' },
+  { name: 'onRowClick', type: '(row: T, index: number) => void', description: 'Row click handler' },
+  { name: 'rowKey', type: 'string | ((row: T) => string)', description: 'Key extractor for row identity' },
+  { name: 'className', type: 'string', description: 'Additional CSS class name' },
+  { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },
+]} />

@@ -1,0 +1,44 @@
+---
+sidebar_position: 1
+title: Installation
+---
+
+# Installation
+
+## Install
+
+```bash npm2yarn
+npm install trust-ui-react
+```
+
+## Setup
+
+Import the styles in your app's entry point:
+
+```tsx
+import 'trust-ui-react/styles.css';
+```
+
+Wrap your app with `ThemeProvider`:
+
+```tsx
+import { ThemeProvider } from 'trust-ui-react';
+
+function App() {
+  return (
+    <ThemeProvider>
+      <YourApp />
+    </ThemeProvider>
+  );
+}
+```
+
+## Usage
+
+```tsx
+import { Button } from 'trust-ui-react';
+
+function MyComponent() {
+  return <Button variant="primary">Click me</Button>;
+}
+```

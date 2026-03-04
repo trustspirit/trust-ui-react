@@ -1,0 +1,107 @@
+---
+sidebar_position: 7
+title: TextField
+---
+
+import { TextField } from '../../../src/components/TextField';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# TextField
+
+A versatile text input supporting labels, helper text, validation, passwords, multiline, and number formatting.
+
+## Basic Usage
+
+<ComponentPreview code={`<TextField label="Name" placeholder="Enter your name" />`}>
+  <div style={{ width: '100%', maxWidth: 320 }}>
+    <TextField label="Name" placeholder="Enter your name" />
+  </div>
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<TextField variant="outlined" label="Outlined" placeholder="Outlined" />
+<TextField variant="filled" label="Filled" placeholder="Filled" />`}>
+  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+    <TextField variant="outlined" label="Outlined" placeholder="Outlined" />
+    <TextField variant="filled" label="Filled" placeholder="Filled" />
+  </div>
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<TextField size="sm" placeholder="Small" />
+<TextField size="md" placeholder="Medium" />
+<TextField size="lg" placeholder="Large" />`}>
+  <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+    <TextField size="sm" placeholder="Small" />
+    <TextField size="md" placeholder="Medium" />
+    <TextField size="lg" placeholder="Large" />
+  </div>
+</ComponentPreview>
+
+## Error State
+
+<ComponentPreview code={`<TextField label="Email" error errorMessage="Invalid email address" placeholder="Enter email" />`}>
+  <div style={{ width: '100%', maxWidth: 320 }}>
+    <TextField label="Email" error errorMessage="Invalid email address" placeholder="Enter email" />
+  </div>
+</ComponentPreview>
+
+## Helper Text
+
+<ComponentPreview code={`<TextField label="Username" helperText="Must be at least 3 characters" placeholder="Choose a username" />`}>
+  <div style={{ width: '100%', maxWidth: 320 }}>
+    <TextField label="Username" helperText="Must be at least 3 characters" placeholder="Choose a username" />
+  </div>
+</ComponentPreview>
+
+## Password
+
+<ComponentPreview code={`<TextField type="password" label="Password" placeholder="Enter password" />`}>
+  <div style={{ width: '100%', maxWidth: 320 }}>
+    <TextField type="password" label="Password" placeholder="Enter password" />
+  </div>
+</ComponentPreview>
+
+## Multiline
+
+<ComponentPreview code={`<TextField multiline rows={4} label="Bio" placeholder="Tell us about yourself" />`}>
+  <div style={{ width: '100%', maxWidth: 320 }}>
+    <TextField multiline rows={4} label="Bio" placeholder="Tell us about yourself" />
+  </div>
+</ComponentPreview>
+
+## Character Count
+
+<ComponentPreview code={`<TextField label="Tweet" maxLength={280} placeholder="What's happening?" />`}>
+  <div style={{ width: '100%', maxWidth: 320 }}>
+    <TextField label="Tweet" maxLength={280} placeholder="What's happening?" />
+  </div>
+</ComponentPreview>
+
+## Props
+
+<PropsTable props={[
+  { name: 'type', type: "'text' | 'tel' | 'password' | 'number' | 'email' | 'url' | 'search'", default: "'text'", description: 'Input type' },
+  { name: 'variant', type: "'outlined' | 'filled'", default: "'outlined'", description: 'Visual variant' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size of the field' },
+  { name: 'shape', type: "'square' | 'rounded' | 'pill'", default: "'square'", description: 'Shape of the input border' },
+  { name: 'label', type: 'string', description: 'Label displayed above the input' },
+  { name: 'placeholder', type: 'string', description: 'Placeholder text' },
+  { name: 'helperText', type: 'string', description: 'Helper text displayed below the input' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Whether the field is in error state' },
+  { name: 'errorMessage', type: 'string', description: 'Error message displayed below the input' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the field is disabled' },
+  { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Stretches the field to fill its container' },
+  { name: 'multiline', type: 'boolean', default: 'false', description: 'Renders a textarea instead of input' },
+  { name: 'rows', type: 'number', default: '3', description: 'Number of rows for textarea' },
+  { name: 'format', type: "'currency' | 'decimal'", description: 'Auto-formatting for number type' },
+  { name: 'onValueChange', type: '(rawValue: string) => void', description: 'Callback with unformatted value' },
+  { name: 'prefix', type: 'ReactNode', description: 'Content before the input' },
+  { name: 'suffix', type: 'ReactNode', description: 'Content after the input' },
+  { name: 'maxLength', type: 'number', description: 'Maximum character count (shows counter)' },
+]} />
+
+Also accepts all standard `<input>` HTML attributes.

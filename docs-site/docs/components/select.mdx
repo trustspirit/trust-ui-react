@@ -1,0 +1,134 @@
+---
+sidebar_position: 11
+title: Select
+---
+
+import { Select } from '../../../src/components/Select';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Select
+
+A dropdown component for selecting one or more options from a list. Supports search, multi-select, and keyboard navigation.
+
+## Basic Usage
+
+<ComponentPreview code={`<Select
+  options={[
+    { value: 'react', label: 'React' },
+    { value: 'vue', label: 'Vue' },
+    { value: 'angular', label: 'Angular' },
+    { value: 'svelte', label: 'Svelte' },
+  ]}
+  placeholder="Choose a framework"
+/>`}>
+  <div style={{ width: 260 }}>
+    <Select
+      options={[
+        { value: 'react', label: 'React' },
+        { value: 'vue', label: 'Vue' },
+        { value: 'angular', label: 'Angular' },
+        { value: 'svelte', label: 'Svelte' },
+      ]}
+      placeholder="Choose a framework"
+    />
+  </div>
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<Select variant="outlined" options={[{ value: '1', label: 'Outlined' }]} placeholder="Outlined" />
+<Select variant="filled" options={[{ value: '1', label: 'Filled' }]} placeholder="Filled" />`}>
+  <div style={{ display: 'flex', gap: 16 }}>
+    <Select variant="outlined" options={[{ value: '1', label: 'Outlined' }]} placeholder="Outlined" />
+    <Select variant="filled" options={[{ value: '1', label: 'Filled' }]} placeholder="Filled" />
+  </div>
+</ComponentPreview>
+
+## Searchable
+
+<ComponentPreview code={`<Select
+  searchable
+  options={[
+    { value: 'react', label: 'React' },
+    { value: 'vue', label: 'Vue' },
+    { value: 'angular', label: 'Angular' },
+    { value: 'svelte', label: 'Svelte' },
+  ]}
+  placeholder="Search frameworks..."
+/>`}>
+  <div style={{ width: 260 }}>
+    <Select
+      searchable
+      options={[
+        { value: 'react', label: 'React' },
+        { value: 'vue', label: 'Vue' },
+        { value: 'angular', label: 'Angular' },
+        { value: 'svelte', label: 'Svelte' },
+      ]}
+      placeholder="Search frameworks..."
+    />
+  </div>
+</ComponentPreview>
+
+## Multi-Select
+
+<ComponentPreview code={`<Select
+  multiple
+  options={[
+    { value: 'react', label: 'React' },
+    { value: 'vue', label: 'Vue' },
+    { value: 'angular', label: 'Angular' },
+  ]}
+  placeholder="Select frameworks"
+/>`}>
+  <div style={{ width: 300 }}>
+    <Select
+      multiple
+      options={[
+        { value: 'react', label: 'React' },
+        { value: 'vue', label: 'Vue' },
+        { value: 'angular', label: 'Angular' },
+      ]}
+      placeholder="Select frameworks"
+    />
+  </div>
+</ComponentPreview>
+
+## Error State
+
+<ComponentPreview code={`<Select
+  error
+  errorMessage="Please select an option"
+  options={[{ value: '1', label: 'Option 1' }]}
+  placeholder="Select..."
+/>`}>
+  <div style={{ width: 260 }}>
+    <Select
+      error
+      errorMessage="Please select an option"
+      options={[{ value: '1', label: 'Option 1' }]}
+      placeholder="Select..."
+    />
+  </div>
+</ComponentPreview>
+
+## Props
+
+<PropsTable props={[
+  { name: 'options', type: 'SelectOption[]', description: 'Available options ({ value, label, disabled? })' },
+  { name: 'value', type: 'string | string[]', description: 'Controlled value (string for single, string[] for multi)' },
+  { name: 'defaultValue', type: 'string | string[]', description: 'Default value (uncontrolled)' },
+  { name: 'onChange', type: '(value: string | string[]) => void', description: 'Change callback' },
+  { name: 'placeholder', type: 'string', default: "'Select...'", description: 'Placeholder text' },
+  { name: 'variant', type: "'outlined' | 'filled'", default: "'outlined'", description: 'Visual variant' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size' },
+  { name: 'searchable', type: 'boolean', default: 'false', description: 'Enable search/filter' },
+  { name: 'multiple', type: 'boolean', default: 'false', description: 'Enable multi-select' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the select is disabled' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Whether the field is in error state' },
+  { name: 'errorMessage', type: 'string', description: 'Error message' },
+  { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Stretches to fill container' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

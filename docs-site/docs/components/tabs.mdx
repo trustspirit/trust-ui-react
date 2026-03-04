@@ -1,0 +1,111 @@
+---
+sidebar_position: 19
+title: Tabs
+---
+
+import { Tabs } from '../../../src/components/Tabs';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Tabs
+
+Organizes content into tabbed sections. Supports underline and pill variants with keyboard navigation.
+
+## Underline Variant
+
+<ComponentPreview code={`<Tabs defaultValue="tab1" variant="underline">
+  <Tabs.List>
+    <Tabs.Trigger value="tab1">Account</Tabs.Trigger>
+    <Tabs.Trigger value="tab2">Security</Tabs.Trigger>
+    <Tabs.Trigger value="tab3">Notifications</Tabs.Trigger>
+  </Tabs.List>
+  <Tabs.Content value="tab1">Account settings content</Tabs.Content>
+  <Tabs.Content value="tab2">Security settings content</Tabs.Content>
+  <Tabs.Content value="tab3">Notification preferences content</Tabs.Content>
+</Tabs>`}>
+  <Tabs defaultValue="tab1" variant="underline">
+    <Tabs.List>
+      <Tabs.Trigger value="tab1">Account</Tabs.Trigger>
+      <Tabs.Trigger value="tab2">Security</Tabs.Trigger>
+      <Tabs.Trigger value="tab3">Notifications</Tabs.Trigger>
+    </Tabs.List>
+    <Tabs.Content value="tab1">Account settings content</Tabs.Content>
+    <Tabs.Content value="tab2">Security settings content</Tabs.Content>
+    <Tabs.Content value="tab3">Notification preferences content</Tabs.Content>
+  </Tabs>
+</ComponentPreview>
+
+## Pill Variant
+
+<ComponentPreview code={`<Tabs defaultValue="tab1" variant="pill">
+  <Tabs.List>
+    <Tabs.Trigger value="tab1">Overview</Tabs.Trigger>
+    <Tabs.Trigger value="tab2">Analytics</Tabs.Trigger>
+    <Tabs.Trigger value="tab3">Reports</Tabs.Trigger>
+  </Tabs.List>
+  <Tabs.Content value="tab1">Overview content</Tabs.Content>
+  <Tabs.Content value="tab2">Analytics content</Tabs.Content>
+  <Tabs.Content value="tab3">Reports content</Tabs.Content>
+</Tabs>`}>
+  <Tabs defaultValue="tab1" variant="pill">
+    <Tabs.List>
+      <Tabs.Trigger value="tab1">Overview</Tabs.Trigger>
+      <Tabs.Trigger value="tab2">Analytics</Tabs.Trigger>
+      <Tabs.Trigger value="tab3">Reports</Tabs.Trigger>
+    </Tabs.List>
+    <Tabs.Content value="tab1">Overview content</Tabs.Content>
+    <Tabs.Content value="tab2">Analytics content</Tabs.Content>
+    <Tabs.Content value="tab3">Reports content</Tabs.Content>
+  </Tabs>
+</ComponentPreview>
+
+## With Disabled Tab
+
+<ComponentPreview code={`<Tabs defaultValue="tab1">
+  <Tabs.List>
+    <Tabs.Trigger value="tab1">Active</Tabs.Trigger>
+    <Tabs.Trigger value="tab2" disabled>Disabled</Tabs.Trigger>
+    <Tabs.Trigger value="tab3">Another</Tabs.Trigger>
+  </Tabs.List>
+  <Tabs.Content value="tab1">Active tab content</Tabs.Content>
+  <Tabs.Content value="tab3">Another tab content</Tabs.Content>
+</Tabs>`}>
+  <Tabs defaultValue="tab1">
+    <Tabs.List>
+      <Tabs.Trigger value="tab1">Active</Tabs.Trigger>
+      <Tabs.Trigger value="tab2" disabled>Disabled</Tabs.Trigger>
+      <Tabs.Trigger value="tab3">Another</Tabs.Trigger>
+    </Tabs.List>
+    <Tabs.Content value="tab1">Active tab content</Tabs.Content>
+    <Tabs.Content value="tab3">Another tab content</Tabs.Content>
+  </Tabs>
+</ComponentPreview>
+
+## Tabs Props
+
+<PropsTable props={[
+  { name: 'defaultValue', type: 'string', description: 'Initial active tab (uncontrolled mode)' },
+  { name: 'value', type: 'string', description: 'Active tab value (controlled mode)' },
+  { name: 'onChange', type: '(value: string) => void', description: 'Callback when active tab changes' },
+  { name: 'variant', type: "'underline' | 'pill'", default: "'underline'", description: 'Visual variant' },
+  { name: 'children', type: 'ReactNode', description: 'Children' },
+  { name: 'className', type: 'string', description: 'Additional CSS class name' },
+  { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },
+]} />
+
+## Tabs.Trigger Props
+
+<PropsTable props={[
+  { name: 'value', type: 'string', description: 'Value that identifies this tab' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Disable the trigger' },
+  { name: 'children', type: 'ReactNode', description: 'Trigger label' },
+  { name: 'className', type: 'string', description: 'Additional CSS class name' },
+]} />
+
+## Tabs.Content Props
+
+<PropsTable props={[
+  { name: 'value', type: 'string', description: 'Value that identifies which tab this content belongs to' },
+  { name: 'children', type: 'ReactNode', description: 'Panel content' },
+  { name: 'className', type: 'string', description: 'Additional CSS class name' },
+]} />

@@ -1,0 +1,99 @@
+---
+sidebar_position: 22
+title: DateRangePicker
+---
+
+import { DateRangePicker } from '../../../src/components/DateRangePicker';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# DateRangePicker
+
+A date input for selecting a range of dates. Displays two side-by-side calendars and supports preset ranges.
+
+## Basic Usage
+
+<ComponentPreview code={`<DateRangePicker placeholder="Select date range" />`}>
+  <div style={{ width: 320 }}>
+    <DateRangePicker placeholder="Select date range" />
+  </div>
+</ComponentPreview>
+
+## With Label
+
+<ComponentPreview code={`<DateRangePicker label="Period" />`}>
+  <div style={{ width: 320 }}>
+    <DateRangePicker label="Period" />
+  </div>
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<DateRangePicker variant="outlined" placeholder="Outlined" />
+<DateRangePicker variant="filled" placeholder="Filled" />`}>
+  <div style={{ display: 'flex', gap: 16 }}>
+    <DateRangePicker variant="outlined" placeholder="Outlined" />
+    <DateRangePicker variant="filled" placeholder="Filled" />
+  </div>
+</ComponentPreview>
+
+## Error State
+
+<ComponentPreview code={`<DateRangePicker error errorMessage="Please select a date range" />`}>
+  <div style={{ width: 320 }}>
+    <DateRangePicker error errorMessage="Please select a date range" />
+  </div>
+</ComponentPreview>
+
+## Disabled
+
+<ComponentPreview code={`<DateRangePicker disabled placeholder="Disabled" />`}>
+  <div style={{ width: 320 }}>
+    <DateRangePicker disabled placeholder="Disabled" />
+  </div>
+</ComponentPreview>
+
+## With Presets
+
+```jsx
+<DateRangePicker
+  presets={[
+    {
+      label: 'Last 7 days',
+      range: {
+        start: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+        end: new Date(),
+      },
+    },
+    {
+      label: 'Last 30 days',
+      range: {
+        start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+        end: new Date(),
+      },
+    },
+  ]}
+/>
+```
+
+## Props
+
+<PropsTable props={[
+  { name: 'value', type: 'DateRange', description: 'Controlled selected range ({ start, end })' },
+  { name: 'defaultValue', type: 'DateRange', description: 'Default selected range (uncontrolled)' },
+  { name: 'onChange', type: '(range: DateRange) => void', description: 'Callback when range changes' },
+  { name: 'placeholder', type: 'string', description: 'Placeholder text' },
+  { name: 'variant', type: "'outlined' | 'filled'", default: "'outlined'", description: 'Visual variant' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size' },
+  { name: 'locale', type: 'string', default: "'ko-KR'", description: 'Locale for day/month labels' },
+  { name: 'dateFormat', type: 'string', default: "'yyyy.MM.dd'", description: 'Date format string' },
+  { name: 'minDate', type: 'Date', description: 'Minimum selectable date' },
+  { name: 'maxDate', type: 'Date', description: 'Maximum selectable date' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Disabled state' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Error state' },
+  { name: 'errorMessage', type: 'string', description: 'Error message' },
+  { name: 'label', type: 'string', description: 'Label displayed above the input' },
+  { name: 'presets', type: 'Array<{ label: string; range: DateRange }>', description: 'Preset ranges shown in sidebar' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

@@ -1,0 +1,74 @@
+---
+sidebar_position: 21
+title: Calendar
+---
+
+import { Calendar } from '../../../src/components/DatePicker/Calendar';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Calendar
+
+A standalone calendar grid used internally by DatePicker and DateRangePicker. Can also be used independently to display a month view.
+
+## Basic Usage
+
+<ComponentPreview code={`<Calendar
+  currentMonth={2}
+  currentYear={2026}
+  onDateClick={(date) => console.log(date)}
+/>`}>
+  <Calendar
+    currentMonth={2}
+    currentYear={2026}
+    onDateClick={(date) => {}}
+  />
+</ComponentPreview>
+
+## With Selected Date
+
+<ComponentPreview code={`<Calendar
+  currentMonth={2}
+  currentYear={2026}
+  selectedDate={new Date(2026, 2, 15)}
+  onDateClick={(date) => console.log(date)}
+/>`}>
+  <Calendar
+    currentMonth={2}
+    currentYear={2026}
+    selectedDate={new Date(2026, 2, 15)}
+    onDateClick={(date) => {}}
+  />
+</ComponentPreview>
+
+## English Locale
+
+<ComponentPreview code={`<Calendar
+  currentMonth={2}
+  currentYear={2026}
+  locale="en-US"
+  onDateClick={(date) => console.log(date)}
+/>`}>
+  <Calendar
+    currentMonth={2}
+    currentYear={2026}
+    locale="en-US"
+    onDateClick={(date) => {}}
+  />
+</ComponentPreview>
+
+## Props
+
+<PropsTable props={[
+  { name: 'currentMonth', type: 'number', description: 'Month to display (0-indexed, 0 = January)' },
+  { name: 'currentYear', type: 'number', description: 'Year to display' },
+  { name: 'selectedDate', type: 'Date | null', description: 'Currently selected date' },
+  { name: 'selectedRange', type: '{ start: Date | null; end: Date | null }', description: 'Selected date range (for range picker)' },
+  { name: 'hoverDate', type: 'Date | null', description: 'Currently hovered date (for range highlighting)' },
+  { name: 'minDate', type: 'Date', description: 'Minimum selectable date' },
+  { name: 'maxDate', type: 'Date', description: 'Maximum selectable date' },
+  { name: 'onDateClick', type: '(date: Date) => void', description: 'Callback when a date is clicked' },
+  { name: 'onDateHover', type: '(date: Date) => void', description: 'Callback when a date is hovered' },
+  { name: 'locale', type: 'string', default: "'ko-KR'", description: 'Locale for day labels' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+]} />

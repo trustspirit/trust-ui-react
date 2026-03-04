@@ -5,3 +5,4 @@ docs/
 .gitignore
 tsconfig.json
 vite.config.ts
+docs-site/

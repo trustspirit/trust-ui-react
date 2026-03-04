@@ -1,0 +1,80 @@
+---
+sidebar_position: 15
+title: Toast
+---
+
+import { Toast } from '../../../src/components/Toast';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Toast
+
+A notification message that appears temporarily to provide feedback about an action.
+
+## Variants
+
+<ComponentPreview code={`<Toast id="1" variant="success" message="Changes saved successfully" />
+<Toast id="2" variant="danger" message="Failed to delete item" />
+<Toast id="3" variant="warning" message="Your session will expire soon" />
+<Toast id="4" variant="info" message="New update available" />`}>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: 360 }}>
+    <Toast id="1" variant="success" message="Changes saved successfully" duration={0} />
+    <Toast id="2" variant="danger" message="Failed to delete item" duration={0} />
+    <Toast id="3" variant="warning" message="Your session will expire soon" duration={0} />
+    <Toast id="4" variant="info" message="New update available" duration={0} />
+  </div>
+</ComponentPreview>
+
+## With Description
+
+<ComponentPreview code={`<Toast
+  id="5"
+  variant="success"
+  message="File uploaded"
+  description="Your file has been uploaded and is ready to share."
+/>`}>
+  <div style={{ width: '100%', maxWidth: 360 }}>
+    <Toast id="5" variant="success" message="File uploaded" description="Your file has been uploaded and is ready to share." duration={0} />
+  </div>
+</ComponentPreview>
+
+## Usage
+
+```jsx
+import { Toast } from 'trust-ui';
+
+function Example() {
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = () => {
+    const id = Date.now().toString();
+    setToasts((prev) => [...prev, { id, variant: 'success', message: 'Saved!' }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  return (
+    <>
+      <Button onClick={addToast}>Show Toast</Button>
+      {toasts.map((toast) => (
+        <Toast key={toast.id} {...toast} onClose={() => removeToast(toast.id)} />
+      ))}
+    </>
+  );
+}
+```
+
+## Props
+
+<PropsTable props={[
+  { name: 'id', type: 'string', description: 'Unique identifier for the toast' },
+  { name: 'variant', type: "'success' | 'danger' | 'warning' | 'info'", description: 'Visual variant' },
+  { name: 'message', type: 'string', description: 'Main message text' },
+  { name: 'description', type: 'string', description: 'Optional description below the message' },
+  { name: 'duration', type: 'number', default: '4000', description: 'Auto-dismiss duration in milliseconds' },
+  { name: 'onClose', type: '() => void', description: 'Callback when toast is closed' },
+  { name: 'className', type: 'string', description: 'Additional CSS class name' },
+  { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },
+]} />

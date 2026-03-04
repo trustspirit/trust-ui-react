@@ -1,0 +1,123 @@
+---
+sidebar_position: 16
+title: Menu
+---
+
+import { Menu } from '../../../src/components/Menu';
+import { Button } from '../../../src/components/Button';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Menu
+
+A dropdown menu triggered by a button click. Supports keyboard navigation, disabled items, and dividers.
+
+## Basic Usage
+
+<ComponentPreview code={`<Menu>
+  <Menu.Trigger>
+    <Button variant="outline">Open Menu</Button>
+  </Menu.Trigger>
+  <Menu.Content>
+    <Menu.Item onClick={() => {}}>Edit</Menu.Item>
+    <Menu.Item onClick={() => {}}>Duplicate</Menu.Item>
+    <Menu.Divider />
+    <Menu.Item onClick={() => {}} danger>Delete</Menu.Item>
+  </Menu.Content>
+</Menu>`}>
+  <Menu>
+    <Menu.Trigger>
+      <Button variant="outline">Open Menu</Button>
+    </Menu.Trigger>
+    <Menu.Content>
+      <Menu.Item onClick={() => {}}>Edit</Menu.Item>
+      <Menu.Item onClick={() => {}}>Duplicate</Menu.Item>
+      <Menu.Divider />
+      <Menu.Item onClick={() => {}} danger>Delete</Menu.Item>
+    </Menu.Content>
+  </Menu>
+</ComponentPreview>
+
+## With Disabled Items
+
+<ComponentPreview code={`<Menu>
+  <Menu.Trigger>
+    <Button variant="outline">Actions</Button>
+  </Menu.Trigger>
+  <Menu.Content>
+    <Menu.Item onClick={() => {}}>Copy</Menu.Item>
+    <Menu.Item disabled>Paste</Menu.Item>
+    <Menu.Item onClick={() => {}}>Cut</Menu.Item>
+  </Menu.Content>
+</Menu>`}>
+  <Menu>
+    <Menu.Trigger>
+      <Button variant="outline">Actions</Button>
+    </Menu.Trigger>
+    <Menu.Content>
+      <Menu.Item onClick={() => {}}>Copy</Menu.Item>
+      <Menu.Item disabled>Paste</Menu.Item>
+      <Menu.Item onClick={() => {}}>Cut</Menu.Item>
+    </Menu.Content>
+  </Menu>
+</ComponentPreview>
+
+## Alignment
+
+<ComponentPreview code={`<Menu>
+  <Menu.Trigger>
+    <Button variant="outline">End-aligned</Button>
+  </Menu.Trigger>
+  <Menu.Content align="end">
+    <Menu.Item onClick={() => {}}>Profile</Menu.Item>
+    <Menu.Item onClick={() => {}}>Settings</Menu.Item>
+    <Menu.Divider />
+    <Menu.Item onClick={() => {}} danger>Logout</Menu.Item>
+  </Menu.Content>
+</Menu>`}>
+  <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+    <Menu>
+      <Menu.Trigger>
+        <Button variant="outline">End-aligned</Button>
+      </Menu.Trigger>
+      <Menu.Content align="end">
+        <Menu.Item onClick={() => {}}>Profile</Menu.Item>
+        <Menu.Item onClick={() => {}}>Settings</Menu.Item>
+        <Menu.Divider />
+        <Menu.Item onClick={() => {}} danger>Logout</Menu.Item>
+      </Menu.Content>
+    </Menu>
+  </div>
+</ComponentPreview>
+
+## Menu Props
+
+<PropsTable props={[
+  { name: 'children', type: 'ReactNode', description: 'Menu children (Trigger, Content)' },
+]} />
+
+## Menu.Trigger Props
+
+<PropsTable props={[
+  { name: 'children', type: 'ReactElement', description: 'Trigger element' },
+]} />
+
+## Menu.Content Props
+
+<PropsTable props={[
+  { name: 'align', type: "'start' | 'end'", default: "'start'", description: 'Alignment relative to trigger' },
+  { name: 'children', type: 'ReactNode', description: 'Content children (Menu.Item, Menu.Divider)' },
+  { name: 'className', type: 'string', description: 'Additional CSS class name' },
+  { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },
+]} />
+
+## Menu.Item Props
+
+<PropsTable props={[
+  { name: 'onClick', type: '() => void', description: 'Click handler' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the item is disabled' },
+  { name: 'danger', type: 'boolean', default: 'false', description: 'Render as a destructive action (red)' },
+  { name: 'startIcon', type: 'ReactNode', description: 'Icon before the label' },
+  { name: 'children', type: 'ReactNode', description: 'Item content' },
+  { name: 'className', type: 'string', description: 'Additional CSS class name' },
+]} />

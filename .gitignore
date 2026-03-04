@@ -5,3 +5,8 @@ dist/
 
 .npmrc
 .env
+
+# Docs site
+docs-site/.docusaurus/
+docs-site/build/
+docs-site/node_modules/

@@ -1,0 +1,83 @@
+---
+sidebar_position: 13
+title: FileUpload
+---
+
+import { FileUpload } from '../../../src/components/FileUpload';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# FileUpload
+
+A file upload component with drag-and-drop support, file validation, and preview functionality.
+
+## Area Variant
+
+<ComponentPreview code={`<FileUpload variant="area" multiple />`}>
+  <div style={{ width: '100%', maxWidth: 400 }}>
+    <FileUpload variant="area" multiple />
+  </div>
+</ComponentPreview>
+
+## Inline Variant
+
+<ComponentPreview code={`<FileUpload variant="inline" />`}>
+  <div style={{ width: '100%', maxWidth: 400 }}>
+    <FileUpload variant="inline" />
+  </div>
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<FileUpload variant="area" size="sm" />
+<FileUpload variant="area" size="md" />
+<FileUpload variant="area" size="lg" />`}>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', maxWidth: 400 }}>
+    <FileUpload variant="area" size="sm" />
+    <FileUpload variant="area" size="md" />
+    <FileUpload variant="area" size="lg" />
+  </div>
+</ComponentPreview>
+
+## Disabled
+
+<ComponentPreview code={`<FileUpload variant="area" disabled />`}>
+  <div style={{ width: '100%', maxWidth: 400 }}>
+    <FileUpload variant="area" disabled />
+  </div>
+</ComponentPreview>
+
+## With Restrictions
+
+```jsx
+<FileUpload
+  accept="image/*,.pdf"
+  multiple
+  maxFiles={5}
+  maxFileSize={10 * 1024 * 1024}
+  onFilesChange={(files) => console.log(files)}
+  onValidationError={(errors) => console.error(errors)}
+/>
+```
+
+## Props
+
+<PropsTable props={[
+  { name: 'accept', type: 'string', description: 'Accepted file types (e.g. "image/*,.pdf")' },
+  { name: 'multiple', type: 'boolean', default: 'false', description: 'Allow multiple file selection' },
+  { name: 'maxFiles', type: 'number', description: 'Maximum number of files allowed' },
+  { name: 'maxFileSize', type: 'number', description: 'Maximum file size in bytes' },
+  { name: 'fileList', type: 'FileUploadFile[]', description: 'List of uploaded files to display' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Disabled state' },
+  { name: 'onFilesChange', type: '(files: File[]) => void', description: 'Callback when valid files are added' },
+  { name: 'onRemove', type: '(file: FileUploadFile) => void', description: 'Callback when a file is removed' },
+  { name: 'onValidationError', type: '(errors: ValidationError[]) => void', description: 'Callback when validation errors occur' },
+  { name: 'variant', type: "'area' | 'inline'", default: "'area'", description: 'Visual variant' },
+  { name: 'listType', type: "'list' | 'grid'", default: "'list'", description: 'File list display type' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size of the dropzone' },
+  { name: 'placeholder', type: 'string', description: 'Custom placeholder text' },
+  { name: 'browseText', type: 'string', default: "'browse'", description: 'Text for the browse link' },
+  { name: 'renderPreview', type: '(file: FileUploadFile) => ReactNode', description: 'Custom preview renderer for grid items' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

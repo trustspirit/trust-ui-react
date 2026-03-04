@@ -1,0 +1,57 @@
+---
+sidebar_position: 2
+title: Badge
+---
+
+import { Badge } from '../../../src/components/Badge';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Badge
+
+A small label used to highlight status, counts, or categories.
+
+## Variants
+
+<ComponentPreview code={`<Badge variant="primary">Primary</Badge>
+<Badge variant="secondary">Secondary</Badge>
+<Badge variant="success">Success</Badge>
+<Badge variant="danger">Danger</Badge>
+<Badge variant="warning">Warning</Badge>
+<Badge variant="info">Info</Badge>`}>
+  <Badge variant="primary">Primary</Badge>
+  <Badge variant="secondary">Secondary</Badge>
+  <Badge variant="success">Success</Badge>
+  <Badge variant="danger">Danger</Badge>
+  <Badge variant="warning">Warning</Badge>
+  <Badge variant="info">Info</Badge>
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<Badge size="sm">Small</Badge>
+<Badge size="md">Medium</Badge>`}>
+  <Badge size="sm">Small</Badge>
+  <Badge size="md">Medium</Badge>
+</ComponentPreview>
+
+## Dot
+
+<ComponentPreview code={`<Badge dot variant="success" />
+<Badge dot variant="danger" />
+<Badge dot variant="warning" />`}>
+  <Badge dot variant="success" />
+  <Badge dot variant="danger" />
+  <Badge dot variant="warning" />
+</ComponentPreview>
+
+## Props
+
+<PropsTable props={[
+  { name: 'variant', type: "'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info'", default: "'primary'", description: 'Visual style variant' },
+  { name: 'size', type: "'sm' | 'md'", default: "'md'", description: 'Size of the badge' },
+  { name: 'dot', type: 'boolean', default: 'false', description: 'Renders as a small colored dot with no text' },
+  { name: 'children', type: 'ReactNode', description: 'Badge content' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

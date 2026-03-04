@@ -1,0 +1,74 @@
+---
+sidebar_position: 5
+title: Progress
+---
+
+import { Progress } from '../../../src/components/Progress';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Progress
+
+A horizontal bar that indicates the completion of a task or process.
+
+## Basic Usage
+
+<ComponentPreview code={`<Progress value={60} />`}>
+  <div style={{ width: '100%', maxWidth: 400 }}>
+    <Progress value={60} />
+  </div>
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<Progress value={60} variant="primary" />
+<Progress value={60} variant="secondary" />
+<Progress value={60} variant="success" />
+<Progress value={60} variant="danger" />`}>
+  <div style={{ width: '100%', maxWidth: 400, display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <Progress value={60} variant="primary" />
+    <Progress value={60} variant="secondary" />
+    <Progress value={60} variant="success" />
+    <Progress value={60} variant="danger" />
+  </div>
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<Progress value={50} size="sm" />
+<Progress value={50} size="md" />
+<Progress value={50} size="lg" />`}>
+  <div style={{ width: '100%', maxWidth: 400, display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <Progress value={50} size="sm" />
+    <Progress value={50} size="md" />
+    <Progress value={50} size="lg" />
+  </div>
+</ComponentPreview>
+
+## With Label
+
+<ComponentPreview code={`<Progress value={75} showLabel />`}>
+  <div style={{ width: '100%', maxWidth: 400 }}>
+    <Progress value={75} showLabel />
+  </div>
+</ComponentPreview>
+
+## Indeterminate
+
+<ComponentPreview code={`<Progress indeterminate />`}>
+  <div style={{ width: '100%', maxWidth: 400 }}>
+    <Progress indeterminate />
+  </div>
+</ComponentPreview>
+
+## Props
+
+<PropsTable props={[
+  { name: 'value', type: 'number', default: '0', description: 'Current progress value (0-100)' },
+  { name: 'variant', type: "'primary' | 'secondary' | 'success' | 'danger'", default: "'primary'", description: 'Color variant' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Height of the progress bar' },
+  { name: 'indeterminate', type: 'boolean', default: 'false', description: 'Shows an animated indeterminate loading bar' },
+  { name: 'showLabel', type: 'boolean', default: 'false', description: 'Shows the percentage label' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

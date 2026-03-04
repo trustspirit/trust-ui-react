@@ -1,0 +1,54 @@
+---
+sidebar_position: 3
+title: Avatar
+---
+
+import { Avatar } from '../../../src/components/Avatar';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Avatar
+
+Displays a user image, initials fallback, or a default icon.
+
+## With Initials
+
+<ComponentPreview code={`<Avatar name="John Doe" size="sm" />
+<Avatar name="John Doe" size="md" />
+<Avatar name="John Doe" size="lg" />`}>
+  <Avatar name="John Doe" size="sm" />
+  <Avatar name="John Doe" size="md" />
+  <Avatar name="John Doe" size="lg" />
+</ComponentPreview>
+
+## Shapes
+
+<ComponentPreview code={`<Avatar name="Alice" shape="circle" />
+<Avatar name="Alice" shape="square" />`}>
+  <Avatar name="Alice" shape="circle" />
+  <Avatar name="Alice" shape="square" />
+</ComponentPreview>
+
+## Default Fallback
+
+When no `src` or `name` is provided, a generic user icon is shown.
+
+<ComponentPreview code={`<Avatar size="sm" />
+<Avatar size="md" />
+<Avatar size="lg" />`}>
+  <Avatar size="sm" />
+  <Avatar size="md" />
+  <Avatar size="lg" />
+</ComponentPreview>
+
+## Props
+
+<PropsTable props={[
+  { name: 'src', type: 'string', description: 'Image URL' },
+  { name: 'alt', type: 'string', default: "''", description: 'Alt text for the image' },
+  { name: 'name', type: 'string', description: 'Name used to derive initials when no image is available' },
+  { name: 'shape', type: "'circle' | 'square'", default: "'circle'", description: 'Shape of the avatar' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size of the avatar' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

@@ -1,0 +1,58 @@
+---
+sidebar_position: 10
+title: Switch
+---
+
+import { Switch } from '../../../src/components/Switch';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Switch
+
+A toggle switch for binary on/off states.
+
+## Basic Usage
+
+<ComponentPreview code={`<Switch label="Enable notifications" />`}>
+  <Switch label="Enable notifications" />
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<Switch label="Primary" variant="primary" defaultChecked />
+<Switch label="Secondary" variant="secondary" defaultChecked />`}>
+  <Switch label="Primary" variant="primary" defaultChecked />
+  <Switch label="Secondary" variant="secondary" defaultChecked />
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<Switch label="Small" size="sm" defaultChecked />
+<Switch label="Medium" size="md" defaultChecked />
+<Switch label="Large" size="lg" defaultChecked />`}>
+  <Switch label="Small" size="sm" defaultChecked />
+  <Switch label="Medium" size="md" defaultChecked />
+  <Switch label="Large" size="lg" defaultChecked />
+</ComponentPreview>
+
+## Disabled
+
+<ComponentPreview code={`<Switch label="Disabled off" disabled />
+<Switch label="Disabled on" disabled defaultChecked />`}>
+  <Switch label="Disabled off" disabled />
+  <Switch label="Disabled on" disabled defaultChecked />
+</ComponentPreview>
+
+## Props
+
+<PropsTable props={[
+  { name: 'checked', type: 'boolean', description: 'Whether the switch is on (controlled)' },
+  { name: 'defaultChecked', type: 'boolean', default: 'false', description: 'Initial state (uncontrolled)' },
+  { name: 'onChange', type: '(checked: boolean) => void', description: 'Callback when the switch is toggled' },
+  { name: 'variant', type: "'primary' | 'secondary'", default: "'primary'", description: 'Color variant' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size of the switch' },
+  { name: 'label', type: 'string', description: 'Text label' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the switch is disabled' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

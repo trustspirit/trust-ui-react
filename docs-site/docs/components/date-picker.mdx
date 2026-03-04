@@ -1,0 +1,87 @@
+---
+sidebar_position: 20
+title: DatePicker
+---
+
+import { DatePicker } from '../../../src/components/DatePicker';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# DatePicker
+
+A date input with a popup calendar for selecting a single date. Supports year navigation and date constraints.
+
+## Basic Usage
+
+<ComponentPreview code={`<DatePicker placeholder="Select a date" />`}>
+  <div style={{ width: 260 }}>
+    <DatePicker placeholder="Select a date" />
+  </div>
+</ComponentPreview>
+
+## With Label
+
+<ComponentPreview code={`<DatePicker label="Start Date" placeholder="yyyy.MM.dd" />`}>
+  <div style={{ width: 260 }}>
+    <DatePicker label="Start Date" placeholder="yyyy.MM.dd" />
+  </div>
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<DatePicker variant="outlined" placeholder="Outlined" />
+<DatePicker variant="filled" placeholder="Filled" />`}>
+  <div style={{ display: 'flex', gap: 16 }}>
+    <DatePicker variant="outlined" placeholder="Outlined" />
+    <DatePicker variant="filled" placeholder="Filled" />
+  </div>
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<DatePicker size="sm" placeholder="Small" />
+<DatePicker size="md" placeholder="Medium" />
+<DatePicker size="lg" placeholder="Large" />`}>
+  <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+    <DatePicker size="sm" placeholder="Small" />
+    <DatePicker size="md" placeholder="Medium" />
+    <DatePicker size="lg" placeholder="Large" />
+  </div>
+</ComponentPreview>
+
+## Error State
+
+<ComponentPreview code={`<DatePicker error errorMessage="Date is required" placeholder="Select a date" />`}>
+  <div style={{ width: 260 }}>
+    <DatePicker error errorMessage="Date is required" placeholder="Select a date" />
+  </div>
+</ComponentPreview>
+
+## Disabled
+
+<ComponentPreview code={`<DatePicker disabled placeholder="Disabled" />`}>
+  <div style={{ width: 260 }}>
+    <DatePicker disabled placeholder="Disabled" />
+  </div>
+</ComponentPreview>
+
+## Props
+
+<PropsTable props={[
+  { name: 'value', type: 'Date | null', description: 'Controlled selected date' },
+  { name: 'defaultValue', type: 'Date | null', description: 'Default selected date (uncontrolled)' },
+  { name: 'onChange', type: '(date: Date | null) => void', description: 'Callback when date changes' },
+  { name: 'placeholder', type: 'string', description: 'Placeholder text' },
+  { name: 'variant', type: "'outlined' | 'filled'", default: "'outlined'", description: 'Visual variant' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size' },
+  { name: 'locale', type: 'string', default: "'ko-KR'", description: 'Locale for day/month labels' },
+  { name: 'dateFormat', type: 'string', default: "'yyyy.MM.dd'", description: 'Date format string' },
+  { name: 'minDate', type: 'Date', description: 'Minimum selectable date' },
+  { name: 'maxDate', type: 'Date', description: 'Maximum selectable date' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Disabled state' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Error state' },
+  { name: 'errorMessage', type: 'string', description: 'Error message' },
+  { name: 'label', type: 'string', description: 'Label displayed above the input' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

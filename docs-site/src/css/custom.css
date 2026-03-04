@@ -1,0 +1,114 @@
+/* trust-ui styles */
+@import '../../../src/styles/tokens.css';
+@import '../../../src/styles/theme-light.css';
+@import '../../../src/styles/theme-dark.css';
+
+/* Infima overrides */
+:root {
+  --ifm-color-primary: #3b82f6;
+  --ifm-color-primary-dark: #2563eb;
+  --ifm-color-primary-darker: #1d4ed8;
+  --ifm-color-primary-darkest: #1e40af;
+  --ifm-color-primary-light: #60a5fa;
+  --ifm-color-primary-lighter: #93bbfd;
+  --ifm-color-primary-lightest: #bfdbfe;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #60a5fa;
+  --ifm-color-primary-dark: #3b82f6;
+  --ifm-color-primary-darker: #2563eb;
+  --ifm-color-primary-darkest: #1d4ed8;
+  --ifm-color-primary-light: #93bbfd;
+  --ifm-color-primary-lighter: #bfdbfe;
+  --ifm-color-primary-lightest: #dbeafe;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Component Preview */
+.component-preview {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 1.5rem 0;
+}
+
+.component-preview__demo {
+  padding: 2rem;
+  background: var(--tui-bg, #fff);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.component-preview__toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-300);
+  background: var(--ifm-color-emphasis-100);
+}
+
+.component-preview__theme-toggle {
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  color: var(--ifm-font-color-base);
+}
+
+.component-preview__code {
+  border-top: 1px solid var(--ifm-color-emphasis-300);
+}
+
+/* Props Table */
+.props-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.props-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  border-bottom: 2px solid var(--ifm-color-emphasis-300);
+  font-weight: 600;
+}
+
+.props-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  vertical-align: top;
+}
+
+.props-table code {
+  font-size: 0.85em;
+  background: var(--ifm-color-emphasis-100);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+/* Design Token Swatch */
+.token-swatch {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.token-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+}
