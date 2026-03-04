@@ -2,7 +2,9 @@
 
 A lightweight, themeable React UI component library built with TypeScript and CSS Modules.
 
-`trust-ui-react` provides 21 production-ready components with built-in dark/light mode support, CSS Custom Properties for easy theming, and full TypeScript type definitions. Every component is designed with accessibility in mind and follows consistent API patterns.
+`trust-ui-react` provides 22 production-ready components with built-in dark/light mode support, CSS Custom Properties for easy theming, and full TypeScript type definitions. Every component is designed with accessibility in mind and follows consistent API patterns.
+
+**[Documentation & Live Examples](https://trustspirit.github.io/trust-ui-react/)**
 
 ---
 
@@ -672,7 +674,10 @@ Form components additionally support:
 - **`error` / `errorMessage`** -- validation state and message
 - **`fullWidth`** -- stretches the component to fill its container
 
-For full prop documentation, type definitions, and interactive examples, run the Storybook development server:
+For full prop documentation, type definitions, and interactive examples:
+
+- **[Documentation Site](https://trustspirit.github.io/trust-ui-react/)** -- live component previews, Props tables, design tokens, and getting started guides
+- **Storybook** -- run locally for development:
 
 ```bash
 pnpm dev
