@@ -3,13 +3,26 @@ sidebar_position: 15
 title: Toast
 ---
 
-import { Toast } from '../../../src/components/Toast';
+import { Toast } from 'trust-ui-react';
+import { ToastDemo } from '@site/src/components/ToastDemo';
 import { ComponentPreview } from '@site/src/components/ComponentPreview';
 import { PropsTable } from '@site/src/components/PropsTable';
 
 # Toast
 
 A notification message that appears temporarily to provide feedback about an action.
+
+## Interactive Demo
+
+Click the buttons to trigger toast notifications.
+
+<ComponentPreview code={`const { toast } = useToast();
+
+toast({ variant: 'success', message: 'Changes saved' });
+toast({ variant: 'danger', message: 'Something went wrong' });
+toast({ variant: 'info', message: 'Update available', description: 'Details here.' });`}>
+  <ToastDemo />
+</ComponentPreview>
 
 ## Variants
 

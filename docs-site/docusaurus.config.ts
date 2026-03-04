@@ -34,7 +34,7 @@ const config: Config = {
           return {
             resolve: {
               alias: {
-                '@trust-ui': path.resolve(__dirname, '../src'),
+                'trust-ui-react': path.resolve(__dirname, '../dist/index.es.js'),
               },
             },
           };

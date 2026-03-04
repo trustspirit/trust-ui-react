@@ -3,8 +3,8 @@ sidebar_position: 14
 title: Dialog
 ---
 
-import { Dialog } from '../../../src/components/Dialog';
-import { Button } from '../../../src/components/Button';
+import { Dialog, Button } from 'trust-ui-react';
+import { DialogDemo } from '@site/src/components/DialogDemo';
 import { ComponentPreview } from '@site/src/components/ComponentPreview';
 import { PropsTable } from '@site/src/components/PropsTable';
 
@@ -12,57 +12,49 @@ import { PropsTable } from '@site/src/components/PropsTable';
 
 A modal dialog overlay for confirmations, forms, or important content. Built on the native `<dialog>` element.
 
-## Usage
+## Preview
 
-The Dialog component requires `open` and `onClose` props for controlled visibility. It uses compound sub-components for structure.
+Click the buttons below to open dialogs of different sizes.
 
-```jsx
-import { Dialog } from 'trust-ui';
+<ComponentPreview code={`const [open, setOpen] = useState(false);
 
-function Example() {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <>
-      <Button onClick={() => setOpen(true)}>Open Dialog</Button>
-      <Dialog open={open} onClose={() => setOpen(false)}>
-        <Dialog.Title onClose={() => setOpen(false)}>
-          Confirm Action
-        </Dialog.Title>
-        <Dialog.Content>
-          Are you sure you want to proceed?
-        </Dialog.Content>
-        <Dialog.Actions>
-          <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button onClick={() => setOpen(false)}>Confirm</Button>
-        </Dialog.Actions>
-      </Dialog>
-    </>
-  );
-}
-```
+<Button onClick={() => setOpen(true)}>Open Dialog</Button>
+<Dialog open={open} onClose={() => setOpen(false)} size="md">
+  <Dialog.Title onClose={() => setOpen(false)}>
+    Dialog Title
+  </Dialog.Title>
+  <Dialog.Content>
+    Dialog body content goes here.
+  </Dialog.Content>
+  <Dialog.Actions>
+    <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+    <Button onClick={() => setOpen(false)}>Confirm</Button>
+  </Dialog.Actions>
+</Dialog>`}>
+  <DialogDemo size="sm" />
+  <DialogDemo size="md" />
+  <DialogDemo size="lg" />
+</ComponentPreview>
 
 ## Sizes
 
 The `size` prop controls the width of the dialog panel.
 
-```jsx
-<Dialog open={open} onClose={onClose} size="sm">...</Dialog>
-<Dialog open={open} onClose={onClose} size="md">...</Dialog>
-<Dialog open={open} onClose={onClose} size="lg">...</Dialog>
-<Dialog open={open} onClose={onClose} size="fullscreen">...</Dialog>
-```
+| Size | Description |
+|------|-------------|
+| `sm` | Small (400px) |
+| `md` | Medium (560px) |
+| `lg` | Large (720px) |
+| `fullscreen` | Full viewport |
 
 ## Dialog Props
 
 <PropsTable props={[
-  { name: 'open', type: 'boolean', description: 'Whether the dialog is open' },
-  { name: 'onClose', type: '() => void', description: 'Callback when the dialog should close' },
+  { name: 'open', type: 'boolean', description: 'Whether the dialog is open', required: true },
+  { name: 'onClose', type: '() => void', description: 'Callback when the dialog should close', required: true },
   { name: 'size', type: "'sm' | 'md' | 'lg' | 'fullscreen'", default: "'md'", description: 'Size preset' },
   { name: 'closeOnBackdrop', type: 'boolean', default: 'true', description: 'Close when backdrop is clicked' },
   { name: 'closeOnEscape', type: 'boolean', default: 'true', description: 'Close when Escape key is pressed' },
-  { name: 'className', type: 'string', description: 'Additional CSS class name' },
-  { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },
   { name: 'children', type: 'ReactNode', description: 'Dialog content' },
 ]} />
 
@@ -72,19 +64,16 @@ The `size` prop controls the width of the dialog panel.
   { name: 'showClose', type: 'boolean', default: 'true', description: 'Show close button' },
   { name: 'onClose', type: '() => void', description: 'Close handler called when close button is clicked' },
   { name: 'children', type: 'ReactNode', description: 'Title text' },
-  { name: 'className', type: 'string', description: 'Additional CSS class name' },
 ]} />
 
 ## Dialog.Content Props
 
 <PropsTable props={[
   { name: 'children', type: 'ReactNode', description: 'Body content' },
-  { name: 'className', type: 'string', description: 'Additional CSS class name' },
 ]} />
 
 ## Dialog.Actions Props
 
 <PropsTable props={[
   { name: 'children', type: 'ReactNode', description: 'Action buttons' },
-  { name: 'className', type: 'string', description: 'Additional CSS class name' },
 ]} />

@@ -1,7 +1,5 @@
-/* trust-ui styles */
-@import '../../../src/styles/tokens.css';
-@import '../../../src/styles/theme-light.css';
-@import '../../../src/styles/theme-dark.css';
+/* trust-ui styles (from built dist) */
+@import '../../../dist/styles.css';
 
 /* Infima overrides */
 :root {
