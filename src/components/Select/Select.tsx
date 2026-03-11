@@ -165,14 +165,27 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     const updateDropdownPosition = useCallback(() => {
       if (!triggerRef.current) return;
       const rect = triggerRef.current.getBoundingClientRect();
-      setDropdownStyle({
-        position: 'fixed',
-        top: rect.bottom + 4,
-        left: rect.left,
-        width: rect.width,
-        zIndex: 'var(--tui-z-dropdown)' as unknown as number,
-      });
-    }, []);
+      const container = getPortalContainer();
+      if (container !== document.body) {
+        // Inside a <dialog>: use absolute positioning relative to the dialog
+        const containerRect = container.getBoundingClientRect();
+        setDropdownStyle({
+          position: 'absolute',
+          top: rect.bottom - containerRect.top + 4,
+          left: rect.left - containerRect.left,
+          width: rect.width,
+          zIndex: 'var(--tui-z-dropdown)' as unknown as number,
+        });
+      } else {
+        setDropdownStyle({
+          position: 'fixed',
+          top: rect.bottom + 4,
+          left: rect.left,
+          width: rect.width,
+          zIndex: 'var(--tui-z-dropdown)' as unknown as number,
+        });
+      }
+    }, [getPortalContainer]);
 
     // Open/close
     const openDropdown = useCallback(() => {
