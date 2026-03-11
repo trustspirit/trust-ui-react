@@ -137,6 +137,12 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     const searchInputRef = useRef<HTMLInputElement>(null);
     const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
 
+    // Detect if Select is inside a <dialog> (showModal creates a top-layer that blocks portals to body)
+    const getPortalContainer = useCallback(() => {
+      const dialog = triggerRef.current?.closest('dialog');
+      return dialog || document.body;
+    }, []);
+
     const isControlled = controlledValue !== undefined;
     const currentValue = isControlled ? controlledValue : internalValue;
 
@@ -478,7 +484,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
                 )}
               </div>
             </div>,
-            document.body,
+            getPortalContainer(),
           )}
       </div>
     );
