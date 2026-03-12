@@ -31,7 +31,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/trustspirit/trust-ui-react"
   },
   "packageManager": "pnpm@10.9.0",
   "peerDependencies": {
