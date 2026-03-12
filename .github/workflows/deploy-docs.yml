@@ -54,6 +54,12 @@ jobs:
       - name: Build trust-ui library
         run: pnpm build
 
+      - name: Publish to npm
+        if: steps.check_version.outputs.changed == 'true'
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: Build docs site
         run: cd docs-site && pnpm build
 
@@ -61,12 +67,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs-site/build
-
-      - name: Publish to npm
-        if: steps.check_version.outputs.changed == 'true'
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   deploy:
     name: Deploy to GitHub Pages
