@@ -104,6 +104,23 @@ function CloseIcon() {
   );
 }
 
+// Detect touch device (coarse pointer = finger/stylus)
+function useIsTouchDevice() {
+  const [isTouch, setIsTouch] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(pointer: coarse)').matches;
+  });
+
+  useEffect(() => {
+    const mq = window.matchMedia('(pointer: coarse)');
+    const handler = (e: MediaQueryListEvent) => setIsTouch(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  return isTouch;
+}
+
 export const Select = forwardRef<HTMLDivElement, SelectProps>(
   (
     {
@@ -125,6 +142,10 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     },
     ref,
   ) => {
+    const isTouchDevice = useIsTouchDevice();
+    // Use native <select> on touch devices for simple single selects
+    const useNative = isTouchDevice && !multiple && !searchable;
+
     const [isOpen, setIsOpen] = useState(false);
     const [internalValue, setInternalValue] = useState<string | string[]>(
       defaultValue ?? (multiple ? [] : ''),
@@ -237,18 +258,25 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isOpen, closeDropdown]);
 
-    // Update position on scroll/resize
+    // Update position on scroll/resize; close on scroll for touch devices
     useEffect(() => {
       if (!isOpen) return;
 
-      const handleUpdate = () => updateDropdownPosition();
-      window.addEventListener('scroll', handleUpdate, true);
-      window.addEventListener('resize', handleUpdate);
-      return () => {
-        window.removeEventListener('scroll', handleUpdate, true);
-        window.removeEventListener('resize', handleUpdate);
+      const handleScroll = () => {
+        if (isTouchDevice) {
+          closeDropdown();
+        } else {
+          updateDropdownPosition();
+        }
       };
-    }, [isOpen, updateDropdownPosition]);
+      const handleResize = () => updateDropdownPosition();
+      window.addEventListener('scroll', handleScroll, true);
+      window.addEventListener('resize', handleResize);
+      return () => {
+        window.removeEventListener('scroll', handleScroll, true);
+        window.removeEventListener('resize', handleResize);
+      };
+    }, [isOpen, isTouchDevice, closeDropdown, updateDropdownPosition]);
 
     // Select an option
     const handleSelect = useCallback(
@@ -343,6 +371,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     const getLabel = (val: string) =>
       options.find((opt) => opt.value === val)?.label ?? val;
 
+    const singleValue = Array.isArray(currentValue) ? currentValue[0] : currentValue;
+
     // Render trigger content
     const renderTriggerContent = () => {
       if (multiple) {
@@ -372,7 +402,6 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
         );
       }
 
-      const singleValue = Array.isArray(currentValue) ? currentValue[0] : currentValue;
       if (!singleValue) {
         return (
           <span className={`${styles.triggerValue} ${styles.triggerPlaceholder}`}>
@@ -402,23 +431,47 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       .filter(Boolean)
       .join(' ');
 
+    const handleNativeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const newValue = e.target.value;
+      if (!isControlled) {
+        setInternalValue(newValue);
+      }
+      onChange?.(newValue);
+    };
+
     return (
       <div ref={ref} className={containerClassNames} style={style}>
         <div
           ref={triggerRef}
-          role="combobox"
-          aria-expanded={isOpen}
-          aria-haspopup="listbox"
+          role={useNative ? undefined : 'combobox'}
+          aria-expanded={useNative ? undefined : isOpen}
+          aria-haspopup={useNative ? undefined : 'listbox'}
           aria-disabled={disabled || undefined}
-          tabIndex={disabled ? -1 : 0}
+          tabIndex={useNative ? -1 : (disabled ? -1 : 0)}
           className={triggerClassNames}
-          onClick={toggleDropdown}
-          onKeyDown={handleKeyDown}
+          onClick={useNative ? undefined : toggleDropdown}
+          onKeyDown={useNative ? undefined : handleKeyDown}
         >
           {renderTriggerContent()}
           <span className={`${styles.arrow} ${isOpen ? styles.arrowOpen : ''}`}>
             <ChevronIcon />
           </span>
+          {useNative && (
+            <select
+              className={styles.nativeSelect}
+              value={singleValue || ''}
+              onChange={handleNativeChange}
+              disabled={disabled}
+              aria-label={placeholder}
+            >
+              {!singleValue && <option value="" disabled>{placeholder}</option>}
+              {options.map((opt) => (
+                <option key={opt.value} value={opt.value} disabled={opt.disabled}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         {errorMessage && (
@@ -427,7 +480,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
           </p>
         )}
 
-        {isOpen &&
+        {!useNative && isOpen &&
           createPortal(
             <div
               ref={dropdownRef}
