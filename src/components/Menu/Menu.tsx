@@ -4,6 +4,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useId,
   useLayoutEffect,
   useRef,
   useState,
@@ -21,6 +22,7 @@ interface MenuContextValue {
   open: boolean;
   setOpen: (open: boolean) => void;
   triggerRef: React.RefObject<HTMLElement | null>;
+  triggerId: string;
 }
 
 const MenuContext = createContext<MenuContextValue | null>(null);
@@ -43,9 +45,10 @@ export interface MenuProps {
 function MenuRoot({ children }: MenuProps) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLElement | null>(null);
+  const triggerId = useId();
 
   return (
-    <MenuContext.Provider value={{ open, setOpen, triggerRef }}>
+    <MenuContext.Provider value={{ open, setOpen, triggerRef, triggerId }}>
       <div className={styles.menu}>{children}</div>
     </MenuContext.Provider>
   );
@@ -61,7 +64,7 @@ interface MenuTriggerProps {
 }
 
 function MenuTrigger({ children }: MenuTriggerProps) {
-  const { open, setOpen, triggerRef } = useMenuContext();
+  const { open, setOpen, triggerRef, triggerId } = useMenuContext();
 
   const handleClick = useCallback(() => {
     setOpen(!open);
@@ -97,6 +100,7 @@ function MenuTrigger({ children }: MenuTriggerProps) {
       handleKeyDown(e);
       (childProps.onKeyDown as ((e: React.KeyboardEvent) => void) | undefined)?.(e);
     },
+    id: triggerId,
     'aria-haspopup': 'menu',
     'aria-expanded': open,
   } as Record<string, unknown>);
@@ -123,17 +127,11 @@ function MenuContent({
   align = 'start',
   children,
 }: MenuContentProps) {
-  const { open, setOpen, triggerRef } = useMenuContext();
+  const { open, setOpen, triggerRef, triggerId } = useMenuContext();
   const contentRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
 
-  // Position the menu below the trigger (useLayoutEffect to prevent flash)
-  useLayoutEffect(() => {
-    if (!open) {
-      setPosition(null);
-      return;
-    }
-
+  const updatePosition = useCallback(() => {
     const trigger = triggerRef.current;
     const content = contentRef.current;
     if (!trigger || !content) return;
@@ -167,7 +165,27 @@ function MenuContent({
     }
 
     setPosition({ top, left });
-  }, [open, align, triggerRef]);
+  }, [align, triggerRef]);
+
+  // Position the menu below the trigger (useLayoutEffect to prevent flash)
+  useLayoutEffect(() => {
+    if (!open) {
+      setPosition(null);
+      return;
+    }
+    updatePosition();
+  }, [open, updatePosition]);
+
+  // Reposition on scroll/resize
+  useEffect(() => {
+    if (!open) return;
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [open, updatePosition]);
 
   // Close on click outside
   useEffect(() => {
@@ -261,6 +279,7 @@ function MenuContent({
         <div
           ref={contentRef}
           role="menu"
+          aria-labelledby={triggerId}
           className={classNames}
           style={contentStyle}
           onKeyDown={handleKeyDown}

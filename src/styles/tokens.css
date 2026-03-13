@@ -39,10 +39,10 @@
   --tui-transition-slow: 300ms ease;
 
   /* Z-index */
-  --tui-z-dropdown: 1050;
-  --tui-z-sticky: 1020;
-  --tui-z-modal: 1030;
-  --tui-z-popover: 1040;
+  --tui-z-dropdown: 1000;
+  --tui-z-sticky: 1010;
+  --tui-z-popover: 1020;
+  --tui-z-modal: 1050;
   --tui-z-tooltip: 1060;
   --tui-z-toast: 1070;
 }

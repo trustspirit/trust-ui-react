@@ -1,4 +1,4 @@
-import { forwardRef, useRef, useState, useCallback } from 'react';
+import { forwardRef, useRef, useState, useCallback, useEffect } from 'react';
 import type { FileUploadProps, ValidationError } from './types';
 import { formatFileSize } from './utils';
 import { FileUploadFileItem } from './FileUploadFileItem';
@@ -223,6 +223,27 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
     },
     [disabled, handleFiles],
   );
+
+  // Reset drag state when drag leaves the window entirely
+  useEffect(() => {
+    const handleDragEnd = () => {
+      dragCounterRef.current = 0;
+      setIsDragOver(false);
+    };
+    document.addEventListener('dragend', handleDragEnd);
+    // Also handle when drag leaves the document
+    const handleDocDragLeave = (e: DragEvent) => {
+      if (!e.relatedTarget) {
+        dragCounterRef.current = 0;
+        setIsDragOver(false);
+      }
+    };
+    document.addEventListener('dragleave', handleDocDragLeave);
+    return () => {
+      document.removeEventListener('dragend', handleDragEnd);
+      document.removeEventListener('dragleave', handleDocDragLeave);
+    };
+  }, []);
 
   const dropzoneClassNames = [
     styles.dropzone,

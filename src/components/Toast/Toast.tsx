@@ -1,4 +1,4 @@
-import { useEffect, useRef, type CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, useRef, type CSSProperties } from 'react';
 import styles from './Toast.module.css';
 
 export type ToastVariant = 'success' | 'danger' | 'warning' | 'info';
@@ -39,11 +39,15 @@ export function Toast({
   style,
 }: ToastProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const onCloseRef = useRef(onClose);
+  useLayoutEffect(() => {
+    onCloseRef.current = onClose;
+  });
 
   useEffect(() => {
     if (duration > 0) {
       timerRef.current = setTimeout(() => {
-        onClose?.();
+        onCloseRef.current?.();
       }, duration);
     }
     return () => {
@@ -51,7 +55,7 @@ export function Toast({
         clearTimeout(timerRef.current);
       }
     };
-  }, [duration, onClose]);
+  }, [duration]);
 
   const classNames = [styles.toast, styles[variant], className]
     .filter(Boolean)

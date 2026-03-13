@@ -48,9 +48,9 @@ export function unformatCurrency(value: string): string {
 export function formatDecimal(value: string): string {
   // Allow only digits and a single decimal point
   const cleaned = value.replace(/[^\d.]/g, '');
-  const parts = cleaned.split('.');
-  const integerPart = parts[0] ?? '';
-  const decimalPart = parts.length > 1 ? parts[1] : undefined;
+  const dotIndex = cleaned.indexOf('.');
+  const integerPart = dotIndex >= 0 ? cleaned.slice(0, dotIndex) : cleaned;
+  const decimalPart = dotIndex >= 0 ? cleaned.slice(dotIndex + 1).replace(/\./g, '') : undefined;
 
   const formattedInteger = integerPart
     ? Number(integerPart).toLocaleString('en-US')

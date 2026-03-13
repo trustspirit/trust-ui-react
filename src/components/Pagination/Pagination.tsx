@@ -173,7 +173,7 @@ export function Pagination({
           if (item === 'ellipsis-start' || item === 'ellipsis-end') {
             return (
               <li key={item}>
-                <span className={styles.ellipsis} aria-hidden="true">
+                <span className={styles.ellipsis} role="separator" aria-label="more pages">
                   ...
                 </span>
               </li>

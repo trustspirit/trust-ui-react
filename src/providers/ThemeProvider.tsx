@@ -26,8 +26,10 @@ export function ThemeProvider({ defaultTheme, children }: ThemeProviderProps) {
 
   const setTheme = useCallback((t: Theme) => {
     setThemeState(t);
-    document.documentElement.setAttribute('data-theme', t);
-    document.documentElement.style.colorScheme = t;
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-theme', t);
+      document.documentElement.style.colorScheme = t;
+    }
   }, []);
 
   const toggleTheme = useCallback(() => {

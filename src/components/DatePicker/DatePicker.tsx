@@ -11,7 +11,7 @@ import {
 import { createPortal } from 'react-dom';
 import styles from './DatePicker.module.css';
 import { Calendar } from './Calendar';
-import { formatDate, getMonthLabel, parseDate } from './utils';
+import { formatDate, getMonthLabel } from './utils';
 
 export interface DatePickerProps {
   /** Controlled selected date */
@@ -154,6 +154,12 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     const inputRef = useRef<HTMLInputElement>(null);
     const [popupStyle, setPopupStyle] = useState<CSSProperties>({});
 
+    // Detect if DatePicker is inside a <dialog> (showModal creates a top-layer that blocks portals to body)
+    const getPortalContainer = useCallback(() => {
+      const dialog = triggerRef.current?.closest('dialog');
+      return dialog || document.body;
+    }, []);
+
     const isError = error || !!errorMessage;
 
     const displayText = useMemo(() => {
@@ -171,13 +177,24 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       const popupHeight = 340;
       const top =
         spaceBelow > popupHeight ? rect.bottom + 4 : rect.top - popupHeight - 4;
-      setPopupStyle({
-        position: 'fixed',
-        top,
-        left: rect.left,
-        zIndex: 'var(--tui-z-dropdown)' as unknown as number,
-      });
-    }, []);
+      const container = getPortalContainer();
+      if (container !== document.body) {
+        const containerRect = container.getBoundingClientRect();
+        setPopupStyle({
+          position: 'absolute',
+          top: top - containerRect.top,
+          left: rect.left - containerRect.left,
+          zIndex: 'var(--tui-z-dropdown)' as unknown as number,
+        });
+      } else {
+        setPopupStyle({
+          position: 'fixed',
+          top,
+          left: rect.left,
+          zIndex: 'var(--tui-z-dropdown)' as unknown as number,
+        });
+      }
+    }, [getPortalContainer]);
 
     const openPopup = useCallback(() => {
       if (disabled) return;
@@ -280,24 +297,6 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       [],
     );
 
-    // Input change (manual typing)
-    const handleInputChange = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
-        if (!val) {
-          if (!isControlled) setInternalValue(null);
-          onChange?.(null);
-          return;
-        }
-        const parsed = parseDate(val, dateFormat);
-        if (parsed) {
-          if (!isControlled) setInternalValue(parsed);
-          onChange?.(parsed);
-        }
-      },
-      [isControlled, onChange, dateFormat],
-    );
-
     const monthYearLabel = `${viewYear}${locale.startsWith('ko') ? '년 ' : ' '}${getMonthLabel(viewMonth, locale)}`;
 
     // Year grid range (12 years per view)
@@ -365,7 +364,6 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
             placeholder={effectivePlaceholder}
             disabled={disabled}
             readOnly
-            onChange={handleInputChange}
             tabIndex={-1}
             aria-invalid={isError || undefined}
           />
@@ -481,7 +479,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                 />
               )}
             </div>,
-            document.body,
+            getPortalContainer(),
           )}
       </div>
     );

@@ -46,10 +46,21 @@ const DialogRoot = forwardRef<HTMLDialogElement, DialogProps>(
     ref,
   ) => {
     const internalRef = useRef<HTMLDialogElement>(null);
-    const dialogRef = (ref as React.RefObject<HTMLDialogElement>) ?? internalRef;
+
+    const mergedRef = useCallback(
+      (node: HTMLDialogElement | null) => {
+        (internalRef as React.MutableRefObject<HTMLDialogElement | null>).current = node;
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          (ref as React.MutableRefObject<HTMLDialogElement | null>).current = node;
+        }
+      },
+      [ref],
+    );
 
     useEffect(() => {
-      const dialog = dialogRef.current;
+      const dialog = internalRef.current;
       if (!dialog) return;
 
       if (open) {
@@ -61,7 +72,7 @@ const DialogRoot = forwardRef<HTMLDialogElement, DialogProps>(
           dialog.close();
         }
       }
-    }, [open, dialogRef]);
+    }, [open]);
 
     const handleCancel = useCallback(
       (e: React.SyntheticEvent<HTMLDialogElement>) => {
@@ -94,7 +105,7 @@ const DialogRoot = forwardRef<HTMLDialogElement, DialogProps>(
 
     return (
       <dialog
-        ref={dialogRef}
+        ref={mergedRef}
         className={classNames}
         style={style}
         onCancel={handleCancel}

@@ -279,7 +279,7 @@ function ExpanderContent({ children, className }: ExpanderContentProps) {
       className={wrapperClassNames}
       role="region"
       aria-labelledby={triggerId}
-      hidden={!isOpen ? true : undefined}
+      aria-hidden={!isOpen}
     >
       <div className={styles.contentInner}>
         <div className={contentClassNames}>{children}</div>

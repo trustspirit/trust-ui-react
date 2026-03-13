@@ -1,6 +1,7 @@
 import {
   createContext,
   useCallback,
+  useRef,
   useState,
   type ReactNode,
 } from 'react';
@@ -39,8 +40,6 @@ interface ToastProviderProps {
   children: ReactNode;
 }
 
-let toastCounter = 0;
-
 const positionClassMap: Record<ToastPosition, string> = {
   'top-right': styles.topRight,
   'top-left': styles.topLeft,
@@ -55,6 +54,7 @@ export function ToastProvider({
   children,
 }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastData[]>([]);
+  const toastCounter = useRef(0);
 
   const dismiss = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -66,7 +66,7 @@ export function ToastProvider({
 
   const toast = useCallback(
     (data: Omit<ToastData, 'id'>) => {
-      const id = `toast-${++toastCounter}`;
+      const id = `toast-${++toastCounter.current}`;
       setToasts((prev) => [...prev, { ...data, id }]);
       return id;
     },

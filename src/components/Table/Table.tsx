@@ -163,7 +163,14 @@ export function Table<T extends Record<string, any>>({
                   key={col.key}
                   className={thClassNames}
                   style={thStyle}
+                  tabIndex={col.sortable ? 0 : undefined}
                   onClick={col.sortable ? () => handleSort(col.key) : undefined}
+                  onKeyDown={col.sortable ? (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      handleSort(col.key);
+                    }
+                  } : undefined}
                   aria-sort={
                     isSorted && sort.direction === 'asc'
                       ? 'ascending'

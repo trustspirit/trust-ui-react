@@ -17,6 +17,8 @@ export interface RadioGroupProps {
   direction?: 'horizontal' | 'vertical';
   /** Whether all radios are disabled */
   disabled?: boolean;
+  /** Accessible label for the radio group */
+  label?: string;
   /** Radio elements */
   children: ReactNode;
   /** Additional CSS class */
@@ -33,6 +35,7 @@ export function RadioGroup({
   variant = 'primary',
   direction = 'vertical',
   disabled = false,
+  label,
   children,
   className,
   style,
@@ -67,7 +70,7 @@ export function RadioGroup({
         onChange: handleChange,
       }}
     >
-      <div role="radiogroup" className={groupClassNames} style={style}>
+      <div role="radiogroup" aria-label={label || name} className={groupClassNames} style={style}>
         {children}
       </div>
     </RadioGroupContext.Provider>

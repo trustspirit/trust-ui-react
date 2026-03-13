@@ -123,6 +123,17 @@ export function Tooltip({
     }
   }, [visible, updatePosition]);
 
+  // Reposition on scroll/resize while visible
+  useEffect(() => {
+    if (!visible) return;
+    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('resize', updatePosition);
+    return () => {
+      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('resize', updatePosition);
+    };
+  }, [visible, updatePosition]);
+
   useEffect(() => {
     return () => {
       if (timerRef.current) {

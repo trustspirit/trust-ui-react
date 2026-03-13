@@ -1,6 +1,7 @@
 import {
   forwardRef,
   useState,
+  useId,
   useRef,
   useEffect,
   useCallback,
@@ -142,6 +143,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     },
     ref,
   ) => {
+    const listboxId = useId();
     const isTouchDevice = useIsTouchDevice();
     // Use native <select> on touch devices for simple single selects
     const useNative = isTouchDevice && !multiple && !searchable;
@@ -237,6 +239,13 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
         searchInputRef.current.focus();
       }
     }, [isOpen, searchable]);
+
+    // Scroll highlighted option into view
+    useEffect(() => {
+      if (!isOpen || highlightedIndex < 0) return;
+      const options = dropdownRef.current?.querySelectorAll('[role="option"]');
+      options?.[highlightedIndex]?.scrollIntoView({ block: 'nearest' });
+    }, [isOpen, highlightedIndex]);
 
     // Click outside to close
     useEffect(() => {
@@ -446,6 +455,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
           role={useNative ? undefined : 'combobox'}
           aria-expanded={useNative ? undefined : isOpen}
           aria-haspopup={useNative ? undefined : 'listbox'}
+          aria-controls={useNative ? undefined : (isOpen ? listboxId : undefined)}
           aria-disabled={disabled || undefined}
           tabIndex={useNative ? -1 : (disabled ? -1 : 0)}
           className={triggerClassNames}
@@ -487,6 +497,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
               className={styles.dropdown}
               style={dropdownStyle}
               role="listbox"
+              id={listboxId}
               aria-multiselectable={multiple || undefined}
             >
               {searchable && (

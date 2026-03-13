@@ -162,6 +162,11 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
     const popupRef = useRef<HTMLDivElement>(null);
     const [popupStyle, setPopupStyle] = useState<CSSProperties>({});
 
+    const getPortalContainer = useCallback(() => {
+      const dialog = triggerRef.current?.closest('dialog');
+      return dialog || document.body;
+    }, []);
+
     const isError = error || !!errorMessage;
 
     const displayText = useMemo(() => {
@@ -185,13 +190,24 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
       const popupHeight = 380;
       const top =
         spaceBelow > popupHeight ? rect.bottom + 4 : rect.top - popupHeight - 4;
-      setPopupStyle({
-        position: 'fixed',
-        top,
-        left: rect.left,
-        zIndex: 'var(--tui-z-dropdown)' as unknown as number,
-      });
-    }, []);
+      const container = getPortalContainer();
+      if (container !== document.body) {
+        const containerRect = container.getBoundingClientRect();
+        setPopupStyle({
+          position: 'absolute',
+          top: top - containerRect.top,
+          left: rect.left - containerRect.left,
+          zIndex: 'var(--tui-z-dropdown)' as unknown as number,
+        });
+      } else {
+        setPopupStyle({
+          position: 'fixed',
+          top,
+          left: rect.left,
+          zIndex: 'var(--tui-z-dropdown)' as unknown as number,
+        });
+      }
+    }, [getPortalContainer]);
 
     const openPopup = useCallback(() => {
       if (disabled) return;
@@ -271,8 +287,15 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
           onChange?.(newRange);
           setSelectingStart(false);
         } else {
-          // Second click: set end
-          const start = selectedRange.start!;
+          // Second click: set end (guard against null start in controlled mode)
+          const start = selectedRange.start;
+          if (!start) {
+            // Parent may have reset start — restart selection
+            const newRange: DateRange = { start: date, end: null };
+            if (!isControlled) setInternalValue(newRange);
+            onChange?.(newRange);
+            return;
+          }
           let newRange: DateRange;
           if (date.getTime() < start.getTime()) {
             // Swap if end < start
@@ -505,7 +528,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
                 </div>
               </div>
             </div>,
-            document.body,
+            getPortalContainer(),
           )}
       </div>
     );

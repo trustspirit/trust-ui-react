@@ -2,6 +2,7 @@ import {
   forwardRef,
   useState,
   useCallback,
+  useId,
   useRef,
   useEffect,
   type InputHTMLAttributes,
@@ -142,6 +143,10 @@ export const TextField = forwardRef<
     },
     ref,
   ) => {
+    const uid = useId();
+    const errorId = `${uid}-error`;
+    const helperId = `${uid}-helper`;
+
     const [focused, setFocused] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [internalValue, setInternalValue] = useState<string>(
@@ -322,7 +327,7 @@ export const TextField = forwardRef<
               onBlur={() => setFocused(false)}
               aria-invalid={isError || undefined}
               aria-describedby={
-                errorMessage ? 'error-msg' : helperText ? 'helper-text' : undefined
+                errorMessage ? errorId : helperText ? helperId : undefined
               }
               {...(rest as TextareaBaseProps)}
             />
@@ -338,13 +343,13 @@ export const TextField = forwardRef<
                   ? undefined
                   : maxLength
               }
-              value={isControlled ? renderedValue : renderedValue}
+              value={renderedValue}
               onChange={handleChange as (e: ChangeEvent<HTMLInputElement>) => void}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
               aria-invalid={isError || undefined}
               aria-describedby={
-                errorMessage ? 'error-msg' : helperText ? 'helper-text' : undefined
+                errorMessage ? errorId : helperText ? helperId : undefined
               }
               {...rest}
             />
@@ -356,12 +361,12 @@ export const TextField = forwardRef<
         <div className={styles.footer}>
           <div>
             {errorMessage && (
-              <p className={styles.errorMessage} id="error-msg" role="alert">
+              <p className={styles.errorMessage} id={errorId} role="alert">
                 {errorMessage}
               </p>
             )}
             {!errorMessage && helperText && (
-              <p className={styles.helperText} id="helper-text">
+              <p className={styles.helperText} id={helperId}>
                 {helperText}
               </p>
             )}

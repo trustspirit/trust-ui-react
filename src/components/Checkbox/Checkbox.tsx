@@ -1,6 +1,7 @@
 import {
   forwardRef,
   useEffect,
+  useState,
   useRef,
   useCallback,
   type InputHTMLAttributes,
@@ -94,6 +95,19 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       [ref],
     );
 
+    const isControlled = checked !== undefined;
+    const [internalChecked, setInternalChecked] = useState(defaultChecked ?? false);
+
+    const handleChange = useCallback(
+      (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!isControlled) {
+          setInternalChecked(e.target.checked);
+        }
+        onChange?.(e);
+      },
+      [isControlled, onChange],
+    );
+
     // Sync the indeterminate property (not available as HTML attribute)
     useEffect(() => {
       if (internalRef.current) {
@@ -101,7 +115,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       }
     }, [indeterminate]);
 
-    const isChecked = checked ?? false;
+    const isChecked = isControlled ? checked : internalChecked;
 
     const containerClassNames = [
       styles.container,
@@ -115,9 +129,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       styles.indicator,
       styles[variant],
       indeterminate ? styles.indeterminate : '',
-      !indeterminate && (checked !== undefined ? isChecked : false)
-        ? styles.checked
-        : '',
+      !indeterminate && isChecked ? styles.checked : '',
     ]
       .filter(Boolean)
       .join(' ');
@@ -128,9 +140,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           ref={mergedRef}
           type="checkbox"
           className={styles.hiddenInput}
-          checked={checked}
-          defaultChecked={defaultChecked}
-          onChange={onChange}
+          checked={isControlled ? checked : undefined}
+          defaultChecked={isControlled ? undefined : defaultChecked}
+          onChange={handleChange}
           disabled={disabled}
           {...rest}
         />
