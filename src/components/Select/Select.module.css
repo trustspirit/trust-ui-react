@@ -291,6 +291,114 @@
   cursor: not-allowed;
 }
 
+/* ── Mobile bottom sheet overlay (for searchable selects on touch devices) ── */
+.mobileOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--tui-z-dropdown);
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.mobileSheet {
+  background-color: var(--tui-bg);
+  border-radius: var(--tui-radius-lg, 16px) var(--tui-radius-lg, 16px) 0 0;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideUp 0.2s ease-out;
+}
+
+.mobileSheetHandle {
+  width: 36px;
+  height: 4px;
+  background-color: var(--tui-border);
+  border-radius: 2px;
+  margin: 10px auto 6px;
+  flex-shrink: 0;
+}
+
+.mobileSheetSearch {
+  padding: var(--tui-spacing-sm) var(--tui-spacing-md);
+  border-bottom: 1px solid var(--tui-border);
+  flex-shrink: 0;
+}
+
+.mobileSheetSearchInput {
+  width: 100%;
+  border: 1px solid var(--tui-border);
+  border-radius: var(--tui-radius-md);
+  padding: 12px var(--tui-spacing-md);
+  font-size: 16px; /* prevents iOS zoom */
+  font-family: var(--tui-font-family);
+  background-color: var(--tui-bg);
+  color: var(--tui-text);
+  outline: none;
+}
+
+.mobileSheetSearchInput:focus {
+  border-color: var(--tui-border-focus);
+}
+
+.mobileSheetSearchInput::placeholder {
+  color: var(--tui-text-muted);
+}
+
+.mobileSheetOptions {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: var(--tui-spacing-xs) 0;
+}
+
+.mobileOption {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-spacing-sm);
+  padding: 14px var(--tui-spacing-md);
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--tui-text);
+  user-select: none;
+  transition: background-color var(--tui-transition-fast);
+}
+
+.mobileOption:active {
+  background-color: var(--tui-bg-muted);
+}
+
+.mobileOptionSelected {
+  background-color: var(--tui-primary-subtle);
+  color: var(--tui-primary);
+  font-weight: var(--tui-font-weight-medium);
+}
+
+.mobileOptionDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mobileNoResults {
+  padding: var(--tui-spacing-lg) var(--tui-spacing-md);
+  text-align: center;
+  color: var(--tui-text-muted);
+  font-size: 16px;
+}
+
 /* ── Error message ── */
 .errorMessage {
   font-size: var(--tui-font-size-xs);

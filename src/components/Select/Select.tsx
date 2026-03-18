@@ -147,6 +147,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     const isTouchDevice = useIsTouchDevice();
     // Use native <select> on touch devices for simple single selects
     const useNative = isTouchDevice && !multiple && !searchable;
+    // Use mobile bottom sheet for searchable selects on touch devices
+    const useMobileSheet = isTouchDevice && searchable;
 
     const [isOpen, setIsOpen] = useState(false);
     const [internalValue, setInternalValue] = useState<string | string[]>(
@@ -247,9 +249,9 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       options?.[highlightedIndex]?.scrollIntoView({ block: 'nearest' });
     }, [isOpen, highlightedIndex]);
 
-    // Click outside to close
+    // Click outside to close (mobile sheet handles its own backdrop click)
     useEffect(() => {
-      if (!isOpen) return;
+      if (!isOpen || useMobileSheet) return;
 
       const handleClickOutside = (e: MouseEvent) => {
         const target = e.target as Node;
@@ -265,11 +267,13 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
 
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [isOpen, closeDropdown]);
+    }, [isOpen, useMobileSheet, closeDropdown]);
 
-    // Update position on scroll/resize; close on scroll for touch devices
+    // Update position on scroll/resize; close on scroll for touch devices (but not for mobile sheet)
     useEffect(() => {
       if (!isOpen) return;
+      // Mobile sheet handles its own scrolling — skip scroll/resize listeners
+      if (useMobileSheet) return;
 
       const handleScroll = () => {
         if (isTouchDevice) {
@@ -285,7 +289,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
         window.removeEventListener('scroll', handleScroll, true);
         window.removeEventListener('resize', handleResize);
       };
-    }, [isOpen, isTouchDevice, closeDropdown, updateDropdownPosition]);
+    }, [isOpen, isTouchDevice, useMobileSheet, closeDropdown, updateDropdownPosition]);
 
     // Select an option
     const handleSelect = useCallback(
@@ -448,6 +452,164 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       onChange?.(newValue);
     };
 
+    // Render the mobile bottom sheet for searchable selects on touch devices
+    const renderMobileSheet = () => {
+      if (!useMobileSheet || !isOpen) return null;
+
+      return createPortal(
+        <div
+          className={styles.mobileOverlay}
+          onClick={(e) => {
+            // Close when tapping the overlay backdrop
+            if (e.target === e.currentTarget) closeDropdown();
+          }}
+        >
+          <div
+            ref={dropdownRef}
+            className={styles.mobileSheet}
+            role="listbox"
+            id={listboxId}
+            aria-multiselectable={multiple || undefined}
+          >
+            <div className={styles.mobileSheetHandle} />
+            <div className={styles.mobileSheetSearch}>
+              <input
+                ref={searchInputRef}
+                className={styles.mobileSheetSearchInput}
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setHighlightedIndex(-1);
+                }}
+                autoFocus
+              />
+            </div>
+            <div className={styles.mobileSheetOptions}>
+              {filteredOptions.length === 0 ? (
+                <div className={styles.mobileNoResults}>No options found</div>
+              ) : (
+                filteredOptions.map((option) => {
+                  const isSelected = selectedValues.includes(option.value);
+                  const optClassNames = [
+                    styles.mobileOption,
+                    isSelected ? styles.mobileOptionSelected : '',
+                    option.disabled ? styles.mobileOptionDisabled : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ');
+
+                  return (
+                    <div
+                      key={option.value}
+                      role="option"
+                      aria-selected={isSelected}
+                      aria-disabled={option.disabled || undefined}
+                      className={optClassNames}
+                      onClick={() => {
+                        if (!option.disabled) handleSelect(option.value);
+                      }}
+                    >
+                      {multiple && (
+                        <span
+                          className={`${styles.checkmark} ${
+                            !isSelected ? styles.checkmarkHidden : ''
+                          }`}
+                        >
+                          <CheckIcon />
+                        </span>
+                      )}
+                      {option.label}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </div>,
+        document.body,
+      );
+    };
+
+    // Render the desktop dropdown (non-touch or non-searchable custom dropdown)
+    const renderDesktopDropdown = () => {
+      if (useNative || useMobileSheet || !isOpen) return null;
+
+      return createPortal(
+        <div
+          ref={dropdownRef}
+          className={styles.dropdown}
+          style={dropdownStyle}
+          role="listbox"
+          id={listboxId}
+          aria-multiselectable={multiple || undefined}
+        >
+          {searchable && (
+            <div className={styles.searchWrapper}>
+              <input
+                ref={searchInputRef}
+                className={styles.searchInput}
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setHighlightedIndex(-1);
+                }}
+                onKeyDown={handleKeyDown}
+              />
+            </div>
+          )}
+          <div className={styles.optionsList}>
+            {filteredOptions.length === 0 ? (
+              <div className={styles.noResults}>No options found</div>
+            ) : (
+              filteredOptions.map((option, index) => {
+                const isSelected = selectedValues.includes(option.value);
+                const optionClassNames = [
+                  styles.option,
+                  isSelected ? styles.optionSelected : '',
+                  index === highlightedIndex ? styles.optionHighlighted : '',
+                  option.disabled ? styles.optionDisabled : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ');
+
+                return (
+                  <div
+                    key={option.value}
+                    role="option"
+                    aria-selected={isSelected}
+                    aria-disabled={option.disabled || undefined}
+                    className={optionClassNames}
+                    onClick={() => {
+                      if (!option.disabled) handleSelect(option.value);
+                    }}
+                    onMouseEnter={() => {
+                      if (!option.disabled) setHighlightedIndex(index);
+                    }}
+                  >
+                    {multiple && (
+                      <span
+                        className={`${styles.checkmark} ${
+                          !isSelected ? styles.checkmarkHidden : ''
+                        }`}
+                      >
+                        <CheckIcon />
+                      </span>
+                    )}
+                    {option.label}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>,
+        getPortalContainer(),
+      );
+    };
+
     return (
       <div ref={ref} className={containerClassNames} style={style}>
         <div
@@ -490,79 +652,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
           </p>
         )}
 
-        {!useNative && isOpen &&
-          createPortal(
-            <div
-              ref={dropdownRef}
-              className={styles.dropdown}
-              style={dropdownStyle}
-              role="listbox"
-              id={listboxId}
-              aria-multiselectable={multiple || undefined}
-            >
-              {searchable && (
-                <div className={styles.searchWrapper}>
-                  <input
-                    ref={searchInputRef}
-                    className={styles.searchInput}
-                    type="text"
-                    placeholder="Search..."
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setHighlightedIndex(-1);
-                    }}
-                    onKeyDown={handleKeyDown}
-                  />
-                </div>
-              )}
-              <div className={styles.optionsList}>
-                {filteredOptions.length === 0 ? (
-                  <div className={styles.noResults}>No options found</div>
-                ) : (
-                  filteredOptions.map((option, index) => {
-                    const isSelected = selectedValues.includes(option.value);
-                    const optionClassNames = [
-                      styles.option,
-                      isSelected ? styles.optionSelected : '',
-                      index === highlightedIndex ? styles.optionHighlighted : '',
-                      option.disabled ? styles.optionDisabled : '',
-                    ]
-                      .filter(Boolean)
-                      .join(' ');
-
-                    return (
-                      <div
-                        key={option.value}
-                        role="option"
-                        aria-selected={isSelected}
-                        aria-disabled={option.disabled || undefined}
-                        className={optionClassNames}
-                        onClick={() => {
-                          if (!option.disabled) handleSelect(option.value);
-                        }}
-                        onMouseEnter={() => {
-                          if (!option.disabled) setHighlightedIndex(index);
-                        }}
-                      >
-                        {multiple && (
-                          <span
-                            className={`${styles.checkmark} ${
-                              !isSelected ? styles.checkmarkHidden : ''
-                            }`}
-                          >
-                            <CheckIcon />
-                          </span>
-                        )}
-                        {option.label}
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </div>,
-            getPortalContainer(),
-          )}
+        {renderMobileSheet()}
+        {renderDesktopDropdown()}
       </div>
     );
   },
