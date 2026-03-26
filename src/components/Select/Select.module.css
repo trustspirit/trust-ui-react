@@ -11,6 +11,27 @@
   width: 100%;
 }
 
+/* ── Label ── */
+.label {
+  display: block;
+  font-size: var(--tui-font-size-sm);
+  font-weight: var(--tui-font-weight-medium);
+  color: var(--tui-text);
+  margin-bottom: 2px;
+}
+
+.labelError {
+  color: var(--tui-danger);
+}
+
+.labelDisabled {
+  opacity: 0.5;
+}
+
+.requiredAsterisk {
+  color: var(--tui-danger);
+}
+
 /* ── Trigger ── */
 .trigger {
   display: flex;

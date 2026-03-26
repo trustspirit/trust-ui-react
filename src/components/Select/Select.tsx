@@ -36,6 +36,10 @@ export interface SelectProps {
   searchable?: boolean;
   /** Enable multi-select */
   multiple?: boolean;
+  /** Label displayed above the select */
+  label?: string;
+  /** Whether the field is required (shows red asterisk) */
+  required?: boolean;
   /** Whether the select is disabled */
   disabled?: boolean;
   /** Whether the field is in error state */
@@ -134,6 +138,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       size = 'md',
       searchable = false,
       multiple = false,
+      label,
+      required = false,
       disabled = false,
       error = false,
       errorMessage,
@@ -610,8 +616,22 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       );
     };
 
+    const labelClassNames = [
+      styles.label,
+      isError ? styles.labelError : '',
+      disabled ? styles.labelDisabled : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
     return (
       <div ref={ref} className={containerClassNames} style={style}>
+        {label && (
+          <label className={labelClassNames}>
+            {label}
+            {required && <span className={styles.requiredAsterisk}> *</span>}
+          </label>
+        )}
         <div
           ref={triggerRef}
           role={useNative ? undefined : 'combobox'}
