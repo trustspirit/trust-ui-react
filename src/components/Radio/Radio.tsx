@@ -8,6 +8,8 @@ export interface RadioProps
   value: string;
   /** Text label */
   label?: string;
+  /** Whether the field is required (shows red asterisk) */
+  required?: boolean;
   /** Whether the radio is disabled */
   disabled?: boolean;
   /** Additional CSS class */
@@ -17,7 +19,7 @@ export interface RadioProps
 }
 
 export const Radio = forwardRef<HTMLInputElement, RadioProps>(
-  ({ value, label, disabled = false, className, style, ...rest }, ref) => {
+  ({ value, label, required = false, disabled = false, className, style, ...rest }, ref) => {
     const group = useRadioGroup();
 
     const isDisabled = disabled || group?.disabled || false;
@@ -54,7 +56,12 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
         <span className={`${styles.indicator} ${styles[variant]}`}>
           <span className={styles.dot} />
         </span>
-        {label && <span className={styles.label}>{label}</span>}
+        {label && (
+          <span className={styles.label}>
+            {label}
+            {required && <span className={styles.requiredAsterisk}> *</span>}
+          </span>
+        )}
       </label>
     );
   },

@@ -22,6 +22,8 @@ export interface CheckboxProps
   variant?: 'primary' | 'secondary';
   /** Text label */
   label?: string;
+  /** Whether the field is required (shows red asterisk) */
+  required?: boolean;
   /** Whether the checkbox is disabled */
   disabled?: boolean;
   /** Additional CSS class */
@@ -74,6 +76,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       onChange,
       variant = 'primary',
       label,
+      required = false,
       disabled = false,
       className,
       style,
@@ -154,7 +157,12 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             <DashIcon />
           </span>
         </span>
-        {label && <span className={styles.label}>{label}</span>}
+        {label && (
+          <span className={styles.label}>
+            {label}
+            {required && <span className={styles.requiredAsterisk}> *</span>}
+          </span>
+        )}
       </label>
     );
   },

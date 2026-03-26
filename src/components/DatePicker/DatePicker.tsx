@@ -42,6 +42,8 @@ export interface DatePickerProps {
   errorMessage?: string;
   /** Label displayed above the input */
   label?: string;
+  /** Whether the field is required (shows red asterisk) */
+  required?: boolean;
   /** Additional CSS class */
   className?: string;
   /** Inline styles */
@@ -122,6 +124,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       error = false,
       errorMessage,
       label,
+      required = false,
       className,
       style,
     },
@@ -338,7 +341,12 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
 
     return (
       <div ref={ref} className={containerClassNames} style={style}>
-        {label && <label className={labelClassNames}>{label}</label>}
+        {label && (
+          <label className={labelClassNames}>
+            {label}
+            {required && <span className={styles.requiredAsterisk}> *</span>}
+          </label>
+        )}
 
         <div
           ref={triggerRef}

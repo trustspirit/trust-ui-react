@@ -46,6 +46,8 @@ export interface DateRangePickerProps {
   errorMessage?: string;
   /** Label displayed above the input */
   label?: string;
+  /** Whether the field is required (shows red asterisk) */
+  required?: boolean;
   /** Preset ranges */
   presets?: Array<{ label: string; range: DateRange }>;
   /** Additional CSS class */
@@ -128,6 +130,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
       error = false,
       errorMessage,
       label,
+      required = false,
       presets,
       className,
       style,
@@ -376,7 +379,12 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
 
     return (
       <div ref={ref} className={containerClassNames} style={style}>
-        {label && <label className={labelClassNames}>{label}</label>}
+        {label && (
+          <label className={labelClassNames}>
+            {label}
+            {required && <span className={styles.requiredAsterisk}> *</span>}
+          </label>
+        )}
 
         <div
           ref={triggerRef}

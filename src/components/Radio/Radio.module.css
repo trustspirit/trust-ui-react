@@ -105,6 +105,10 @@
   line-height: var(--tui-line-height);
 }
 
+.requiredAsterisk {
+  color: var(--tui-danger);
+}
+
 /* ── RadioGroup ── */
 .group {
   display: flex;

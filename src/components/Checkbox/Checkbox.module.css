@@ -127,3 +127,7 @@
   color: var(--tui-text);
   line-height: var(--tui-line-height);
 }
+
+.requiredAsterisk {
+  color: var(--tui-danger);
+}

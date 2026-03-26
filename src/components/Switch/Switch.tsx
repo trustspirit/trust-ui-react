@@ -14,6 +14,8 @@ export interface SwitchProps {
   size?: 'sm' | 'md' | 'lg';
   /** Text label */
   label?: string;
+  /** Whether the field is required (shows red asterisk) */
+  required?: boolean;
   /** Whether the switch is disabled */
   disabled?: boolean;
   /** Additional CSS class */
@@ -31,6 +33,7 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
       variant = 'primary',
       size = 'md',
       label,
+      required = false,
       disabled = false,
       className,
       style,
@@ -83,6 +86,7 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
             onClick={disabled ? undefined : handleClick}
           >
             {label}
+            {required && <span className={styles.requiredAsterisk}> *</span>}
           </span>
         )}
       </div>

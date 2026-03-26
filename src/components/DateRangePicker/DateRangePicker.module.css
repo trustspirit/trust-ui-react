@@ -25,6 +25,10 @@
   opacity: 0.5;
 }
 
+.requiredAsterisk {
+  color: var(--tui-danger);
+}
+
 /* ── Input wrapper ── */
 .inputWrapper {
   display: flex;

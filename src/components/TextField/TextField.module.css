@@ -28,6 +28,10 @@
   opacity: 0.5;
 }
 
+.requiredAsterisk {
+  color: var(--tui-danger);
+}
+
 /* ── Shapes ── */
 .shape_square .inputWrapper {
   border-radius: var(--tui-radius-md);

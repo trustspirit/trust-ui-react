@@ -48,6 +48,8 @@ export interface TextFieldProps extends InputBaseProps {
   error?: boolean;
   /** Error message displayed below the input */
   errorMessage?: string;
+  /** Whether the field is required (shows red asterisk) */
+  required?: boolean;
   /** Whether the field is disabled */
   disabled?: boolean;
   /** Stretches the field to fill its container */
@@ -125,6 +127,7 @@ export const TextField = forwardRef<
       helperText,
       error = false,
       errorMessage,
+      required = false,
       disabled = false,
       fullWidth = false,
       multiline = false,
@@ -310,7 +313,12 @@ export const TextField = forwardRef<
 
     return (
       <div className={containerClassNames} style={style}>
-        {label && <label className={labelClassNames}>{label}</label>}
+        {label && (
+          <label className={labelClassNames}>
+            {label}
+            {required && <span className={styles.requiredAsterisk}> *</span>}
+          </label>
+        )}
         <div className={wrapperClassNames}>
           {prefix && <span className={styles.prefix}>{prefix}</span>}
           {multiline ? (
