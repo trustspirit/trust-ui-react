@@ -35,4 +35,9 @@ export interface FileUploadProps {
   renderPreview?: (file: FileUploadFile) => React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
+  /**
+   * Mobile rendering strategy. 'dropzone' (default) = traditional dropzone area.
+   * 'button' = mobile-friendly large CTA button that opens the system file picker.
+   */
+  mobileVariant?: 'dropzone' | 'button';
 }

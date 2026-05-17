@@ -118,3 +118,14 @@ export const Sizes: Story = {
     </div>
   ),
 };
+
+export const MobileButton: Story = {
+  args: {
+    mobileVariant: 'button',
+    multiple: true,
+    placeholder: 'Choose file',
+  },
+  parameters: {
+    viewport: { defaultViewport: 'mobile1' },
+  },
+};

@@ -69,6 +69,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
   renderPreview,
   className,
   style,
+  mobileVariant = 'dropzone',
 }: FileUploadProps, ref) {
   const inputRef = useRef<HTMLInputElement>(null);
   const dragCounterRef = useRef(0);
@@ -279,30 +280,42 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
         tabIndex={-1}
       />
 
-      <div
-        className={dropzoneClassNames}
-        role="button"
-        tabIndex={disabled ? -1 : 0}
-        onClick={openFileDialog}
-        onKeyDown={handleKeyDown}
-        onDragEnter={handleDragEnter}
-        onDragLeave={handleDragLeave}
-        onDragOver={handleDragOver}
-        onDrop={handleDrop}
-        aria-disabled={disabled}
-        aria-label={placeholder || 'Upload files'}
-      >
-        {variant === 'area' && (
-          <span className={styles.uploadIcon}>
-            <UploadIcon />
-          </span>
-        )}
+      {mobileVariant === 'button' ? (
+        <button
+          type="button"
+          className={styles.mobileButton}
+          disabled={disabled}
+          onClick={() => inputRef.current?.click()}
+        >
+          <UploadIcon />
+          {placeholder || 'Choose file'}
+        </button>
+      ) : (
+        <div
+          className={dropzoneClassNames}
+          role="button"
+          tabIndex={disabled ? -1 : 0}
+          onClick={openFileDialog}
+          onKeyDown={handleKeyDown}
+          onDragEnter={handleDragEnter}
+          onDragLeave={handleDragLeave}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          aria-disabled={disabled}
+          aria-label={placeholder || 'Upload files'}
+        >
+          {variant === 'area' && (
+            <span className={styles.uploadIcon}>
+              <UploadIcon />
+            </span>
+          )}
 
-        <span className={styles.dropzoneText}>
-          {displayPlaceholder}{' '}
-          <span className={styles.browseText}>{browseText}</span>
-        </span>
-      </div>
+          <span className={styles.dropzoneText}>
+            {displayPlaceholder}{' '}
+            <span className={styles.browseText}>{browseText}</span>
+          </span>
+        </div>
+      )}
 
       {fileList && fileList.length > 0 && (
         <div

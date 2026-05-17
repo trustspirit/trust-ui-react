@@ -16,13 +16,19 @@
   cursor: pointer;
   background-color: var(--tui-bg);
   transition:
-    border-color var(--tui-transition),
-    background-color var(--tui-transition);
+    background-color var(--tui-duration-fast) var(--tui-ease-out),
+    border-color var(--tui-duration-fast) var(--tui-ease-out),
+    transform var(--tui-duration-base) var(--tui-ease-spring),
+    box-shadow var(--tui-duration-base) var(--tui-ease-out);
 }
 
-.dropzone:hover {
-  border-color: var(--tui-border-hover);
-  background-color: var(--tui-bg-subtle);
+@media (hover: hover) {
+  .dropzone:hover:not(.dropzoneDisabled) {
+    border-color: var(--tui-border-hover);
+    background-color: var(--tui-bg-subtle);
+    transform: translateY(-1px);
+    box-shadow: var(--tui-shadow-md);
+  }
 }
 
 .dropzone:focus-visible {
@@ -62,9 +68,11 @@
 }
 
 /* ── Dropzone: drag over state ── */
-.dragOver {
-  border-color: var(--tui-primary);
+.dropzone.dragOver {
   background-color: var(--tui-primary-subtle);
+  border-color: var(--tui-primary);
+  transform: none;
+  box-shadow: none;
 }
 
 /* ── Dropzone: disabled ── */
@@ -95,8 +103,10 @@
   cursor: pointer;
 }
 
-.browseText:hover {
-  text-decoration: underline;
+@media (hover: hover) {
+  .browseText:hover {
+    text-decoration: underline;
+  }
 }
 
 /* ── File List (list mode) ── */
@@ -223,8 +233,10 @@
   flex-shrink: 0;
 }
 
-.removeButton:hover {
-  opacity: 1;
+@media (hover: hover) {
+  .removeButton:hover {
+    opacity: 1;
+  }
 }
 
 .removeButton:focus-visible {
@@ -335,4 +347,40 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
+}
+
+/* ── Mobile button variant ── */
+.mobileButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tui-spacing-sm);
+  width: 100%;
+  height: 56px;
+  border-radius: var(--tui-radius-lg);
+  background: var(--tui-primary-gradient);
+  background-color: var(--tui-primary);
+  color: var(--tui-primary-text);
+  font-family: var(--tui-font-sans);
+  font-weight: var(--tui-font-weight-medium);
+  font-size: var(--tui-font-size-md);
+  cursor: pointer;
+  border: none;
+  box-shadow: var(--tui-inset-highlight);
+  transition: filter var(--tui-duration-fast) var(--tui-ease-out);
+}
+
+@media (hover: hover) {
+  .mobileButton:hover:not(:disabled) {
+    filter: brightness(0.93);
+  }
+}
+
+.mobileButton:active:not(:disabled) {
+  filter: brightness(0.86);
+}
+
+.mobileButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
