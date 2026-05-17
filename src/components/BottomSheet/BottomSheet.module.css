@@ -1,0 +1,82 @@
+/* Backdrop */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: var(--tui-overlay);
+  z-index: 1054;
+  animation: bs-backdrop-in var(--tui-duration-medium) var(--tui-ease-out);
+}
+
+.backdropExit {
+  animation: bs-backdrop-out var(--tui-duration-base) var(--tui-ease-out) forwards;
+}
+
+@keyframes bs-backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes bs-backdrop-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* Sheet container */
+.sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--tui-z-bottom-sheet);
+  display: flex;
+  flex-direction: column;
+  border-top-left-radius: var(--tui-radius-2xl);
+  border-top-right-radius: var(--tui-radius-2xl);
+  /* Glass — but only top corners radius, override .tui-glass border-radius. */
+  /* Note: .tui-glass class added via className in TSX, providing bg + backdrop-filter + box-shadow. */
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  max-height: 95vh;
+  overflow: hidden;
+  /* transform is set inline based on snap + drag state */
+  /* transition appears only when not dragging */
+}
+
+.sheetAnimating {
+  transition: transform var(--tui-duration-medium) var(--tui-ease-out);
+}
+
+.sheetExit {
+  transition: transform var(--tui-duration-base) var(--tui-ease-out);
+  transform: translateY(100%) !important;
+}
+
+/* Drag handle */
+.handle {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 6px;
+  touch-action: none;
+  cursor: grab;
+  flex-shrink: 0;
+}
+
+.handle:active { cursor: grabbing; }
+
+.handleBar {
+  width: 40px;
+  height: 4px;
+  border-radius: var(--tui-radius-full);
+  background-color: var(--tui-border-strong);
+  opacity: 0.5;
+}
+
+/* Content area */
+.content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: var(--tui-spacing-md);
+  padding-bottom: var(--tui-thumb-safe-bottom);
+}
