@@ -57,6 +57,12 @@ A standalone calendar grid used internally by DatePicker and DateRangePicker. Ca
   />
 </ComponentPreview>
 
+## Mobile considerations
+
+- Day cells scale to a 44×44px minimum on `pointer:coarse` so each date is finger-tappable.
+- Used internally by both DatePicker (`mobileVariant="modal"`) and DateRangePicker (2-step modal flow).
+- Hover-based range highlighting (`hoverDate` + `onDateHover`) is desktop-only — on touch, range selection works via tap-start → tap-end without a hover state in between.
+
 ## Props
 
 <PropsTable props={[

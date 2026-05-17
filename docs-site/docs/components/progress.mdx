@@ -53,6 +53,18 @@ A horizontal bar that indicates the completion of a task or process.
   </div>
 </ComponentPreview>
 
+## Gradient fill
+
+Set `gradient` on the `primary` variant to use the brand gradient as the fill — useful for hero progress indicators (onboarding, upload).
+
+<ComponentPreview code={`<Progress value={65} gradient />`}>
+  <div style={{ width: '100%', maxWidth: 400 }}>
+    <Progress value={65} gradient />
+  </div>
+</ComponentPreview>
+
+`gradient` only applies to `variant="primary"` — other variants ignore it (semantic colors stay solid for clarity).
+
 ## Indeterminate
 
 <ComponentPreview code={`<Progress indeterminate />`}>
@@ -69,6 +81,7 @@ A horizontal bar that indicates the completion of a task or process.
   { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Height of the progress bar' },
   { name: 'indeterminate', type: 'boolean', default: 'false', description: 'Shows an animated indeterminate loading bar' },
   { name: 'showLabel', type: 'boolean', default: 'false', description: 'Shows the percentage label' },
+  { name: 'gradient', type: 'boolean', default: 'false', description: 'Use brand gradient as fill (primary variant only)' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },
   { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
 ]} />

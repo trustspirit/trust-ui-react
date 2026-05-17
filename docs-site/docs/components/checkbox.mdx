@@ -55,3 +55,9 @@ A toggle control that allows users to select one or more options.
 ]} />
 
 Also accepts all standard `<input>` HTML attributes (except `type` and `size`).
+
+## Mobile considerations
+
+- The clickable area extends to include the label so the 44px tap target is met even with `size="sm"` styles.
+- Check / uncheck animation respects `prefers-reduced-motion: reduce`.
+- Group multiple Checkboxes inside a list with at least `--tui-space-3` vertical gap so finger taps don't miss neighbors.

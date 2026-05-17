@@ -91,6 +91,32 @@ An accordion component for collapsible content sections. Supports single and mul
   </Expander>
 </ComponentPreview>
 
+## Separated variant
+
+`separated` renders each item as its own card with gap between — useful when items represent independent units (settings groups, product features) rather than a connected accordion.
+
+<ComponentPreview code={`<Expander variant="separated" type="multiple">
+  <Expander.Item value="a">
+    <Expander.Trigger>Profile settings</Expander.Trigger>
+    <Expander.Content>Update your account info, photo, and bio.</Expander.Content>
+  </Expander.Item>
+  <Expander.Item value="b">
+    <Expander.Trigger>Notification settings</Expander.Trigger>
+    <Expander.Content>Choose which events email you.</Expander.Content>
+  </Expander.Item>
+</Expander>`}>
+  <Expander variant="separated" type="multiple">
+    <Expander.Item value="a">
+      <Expander.Trigger>Profile settings</Expander.Trigger>
+      <Expander.Content>Update your account info, photo, and bio.</Expander.Content>
+    </Expander.Item>
+    <Expander.Item value="b">
+      <Expander.Trigger>Notification settings</Expander.Trigger>
+      <Expander.Content>Choose which events email you.</Expander.Content>
+    </Expander.Item>
+  </Expander>
+</ComponentPreview>
+
 ## Disabled Item
 
 <ComponentPreview code={`<Expander type="single">

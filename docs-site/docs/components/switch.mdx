@@ -43,6 +43,12 @@ A toggle switch for binary on/off states.
   <Switch label="Disabled on" disabled defaultChecked />
 </ComponentPreview>
 
+## Mobile considerations
+
+- Switch knob slides with the Pattern D layout-shift transition (`var(--tui-duration-base)` + `var(--tui-ease-in-out)`) — symmetric so on/off feel balanced.
+- Tap target is at minimum 44×44px on `size="md"` and `"lg"`. For `size="sm"`, embed inside a row that hits 44px on its own.
+- Switch is the right primitive for **settings** (instant apply). For form submission flows, use a Checkbox so changes are explicit on submit.
+
 ## Props
 
 <PropsTable props={[

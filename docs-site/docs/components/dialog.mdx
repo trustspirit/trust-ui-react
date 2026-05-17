@@ -38,7 +38,7 @@ Click the buttons below to open dialogs of different sizes.
 
 ## Sizes
 
-The `size` prop controls the width of the dialog panel.
+The `size` prop controls the width of the dialog panel on desktop.
 
 | Size | Description |
 |------|-------------|
@@ -47,12 +47,40 @@ The `size` prop controls the width of the dialog panel.
 | `lg` | Large (720px) |
 | `fullscreen` | Full viewport |
 
+## Mobile variant
+
+`mobileVariant` controls how the dialog renders on touch / narrow viewports. The default is a centered modal, but action-driven content (confirmations, single-step forms) feels more native as a bottom sheet, and complex flows (multi-step wizards, filters) read better fullscreen.
+
+| `mobileVariant` | Mobile rendering | Use for |
+|---|---|---|
+| `modal` (default) | Centered overlay, same as desktop | Generic confirmations |
+| `sheet` | Bottom sheet with drag-to-dismiss | Action lists, quick forms |
+| `fullscreen` | Full-viewport panel with safe-area padding | Multi-step flows, large forms |
+
+```tsx
+<Dialog open={open} onClose={close} mobileVariant="sheet">
+  <Dialog.Title onClose={close}>Delete project?</Dialog.Title>
+  <Dialog.Content>This action cannot be undone.</Dialog.Content>
+  <Dialog.Actions>
+    <Button variant="ghost" onClick={close}>Cancel</Button>
+    <Button variant="danger" onClick={confirmDelete}>Delete</Button>
+  </Dialog.Actions>
+</Dialog>
+```
+
+## Mobile considerations
+
+- Dialog panel uses `.tui-glass` (Tier 3 surface) — translucent + backdrop-blur on capable browsers, falling back to opaque `--tui-bg-subtle` on older Android WebView.
+- `mobileVariant="fullscreen"` automatically respects iOS safe areas (notch + home indicator) via `env(safe-area-inset-*)`.
+- Backdrop tap dismiss can be disabled with `closeOnBackdrop={false}` — recommended for destructive confirmations to prevent accidental dismissal.
+
 ## Dialog Props
 
 <PropsTable props={[
   { name: 'open', type: 'boolean', description: 'Whether the dialog is open', required: true },
   { name: 'onClose', type: '() => void', description: 'Callback when the dialog should close', required: true },
-  { name: 'size', type: "'sm' | 'md' | 'lg' | 'fullscreen'", default: "'md'", description: 'Size preset' },
+  { name: 'size', type: "'sm' | 'md' | 'lg' | 'fullscreen'", default: "'md'", description: 'Desktop size preset' },
+  { name: 'mobileVariant', type: "'modal' | 'sheet' | 'fullscreen'", default: "'modal'", description: 'Mobile rendering strategy' },
   { name: 'closeOnBackdrop', type: 'boolean', default: 'true', description: 'Close when backdrop is clicked' },
   { name: 'closeOnEscape', type: 'boolean', default: 'true', description: 'Close when Escape key is pressed' },
   { name: 'children', type: 'ReactNode', description: 'Dialog content' },

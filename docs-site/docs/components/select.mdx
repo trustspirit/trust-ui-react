@@ -95,6 +95,24 @@ A dropdown component for selecting one or more options from a list. Supports sea
   </div>
 </ComponentPreview>
 
+## Mobile behavior
+
+Select adapts automatically to the input device — no extra wiring needed:
+
+| Variant | Touch device behavior |
+|---|---|
+| `searchable` | Opens as a **bottom sheet** with a search field pinned at top and the option list filling the height — easier to type-and-pick than a floating dropdown. |
+| Non-searchable | Falls back to the native `<select>` element so users get the OS-native scroller (iOS wheel, Android list). |
+| `multiple` | Opens as a bottom sheet on touch when `searchable`; otherwise a checkbox list. |
+
+Desktop layout is unaffected — a floating dropdown anchored to the trigger.
+
+## Mobile considerations
+
+- Bottom sheet uses `.tui-glass` surface with drag-to-dismiss.
+- The search input gets `font-size: 16px` automatically on coarse pointer to prevent iOS auto-zoom.
+- For 4 or fewer fixed options, prefer non-searchable mode so the OS-native picker takes over (more familiar to users).
+
 ## Error State
 
 <ComponentPreview code={`<Select

@@ -89,10 +89,37 @@ A dropdown menu triggered by a button click. Supports keyboard navigation, disab
   </div>
 </ComponentPreview>
 
+## Mobile variant
+
+By default, Menu renders as a dropdown on every viewport. Set `mobileVariant="sheet"` and on touch devices (coarse pointer) the menu instead opens as an **ActionSheet** anchored at the bottom — a much more reachable target for thumb-driven interaction.
+
+```tsx
+<Menu mobileVariant="sheet">
+  <Menu.Trigger>
+    <Button variant="outline">Actions</Button>
+  </Menu.Trigger>
+  <Menu.Content>
+    <Menu.Item onClick={share}>Share</Menu.Item>
+    <Menu.Item onClick={archive}>Archive</Menu.Item>
+    <Menu.Divider />
+    <Menu.Item onClick={remove} danger>Delete</Menu.Item>
+  </Menu.Content>
+</Menu>
+```
+
+Desktop layout is unaffected — the dropdown still anchors to the trigger.
+
+## Mobile considerations
+
+- `mobileVariant="sheet"` is recommended for menus with more than 3 items on mobile — thumb reach to a bottom sheet beats accuracy on a small floating dropdown.
+- All `Menu.Item`s meet the 44px tap target on mobile (vertical padding scales up automatically on coarse pointers).
+- Hover highlight is `@media (hover: hover)` guarded so taps don't leave items in a stuck-hover state.
+
 ## Menu Props
 
 <PropsTable props={[
   { name: 'children', type: 'ReactNode', description: 'Menu children (Trigger, Content)' },
+  { name: 'mobileVariant', type: "'dropdown' | 'sheet'", default: "'dropdown'", description: 'On touch devices, render as ActionSheet when set to "sheet"' },
 ]} />
 
 ## Menu.Trigger Props

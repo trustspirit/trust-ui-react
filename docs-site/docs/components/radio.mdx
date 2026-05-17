@@ -88,6 +88,12 @@ A set of mutually exclusive options. Use `RadioGroup` to wrap multiple `Radio` c
   { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
 ]} />
 
+## Mobile considerations
+
+- The clickable area covers the label + dot so the 44px tap target is met.
+- For long option lists on mobile, consider `<SegmentedControl>` (2-4 options, equal width) or a Select with `mobileVariant="sheet"` (many options).
+- `direction="horizontal"` is fine on desktop but may overflow on mobile — switch to vertical with a media query or use `useTouchDevice()` to pick at runtime.
+
 ## Radio Props
 
 <PropsTable props={[

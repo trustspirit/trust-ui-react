@@ -73,6 +73,30 @@ A versatile text input supporting labels, helper text, validation, passwords, mu
   </div>
 </ComponentPreview>
 
+## Shapes
+
+<ComponentPreview code={`<TextField shape="square" placeholder="Square" />
+<TextField shape="rounded" placeholder="Rounded" />
+<TextField shape="pill" placeholder="Pill" />`}>
+  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+    <TextField shape="square" placeholder="Square" />
+    <TextField shape="rounded" placeholder="Rounded" />
+    <TextField shape="pill" placeholder="Pill" />
+  </div>
+</ComponentPreview>
+
+## Prefix & Suffix
+
+`prefix` / `suffix` render inline content inside the field — useful for currency symbols, units, or trailing actions.
+
+<ComponentPreview code={`<TextField prefix="$" placeholder="0.00" />
+<TextField suffix="kg" placeholder="Weight" />`}>
+  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+    <TextField prefix="$" placeholder="0.00" />
+    <TextField suffix="kg" placeholder="Weight" />
+  </div>
+</ComponentPreview>
+
 ## Character Count
 
 <ComponentPreview code={`<TextField label="Tweet" maxLength={280} placeholder="What's happening?" />`}>
@@ -106,3 +130,10 @@ A versatile text input supporting labels, helper text, validation, passwords, mu
 ]} />
 
 Also accepts all standard `<input>` HTML attributes.
+
+## Mobile considerations
+
+- iOS Safari **auto-zooms** any input with `font-size < 16px` on focus. trust-ui's mobile font scale automatically bumps `--tui-font-size-md` up to 16px on `pointer:coarse` devices to prevent this — no extra config needed.
+- For `type="tel"` / `type="email"` / `type="url"` / `type="number"`, iOS shows the right software keyboard automatically.
+- When the keyboard appears, wrap the form in [`<KeyboardAvoidingView>`](../design-tokens/spacing.mdx#touch-targets--safe-area) so the focused field stays visible above the keyboard.
+- `multiline` textarea respects the same auto-zoom prevention.

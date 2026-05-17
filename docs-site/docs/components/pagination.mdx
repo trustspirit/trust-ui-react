@@ -41,6 +41,12 @@ Navigation controls for paging through data. Supports numbered pages and a simpl
   <Pagination totalPages={10} currentPage={5} onChange={() => {}} disabled />
 </ComponentPreview>
 
+## Mobile considerations
+
+- For mobile, prefer `variant="simple"` (previous / next + "page X of Y") — numbered pagination crowds narrow viewports.
+- Page buttons hit 44px tap target on `size="md"` / `lg"`. For `size="sm"` on mobile, switch to simple variant or wrap in a row with extra padding.
+- Consider infinite-scroll or "Load more" patterns instead of pagination for mobile-first content feeds.
+
 ## Props
 
 <PropsTable props={[

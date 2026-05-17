@@ -57,6 +57,26 @@ A range input for selecting a numeric value within a given range.
   </div>
 </ComponentPreview>
 
+## Gradient fill
+
+Set `gradient` to use the brand gradient as the track fill.
+
+<ComponentPreview code={`<Slider defaultValue={60} gradient showValue />`}>
+  <div style={{ width: '100%', maxWidth: 320 }}>
+    <Slider defaultValue={60} gradient showValue />
+  </div>
+</ComponentPreview>
+
+:::caution Browser limitation
+`gradient` only renders in Firefox. WebKit (Safari, Chrome, Edge) shows the solid `--tui-primary` color because range-input pseudo-elements don't support `background-image`. The feature is **progressive enhancement** — non-Firefox users still get a fully functional slider, just without the gradient.
+:::
+
+## Mobile considerations
+
+- Thumb is sized to a 24px minimum on `pointer:coarse` so it's grabbable with a finger.
+- Touch drag works natively — no extra wiring needed.
+- Pair with `showValue` on mobile so the user gets immediate numeric feedback (no hover-to-see-value).
+
 ## Disabled
 
 <ComponentPreview code={`<Slider defaultValue={50} disabled />`}>
@@ -77,6 +97,7 @@ A range input for selecting a numeric value within a given range.
   { name: 'variant', type: "'primary' | 'secondary'", default: "'primary'", description: 'Color variant' },
   { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size' },
   { name: 'showValue', type: 'boolean', default: 'false', description: 'Show the current value label' },
+  { name: 'gradient', type: 'boolean', default: 'false', description: 'Gradient track fill (Firefox only — WebKit shows solid color)' },
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the slider is disabled' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },
   { name: 'style', type: 'CSSProperties', description: 'Inline styles' },

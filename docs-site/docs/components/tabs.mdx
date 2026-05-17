@@ -59,6 +59,40 @@ Organizes content into tabbed sections. Supports underline and pill variants wit
   </Tabs>
 </ComponentPreview>
 
+## Segmented Variant
+
+`segmented` is a tighter, container-bound variant of `pill` — useful as a control-bar replacement (think iOS segmented control) for switching between 2-4 related views.
+
+<ComponentPreview code={`<Tabs defaultValue="day" variant="segmented">
+  <Tabs.List>
+    <Tabs.Trigger value="day">Day</Tabs.Trigger>
+    <Tabs.Trigger value="week">Week</Tabs.Trigger>
+    <Tabs.Trigger value="month">Month</Tabs.Trigger>
+  </Tabs.List>
+  <Tabs.Content value="day">Day view</Tabs.Content>
+  <Tabs.Content value="week">Week view</Tabs.Content>
+  <Tabs.Content value="month">Month view</Tabs.Content>
+</Tabs>`}>
+  <Tabs defaultValue="day" variant="segmented">
+    <Tabs.List>
+      <Tabs.Trigger value="day">Day</Tabs.Trigger>
+      <Tabs.Trigger value="week">Week</Tabs.Trigger>
+      <Tabs.Trigger value="month">Month</Tabs.Trigger>
+    </Tabs.List>
+    <Tabs.Content value="day">Day view</Tabs.Content>
+    <Tabs.Content value="week">Week view</Tabs.Content>
+    <Tabs.Content value="month">Month view</Tabs.Content>
+  </Tabs>
+</ComponentPreview>
+
+For a standalone segmented control without `Tabs.Content` panels, use the dedicated `<SegmentedControl>` primitive instead (component reference coming in Phase 7-c).
+
+## Mobile considerations
+
+- Tab triggers meet the 44px tap target on mobile (vertical padding scales automatically on coarse pointer).
+- For long tab lists (5+ items), the list scrolls horizontally with `-webkit-overflow-scrolling: touch` momentum and snap.
+- Active-tab indicator uses `var(--tui-duration-base)` + `var(--tui-ease-in-out)` for symmetric slide animation (Pattern D — layout shift).
+
 ## With Disabled Tab
 
 <ComponentPreview code={`<Tabs defaultValue="tab1">
@@ -87,7 +121,7 @@ Organizes content into tabbed sections. Supports underline and pill variants wit
   { name: 'defaultValue', type: 'string', description: 'Initial active tab (uncontrolled mode)' },
   { name: 'value', type: 'string', description: 'Active tab value (controlled mode)' },
   { name: 'onChange', type: '(value: string) => void', description: 'Callback when active tab changes' },
-  { name: 'variant', type: "'underline' | 'pill'", default: "'underline'", description: 'Visual variant' },
+  { name: 'variant', type: "'underline' | 'pill' | 'segmented'", default: "'underline'", description: 'Visual variant' },
   { name: 'children', type: 'ReactNode', description: 'Children' },
   { name: 'className', type: 'string', description: 'Additional CSS class name' },
   { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },

@@ -76,6 +76,27 @@ A date input for selecting a range of dates. Displays two side-by-side calendars
 />
 ```
 
+## Mobile variant
+
+A side-by-side dual calendar doesn't fit small viewports. `mobileVariant` picks between two strategies:
+
+| Value | Mobile rendering |
+|---|---|
+| `modal` (default) | Fullscreen Dialog with a 2-step flow: tap to set start → tap to set end. Range highlights between selections. |
+| `native` | Two stacked native `<input type="date">` (start + end) — uses the OS spinner. |
+
+```tsx
+<DateRangePicker mobileVariant="native" label="Period" />
+```
+
+The 2-step `modal` flow feels native to mobile users (think Airbnb / Google Flights) and avoids the cramped dual-calendar layout entirely.
+
+## Mobile considerations
+
+- 2-step flow uses the same Calendar component as desktop, but resets to the start step each open to avoid stale state.
+- Day cells meet 44×44px tap target on mobile.
+- Preset list (when provided) renders as a horizontal scrollable chip row above the calendar on mobile.
+
 ## Props
 
 <PropsTable props={[
@@ -95,6 +116,7 @@ A date input for selecting a range of dates. Displays two side-by-side calendars
   { name: 'label', type: 'string', description: 'Label displayed above the input' },
   { name: 'required', type: 'boolean', default: 'false', description: 'Whether the field is required (shows red asterisk)' },
   { name: 'presets', type: 'Array<{ label: string; range: DateRange }>', description: 'Preset ranges shown in sidebar' },
+  { name: 'mobileVariant', type: "'modal' | 'native'", default: "'modal'", description: 'Mobile rendering: 2-step fullscreen flow or stacked native inputs' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },
   { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
 ]} />

@@ -13,11 +13,15 @@ A compact element for tags, filters, or selections. Supports delete and click ac
 
 ## Variants
 
-<ComponentPreview code={`<Chip variant="filled">Filled</Chip>
-<Chip variant="outlined">Outlined</Chip>`}>
-  <Chip variant="filled">Filled</Chip>
-  <Chip variant="outlined">Outlined</Chip>
+<ComponentPreview code={`<Chip variant="solid">Solid</Chip>
+<Chip variant="subtle">Subtle</Chip>
+<Chip variant="outline">Outline</Chip>`}>
+  <Chip variant="solid">Solid</Chip>
+  <Chip variant="subtle">Subtle</Chip>
+  <Chip variant="outline">Outline</Chip>
 </ComponentPreview>
+
+`'filled'` and `'outlined'` aliases are preserved for backwards compatibility — they map to `'solid'` and `'outline'` respectively.
 
 ## Colors
 
@@ -52,7 +56,7 @@ A compact element for tags, filters, or selections. Supports delete and click ac
 ## Props
 
 <PropsTable props={[
-  { name: 'variant', type: "'filled' | 'outlined'", default: "'filled'", description: 'Visual style variant' },
+  { name: 'variant', type: "'solid' | 'subtle' | 'outline' | 'filled' | 'outlined'", default: "'solid'", description: 'Visual fill weight (filled/outlined kept as backwards-compat aliases)' },
   { name: 'color', type: "'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info'", default: "'primary'", description: 'Color scheme' },
   { name: 'size', type: "'sm' | 'md'", default: "'md'", description: 'Size of the chip' },
   { name: 'onDelete', type: '() => void', description: 'Callback when the delete icon is clicked; shows the delete button when provided' },

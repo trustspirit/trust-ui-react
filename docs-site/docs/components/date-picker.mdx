@@ -65,6 +65,27 @@ A date input with a popup calendar for selecting a single date. Supports year na
   </div>
 </ComponentPreview>
 
+## Mobile variant
+
+On touch devices the inline calendar popover is too cramped for comfortable selection. `mobileVariant` lets you pick the strategy:
+
+| Value | Mobile rendering |
+|---|---|
+| `modal` (default) | Opens the calendar as a fullscreen Dialog with safe-area padding. Large tap targets, scrollable months. |
+| `native` | Falls back to the browser's native `<input type="date">` picker — gives users the OS-native spinner (iOS wheel, Android material). |
+
+```tsx
+<DatePicker mobileVariant="native" label="Date of birth" />
+```
+
+Pick `native` for system-critical fields (DOB, deadlines) where OS familiarity wins. Pick `modal` for app-themed selectors where look-consistency matters.
+
+## Mobile considerations
+
+- Day cells meet the 44×44px tap target on mobile (cell size scales up automatically on coarse pointer).
+- Calendar dialog uses `.tui-glass` surface — translucent on capable browsers, opaque fallback elsewhere.
+- The dialog respects iOS safe areas (notch + home indicator) automatically.
+
 ## Props
 
 <PropsTable props={[
@@ -83,6 +104,7 @@ A date input with a popup calendar for selecting a single date. Supports year na
   { name: 'errorMessage', type: 'string', description: 'Error message' },
   { name: 'label', type: 'string', description: 'Label displayed above the input' },
   { name: 'required', type: 'boolean', default: 'false', description: 'Whether the field is required (shows red asterisk)' },
+  { name: 'mobileVariant', type: "'modal' | 'native'", default: "'modal'", description: 'Mobile rendering: themed fullscreen dialog or native OS picker' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },
   { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
 ]} />

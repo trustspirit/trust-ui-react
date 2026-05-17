@@ -47,6 +47,13 @@ A file upload component with drag-and-drop support, file validation, and preview
   </div>
 </ComponentPreview>
 
+## Mobile considerations
+
+- On touch devices, tap-to-browse is the primary interaction — drag-and-drop hover styles still apply for desktop browsers that report `pointer: fine`.
+- `accept="image/*"` triggers the **OS image picker** (camera roll, files app, or live camera on iOS / Android).
+- `accept="image/*"` + `capture="environment"` (passed via standard HTML attribute) opens the rear camera directly — useful for receipt / document capture flows.
+- The dropzone meets a 44px tap target at all sizes; `variant="inline"` is preferred for compact mobile forms.
+
 ## With Restrictions
 
 ```jsx

@@ -59,12 +59,29 @@ A clickable button with multiple variants, sizes, shapes, and loading state.
   </div>
 </ComponentPreview>
 
+## Elevation
+
+`primary` and `danger` variants ship with a gradient surface + inset highlight + micro-lift hover by default (`elevation="raised"`). Use `elevation="flat"` for dense surfaces where the lift would feel noisy (toolbars, inline action rows). `outline` / `ghost` / `secondary` are always flat regardless.
+
+<ComponentPreview code={`<Button>Raised (default)</Button>
+<Button elevation="flat">Flat</Button>`}>
+  <Button>Raised (default)</Button>
+  <Button elevation="flat">Flat</Button>
+</ComponentPreview>
+
+## Mobile considerations
+
+- All hover effects (lift + brightness) are guarded by `@media (hover: hover)` so they don't get "stuck" after a tap on touch devices.
+- Active press uses `--tui-duration-instant` (80ms) for immediate feedback.
+- Buttons meet the 44×44px tap-target minimum at `size="md"` and `lg`. For `size="sm"`, ensure the surrounding row gives at least 8px vertical padding.
+
 ## Props
 
 <PropsTable props={[
   { name: 'variant', type: "'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'", default: "'primary'", description: 'Visual style variant' },
   { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size of the button' },
   { name: 'shape', type: "'square' | 'rounded' | 'pill'", default: "'square'", description: 'Shape of the button' },
+  { name: 'elevation', type: "'flat' | 'raised'", default: "'raised' (primary/danger), 'flat' (others)", description: 'Visual elevation. Raised adds gradient + inset + hover lift.' },
   { name: 'loading', type: 'boolean', default: 'false', description: 'Shows a spinner and disables the button' },
   { name: 'startIcon', type: 'ReactNode', description: 'Icon placed before the children' },
   { name: 'endIcon', type: 'ReactNode', description: 'Icon placed after the children' },

@@ -51,6 +51,22 @@ toast({ variant: 'info', message: 'Update available', description: 'Details here
   </div>
 </ComponentPreview>
 
+## Progress bar
+
+Set `showProgress` to render a thin bar that drains over the toast's `duration` — gives the user a visual hint of how long the toast will remain.
+
+<ComponentPreview code={`<Toast id="6" variant="success" message="Saved" showProgress duration={4000} />`}>
+  <div style={{ width: '100%', maxWidth: 360 }}>
+    <Toast id="6" variant="success" message="Saved" showProgress duration={4000} />
+  </div>
+</ComponentPreview>
+
+## Mobile considerations
+
+- Toast surface uses `.tui-glass` (Tier 3) — translucent + backdrop-blur on capable browsers, opaque fallback elsewhere.
+- On `prefers-reduced-motion: reduce`, slide-in animation is replaced with instant fade.
+- Toast container should be wrapped in [`<SafeAreaView edges={['top']}>`](../design-tokens/spacing.mdx#touch-targets--safe-area) so notifications clear iOS notch / status bar.
+
 ## Usage
 
 ```jsx
@@ -87,6 +103,7 @@ function Example() {
   { name: 'message', type: 'string', description: 'Main message text' },
   { name: 'description', type: 'string', description: 'Optional description below the message' },
   { name: 'duration', type: 'number', default: '4000', description: 'Auto-dismiss duration in milliseconds' },
+  { name: 'showProgress', type: 'boolean', default: 'false', description: 'Show a thin bar that drains over duration' },
   { name: 'onClose', type: '() => void', description: 'Callback when toast is closed' },
   { name: 'className', type: 'string', description: 'Additional CSS class name' },
   { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },
