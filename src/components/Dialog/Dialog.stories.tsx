@@ -12,6 +12,10 @@ const meta: Meta<typeof Dialog> = {
       control: 'select',
       options: ['sm', 'md', 'lg', 'fullscreen'],
     },
+    mobileVariant: {
+      control: 'select',
+      options: ['modal', 'sheet', 'fullscreen'],
+    },
     closeOnBackdrop: { control: 'boolean' },
     closeOnEscape: { control: 'boolean' },
   },
@@ -210,4 +214,57 @@ function ConfirmDialog() {
 export const ConfirmDialogStory: Story = {
   name: 'ConfirmDialog',
   render: () => <ConfirmDialog />,
+};
+
+function MobileSheetDialog() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open as Sheet</Button>
+      <Dialog open={open} onClose={() => setOpen(false)} mobileVariant="sheet">
+        <Dialog.Title onClose={() => setOpen(false)}>Sheet Dialog</Dialog.Title>
+        <Dialog.Content>
+          <p>This dialog renders as a BottomSheet on all viewports. Use for action-driven content.</p>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Cancel
+          </Button>
+          <Button onClick={() => setOpen(false)}>Confirm</Button>
+        </Dialog.Actions>
+      </Dialog>
+    </>
+  );
+}
+
+export const MobileSheet: Story = {
+  args: { mobileVariant: 'sheet' },
+  render: () => <MobileSheetDialog />,
+};
+
+function MobileFullscreenDialog() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open Fullscreen (Safe Area)</Button>
+      <Dialog open={open} onClose={() => setOpen(false)} mobileVariant="fullscreen">
+        <Dialog.Title onClose={() => setOpen(false)}>
+          Fullscreen Dialog
+        </Dialog.Title>
+        <Dialog.Content>
+          <p>This dialog fills the entire viewport with safe-area inset padding.</p>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Close
+          </Button>
+        </Dialog.Actions>
+      </Dialog>
+    </>
+  );
+}
+
+export const MobileFullscreen: Story = {
+  args: { mobileVariant: 'fullscreen' },
+  render: () => <MobileFullscreenDialog />,
 };

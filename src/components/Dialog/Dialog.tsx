@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react';
 import styles from './Dialog.module.css';
+import { BottomSheet } from '../BottomSheet';
 
 /* ── Dialog ── */
 
@@ -19,6 +20,12 @@ export interface DialogProps {
   onClose: () => void;
   /** Size preset (default: 'md') */
   size?: 'sm' | 'md' | 'lg' | 'fullscreen';
+  /**
+   * Mobile-specific rendering. 'modal' (default) = centered overlay dialog.
+   * 'sheet' = renders as BottomSheet on all viewports (use for action-driven content).
+   * 'fullscreen' = full-viewport dialog with safe-area padding.
+   */
+  mobileVariant?: 'modal' | 'sheet' | 'fullscreen';
   /** Close when backdrop is clicked (default: true) */
   closeOnBackdrop?: boolean;
   /** Close when Escape key is pressed (default: true) */
@@ -37,6 +44,53 @@ const DialogRoot = forwardRef<HTMLDialogElement, DialogProps>(
       open,
       onClose,
       size = 'md',
+      mobileVariant = 'modal',
+      closeOnBackdrop = true,
+      closeOnEscape = true,
+      className,
+      style,
+      children,
+    },
+    ref,
+  ) => {
+    // Render as BottomSheet when mobileVariant='sheet'
+    if (mobileVariant === 'sheet') {
+      return (
+        <BottomSheet open={open} onClose={onClose} snapPoints={[0.85]} showHandle={false}>
+          {children}
+        </BottomSheet>
+      );
+    }
+
+    return (
+      <DialogInner
+        ref={ref}
+        open={open}
+        onClose={onClose}
+        size={size}
+        mobileVariant={mobileVariant}
+        closeOnBackdrop={closeOnBackdrop}
+        closeOnEscape={closeOnEscape}
+        className={className}
+        style={style}
+      >
+        {children}
+      </DialogInner>
+    );
+  },
+);
+
+DialogRoot.displayName = 'Dialog';
+
+/* ── DialogInner (non-sheet rendering) ── */
+
+const DialogInner = forwardRef<HTMLDialogElement, Omit<DialogProps, 'mobileVariant'> & { mobileVariant: 'modal' | 'fullscreen' }>(
+  (
+    {
+      open,
+      onClose,
+      size = 'md',
+      mobileVariant = 'modal',
       closeOnBackdrop = true,
       closeOnEscape = true,
       className,
@@ -97,7 +151,7 @@ const DialogRoot = forwardRef<HTMLDialogElement, DialogProps>(
 
     const classNames = [
       styles.dialog,
-      styles[size],
+      mobileVariant === 'fullscreen' ? styles.mobileFullscreen : styles[size],
       className,
     ]
       .filter(Boolean)
@@ -117,7 +171,7 @@ const DialogRoot = forwardRef<HTMLDialogElement, DialogProps>(
   },
 );
 
-DialogRoot.displayName = 'Dialog';
+DialogInner.displayName = 'DialogInner';
 
 /* ── Dialog.Title ── */
 
