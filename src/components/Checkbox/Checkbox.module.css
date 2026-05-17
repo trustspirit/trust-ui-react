@@ -1,3 +1,21 @@
+/* ── Wrapper holds the row + error message ── */
+.wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--tui-space-2);
+}
+
+.errorMessage {
+  margin: 0;
+  font-size: var(--tui-font-size-sm);
+  color: var(--tui-danger);
+  line-height: var(--tui-line-height);
+}
+
+.indicator.errorState {
+  border-color: var(--tui-danger);
+}
+
 /* ── Container ── */
 .container {
   display: inline-flex;

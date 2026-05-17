@@ -2,8 +2,8 @@ import type { ReactNode } from 'react';
 import styles from './Chip.module.css';
 
 export interface ChipProps {
-  /** Visual style variant */
-  variant?: 'solid' | 'subtle' | 'outline' | 'filled' | 'outlined';
+  /** Visual fill style */
+  variant?: 'solid' | 'subtle' | 'outline';
   /** Color scheme */
   color?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info';
   /** Size of the chip */
@@ -37,7 +37,7 @@ function DeleteIcon() {
 }
 
 export function Chip({
-  variant = 'filled',
+  variant = 'solid',
   color = 'primary',
   size = 'md',
   onDelete,
@@ -47,14 +47,13 @@ export function Chip({
   className,
   style,
 }: ChipProps) {
-  const normalizedVariant =
-    variant === 'solid' ? 'filled' :
-    variant === 'outline' ? 'outlined' :
-    variant; // 'subtle' | 'filled' | 'outlined' pass through
+  // Map public variant names to internal CSS class names
+  const cssVariant =
+    variant === 'solid' ? 'filled' : variant === 'outline' ? 'outlined' : variant;
 
   const classNames = [
     styles.chip,
-    styles[normalizedVariant],
+    styles[cssVariant],
     styles[color],
     styles[size],
     onClick ? styles.clickable : '',

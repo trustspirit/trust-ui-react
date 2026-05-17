@@ -100,7 +100,7 @@ export const CustomDelay: Story = {
 };
 
 export const MobileTap: Story = {
-  args: { mobileBehavior: 'tap', mobileIndicator: true, content: 'Tap-mode tooltip (4s auto-dismiss)' },
+  args: { mobileVariant: 'tap', mobileIndicator: true, content: 'Tap-mode tooltip (4s auto-dismiss)' },
   render: (args) => (
     <Tooltip {...args}>
       <span>Tap me for info</span>
@@ -109,7 +109,7 @@ export const MobileTap: Story = {
 };
 
 export const MobileLongpress: Story = {
-  args: { mobileBehavior: 'longpress', content: 'Long-press to view (hold 500ms)' },
+  args: { mobileVariant: 'longpress', content: 'Long-press to view (hold 500ms)' },
   render: (args) => (
     <Tooltip {...args}>
       <button>Hold for info</button>
@@ -118,7 +118,7 @@ export const MobileLongpress: Story = {
 };
 
 export const MobileInline: Story = {
-  args: { mobileBehavior: 'inline', content: 'Username must be 3–20 characters' },
+  args: { mobileVariant: 'inline', content: 'Username must be 3–20 characters' },
   render: (args) => (
     <Tooltip {...args}>
       <input placeholder="Username" />
@@ -127,7 +127,7 @@ export const MobileInline: Story = {
 };
 
 export const MobileHidden: Story = {
-  args: { mobileBehavior: 'hidden', content: 'This tooltip is hidden on mobile' },
+  args: { mobileVariant: 'hidden', content: 'This tooltip is hidden on mobile' },
   render: (args) => (
     <Tooltip {...args}>
       <span>Hover me on desktop only</span>

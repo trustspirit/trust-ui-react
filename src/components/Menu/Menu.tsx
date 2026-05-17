@@ -286,7 +286,7 @@ function MenuContent({
       })
       .map((child) => ({
         label: typeof child.props.children === 'string' ? child.props.children : String(child.props.children ?? ''),
-        onPress: () => {
+        onClick: () => {
           child.props.onClick?.();
           setOpen(false);
         },

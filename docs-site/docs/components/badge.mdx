@@ -11,20 +11,20 @@ import { PropsTable } from '@site/src/components/PropsTable';
 
 A small label used to highlight status, counts, or categories.
 
-## Variants
+## Colors
 
-<ComponentPreview code={`<Badge variant="primary">Primary</Badge>
-<Badge variant="secondary">Secondary</Badge>
-<Badge variant="success">Success</Badge>
-<Badge variant="danger">Danger</Badge>
-<Badge variant="warning">Warning</Badge>
-<Badge variant="info">Info</Badge>`}>
-  <Badge variant="primary">Primary</Badge>
-  <Badge variant="secondary">Secondary</Badge>
-  <Badge variant="success">Success</Badge>
-  <Badge variant="danger">Danger</Badge>
-  <Badge variant="warning">Warning</Badge>
-  <Badge variant="info">Info</Badge>
+<ComponentPreview code={`<Badge color="primary">Primary</Badge>
+<Badge color="secondary">Secondary</Badge>
+<Badge color="success">Success</Badge>
+<Badge color="danger">Danger</Badge>
+<Badge color="warning">Warning</Badge>
+<Badge color="info">Info</Badge>`}>
+  <Badge color="primary">Primary</Badge>
+  <Badge color="secondary">Secondary</Badge>
+  <Badge color="success">Success</Badge>
+  <Badge color="danger">Danger</Badge>
+  <Badge color="warning">Warning</Badge>
+  <Badge color="info">Info</Badge>
 </ComponentPreview>
 
 ## Sizes
@@ -35,34 +35,34 @@ A small label used to highlight status, counts, or categories.
   <Badge size="md">Medium</Badge>
 </ComponentPreview>
 
-## Fill style
+## Variant (fill style)
 
-`fillStyle` separates the **color intent** (variant) from the **visual weight** (fill). Pick `subtle` for low-emphasis status labels, `solid` for high-contrast emphasis, `outline` when the badge sits on a busy surface where solid would clash.
+`variant` controls the visual weight — pick `subtle` for low-emphasis status labels, `solid` for high-contrast emphasis, `outline` when the badge sits on a busy surface where solid would clash.
 
-<ComponentPreview code={`<Badge variant="success" fillStyle="solid">Solid</Badge>
-<Badge variant="success" fillStyle="subtle">Subtle</Badge>
-<Badge variant="success" fillStyle="outline">Outline</Badge>`}>
-  <Badge variant="success" fillStyle="solid">Solid</Badge>
-  <Badge variant="success" fillStyle="subtle">Subtle</Badge>
-  <Badge variant="success" fillStyle="outline">Outline</Badge>
+<ComponentPreview code={`<Badge color="success" variant="solid">Solid</Badge>
+<Badge color="success" variant="subtle">Subtle</Badge>
+<Badge color="success" variant="outline">Outline</Badge>`}>
+  <Badge color="success" variant="solid">Solid</Badge>
+  <Badge color="success" variant="subtle">Subtle</Badge>
+  <Badge color="success" variant="outline">Outline</Badge>
 </ComponentPreview>
 
 ## Dot
 
-<ComponentPreview code={`<Badge dot variant="success" />
-<Badge dot variant="danger" />
-<Badge dot variant="warning" />`}>
-  <Badge dot variant="success" />
-  <Badge dot variant="danger" />
-  <Badge dot variant="warning" />
+<ComponentPreview code={`<Badge dot color="success" />
+<Badge dot color="danger" />
+<Badge dot color="warning" />`}>
+  <Badge dot color="success" />
+  <Badge dot color="danger" />
+  <Badge dot color="warning" />
 </ComponentPreview>
 
 ## Props
 
 <PropsTable props={[
-  { name: 'variant', type: "'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info'", default: "'primary'", description: 'Visual style variant' },
+  { name: 'variant', type: "'solid' | 'subtle' | 'outline'", default: "'solid'", description: 'Visual fill weight — solid bg, subtle tint, or transparent with border' },
+  { name: 'color', type: "'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info'", default: "'primary'", description: 'Color scheme' },
   { name: 'size', type: "'sm' | 'md'", default: "'md'", description: 'Size of the badge' },
-  { name: 'fillStyle', type: "'solid' | 'subtle' | 'outline'", default: "'solid'", description: 'Visual fill weight — solid bg, subtle tint, or transparent with border' },
   { name: 'dot', type: 'boolean', default: 'false', description: 'Renders as a small colored dot with no text' },
   { name: 'children', type: 'ReactNode', description: 'Badge content' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },

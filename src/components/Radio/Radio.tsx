@@ -40,6 +40,14 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
       .filter(Boolean)
       .join(' ');
 
+    const indicatorClassNames = [
+      styles.indicator,
+      styles[variant],
+      group?.error ? styles.errorState : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+
     return (
       <label className={containerClassNames} style={style}>
         <input
@@ -51,9 +59,10 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
           checked={isChecked}
           onChange={handleChange}
           disabled={isDisabled}
+          aria-invalid={group?.error || undefined}
           {...rest}
         />
-        <span className={`${styles.indicator} ${styles[variant]}`}>
+        <span className={indicatorClassNames}>
           <span className={styles.dot} />
         </span>
         {label && (

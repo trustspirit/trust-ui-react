@@ -24,10 +24,10 @@ export const BasicActionSheet = () => {
         onClose={() => setOpen(false)}
         title="Manage post"
         actions={[
-          { label: 'Edit', onPress: () => setOpen(false) },
-          { label: 'Share', onPress: () => setOpen(false) },
-          { label: 'Move to draft', onPress: () => setOpen(false) },
-          { label: 'Delete', onPress: () => setOpen(false), destructive: true },
+          { label: 'Edit', onClick: () => setOpen(false) },
+          { label: 'Share', onClick: () => setOpen(false) },
+          { label: 'Move to draft', onClick: () => setOpen(false) },
+          { label: 'Delete', onClick: () => setOpen(false), destructive: true },
         ]}
         cancelLabel="Cancel"
       />
@@ -42,10 +42,10 @@ export const BasicActionSheet = () => {
   onClose={() => setOpen(false)}
   title="Manage post"
   actions={[
-    { label: 'Edit', onPress: handleEdit },
-    { label: 'Share', onPress: handleShare },
-    { label: 'Move to draft', onPress: handleDraft },
-    { label: 'Delete', onPress: handleDelete, destructive: true },
+    { label: 'Edit', onClick: handleEdit },
+    { label: 'Share', onClick: handleShare },
+    { label: 'Move to draft', onClick: handleDraft },
+    { label: 'Delete', onClick: handleDelete, destructive: true },
   ]}
   cancelLabel="Cancel"
 />`}>
@@ -57,7 +57,7 @@ export const BasicActionSheet = () => {
 Pass `destructive: true` on an action to render its label in danger color + semibold weight. This is the iOS convention for delete / sign-out / unrecoverable operations.
 
 ```tsx
-{ label: 'Delete project', onPress: confirmDelete, destructive: true }
+{ label: 'Delete project', onClick: confirmDelete, destructive: true }
 ```
 
 The destructive style is purely visual — it does **not** add a confirmation step. Pair it with a Dialog (or a follow-up ActionSheet) if you want a second prompt before the action fires.
@@ -71,9 +71,9 @@ Omit `cancelLabel` to render no Cancel — handy on Android where the system bac
   open={open}
   onClose={close}
   actions={[
-    { label: 'Photo', onPress: takePhoto },
-    { label: 'Video', onPress: takeVideo },
-    { label: 'Choose from library', onPress: openLibrary },
+    { label: 'Photo', onClick: takePhoto },
+    { label: 'Video', onClick: takeVideo },
+    { label: 'Choose from library', onClick: openLibrary },
   ]}
 />
 ```
@@ -83,19 +83,19 @@ Omit `cancelLabel` to render no Cancel — handy on Android where the system bac
 Each action can be individually disabled via `action.disabled`:
 
 ```tsx
-{ label: 'Restore', onPress: handleRestore, disabled: !hasBackup }
+{ label: 'Restore', onClick: handleRestore, disabled: !hasBackup }
 ```
 
 ## Auto-close behavior
 
-ActionSheet does **not** auto-close on action press — your `onPress` handler is responsible for calling `onClose` (or transitioning to another sheet). This is deliberate: it lets you chain confirmation flows without flicker.
+ActionSheet does **not** auto-close on action press — your `onClick` handler is responsible for calling `onClose` (or transitioning to another sheet). This is deliberate: it lets you chain confirmation flows without flicker.
 
 ```tsx
 actions={[
   {
     label: 'Delete',
     destructive: true,
-    onPress: async () => {
+    onClick: async () => {
       await deleteItem();
       setOpen(false);          // close after success
     },
@@ -115,7 +115,7 @@ actions={[
 <PropsTable props={[
   { name: 'open', type: 'boolean', description: 'Whether the sheet is open (controlled)', required: true },
   { name: 'onClose', type: '() => void', description: 'Called when the sheet should close (backdrop tap or cancel)', required: true },
-  { name: 'actions', type: 'ActionSheetAction[]', description: '{ label, onPress, destructive?, disabled? } — see below', required: true },
+  { name: 'actions', type: 'ActionSheetAction[]', description: '{ label, onClick, destructive?, disabled? } — see below', required: true },
   { name: 'title', type: 'ReactNode', description: 'Optional title shown above the actions' },
   { name: 'cancelLabel', type: 'string', description: 'Label for the Cancel button. If undefined, no Cancel is rendered.' },
 ]} />
@@ -124,7 +124,7 @@ actions={[
 
 <PropsTable props={[
   { name: 'label', type: 'string', description: 'Visible label for the action', required: true },
-  { name: 'onPress', type: '() => void', description: 'Click handler (sheet does not auto-close — call onClose yourself)', required: true },
+  { name: 'onClick', type: '() => void', description: 'Click handler (sheet does not auto-close — call onClose yourself)', required: true },
   { name: 'destructive', type: 'boolean', default: 'false', description: 'Render label in danger color + semibold (iOS destructive style)' },
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Disable this action' },
 ]} />

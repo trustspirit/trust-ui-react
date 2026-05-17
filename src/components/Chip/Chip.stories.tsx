@@ -32,8 +32,8 @@ export const Default: Story = {};
 export const Variants: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <Chip variant="filled">Filled</Chip>
-      <Chip variant="outlined">Outlined</Chip>
+      <Chip variant="solid">Filled</Chip>
+      <Chip variant="outline">Outlined</Chip>
     </div>
   ),
 };
@@ -47,12 +47,12 @@ export const Colors: Story = {
       <Chip color="danger">Danger</Chip>
       <Chip color="warning">Warning</Chip>
       <Chip color="info">Info</Chip>
-      <Chip variant="outlined" color="primary">Primary</Chip>
-      <Chip variant="outlined" color="secondary">Secondary</Chip>
-      <Chip variant="outlined" color="success">Success</Chip>
-      <Chip variant="outlined" color="danger">Danger</Chip>
-      <Chip variant="outlined" color="warning">Warning</Chip>
-      <Chip variant="outlined" color="info">Info</Chip>
+      <Chip variant="outline" color="primary">Primary</Chip>
+      <Chip variant="outline" color="secondary">Secondary</Chip>
+      <Chip variant="outline" color="success">Success</Chip>
+      <Chip variant="outline" color="danger">Danger</Chip>
+      <Chip variant="outline" color="warning">Warning</Chip>
+      <Chip variant="outline" color="info">Info</Chip>
     </div>
   ),
 };
@@ -94,7 +94,7 @@ export const WithIcon: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
       <Chip startIcon={<TagIcon />}>Tag</Chip>
-      <Chip startIcon={<TagIcon />} variant="outlined">
+      <Chip startIcon={<TagIcon />} variant="outline">
         Outlined tag
       </Chip>
     </div>

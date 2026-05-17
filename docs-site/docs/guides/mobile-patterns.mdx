@@ -28,7 +28,7 @@ When building a screen that should feel native on touch:
 | Confirmation as native sheet on mobile | `<Dialog mobileVariant="sheet">` |
 | Multi-step wizard, mobile fullscreen | `<Dialog mobileVariant="fullscreen">` |
 | Dropdown menu → sheet on mobile | `<Menu mobileVariant="sheet">` |
-| Long table on mobile | `<Table mobileLayout="stacked">` |
+| Long table on mobile | `<Table mobileVariant="stacked">` |
 | Searchable Select → bottom sheet on touch | `<Select searchable>` (automatic) |
 | Date picker → fullscreen on mobile | `<DatePicker mobileVariant="modal">` (default) |
 | Date picker using OS-native UI | `<DatePicker mobileVariant="native">` |
@@ -56,7 +56,7 @@ Tooltips are hover-only by definition — but mobile has no hover. v2 ships **fo
 </Tooltip>
 
 // Manual override
-<Tooltip content="Last updated 5 minutes ago" mobileBehavior="tap" mobileIndicator>
+<Tooltip content="Last updated 5 minutes ago" mobileVariant="tap" mobileIndicator>
   <span>Status: Live</span>
 </Tooltip>
 ```

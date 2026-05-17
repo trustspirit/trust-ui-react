@@ -5,6 +5,7 @@ export interface RadioGroupContextValue {
   value?: string;
   variant: 'primary' | 'secondary';
   disabled?: boolean;
+  error?: boolean;
   onChange?: (value: string) => void;
 }
 

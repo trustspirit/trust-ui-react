@@ -18,6 +18,10 @@ export interface SwitchProps {
   required?: boolean;
   /** Whether the switch is disabled */
   disabled?: boolean;
+  /** Whether the field is in error state */
+  error?: boolean;
+  /** Error message displayed below the switch */
+  errorMessage?: string;
   /** Additional CSS class */
   className?: string;
   /** Inline styles */
@@ -35,6 +39,8 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
       label,
       required = false,
       disabled = false,
+      error = false,
+      errorMessage,
       className,
       style,
     },
@@ -45,6 +51,7 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
 
     const isControlled = controlledChecked !== undefined;
     const isChecked = isControlled ? controlledChecked : internalChecked;
+    const isError = error || !!errorMessage;
 
     const handleClick = () => {
       if (disabled) return;
@@ -60,34 +67,43 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
       styles[size],
       styles[variant],
       isChecked ? styles.checked : '',
+      isError ? styles.errorState : '',
       className ?? '',
     ]
       .filter(Boolean)
       .join(' ');
 
     return (
-      <div className={styles.container} style={style}>
-        <button
-          ref={ref}
-          type="button"
-          role="switch"
-          aria-checked={isChecked}
-          aria-labelledby={label ? `${id}-label` : undefined}
-          className={switchClassNames}
-          disabled={disabled}
-          onClick={handleClick}
-        >
-          <span className={styles.thumb} />
-        </button>
-        {label && (
-          <span
-            id={`${id}-label`}
-            className={styles.label}
-            onClick={disabled ? undefined : handleClick}
+      <div className={styles.wrapper} style={style}>
+        <div className={styles.container}>
+          <button
+            ref={ref}
+            type="button"
+            role="switch"
+            aria-checked={isChecked}
+            aria-invalid={isError || undefined}
+            aria-labelledby={label ? `${id}-label` : undefined}
+            className={switchClassNames}
+            disabled={disabled}
+            onClick={handleClick}
           >
-            {label}
-            {required && <span className={styles.requiredAsterisk}> *</span>}
-          </span>
+            <span className={styles.thumb} />
+          </button>
+          {label && (
+            <span
+              id={`${id}-label`}
+              className={styles.label}
+              onClick={disabled ? undefined : handleClick}
+            >
+              {label}
+              {required && <span className={styles.requiredAsterisk}> *</span>}
+            </span>
+          )}
+        </div>
+        {errorMessage && (
+          <p className={styles.errorMessage} role="alert">
+            {errorMessage}
+          </p>
         )}
       </div>
     );

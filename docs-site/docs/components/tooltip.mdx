@@ -67,7 +67,7 @@ A popup that displays informative text when hovering or focusing on a trigger el
 
 ## Mobile behavior
 
-Tooltips have no hover on touch devices, so v2 ships with **four explicit mobile modes**. Tooltip auto-picks the right mode based on what's being wrapped, but you can override with `mobileBehavior`.
+Tooltips have no hover on touch devices, so v2 ships with **four explicit mobile modes**. Tooltip auto-picks the right mode based on what's being wrapped, but you can override with `mobileVariant`.
 
 | Mode | Interaction | Auto-default for |
 |---|---|---|
@@ -77,11 +77,11 @@ Tooltips have no hover on touch devices, so v2 ships with **four explicit mobile
 | `hidden` | No mobile rendering | Decorative tooltips |
 
 ```tsx
-<Tooltip content="Saved automatically" mobileBehavior="longpress">
+<Tooltip content="Saved automatically" mobileVariant="longpress">
   <Button>Save</Button>
 </Tooltip>
 
-<Tooltip content="Required field" mobileBehavior="inline">
+<Tooltip content="Required field" mobileVariant="inline">
   <input type="email" />
 </Tooltip>
 ```
@@ -102,7 +102,7 @@ Pair with `mobileIndicator` to add a subtle dotted underline on the trigger — 
   { name: 'variant', type: "'dark' | 'light'", default: "'dark'", description: 'Visual variant' },
   { name: 'delay', type: 'number', default: '200', description: 'Delay in milliseconds before showing' },
   { name: 'maxWidth', type: 'number', default: '250', description: 'Maximum width in pixels' },
-  { name: 'mobileBehavior', type: "'tap' | 'longpress' | 'inline' | 'hidden'", default: 'auto-detected from trigger', description: 'How the tooltip behaves on touch devices' },
+  { name: 'mobileVariant', type: "'tap' | 'longpress' | 'inline' | 'hidden'", default: 'auto-detected from trigger', description: 'How the tooltip behaves on touch devices' },
   { name: 'mobileAutoDismiss', type: 'number', default: '4000', description: 'Auto-dismiss duration in tap mode (ms). Set 0 to disable.' },
   { name: 'mobileIndicator', type: 'boolean', default: 'false', description: 'Add a dotted-underline visual hint on the trigger' },
   { name: 'mobileMaxWidth', type: 'number', description: 'Override maxWidth on mobile (defaults to maxWidth)' },

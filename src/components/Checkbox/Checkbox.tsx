@@ -26,6 +26,10 @@ export interface CheckboxProps
   required?: boolean;
   /** Whether the checkbox is disabled */
   disabled?: boolean;
+  /** Whether the field is in error state */
+  error?: boolean;
+  /** Error message displayed below the checkbox */
+  errorMessage?: string;
   /** Additional CSS class */
   className?: string;
   /** Inline styles */
@@ -78,6 +82,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       label,
       required = false,
       disabled = false,
+      error = false,
+      errorMessage,
       className,
       style,
       ...rest
@@ -129,6 +135,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     }, [internalIndeterminate]);
 
     const isChecked = isControlled ? checked : internalChecked;
+    const isError = error || !!errorMessage;
 
     const containerClassNames = [
       styles.container,
@@ -143,37 +150,46 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       styles[variant],
       internalIndeterminate ? styles.indeterminate : '',
       !internalIndeterminate && isChecked ? styles.checked : '',
+      isError ? styles.errorState : '',
     ]
       .filter(Boolean)
       .join(' ');
 
     return (
-      <label className={containerClassNames} style={style}>
-        <input
-          ref={mergedRef}
-          type="checkbox"
-          className={styles.hiddenInput}
-          checked={isControlled ? checked : undefined}
-          defaultChecked={isControlled ? undefined : defaultChecked}
-          onChange={handleChange}
-          disabled={disabled}
-          {...rest}
-        />
-        <span className={indicatorClassNames}>
-          <span className={styles.checkIcon}>
-            <CheckIcon />
+      <span className={styles.wrapper} style={style}>
+        <label className={containerClassNames}>
+          <input
+            ref={mergedRef}
+            type="checkbox"
+            className={styles.hiddenInput}
+            checked={isControlled ? checked : undefined}
+            defaultChecked={isControlled ? undefined : defaultChecked}
+            onChange={handleChange}
+            disabled={disabled}
+            aria-invalid={isError || undefined}
+            {...rest}
+          />
+          <span className={indicatorClassNames}>
+            <span className={styles.checkIcon}>
+              <CheckIcon />
+            </span>
+            <span className={styles.dashIcon}>
+              <DashIcon />
+            </span>
           </span>
-          <span className={styles.dashIcon}>
-            <DashIcon />
-          </span>
-        </span>
-        {label && (
-          <span className={styles.label}>
-            {label}
-            {required && <span className={styles.requiredAsterisk}> *</span>}
-          </span>
+          {label && (
+            <span className={styles.label}>
+              {label}
+              {required && <span className={styles.requiredAsterisk}> *</span>}
+            </span>
+          )}
+        </label>
+        {errorMessage && (
+          <p className={styles.errorMessage} role="alert">
+            {errorMessage}
+          </p>
         )}
-      </label>
+      </span>
     );
   },
 );

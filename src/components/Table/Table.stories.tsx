@@ -133,7 +133,7 @@ export const MobileStacked: Story = {
     <Table<User>
       columns={columns}
       data={sampleData}
-      mobileLayout="stacked"
+      mobileVariant="stacked"
       rowKey="id"
     />
   ),

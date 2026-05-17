@@ -127,6 +127,23 @@
 }
 
 /* ── RadioGroup ── */
+.wrapper {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--tui-space-2);
+}
+
+.errorMessage {
+  margin: 0;
+  font-size: var(--tui-font-size-sm);
+  color: var(--tui-danger);
+  line-height: var(--tui-line-height);
+}
+
+.indicator.errorState {
+  border-color: var(--tui-danger);
+}
+
 .group {
   display: flex;
   gap: var(--tui-spacing-sm);

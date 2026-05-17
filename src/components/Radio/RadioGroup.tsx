@@ -19,6 +19,10 @@ export interface RadioGroupProps {
   disabled?: boolean;
   /** Accessible label for the radio group */
   label?: string;
+  /** Whether the group is in error state */
+  error?: boolean;
+  /** Error message displayed below the group */
+  errorMessage?: string;
   /** Radio elements */
   children: ReactNode;
   /** Additional CSS class */
@@ -36,6 +40,8 @@ export function RadioGroup({
   direction = 'vertical',
   disabled = false,
   label,
+  error = false,
+  errorMessage,
   children,
   className,
   style,
@@ -44,6 +50,7 @@ export function RadioGroup({
 
   const isControlled = controlledValue !== undefined;
   const currentValue = isControlled ? controlledValue : internalValue;
+  const isError = error || !!errorMessage;
 
   const handleChange = (newValue: string) => {
     if (!isControlled) {
@@ -55,6 +62,7 @@ export function RadioGroup({
   const groupClassNames = [
     styles.group,
     styles[direction],
+    isError ? styles.errorState : '',
     className ?? '',
   ]
     .filter(Boolean)
@@ -67,11 +75,24 @@ export function RadioGroup({
         value: currentValue,
         variant,
         disabled,
+        error: isError,
         onChange: handleChange,
       }}
     >
-      <div role="radiogroup" aria-label={label || name} className={groupClassNames} style={style}>
-        {children}
+      <div className={styles.wrapper} style={style}>
+        <div
+          role="radiogroup"
+          aria-label={label || name}
+          aria-invalid={isError || undefined}
+          className={groupClassNames}
+        >
+          {children}
+        </div>
+        {errorMessage && (
+          <p className={styles.errorMessage} role="alert">
+            {errorMessage}
+          </p>
+        )}
       </div>
     </RadioGroupContext.Provider>
   );

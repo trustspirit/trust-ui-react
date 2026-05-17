@@ -22,9 +22,9 @@ export const Default: Story = {
           onClose={() => setOpen(false)}
           title="Share this photo"
           actions={[
-            { label: 'Save Image', onPress: () => { setOpen(false); console.log('save'); } },
-            { label: 'Copy', onPress: () => { setOpen(false); console.log('copy'); } },
-            { label: 'Share...', onPress: () => { setOpen(false); console.log('share'); } },
+            { label: 'Save Image', onClick: () => { setOpen(false); console.log('save'); } },
+            { label: 'Copy', onClick: () => { setOpen(false); console.log('copy'); } },
+            { label: 'Share...', onClick: () => { setOpen(false); console.log('share'); } },
           ]}
           cancelLabel="Cancel"
         />
@@ -44,8 +44,8 @@ export const WithDestructive: Story = {
           onClose={() => setOpen(false)}
           title="Are you sure you want to remove this?"
           actions={[
-            { label: 'Remove', destructive: true, onPress: () => { setOpen(false); console.log('remove'); } },
-            { label: 'Keep', onPress: () => setOpen(false) },
+            { label: 'Remove', destructive: true, onClick: () => { setOpen(false); console.log('remove'); } },
+            { label: 'Keep', onClick: () => setOpen(false) },
           ]}
           cancelLabel="Cancel"
         />

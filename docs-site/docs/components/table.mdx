@@ -126,7 +126,7 @@ A data table with sorting, custom cell rendering, and multiple visual variants.
 
 ## Mobile layout
 
-Tables don't fit small viewports gracefully. `mobileLayout` lets you pick the strategy:
+Tables don't fit small viewports gracefully. `mobileVariant` lets you pick the strategy:
 
 | Value | Behavior |
 |---|---|
@@ -134,7 +134,7 @@ Tables don't fit small viewports gracefully. `mobileLayout` lets you pick the st
 | `stacked` | Each row collapses into a vertical card with `column.header` as the label and the cell content as the value. Loses tabular comparison but reads naturally. |
 
 ```tsx
-<Table mobileLayout="stacked" columns={cols} data={rows} />
+<Table mobileVariant="stacked" columns={cols} data={rows} />
 ```
 
 Pick `stacked` when each row represents an independent entity (a user, an order). Stick with `scroll` when users need to compare values across rows.
@@ -162,7 +162,7 @@ Pick `stacked` when each row represents an independent entity (a user, an order)
   { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size preset' },
   { name: 'stickyHeader', type: 'boolean', default: 'false', description: 'Sticky header on scroll' },
   { name: 'zebra', type: 'boolean', default: 'false', description: 'Alternate row backgrounds with --tui-bg-muted' },
-  { name: 'mobileLayout', type: "'scroll' | 'stacked'", default: "'scroll'", description: 'On narrow viewports: horizontal scroll or stacked-card per row' },
+  { name: 'mobileVariant', type: "'scroll' | 'stacked'", default: "'scroll'", description: 'On narrow viewports: horizontal scroll or stacked-card per row' },
   { name: 'hoverable', type: 'boolean', default: 'true', description: 'Highlight rows on hover' },
   { name: 'emptyText', type: 'string', default: "'No data available'", description: 'Text shown when data is empty' },
   { name: 'onRowClick', type: '(row: T, index: number) => void', description: 'Row click handler' },

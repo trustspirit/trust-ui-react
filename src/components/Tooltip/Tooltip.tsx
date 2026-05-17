@@ -15,7 +15,7 @@ import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
 import { useLongPress } from '../../hooks/touch/useLongPress';
 import styles from './Tooltip.module.css';
 
-export type TooltipMobileBehavior = 'tap' | 'longpress' | 'inline' | 'hidden';
+export type TooltipMobileVariant = 'tap' | 'longpress' | 'inline' | 'hidden';
 
 export interface TooltipProps {
   /** Content to display inside the tooltip */
@@ -41,7 +41,7 @@ export interface TooltipProps {
    * - 'hidden': don't show on mobile
    * Auto-default: button/link → 'longpress', input/textarea/select → 'inline', else → 'tap'.
    */
-  mobileBehavior?: TooltipMobileBehavior;
+  mobileVariant?: TooltipMobileVariant;
   /** Auto-dismiss duration (ms) in tap mode. Default 4000. Set 0 to disable. */
   mobileAutoDismiss?: number;
   /** Show a visual indicator (dotted underline) on the trigger to hint that a tooltip exists. */
@@ -50,7 +50,7 @@ export interface TooltipProps {
   mobileMaxWidth?: number;
 }
 
-function detectAutoMobileBehavior(child: ReactElement): TooltipMobileBehavior {
+function detectAutoMobileVariant(child: ReactElement): TooltipMobileVariant {
   const type = child.type;
   const props = child.props as Record<string, unknown>;
   if (typeof type === 'string') {
@@ -69,15 +69,15 @@ export function Tooltip({
   maxWidth = 250,
   children,
   className,
-  mobileBehavior,
+  mobileVariant,
   mobileAutoDismiss = 4000,
   mobileIndicator = false,
   mobileMaxWidth,
 }: TooltipProps) {
   const isTouch = useTouchDevice();
-  const effectiveMobileBehavior = useMemo(
-    () => mobileBehavior ?? detectAutoMobileBehavior(children),
-    [mobileBehavior, children],
+  const effectiveMobileVariant = useMemo(
+    () => mobileVariant ?? detectAutoMobileVariant(children),
+    [mobileVariant, children],
   );
 
   const [visible, setVisible] = useState(false);
@@ -138,7 +138,7 @@ export function Tooltip({
   useLongPress(
     triggerRef as React.RefObject<HTMLElement | null>,
     () => {
-      if (isTouch && effectiveMobileBehavior === 'longpress') {
+      if (isTouch && effectiveMobileVariant === 'longpress') {
         showImmediate();
       }
     },
@@ -146,7 +146,7 @@ export function Tooltip({
   );
 
   useEffect(() => {
-    if (!visible || !isTouch || effectiveMobileBehavior !== 'tap') return;
+    if (!visible || !isTouch || effectiveMobileVariant !== 'tap') return;
     const onClickOutside = (e: PointerEvent) => {
       if (triggerRef.current?.contains(e.target as Node)) return;
       if (tooltipRef.current?.contains(e.target as Node)) return;
@@ -154,18 +154,18 @@ export function Tooltip({
     };
     document.addEventListener('pointerdown', onClickOutside);
     return () => document.removeEventListener('pointerdown', onClickOutside);
-  }, [visible, isTouch, effectiveMobileBehavior, hide]);
+  }, [visible, isTouch, effectiveMobileVariant, hide]);
 
   useEffect(() => {
-    if (!visible || !isTouch || effectiveMobileBehavior !== 'tap' || mobileAutoDismiss === 0) return;
+    if (!visible || !isTouch || effectiveMobileVariant !== 'tap' || mobileAutoDismiss === 0) return;
     autoDismissTimerRef.current = setTimeout(hide, mobileAutoDismiss);
     return () => {
       if (autoDismissTimerRef.current) clearTimeout(autoDismissTimerRef.current);
     };
-  }, [visible, isTouch, effectiveMobileBehavior, mobileAutoDismiss, hide]);
+  }, [visible, isTouch, effectiveMobileVariant, mobileAutoDismiss, hide]);
 
   useEffect(() => {
-    if (!visible || !isTouch || effectiveMobileBehavior !== 'longpress') return;
+    if (!visible || !isTouch || effectiveMobileVariant !== 'longpress') return;
     const onUp = () => hide();
     document.addEventListener('pointerup', onUp);
     document.addEventListener('pointercancel', onUp);
@@ -173,7 +173,7 @@ export function Tooltip({
       document.removeEventListener('pointerup', onUp);
       document.removeEventListener('pointercancel', onUp);
     };
-  }, [visible, isTouch, effectiveMobileBehavior, hide]);
+  }, [visible, isTouch, effectiveMobileVariant, hide]);
 
   useEffect(() => {
     if (visible) {
@@ -199,7 +199,7 @@ export function Tooltip({
     };
   }, []);
 
-  if (isTouch && effectiveMobileBehavior === 'inline') {
+  if (isTouch && effectiveMobileVariant === 'inline') {
     return (
       <div className={styles.inlineContainer}>
         {children}
@@ -210,7 +210,7 @@ export function Tooltip({
     );
   }
 
-  if (isTouch && effectiveMobileBehavior === 'hidden') {
+  if (isTouch && effectiveMobileVariant === 'hidden') {
     return children;
   }
 
@@ -249,7 +249,7 @@ export function Tooltip({
     (childProps.onBlur as ((e: React.FocusEvent) => void) | undefined)?.(e);
   };
   const onClick = (e: React.MouseEvent) => {
-    if (isTouch && effectiveMobileBehavior === 'tap') {
+    if (isTouch && effectiveMobileVariant === 'tap') {
       e.preventDefault();
       setVisible((v) => !v);
     }

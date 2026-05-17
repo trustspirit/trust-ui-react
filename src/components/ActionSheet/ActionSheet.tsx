@@ -6,7 +6,7 @@ export interface ActionSheetAction {
   /** Visible label for the action. */
   label: string;
   /** Click handler. The sheet does NOT auto-close — call onClose yourself if desired. */
-  onPress: () => void;
+  onClick: () => void;
   /** Renders the label in danger color + semibold (iOS destructive style). */
   destructive?: boolean;
   /** Disable the action. */
@@ -50,7 +50,7 @@ export const ActionSheet = forwardRef<HTMLDivElement, ActionSheetProps>(
                 className={[styles.actionItem, action.destructive && styles.destructive]
                   .filter(Boolean)
                   .join(' ')}
-                onClick={action.onPress}
+                onClick={action.onClick}
                 disabled={action.disabled}
               >
                 {action.label}
