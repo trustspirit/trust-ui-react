@@ -6,10 +6,43 @@
 
 body {
   margin: 0;
-  font-family: var(--tui-font-family);
+  font-family: var(--tui-font-sans);
+  font-size: var(--tui-font-size-md);
   line-height: var(--tui-line-height);
   color: var(--tui-text);
   background-color: var(--tui-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ─────────────────────────────────────────────────────────────────── */
+/* Mobile-friendly interactive defaults                                 */
+/* ─────────────────────────────────────────────────────────────────── */
+
+/* Tap highlight 회색 제거 + 300ms tap delay 제거 (Android WebView 구버전 대응) */
+button,
+a,
+[role='button'],
+[tabindex] {
+  -webkit-tap-highlight-color: var(--tui-tap-highlight);
+  touch-action: manipulation;
+}
+
+/* iOS Safari/WebView: input의 font-size가 16px 미만이면 focus 시 auto-zoom.
+ * pointer:coarse 환경에서 최소 16px 강제. */
+@media (pointer: coarse) {
+  input,
+  textarea,
+  select {
+    font-size: max(16px, var(--tui-font-size-md));
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────── */
+/* Scroll container utility (iOS momentum scroll + overscroll containment) */
+/* ─────────────────────────────────────────────────────────────────── */
+.tui-scroll-container {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
