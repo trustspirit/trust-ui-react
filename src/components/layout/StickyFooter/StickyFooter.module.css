@@ -1,0 +1,14 @@
+.container {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--tui-z-sticky);
+  padding: var(--tui-spacing-md);
+  padding-bottom: var(--tui-thumb-safe-bottom);
+  background-color: var(--tui-bg);
+  border-top: 1px solid var(--tui-border);
+  box-shadow: 0 -4px 12px -2px rgba(15, 16, 26, 0.04);
+}
+
+.elevated {
+  box-shadow: 0 -4px 16px -2px rgba(15, 16, 26, 0.08);
+}
