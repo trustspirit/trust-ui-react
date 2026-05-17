@@ -1,0 +1,131 @@
+---
+sidebar_position: 4
+title: Motion
+---
+
+# Motion
+
+trust-ui v2 motion is **sophisticated cinematic** — short ease-out spring transitions that feel quick but never abrupt. All transitions are token-based so consumers can tune the whole system from one place.
+
+## Duration tokens
+
+| Token | Value | Usage |
+|---|---|---|
+| `--tui-duration-instant` | `80ms` | Active/press feedback (must feel immediate) |
+| `--tui-duration-fast` | `150ms` | Color / border / box-shadow transitions |
+| `--tui-duration-base` | `220ms` | Hover transforms, layout shifts |
+| `--tui-duration-medium` | `320ms` | Dialog / popover enter |
+| `--tui-duration-slow` | `480ms` | Major page transitions |
+
+## Easing tokens
+
+| Token | Value | Feel |
+|---|---|---|
+| `--tui-ease-out` | `cubic-bezier(0.16, 1, 0.3, 1)` | Default — sharp out, soft stop |
+| `--tui-ease-in-out` | `cubic-bezier(0.65, 0, 0.35, 1)` | Symmetric (layout shifts) |
+| `--tui-ease-spring` | `cubic-bezier(0.34, 1.56, 0.64, 1)` | Subtle overshoot (hover lifts) |
+| `--tui-ease-linear` | `linear` | Loops (spinners, progress) |
+
+## Composite transition tokens
+
+For common patterns, use composite tokens instead of writing the full `transition` shorthand:
+
+```css
+.button {
+  transition: var(--tui-transition-color), var(--tui-transition-shadow);
+}
+```
+
+| Token | Expands to |
+|---|---|
+| `--tui-transition-color` | `color`, `background-color`, `border-color` × `fast` × `ease-out` |
+| `--tui-transition-transform` | `transform` × `base` × `ease-spring` |
+| `--tui-transition-shadow` | `box-shadow` × `base` × `ease-out` |
+
+## The 5 motion patterns
+
+Components in trust-ui use exactly **5 motion patterns** — picking the right pattern for each interaction creates a coherent feel across the whole library.
+
+### Pattern A — State color transition
+
+Color/border changes on hover / focus / active.
+
+```css
+transition: var(--tui-transition-color);
+```
+
+**Used by:** Button color, Input border, Chip bg, Toast icon, every text/border state change.
+
+### Pattern B — Micro-lift transform
+
+Tiny `translateY(-1px)` on hover with `ease-spring` for a subtle "button rises" feel.
+
+```css
+@media (hover: hover) {
+  .btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--tui-shadow-md);
+  }
+}
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+  transition-duration: var(--tui-duration-instant);
+}
+```
+
+**Used by:** Button primary/danger, Chip clickable, FileUpload dropzone. Mobile-safe via `@media (hover: hover)`.
+
+### Pattern C — Surface enter/exit
+
+Modal / popover open animations. Combines opacity + small transform.
+
+```css
+@keyframes dialogEnter {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+.dialog { animation: dialogEnter var(--tui-duration-medium) var(--tui-ease-out); }
+```
+
+**Used by:** Dialog, Popover, Toast, Tooltip (fade-in only — no transform), Select dropdown.
+
+### Pattern D — Layout shift
+
+Smooth resize / position changes. Symmetric `ease-in-out` so the start and end feel balanced.
+
+```css
+.tabIndicator {
+  transition:
+    transform var(--tui-duration-base) var(--tui-ease-in-out),
+    width var(--tui-duration-base) var(--tui-ease-in-out);
+}
+```
+
+**Used by:** Tabs sliding indicator, Switch knob, Expander height (`grid-template-rows`), SegmentedControl indicator.
+
+### Pattern E — Continuous (looping)
+
+Spinner / indeterminate progress — `linear` so the loop doesn't pulse.
+
+```css
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner { animation: spin 0.6s linear infinite; }
+```
+
+**Used by:** Button loading spinner, Progress indeterminate stripe.
+
+## Reduced motion
+
+All motion respects `prefers-reduced-motion: reduce`:
+
+```css
+/* Defined globally in tokens.css */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+No per-component code needed — every transition/animation in the library is auto-disabled when the user opts out.

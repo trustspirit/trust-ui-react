@@ -5,41 +5,70 @@ title: Typography
 
 # Typography
 
-## Font Family
+trust-ui v2 ships with **Geist** (Vercel) for sans + mono. The fonts are bundled as variable fonts via `@fontsource-variable/geist`, no additional setup needed — they auto-load when you import `trust-ui-react/styles.css`.
 
+## Font families
+
+| Token | Value |
+|---|---|
+| `--tui-font-sans` | `'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif` |
+| `--tui-font-mono` | `'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace` |
+| `--tui-font-family` | alias for `--tui-font-sans` (backwards-compat) |
+
+## Font sizes
+
+| Token | Desktop | Mobile (`pointer:coarse`) |
+|---|---|---|
+| `--tui-font-size-xs` | `0.75rem` (12px) | `0.8125rem` (13px) |
+| `--tui-font-size-sm` | `0.8125rem` (13px) | `0.875rem` (14px) |
+| `--tui-font-size-md` | `0.875rem` (14px) | `1rem` (16px) |
+| `--tui-font-size-lg` | `1rem` (16px) | `1.125rem` (18px) |
+| `--tui-font-size-xl` | `1.125rem` (18px) | `1.25rem` (20px) |
+| `--tui-font-size-2xl` | `1.375rem` (22px) | `1.5rem` (24px) |
+
+**Why two scales?** Desktop baseline is 14px (denser, Linear/Vercel-style discipline). Mobile baseline is 16px — iOS Safari auto-zooms `<input>` whose font-size is below 16px on focus; this token automatically prevents that.
+
+## Font weights
+
+Geist is a variable font supporting all weights 100–900. trust-ui exposes the common stops:
+
+| Token | Value |
+|---|---|
+| `--tui-font-weight-normal` | `400` |
+| `--tui-font-weight-medium` | `500` |
+| `--tui-font-weight-semibold` | `600` |
+| `--tui-font-weight-bold` | `700` |
+
+## Letter spacing
+
+For tight headings (A-discipline Linear-style):
+
+| Token | Value |
+|---|---|
+| `--tui-letter-tight` | `-0.011em` |
+| `--tui-letter-tighter` | `-0.022em` |
+
+Apply on headlines:
 ```css
---tui-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+h1 { letter-spacing: var(--tui-letter-tighter); }
+h2 { letter-spacing: var(--tui-letter-tight); }
 ```
 
-## Font Sizes
+## Line height
 
 | Token | Value |
-|-------|-------|
-| `--tui-font-size-xs` | 0.75rem (12px) |
-| `--tui-font-size-sm` | 0.875rem (14px) |
-| `--tui-font-size-md` | 1rem (16px) |
-| `--tui-font-size-lg` | 1.125rem (18px) |
-| `--tui-font-size-xl` | 1.25rem (20px) |
+|---|---|
+| `--tui-line-height` | `1.5` |
 
-## Font Weights
+## Custom fonts
 
-| Token | Value |
-|-------|-------|
-| `--tui-font-weight-normal` | 400 |
-| `--tui-font-weight-medium` | 500 |
-| `--tui-font-weight-semibold` | 600 |
-| `--tui-font-weight-bold` | 700 |
+To override Geist with your own:
 
-## Line Height
+```css
+:root {
+  --tui-font-sans: 'Your Font', system-ui, sans-serif;
+  --tui-font-mono: 'Your Mono Font', monospace;
+}
+```
 
-| Token | Value |
-|-------|-------|
-| `--tui-line-height` | 1.5 |
-
-## Transitions
-
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--tui-transition-fast` | 100ms ease | Micro-interactions |
-| `--tui-transition` | 150ms ease | Default transitions |
-| `--tui-transition-slow` | 300ms ease | Larger animations |
+trust-ui inlines Geist as data URIs in `styles.css` so the bundle is self-contained. If you don't want Geist, override before importing — but the woff2 will still be in the bundle. To exclude it entirely, fork the package and remove the `fonts.css` import from `src/index.ts`.

@@ -1,0 +1,95 @@
+---
+sidebar_position: 5
+title: Elevation & Surfaces
+---
+
+# Elevation & Surfaces
+
+trust-ui v2 organizes UI into **3 surface tiers**. Pick the right tier for each component and you get coherent depth across the whole interface.
+
+## Tier model
+
+| Tier | Used by | Style |
+|---|---|---|
+| **Tier 1 — Base** | Page background | `var(--tui-bg)` solid |
+| **Tier 2 — Raised** | Card, Button (secondary), Input, Table, Tabs panel | `var(--tui-bg-subtle)` + `var(--tui-border)` 1px + `var(--tui-shadow-sm)` |
+| **Tier 3 — Elevated Glass** | Dialog, Popover, Toast, Menu | `.tui-glass` utility (translucent + backdrop-blur) |
+
+Tooltip is intentionally **not** Glass — small surfaces benefit from opaque inverse contrast (black bg + white text) for readability.
+
+## Shadow scale
+
+Layered shadows that read warm and natural:
+
+| Token | Value |
+|---|---|
+| `--tui-shadow-xs` | `0 1px 2px rgba(15, 16, 26, 0.04)` |
+| `--tui-shadow-sm` | `0 1px 2px rgba(15, 16, 26, 0.05), 0 1px 3px rgba(15, 16, 26, 0.03)` |
+| `--tui-shadow-md` | `0 2px 4px rgba(15, 16, 26, 0.06), 0 4px 12px -2px rgba(15, 16, 26, 0.06)` |
+| `--tui-shadow-lg` | `0 4px 8px rgba(15, 16, 26, 0.06), 0 12px 32px -8px rgba(15, 16, 26, 0.1)` |
+| `--tui-shadow-xl` | `0 8px 16px rgba(15, 16, 26, 0.08), 0 24px 48px -12px rgba(15, 16, 26, 0.14)` |
+
+### Inset highlight
+
+For premium-feel solid surfaces (gradient buttons), pair the shadow with an inset top highlight to suggest light coming from above:
+
+```css
+.button-primary {
+  background: var(--tui-primary-gradient);
+  box-shadow: var(--tui-inset-highlight);
+}
+```
+
+| Token | Value |
+|---|---|
+| `--tui-inset-highlight` | `inset 0 1px 0 rgba(255, 255, 255, 0.18)` |
+
+## Glass — `.tui-glass`
+
+The `.tui-glass` global utility class gives a component the Tier 3 treatment in one line. Two-step fallback chain handles browsers without `backdrop-filter`:
+
+```css
+.tui-glass {
+  background-color: var(--tui-glass-bg);   /* translucent surface */
+  border: 1px solid var(--tui-glass-border);
+  box-shadow: var(--tui-glass-shadow);
+  border-radius: var(--tui-radius-xl);
+}
+
+@supports ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
+  .tui-glass {
+    backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
+  }
+}
+
+@supports not ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
+  .tui-glass {
+    /* Older Android WebView, etc. — drops down to Tier 2 surface */
+    background-color: var(--tui-bg-subtle);
+  }
+}
+```
+
+### Glass tokens
+
+| Token | Light | Dark |
+|---|---|---|
+| `--tui-glass-bg` | `rgba(255, 255, 255, 0.72)` | `rgba(24, 25, 34, 0.72)` |
+| `--tui-glass-border` | `rgba(255, 255, 255, 0.5)` | `rgba(255, 255, 255, 0.1)` |
+| `--tui-glass-blur` | `20px` | `20px` |
+| `--tui-glass-shadow` | layered drop + inner highlight | dark-tuned variant |
+
+### Performance note
+
+`backdrop-filter` is GPU-accelerated but not free — it has measurable cost on mid-range Android. trust-ui only applies Glass to **transient surfaces** (modals, dropdowns, toasts) that mount on user action, so the cost is bounded. **Never** apply `.tui-glass` to a permanent page-background element.
+
+## Card elevation prop
+
+The `Card` component (not yet shipped in v2 — coming) exposes an `elevation` prop to switch between flat / raised / floating shadow levels without writing CSS. For other components, compose with shadow tokens directly:
+
+```tsx
+<div style={{ boxShadow: 'var(--tui-shadow-md)' }}>
+  <Card />
+</div>
+```

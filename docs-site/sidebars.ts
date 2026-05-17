@@ -71,6 +71,8 @@ const sidebars: SidebarsConfig = {
         'design-tokens/colors',
         'design-tokens/spacing',
         'design-tokens/typography',
+        'design-tokens/motion',
+        'design-tokens/elevation',
       ],
     },
   ],

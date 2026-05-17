@@ -1,49 +1,71 @@
 ---
 sidebar_position: 2
-title: Spacing
+title: Spacing & Radius
 ---
 
-# Spacing
+# Spacing & Radius
 
-Consistent spacing scale used across all components.
+trust-ui v2 has a **dual-density** spacing scale — slightly tighter on desktop, more generous on touch devices. The shift happens automatically via `@media (pointer: coarse)`.
 
-## Spacing Scale
+## Spacing scale
 
-| Token | Value |
-|-------|-------|
-| `--tui-spacing-xs` | 4px |
-| `--tui-spacing-sm` | 8px |
-| `--tui-spacing-md` | 16px |
-| `--tui-spacing-lg` | 24px |
-| `--tui-spacing-xl` | 32px |
-| `--tui-spacing-2xl` | 48px |
-
-## Border Radius
-
-| Token | Value |
-|-------|-------|
-| `--tui-radius-sm` | 4px |
-| `--tui-radius-md` | 6px |
-| `--tui-radius-lg` | 8px |
-| `--tui-radius-xl` | 12px |
-| `--tui-radius-full` | 9999px |
-
-## Shadows
-
-| Token | Value |
-|-------|-------|
-| `--tui-shadow-sm` | `0 1px 2px rgba(0,0,0,0.05)` |
-| `--tui-shadow-md` | `0 4px 6px -1px rgba(0,0,0,0.1)` |
-| `--tui-shadow-lg` | `0 10px 15px -3px rgba(0,0,0,0.1)` |
-| `--tui-shadow-xl` | `0 20px 25px -5px rgba(0,0,0,0.1)` |
-
-## Z-Index
+### Desktop (default)
 
 | Token | Value | Usage |
-|-------|-------|-------|
-| `--tui-z-dropdown` | 1000 | Dropdown menus |
-| `--tui-z-sticky` | 1020 | Sticky elements |
-| `--tui-z-modal` | 1030 | Modal dialogs |
-| `--tui-z-popover` | 1040 | Popovers |
-| `--tui-z-tooltip` | 1050 | Tooltips |
-| `--tui-z-toast` | 1060 | Toast notifications |
+|---|---|---|
+| `--tui-spacing-xs` | `4px` | Icon ↔ label gap |
+| `--tui-spacing-sm` | `8px` | Tight padding |
+| `--tui-spacing-md` | `12px` | Default control padding |
+| `--tui-spacing-lg` | `16px` | Card padding |
+| `--tui-spacing-xl` | `24px` | Section padding |
+| `--tui-spacing-2xl` | `32px` | Large section |
+| `--tui-spacing-3xl` | `48px` | Hero / page margins |
+
+### Mobile (`@media (pointer: coarse)`)
+
+| Token | Value | Δ |
+|---|---|---|
+| `--tui-spacing-md` | `16px` | +4 |
+| `--tui-spacing-lg` | `20px` | +4 |
+| `--tui-spacing-xl` | `28px` | +4 |
+
+`xs`/`sm`/`2xl`/`3xl` stay the same — they're already mobile-appropriate at the edges.
+
+## Border radius
+
+| Token | Desktop | Mobile | Usage |
+|---|---|---|---|
+| `--tui-radius-xs` | `4px` | `4px` | Tiny pills |
+| `--tui-radius-sm` | `6px` | `6px` | Chips, badges |
+| `--tui-radius-md` | `8px` | `12px` | Buttons, inputs (more pillowy on touch) |
+| `--tui-radius-lg` | `10px` | `14px` | Cards |
+| `--tui-radius-xl` | `14px` | `20px` | Dialogs, popovers |
+| `--tui-radius-2xl` | `20px` | `20px` | Bottom-sheet top corners |
+| `--tui-radius-full` | `9999px` | — | Pills, dots |
+
+## Touch targets & safe area
+
+| Token | Value | Usage |
+|---|---|---|
+| `--tui-touch-target-min` | `44px` | iOS HIG minimum hit area |
+| `--tui-touch-target-comfortable` | `48px` | Android Material baseline |
+| `--tui-safe-top` | `env(safe-area-inset-top, 0px)` | iOS notch |
+| `--tui-safe-right` | `env(safe-area-inset-right, 0px)` | — |
+| `--tui-safe-bottom` | `env(safe-area-inset-bottom, 0px)` | iOS home indicator |
+| `--tui-safe-left` | `env(safe-area-inset-left, 0px)` | — |
+| `--tui-thumb-zone-height` | `65vh` | Suggested thumb-reach zone |
+| `--tui-thumb-safe-bottom` | `max(env(safe-area-inset-bottom, 0px), 16px)` | Bottom padding for thumb-zone CTAs |
+
+Use the `<SafeAreaView>` and `<StickyFooter>` layout primitives to apply these without custom CSS.
+
+## Z-index scale
+
+| Token | Value | Usage |
+|---|---|---|
+| `--tui-z-dropdown` | `1000` | Select dropdowns |
+| `--tui-z-sticky` | `1010` | Sticky headers / footers |
+| `--tui-z-popover` | `1020` | Popovers |
+| `--tui-z-modal` | `1050` | Dialogs |
+| `--tui-z-bottom-sheet` | `1055` | BottomSheet, ActionSheet |
+| `--tui-z-tooltip` | `1060` | Tooltips |
+| `--tui-z-toast` | `1070` | Toasts |

@@ -5,59 +5,164 @@ title: Colors
 
 # Colors
 
-trust-ui uses CSS Custom Properties for all colors, supporting light and dark themes.
+trust-ui v2 uses the **Indigo Premium** palette — a gradient indigo primary on warm ivory neutrals (light) or deep charcoal (dark). All values are CSS Custom Properties consumed by every component.
 
-## Primary
+## Light theme
 
-| Token | Usage |
-|-------|-------|
-| `--tui-primary` | Primary actions, links |
-| `--tui-primary-hover` | Primary hover state |
-| `--tui-primary-active` | Primary active state |
-| `--tui-primary-subtle` | Primary backgrounds |
-| `--tui-primary-text` | Text on primary bg |
+### Surface
 
-## Semantic Colors
+| Token | Value | Usage |
+|---|---|---|
+| `--tui-bg` | `#fbfaf7` | Page background (warm ivory) |
+| `--tui-bg-subtle` | `#ffffff` | Lifted surface (cards) |
+| `--tui-bg-muted` | `#f4f1ea` | Muted areas (sidebars, hover bg base) |
+| `--tui-bg-hover` | `#ede9df` | Hover background |
+| `--tui-bg-active` | `#e3dccc` | Pressed/active background |
 
-| Token | Usage |
-|-------|-------|
-| `--tui-success` | Success states |
-| `--tui-success-hover` | Success hover |
-| `--tui-success-subtle` | Success background |
-| `--tui-danger` | Error/danger states |
-| `--tui-danger-hover` | Danger hover |
-| `--tui-danger-subtle` | Danger background |
-| `--tui-warning` | Warning states |
-| `--tui-warning-hover` | Warning hover |
-| `--tui-warning-subtle` | Warning background |
-| `--tui-info` | Informational states |
-| `--tui-info-hover` | Info hover |
-| `--tui-info-subtle` | Info background |
+### Text
 
-## Surface & Text
+| Token | Value | Usage |
+|---|---|---|
+| `--tui-text` | `#14151a` | Primary text |
+| `--tui-text-secondary` | `#4b4d59` | Secondary / labels |
+| `--tui-text-muted` | `#8a8b96` | De-emphasized text |
+| `--tui-text-inverse` | `#fbfaf7` | Text on dark surfaces |
 
-| Token | Usage |
-|-------|-------|
-| `--tui-bg` | Page background |
-| `--tui-bg-subtle` | Subtle background |
-| `--tui-bg-muted` | Muted background |
-| `--tui-bg-hover` | Hover background |
-| `--tui-text` | Primary text |
-| `--tui-text-secondary` | Secondary text |
-| `--tui-text-muted` | Muted text |
-| `--tui-text-inverse` | Inverse text |
+### Border
 
-## Border
+| Token | Value | Usage |
+|---|---|---|
+| `--tui-border` | `#ede9df` | Default border |
+| `--tui-border-hover` | `#d8d2c4` | Border hover |
+| `--tui-border-strong` | `#b8b0a0` | Strong border (separators) |
+| `--tui-border-focus` | `#635bff` | Focus outline color |
 
-| Token | Usage |
-|-------|-------|
-| `--tui-border` | Default borders |
-| `--tui-border-hover` | Hover borders |
-| `--tui-border-focus` | Focus borders |
+### Primary — Indigo
 
-## Other
+| Token | Value | Usage |
+|---|---|---|
+| `--tui-primary` | `#635bff` | Indigo primary |
+| `--tui-primary-hover` | `#5048e8` | Hover state |
+| `--tui-primary-active` | `#4036c4` | Active state |
+| `--tui-primary-subtle` | `#f1eef8` | Subtle bg for badges/active pages |
+| `--tui-primary-subtle-hover` | `#e6e1f4` | Subtle-bg hover |
+| `--tui-primary-text` | `#ffffff` | Text on primary bg |
+| `--tui-primary-gradient` | `linear-gradient(180deg, #635bff 0%, #4f47e0 100%)` | Gradient on Primary/Danger buttons |
 
-| Token | Usage |
-|-------|-------|
-| `--tui-focus-ring` | Focus ring color |
-| `--tui-overlay` | Modal overlay |
+### Secondary (charcoal)
+
+| Token | Value | Usage |
+|---|---|---|
+| `--tui-secondary` | `#2a2b34` | Charcoal secondary |
+| `--tui-secondary-hover` | `#1e1f27` | Hover |
+| `--tui-secondary-active` | `#14151a` | Active |
+| `--tui-secondary-subtle` | `#f4f1ea` | Subtle bg |
+| `--tui-secondary-text` | `#fbfaf7` | Text on secondary bg |
+
+### Status
+
+| Token | Value | Subtle | Text |
+|---|---|---|---|
+| `--tui-success` | `#15803d` | `#ecfdf3` | `#ffffff` |
+| `--tui-danger` | `#dc2626` | `#fef2f2` | `#ffffff` |
+| `--tui-warning` | `#b45309` | `#fef3c7` | `#ffffff` |
+| `--tui-info` | `#635bff` | `#f1eef8` | `#ffffff` |
+
+`info` shares the indigo primary by design — informational accents match the brand color.
+
+### Focus & Overlay
+
+| Token | Value | Usage |
+|---|---|---|
+| `--tui-focus-ring` | `0 0 0 2px var(--tui-bg), 0 0 0 4px rgba(99, 91, 255, 0.5)` | 2-layer focus glow |
+| `--tui-overlay` | `rgba(15, 16, 26, 0.32)` | Backdrop for Dialog/BottomSheet |
+
+### Glass (Tier 3 elevated surfaces)
+
+| Token | Value | Usage |
+|---|---|---|
+| `--tui-glass-bg` | `rgba(255, 255, 255, 0.72)` | Translucent surface bg |
+| `--tui-glass-border` | `rgba(255, 255, 255, 0.5)` | Glass edge |
+| `--tui-glass-shadow` | `0 8px 32px rgba(15,16,26,.12), inset 0 1px 0 rgba(255,255,255,.6)` | Glass elevation shadow |
+
+See [Elevation](./elevation.mdx) for usage of glass tokens.
+
+---
+
+## Dark theme
+
+The dark palette uses **lifted indigo** (`#7c75ff` — slightly brighter than the light primary so it reads on dark surfaces) with deep charcoal backgrounds.
+
+### Surface
+
+| Token | Value | Usage |
+|---|---|---|
+| `--tui-bg` | `#0e0f14` | Page background |
+| `--tui-bg-subtle` | `#181922` | Lifted surface |
+| `--tui-bg-muted` | `#14151c` | Muted areas |
+| `--tui-bg-hover` | `#23242e` | Hover |
+| `--tui-bg-active` | `#2d2e38` | Pressed |
+
+### Text
+
+| Token | Value | Usage |
+|---|---|---|
+| `--tui-text` | `#ededf0` | Primary |
+| `--tui-text-secondary` | `#a5a6ae` | Secondary |
+| `--tui-text-muted` | `#6e6f78` | Muted |
+| `--tui-text-inverse` | `#14151a` | Text on light surfaces |
+
+### Border
+
+| Token | Value | Usage |
+|---|---|---|
+| `--tui-border` | `#23242e` | Default |
+| `--tui-border-hover` | `#33343e` | Hover |
+| `--tui-border-strong` | `#4a4b56` | Strong |
+| `--tui-border-focus` | `#7c75ff` | Focus |
+
+### Primary — lifted Indigo
+
+| Token | Value |
+|---|---|
+| `--tui-primary` | `#7c75ff` |
+| `--tui-primary-hover` | `#948dff` |
+| `--tui-primary-active` | `#6c64f0` |
+| `--tui-primary-subtle` | `rgba(124, 117, 255, 0.14)` |
+| `--tui-primary-subtle-hover` | `rgba(124, 117, 255, 0.22)` |
+| `--tui-primary-text` | `#ffffff` |
+| `--tui-primary-gradient` | `linear-gradient(180deg, #7c75ff 0%, #5f56f5 100%)` |
+
+### Status (dark-tuned)
+
+| Token | Value | Subtle |
+|---|---|---|
+| `--tui-success` | `#22c55e` | `rgba(34, 197, 94, 0.14)` |
+| `--tui-danger` | `#ef4444` | `rgba(239, 68, 68, 0.14)` |
+| `--tui-warning` | `#fbbf24` | `rgba(251, 191, 36, 0.14)` |
+
+### Glass
+
+| Token | Value |
+|---|---|
+| `--tui-glass-bg` | `rgba(24, 25, 34, 0.72)` |
+| `--tui-glass-border` | `rgba(255, 255, 255, 0.1)` |
+| `--tui-glass-shadow` | `0 8px 32px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08)` |
+
+---
+
+## Customizing the palette
+
+To override any token, write a more-specific selector after trust-ui's stylesheet is loaded:
+
+```css
+/* Override the primary indigo with your brand color */
+[data-theme='light'] {
+  --tui-primary: #ff6b35;
+  --tui-primary-hover: #e85a28;
+  --tui-primary-active: #c94a20;
+  --tui-primary-gradient: linear-gradient(180deg, #ff6b35 0%, #e85a28 100%);
+}
+```
+
+All components consume these tokens via `var()`, so a single override propagates everywhere. See [Theming](../getting-started/theming.mdx) for the full custom-palette recipe.

@@ -5,43 +5,118 @@ title: Theming
 
 # Theming
 
-trust-ui uses CSS Custom Properties for theming with built-in light and dark modes.
+trust-ui v2 uses CSS Custom Properties for theming. Built-in **Light** and **Dark** themes ship with the **Indigo Premium** palette, but every token can be overridden to match your brand.
 
-## Theme Switching
+## Theme switching
 
-Use `useTheme` hook to toggle themes:
+Wrap your app in `ThemeProvider`, then use `useTheme()` to toggle:
 
 ```tsx
-import { useTheme } from 'trust-ui-react';
+import { ThemeProvider, useTheme, Button } from 'trust-ui-react';
+
+function App() {
+  return (
+    <ThemeProvider defaultTheme="light">
+      <YourUI />
+    </ThemeProvider>
+  );
+}
 
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   return (
-    <button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
-      Current: {theme}
-    </button>
+    <Button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
+      Switch to {theme === 'light' ? 'dark' : 'light'}
+    </Button>
   );
 }
 ```
 
-## Custom Tokens
+`ThemeProvider` sets `data-theme="light"` or `data-theme="dark"` on `<html>`. All CSS variables resolve based on that attribute.
 
-Override CSS Custom Properties to customize the design:
+## System preference
+
+Want to follow the OS setting until the user explicitly chooses? Pass `defaultTheme="system"` and the provider listens to `prefers-color-scheme`:
+
+```tsx
+<ThemeProvider defaultTheme="system">
+  <YourUI />
+</ThemeProvider>
+```
+
+Once the user calls `setTheme('light' | 'dark')` once, their choice is persisted (via localStorage) and takes precedence over the OS.
+
+## Custom palette
+
+Override any token to remap the look. Tokens cascade through every component automatically — change `--tui-primary` once and every Button, Switch, Toast, etc. picks it up.
 
 ```css
-:root {
-  --tui-primary: #your-brand-color;
-  --tui-primary-hover: #your-brand-hover;
-  --tui-radius-md: 8px;
+/* my-brand-overrides.css — load AFTER trust-ui's styles.css */
+
+[data-theme='light'] {
+  /* Replace Indigo with your brand color */
+  --tui-primary: #ff5c2c;
+  --tui-primary-hover: #e8501f;
+  --tui-primary-active: #c54214;
+  --tui-primary-subtle: #fff0eb;
+  --tui-primary-subtle-hover: #ffe2d8;
+  --tui-primary-gradient: linear-gradient(180deg, #ff5c2c 0%, #e8501f 100%);
+
+  /* Adjust focus ring to match */
+  --tui-focus-ring: 0 0 0 2px var(--tui-bg), 0 0 0 4px rgba(255, 92, 44, 0.5);
+}
+
+[data-theme='dark'] {
+  --tui-primary: #ff7a52;
+  --tui-primary-hover: #ff9272;
+  --tui-primary-active: #f06840;
+  --tui-primary-subtle: rgba(255, 122, 82, 0.14);
+  --tui-primary-gradient: linear-gradient(180deg, #ff7a52 0%, #e85f30 100%);
+  --tui-focus-ring: 0 0 0 2px var(--tui-bg), 0 0 0 4px rgba(255, 122, 82, 0.5);
 }
 ```
 
-## Available Token Categories
+Apply the override:
 
-- **Colors**: `--tui-primary`, `--tui-bg`, `--tui-text`, etc.
-- **Spacing**: `--tui-spacing-xs` through `--tui-spacing-2xl`
-- **Typography**: `--tui-font-size-xs` through `--tui-font-size-xl`
-- **Radius**: `--tui-radius-sm` through `--tui-radius-full`
-- **Shadows**: `--tui-shadow-sm` through `--tui-shadow-xl`
+```ts
+// Your app entry
+import 'trust-ui-react/styles.css';
+import './my-brand-overrides.css';   // Always after trust-ui
+```
 
-See the [Design Tokens](/design-tokens/colors) section for the full list.
+## Token reference
+
+For the complete list of tokens, see:
+
+- [Colors](../design-tokens/colors.mdx) — palette + glass tokens (light + dark)
+- [Spacing & Radius](../design-tokens/spacing.mdx) — desktop + mobile density, z-index
+- [Typography](../design-tokens/typography.mdx) — Geist font setup, size scale
+- [Motion](../design-tokens/motion.mdx) — duration / easing / 5 patterns
+- [Elevation & Surfaces](../design-tokens/elevation.mdx) — shadow scale, glass mixin
+
+## Mobile considerations
+
+- Form `<input>`/`<textarea>`/`<select>` automatically get `font-size: max(16px, ...)` on `pointer:coarse` devices — this prevents iOS Safari's auto-zoom on focus.
+- All hover effects are wrapped in `@media (hover: hover)` so they don't get stuck after a tap on touch devices.
+- `prefers-reduced-motion: reduce` is respected globally — all transitions become instant.
+- iOS notch + home indicator handled via `env(safe-area-inset-*)` tokens. Use [`<SafeAreaView>`](../design-tokens/spacing.mdx#touch-targets--safe-area) for fullscreen layouts.
+
+## Multi-brand setup
+
+If you need multiple brands in one app, scope overrides to a custom attribute or class:
+
+```css
+[data-brand='alpha'] {
+  --tui-primary: #635bff;
+}
+[data-brand='beta'] {
+  --tui-primary: #ff5c2c;
+}
+```
+
+```tsx
+<section data-brand="alpha">{/* Alpha components */}</section>
+<section data-brand="beta">{/* Beta components */}</section>
+```
+
+Each section's components consume the locally-overridden tokens with no extra wiring.
