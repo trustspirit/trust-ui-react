@@ -8,7 +8,7 @@ const meta: Meta<typeof Chip> = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['filled', 'outlined'],
+      options: ['filled', 'outlined', 'subtle', 'solid', 'outline'],
     },
     color: {
       control: 'select',
@@ -53,6 +53,18 @@ export const Colors: Story = {
       <Chip variant="outlined" color="danger">Danger</Chip>
       <Chip variant="outlined" color="warning">Warning</Chip>
       <Chip variant="outlined" color="info">Info</Chip>
+    </div>
+  ),
+};
+
+export const Subtle: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      <Chip variant="subtle" color="primary">Primary</Chip>
+      <Chip variant="subtle" color="success">Success</Chip>
+      <Chip variant="subtle" color="danger">Danger</Chip>
+      <Chip variant="subtle" color="warning">Warning</Chip>
+      <Chip variant="subtle" color="info">Info</Chip>
     </div>
   ),
 };

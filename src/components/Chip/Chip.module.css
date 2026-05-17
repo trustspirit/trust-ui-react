@@ -11,9 +11,10 @@
   vertical-align: middle;
   border: 1px solid transparent;
   transition:
-    background-color var(--tui-transition),
-    border-color var(--tui-transition),
-    box-shadow var(--tui-transition);
+    background-color var(--tui-duration-fast) var(--tui-ease-out),
+    border-color var(--tui-duration-fast) var(--tui-ease-out),
+    box-shadow var(--tui-duration-base) var(--tui-ease-out),
+    transform var(--tui-duration-base) var(--tui-ease-spring);
 }
 
 /* ── Sizes ── */
@@ -46,36 +47,24 @@
   color: var(--tui-primary-text);
 }
 
-.filled.primary.clickable:hover {
-  background-color: var(--tui-primary-hover);
-}
 
 .filled.secondary {
   background-color: var(--tui-secondary);
   color: var(--tui-secondary-text);
 }
 
-.filled.secondary.clickable:hover {
-  background-color: var(--tui-secondary-hover);
-}
 
 .filled.success {
   background-color: var(--tui-success);
   color: var(--tui-success-text);
 }
 
-.filled.success.clickable:hover {
-  background-color: var(--tui-success-hover);
-}
 
 .filled.danger {
   background-color: var(--tui-danger);
   color: var(--tui-danger-text);
 }
 
-.filled.danger.clickable:hover {
-  background-color: var(--tui-danger-hover);
-}
 
 /* ── Filled: warning ── */
 .filled.warning {
@@ -83,9 +72,6 @@
   color: var(--tui-warning-text);
 }
 
-.filled.warning.clickable:hover {
-  background-color: var(--tui-warning-hover);
-}
 
 /* ── Filled: info ── */
 .filled.info {
@@ -93,9 +79,6 @@
   color: var(--tui-info-text);
 }
 
-.filled.info.clickable:hover {
-  background-color: var(--tui-info-hover);
-}
 
 /* ── Outlined variants ── */
 .outlined.primary {
@@ -104,9 +87,6 @@
   color: var(--tui-primary);
 }
 
-.outlined.primary.clickable:hover {
-  background-color: var(--tui-primary-subtle);
-}
 
 .outlined.secondary {
   background-color: transparent;
@@ -114,9 +94,6 @@
   color: var(--tui-secondary);
 }
 
-.outlined.secondary.clickable:hover {
-  background-color: var(--tui-secondary-subtle);
-}
 
 .outlined.success {
   background-color: transparent;
@@ -124,9 +101,6 @@
   color: var(--tui-success);
 }
 
-.outlined.success.clickable:hover {
-  background-color: var(--tui-success-subtle);
-}
 
 .outlined.danger {
   background-color: transparent;
@@ -134,9 +108,6 @@
   color: var(--tui-danger);
 }
 
-.outlined.danger.clickable:hover {
-  background-color: var(--tui-danger-subtle);
-}
 
 /* ── Outlined: warning ── */
 .outlined.warning {
@@ -145,9 +116,6 @@
   color: var(--tui-warning);
 }
 
-.outlined.warning.clickable:hover {
-  background-color: var(--tui-warning-subtle);
-}
 
 /* ── Outlined: info ── */
 .outlined.info {
@@ -156,9 +124,6 @@
   color: var(--tui-info);
 }
 
-.outlined.info.clickable:hover {
-  background-color: var(--tui-info-subtle);
-}
 
 /* ── Icon ── */
 .icon {
@@ -192,4 +157,98 @@
 
 .deleteButton:hover {
   opacity: 1;
+}
+
+/* ── Hover guard: all clickable hover states ── */
+@media (hover: hover) {
+  .clickable:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Filled hover */
+  .filled.primary.clickable:hover {
+    background-color: var(--tui-primary-hover);
+  }
+  .filled.secondary.clickable:hover {
+    background-color: var(--tui-secondary-hover);
+  }
+  .filled.success.clickable:hover {
+    background-color: var(--tui-success-hover);
+  }
+  .filled.danger.clickable:hover {
+    background-color: var(--tui-danger-hover);
+  }
+  .filled.warning.clickable:hover {
+    background-color: var(--tui-warning-hover);
+  }
+  .filled.info.clickable:hover {
+    background-color: var(--tui-info-hover);
+  }
+
+  /* Outlined hover */
+  .outlined.primary.clickable:hover {
+    background-color: var(--tui-primary-subtle);
+  }
+  .outlined.secondary.clickable:hover {
+    background-color: var(--tui-secondary-subtle);
+  }
+  .outlined.success.clickable:hover {
+    background-color: var(--tui-success-subtle);
+  }
+  .outlined.danger.clickable:hover {
+    background-color: var(--tui-danger-subtle);
+  }
+  .outlined.warning.clickable:hover {
+    background-color: var(--tui-warning-subtle);
+  }
+  .outlined.info.clickable:hover {
+    background-color: var(--tui-info-subtle);
+  }
+}
+
+/* ── Micro-lift: active resets ── */
+.clickable:active {
+  transform: translateY(0);
+  transition-duration: var(--tui-duration-instant);
+}
+
+/* ── Subtle variants ── */
+.subtle.primary {
+  background-color: var(--tui-primary-subtle);
+  color: var(--tui-primary);
+}
+.subtle.secondary {
+  background-color: var(--tui-secondary-subtle);
+  color: var(--tui-text);
+}
+.subtle.success {
+  background-color: var(--tui-success-subtle);
+  color: var(--tui-success);
+}
+.subtle.danger {
+  background-color: var(--tui-danger-subtle);
+  color: var(--tui-danger);
+}
+.subtle.warning {
+  background-color: var(--tui-warning-subtle);
+  color: var(--tui-warning);
+}
+.subtle.info {
+  background-color: var(--tui-info-subtle);
+  color: var(--tui-info);
+}
+
+@media (hover: hover) {
+  .subtle.primary.clickable:hover {
+    background-color: var(--tui-primary-subtle-hover);
+  }
+  .subtle.secondary.clickable:hover {
+    background-color: var(--tui-bg-hover);
+  }
+  .subtle.success.clickable:hover,
+  .subtle.danger.clickable:hover,
+  .subtle.warning.clickable:hover,
+  .subtle.info.clickable:hover {
+    filter: brightness(0.97);
+  }
 }

@@ -3,7 +3,7 @@ import styles from './Chip.module.css';
 
 export interface ChipProps {
   /** Visual style variant */
-  variant?: 'filled' | 'outlined';
+  variant?: 'solid' | 'subtle' | 'outline' | 'filled' | 'outlined';
   /** Color scheme */
   color?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info';
   /** Size of the chip */
@@ -47,9 +47,14 @@ export function Chip({
   className,
   style,
 }: ChipProps) {
+  const normalizedVariant =
+    variant === 'solid' ? 'filled' :
+    variant === 'outline' ? 'outlined' :
+    variant; // 'subtle' | 'filled' | 'outlined' pass through
+
   const classNames = [
     styles.chip,
-    styles[variant],
+    styles[normalizedVariant],
     styles[color],
     styles[size],
     onClick ? styles.clickable : '',
