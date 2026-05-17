@@ -1,0 +1,131 @@
+---
+sidebar_position: 24
+title: SegmentedControl
+---
+
+import { SegmentedControl } from 'trust-ui-react';
+import { useState } from 'react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# SegmentedControl
+
+A compact, equal-width control for switching between **2-4 mutually exclusive options**. Inspired by iOS UISegmentedControl — ideal for view toggles, filter sets, and grouped selectors where Radio would feel too loose and Tabs too heavy.
+
+## Basic Usage
+
+export const BasicDemo = () => {
+  const [value, setValue] = useState('day');
+  return (
+    <div style={{ width: 320 }}>
+      <SegmentedControl
+        value={value}
+        onChange={setValue}
+        options={[
+          { value: 'day', label: 'Day' },
+          { value: 'week', label: 'Week' },
+          { value: 'month', label: 'Month' },
+        ]}
+      />
+    </div>
+  );
+};
+
+<ComponentPreview code={`const [value, setValue] = useState('day');
+
+<SegmentedControl
+  value={value}
+  onChange={setValue}
+  options={[
+    { value: 'day', label: 'Day' },
+    { value: 'week', label: 'Week' },
+    { value: 'month', label: 'Month' },
+  ]}
+/>`}>
+  <BasicDemo />
+</ComponentPreview>
+
+## Sizes
+
+export const SizesDemo = () => {
+  const [a, setA] = useState('one');
+  const [b, setB] = useState('one');
+  const options = [
+    { value: 'one', label: 'One' },
+    { value: 'two', label: 'Two' },
+    { value: 'three', label: 'Three' },
+  ];
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: 320 }}>
+      <SegmentedControl size="sm" value={a} onChange={setA} options={options} />
+      <SegmentedControl size="md" value={b} onChange={setB} options={options} />
+    </div>
+  );
+};
+
+<ComponentPreview code={`<SegmentedControl size="sm" ... />
+<SegmentedControl size="md" ... />`}>
+  <SizesDemo />
+</ComponentPreview>
+
+## Disabled segment
+
+Individual options can be disabled via `option.disabled`. The whole control is implicitly disabled when only one option is selectable.
+
+export const DisabledDemo = () => {
+  const [v, setV] = useState('list');
+  return (
+    <div style={{ width: 320 }}>
+      <SegmentedControl
+        value={v}
+        onChange={setV}
+        options={[
+          { value: 'list', label: 'List' },
+          { value: 'grid', label: 'Grid' },
+          { value: 'kanban', label: 'Kanban', disabled: true },
+        ]}
+      />
+    </div>
+  );
+};
+
+<ComponentPreview code={`<SegmentedControl
+  value={v}
+  onChange={setV}
+  options={[
+    { value: 'list', label: 'List' },
+    { value: 'grid', label: 'Grid' },
+    { value: 'kanban', label: 'Kanban', disabled: true },
+  ]}
+/>`}>
+  <DisabledDemo />
+</ComponentPreview>
+
+## When to use which
+
+| Component | Best for |
+|---|---|
+| **SegmentedControl** | 2-4 mutually exclusive options of similar weight (view toggles, filter sets) |
+| **Tabs** (variant="segmented") | Same look, but bound to content panels via `Tabs.Content` |
+| **RadioGroup** | 5+ options, or when labels need different lengths |
+| **Select** (mobileVariant="sheet") | Many options, or options the user picks once and rarely changes |
+
+The sliding indicator animation uses Pattern D (`--tui-duration-base` × `--tui-ease-in-out`) so the highlight glides between segments rather than snapping.
+
+## Mobile considerations
+
+- All segments meet the 44px tap target on both `sm` and `md` sizes (height scales up on `pointer:coarse`).
+- The indicator slide animation is GPU-accelerated (`transform`), so it stays smooth even on mid-range Android.
+- For 5+ options, switch to `<Select mobileVariant="sheet">` — SegmentedControl wraps awkwardly on narrow viewports.
+
+## Props
+
+<PropsTable props={[
+  { name: 'value', type: 'string', description: 'Currently selected option value (controlled)', required: true },
+  { name: 'onChange', type: '(value: string) => void', description: 'Called when the user selects a different segment', required: true },
+  { name: 'options', type: 'SegmentedControlOption[]', description: '{ value, label, disabled? } — 2-4 recommended', required: true },
+  { name: 'size', type: "'sm' | 'md'", default: "'sm'", description: 'Visual size' },
+  { name: 'aria-label', type: 'string', description: 'Accessible label for the segmented group' },
+  { name: 'className', type: 'string', description: 'Additional CSS class for the track element' },
+  { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },
+]} />

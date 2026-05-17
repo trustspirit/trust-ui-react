@@ -59,6 +59,15 @@ const sidebars: SidebarsConfig = {
         },
         {
           type: 'category',
+          label: 'Mobile',
+          items: [
+            'components/bottom-sheet',
+            'components/action-sheet',
+            'components/segmented-control',
+          ],
+        },
+        {
+          type: 'category',
           label: 'Layout',
           items: ['components/expander'],
         },

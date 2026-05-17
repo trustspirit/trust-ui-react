@@ -1,0 +1,117 @@
+---
+sidebar_position: 25
+title: BottomSheet
+---
+
+import { BottomSheet, Button } from 'trust-ui-react';
+import { useState } from 'react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# BottomSheet
+
+A bottom-anchored modal panel native to mobile UX. Supports **multiple snap points**, drag-to-resize, swipe-to-dismiss, and backdrop tap dismiss. Use it for filter panels, detail pages, comment lists, action confirmations — anywhere a centered modal would feel out of place on touch.
+
+## Basic Usage
+
+export const BasicSheet = () => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Open sheet</Button>
+      <BottomSheet open={open} onClose={() => setOpen(false)}>
+        <div style={{ padding: 24 }}>
+          <h3>Hello from BottomSheet</h3>
+          <p>Drag the handle or swipe down to dismiss.</p>
+          <Button onClick={() => setOpen(false)}>Close</Button>
+        </div>
+      </BottomSheet>
+    </>
+  );
+};
+
+<ComponentPreview code={`const [open, setOpen] = useState(false);
+
+<Button onClick={() => setOpen(true)}>Open sheet</Button>
+<BottomSheet open={open} onClose={() => setOpen(false)}>
+  <div style={{ padding: 24 }}>
+    <h3>Hello from BottomSheet</h3>
+    <p>Drag the handle or swipe down to dismiss.</p>
+  </div>
+</BottomSheet>`}>
+  <BasicSheet />
+</ComponentPreview>
+
+## Snap points
+
+`snapPoints` is an array of viewport-height fractions (0-1). The sheet maximum height is the largest entry; intermediate values are stopping points the user can drag to. Default is `[0.5]` (single fixed half-height).
+
+```tsx
+<BottomSheet
+  open={open}
+  onClose={close}
+  snapPoints={[0.25, 0.5, 0.9]}
+  initialSnap={1}
+>
+  <FilterPanel />
+</BottomSheet>
+```
+
+This gives a 3-position sheet — peek (25%), default (50%), and fullscreen (90%). The user can drag the handle between any of them. Dragging below the smallest snap (or beyond 50% past it) calls `onClose`.
+
+### Picking snap points
+
+| Pattern | snapPoints | Use for |
+|---|---|---|
+| Single height | `[0.5]` | Action confirmations, simple forms |
+| Peek + expand | `[0.25, 0.7]` | Map overlays, detail with progressive disclosure |
+| Mini → half → full | `[0.2, 0.5, 0.92]` | Maps, music players, complex tools |
+
+## Drag handle
+
+By default a small handle is shown at the top of the sheet (`--tui-bg-muted` rounded bar). Set `showHandle={false}` to hide it — useful when you want a strict modal feel with no drag affordance.
+
+```tsx
+<BottomSheet open={open} onClose={close} showHandle={false} dismissible={false}>
+  <RequiredConfirmation />
+</BottomSheet>
+```
+
+## Dismissibility
+
+Set `dismissible={false}` to prevent swipe-down dismiss (e.g., for confirmation flows where the user must explicitly choose). The backdrop tap still closes the sheet unless you also handle the `onClose` callback.
+
+| Prop | Effect |
+|---|---|
+| `dismissible={true}` (default) | Swipe down past threshold → `onClose` |
+| `dismissible={false}` | Swipe is captured but never dismisses; ESC + backdrop tap still work |
+
+## Mobile considerations
+
+- The sheet uses `.tui-glass` surface (translucent + backdrop-blur on capable browsers, opaque `--tui-bg-subtle` fallback on older Android WebView).
+- Drag is GPU-accelerated (`transform: translateY`) — stays smooth even with heavy children.
+- Body scroll is locked while the sheet is open and restored on close.
+- Respects iOS safe-area-inset-bottom automatically (so content doesn't sit under the home indicator).
+- On `prefers-reduced-motion: reduce`, the slide-up animation is replaced with instant fade.
+- Pointer events use [`useDrag`](../design-tokens/spacing.mdx) hook internally — both touch and mouse drag work.
+
+## Related components
+
+- **[Dialog](./dialog.mdx)** with `mobileVariant="sheet"` — easier opt-in if you already use Dialog
+- **[ActionSheet](./action-sheet.mdx)** — pre-built action list on top of BottomSheet
+- **[Menu](./menu.mdx)** with `mobileVariant="sheet"` — dropdown that converts to a sheet on touch
+
+## Props
+
+<PropsTable props={[
+  { name: 'open', type: 'boolean', description: 'Whether the sheet is open (controlled)', required: true },
+  { name: 'onClose', type: '() => void', description: 'Called when the sheet should close (backdrop tap, swipe-down, ESC, drag out-of-range)', required: true },
+  { name: 'snapPoints', type: 'number[]', default: '[0.5]', description: 'Heights as fractions of viewport (0-1). Max value = sheet maximum height.' },
+  { name: 'initialSnap', type: 'number', default: '0', description: 'Index into snapPoints when the sheet opens' },
+  { name: 'showHandle', type: 'boolean', default: 'true', description: 'Show the drag handle at the top' },
+  { name: 'dismissible', type: 'boolean', default: 'true', description: 'Allow swipe-down to dismiss' },
+  { name: 'children', type: 'ReactNode', description: 'Sheet content' },
+  { name: 'className', type: 'string', description: 'Additional CSS class for the sheet element' },
+]} />
+
+Also accepts standard `<div>` HTML attributes via spread.
