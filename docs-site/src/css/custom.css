@@ -1,112 +1,311 @@
-/* trust-ui styles (from built dist) */
+/* trust-ui styles (from built dist) — provides --tui-* tokens for the entire docs site */
 @import '../../../dist/styles.css';
 
-/* Infima overrides */
+/* ----------------------------------------------------------------
+   Infima override — align Docusaurus chrome with v2 Indigo Premium
+---------------------------------------------------------------- */
+
 :root {
-  --ifm-color-primary: #3b82f6;
-  --ifm-color-primary-dark: #2563eb;
-  --ifm-color-primary-darker: #1d4ed8;
-  --ifm-color-primary-darkest: #1e40af;
-  --ifm-color-primary-light: #60a5fa;
-  --ifm-color-primary-lighter: #93bbfd;
-  --ifm-color-primary-lightest: #bfdbfe;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-color-primary: #635bff;
+  --ifm-color-primary-dark: #4f47ff;
+  --ifm-color-primary-darker: #3d35e8;
+  --ifm-color-primary-darkest: #2d27b8;
+  --ifm-color-primary-light: #7c75ff;
+  --ifm-color-primary-lighter: #968fff;
+  --ifm-color-primary-lightest: #c4c0ff;
+  --ifm-code-font-size: 92%;
+  --ifm-font-family-base: var(--tui-font-sans);
+  --ifm-font-family-monospace: var(--tui-font-mono);
+  --docusaurus-highlighted-code-line-bg: rgba(99, 91, 255, 0.08);
 }
 
 [data-theme='dark'] {
-  --ifm-color-primary: #60a5fa;
-  --ifm-color-primary-dark: #3b82f6;
-  --ifm-color-primary-darker: #2563eb;
-  --ifm-color-primary-darkest: #1d4ed8;
-  --ifm-color-primary-light: #93bbfd;
-  --ifm-color-primary-lighter: #bfdbfe;
-  --ifm-color-primary-lightest: #dbeafe;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-color-primary: #7c75ff;
+  --ifm-color-primary-dark: #635bff;
+  --ifm-color-primary-darker: #4f47ff;
+  --ifm-color-primary-darkest: #3d35e8;
+  --ifm-color-primary-light: #968fff;
+  --ifm-color-primary-lighter: #b0aaff;
+  --ifm-color-primary-lightest: #d4d1ff;
+  --docusaurus-highlighted-code-line-bg: rgba(124, 117, 255, 0.18);
 }
 
-/* Component Preview */
+/* ----------------------------------------------------------------
+   Component Preview — uses v2 surface + shadow tokens
+---------------------------------------------------------------- */
+
 .component-preview {
-  border: 1px solid var(--ifm-color-emphasis-300);
-  border-radius: 8px;
+  border: 1px solid var(--tui-border, var(--ifm-color-emphasis-300));
+  border-radius: var(--tui-radius-lg, 12px);
   overflow: hidden;
   margin: 1.5rem 0;
+  box-shadow: var(--tui-shadow-sm, none);
+  background: var(--tui-bg, #fff);
 }
 
 .component-preview__demo {
-  padding: 2rem;
-  background: var(--tui-bg, #fff);
+  padding: var(--tui-space-6, 2rem);
+  background: var(--tui-bg-subtle, #fbfaf7);
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--tui-space-3, 12px);
   align-items: center;
   justify-content: center;
+  min-height: 80px;
+}
+
+[data-theme='dark'] .component-preview__demo {
+  background: var(--tui-bg-subtle);
 }
 
 .component-preview__toolbar {
   display: flex;
   justify-content: flex-end;
-  padding: 0.5rem 1rem;
-  border-bottom: 1px solid var(--ifm-color-emphasis-300);
-  background: var(--ifm-color-emphasis-100);
+  padding: var(--tui-space-2, 0.5rem) var(--tui-space-4, 1rem);
+  border-bottom: 1px solid var(--tui-border, var(--ifm-color-emphasis-300));
+  background: var(--tui-bg, #fff);
 }
 
 .component-preview__theme-toggle {
   cursor: pointer;
-  background: none;
-  border: 1px solid var(--ifm-color-emphasis-300);
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 0.8rem;
-  color: var(--ifm-font-color-base);
+  background: transparent;
+  border: 1px solid var(--tui-border, var(--ifm-color-emphasis-300));
+  border-radius: var(--tui-radius-sm, 6px);
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--tui-fg, var(--ifm-font-color-base));
+  transition:
+    background-color var(--tui-duration-fast, 150ms) var(--tui-ease-out, ease),
+    border-color var(--tui-duration-fast, 150ms) var(--tui-ease-out, ease);
+}
+
+@media (hover: hover) {
+  .component-preview__theme-toggle:hover {
+    background: var(--tui-bg-muted, var(--ifm-color-emphasis-100));
+    border-color: var(--tui-border-strong, var(--ifm-color-emphasis-400));
+  }
 }
 
 .component-preview__code {
-  border-top: 1px solid var(--ifm-color-emphasis-300);
+  border-top: 1px solid var(--tui-border, var(--ifm-color-emphasis-300));
 }
 
-/* Props Table */
+/* ----------------------------------------------------------------
+   Props Table — tighter, token-driven
+---------------------------------------------------------------- */
+
 .props-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  margin: 1rem 0 1.5rem;
 }
 
 .props-table th {
   text-align: left;
-  padding: 0.75rem 1rem;
-  border-bottom: 2px solid var(--ifm-color-emphasis-300);
+  padding: var(--tui-space-3, 0.75rem) var(--tui-space-4, 1rem);
+  border-bottom: 1px solid var(--tui-border-strong, var(--ifm-color-emphasis-400));
   font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--tui-fg-muted, var(--ifm-color-emphasis-700));
+  background: var(--tui-bg-subtle, transparent);
 }
 
 .props-table td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  padding: var(--tui-space-3, 0.75rem) var(--tui-space-4, 1rem);
+  border-bottom: 1px solid var(--tui-border, var(--ifm-color-emphasis-200));
   vertical-align: top;
 }
 
-.props-table code {
-  font-size: 0.85em;
-  background: var(--ifm-color-emphasis-100);
-  padding: 2px 6px;
-  border-radius: 3px;
+.props-table tr:last-child td {
+  border-bottom: 0;
 }
 
-/* Design Token Swatch */
+.props-table code {
+  font-size: 0.82em;
+  background: var(--tui-bg-muted, var(--ifm-color-emphasis-100));
+  padding: 2px 6px;
+  border-radius: var(--tui-radius-sm, 4px);
+  font-family: var(--tui-font-mono);
+  color: var(--tui-fg, inherit);
+}
+
+/* ----------------------------------------------------------------
+   Design Token Swatch — used on the design-tokens pages
+---------------------------------------------------------------- */
+
 .token-swatch {
   display: inline-block;
   width: 40px;
   height: 40px;
-  border-radius: 6px;
-  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: var(--tui-radius-md, 6px);
+  border: 1px solid var(--tui-border, var(--ifm-color-emphasis-300));
   vertical-align: middle;
-  margin-right: 8px;
+  margin-right: var(--tui-space-2, 8px);
+  box-shadow: var(--tui-shadow-xs, none);
 }
 
 .token-row {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--ifm-color-emphasis-200);
+  gap: var(--tui-space-3, 12px);
+  padding: var(--tui-space-2, 8px) 0;
+  border-bottom: 1px solid var(--tui-border, var(--ifm-color-emphasis-200));
+}
+
+.token-row:last-child {
+  border-bottom: 0;
+}
+
+/* ----------------------------------------------------------------
+   Landing page hero
+---------------------------------------------------------------- */
+
+.tui-hero {
+  padding: clamp(56px, 10vw, 120px) var(--tui-space-6, 24px);
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(99, 91, 255, 0.08), transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(124, 117, 255, 0.06), transparent 50%),
+    var(--tui-bg);
+}
+
+[data-theme='dark'] .tui-hero {
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(124, 117, 255, 0.12), transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(99, 91, 255, 0.1), transparent 50%),
+    var(--tui-bg);
+}
+
+.tui-hero__eyebrow {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--tui-primary-subtle);
+  color: var(--tui-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  margin-bottom: var(--tui-space-5, 20px);
+}
+
+.tui-hero__title {
+  font-family: var(--tui-font-sans);
+  font-size: clamp(2.25rem, 6vw, 4rem);
+  font-weight: 700;
+  letter-spacing: var(--tui-letter-tighter, -0.022em);
+  line-height: 1.05;
+  margin: 0 auto var(--tui-space-5, 20px);
+  max-width: 720px;
+  background: linear-gradient(180deg, var(--tui-fg) 0%, var(--tui-fg-muted) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tui-hero__subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--tui-fg-muted);
+  line-height: 1.55;
+  max-width: 620px;
+  margin: 0 auto var(--tui-space-8, 32px);
+}
+
+.tui-hero__cta-row {
+  display: flex;
+  gap: var(--tui-space-3, 12px);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tui-hero__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 22px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  border-radius: var(--tui-radius-md, 8px);
+  border: 1px solid transparent;
+  text-decoration: none !important;
+  transition:
+    filter var(--tui-duration-base, 220ms) var(--tui-ease-spring, ease),
+    transform var(--tui-duration-base, 220ms) var(--tui-ease-spring, ease),
+    box-shadow var(--tui-duration-base, 220ms) var(--tui-ease-out, ease);
+}
+
+.tui-hero__cta--primary {
+  background: var(--tui-primary-gradient);
+  color: #fff;
+  box-shadow: var(--tui-shadow-md, none), var(--tui-inset-highlight, none);
+}
+
+@media (hover: hover) {
+  .tui-hero__cta--primary:hover {
+    filter: brightness(0.95);
+    transform: translateY(-1px);
+    box-shadow: var(--tui-shadow-lg, none), var(--tui-inset-highlight, none);
+    color: #fff;
+  }
+}
+
+.tui-hero__cta--secondary {
+  background: transparent;
+  color: var(--tui-fg);
+  border-color: var(--tui-border-strong);
+}
+
+@media (hover: hover) {
+  .tui-hero__cta--secondary:hover {
+    background: var(--tui-bg-muted);
+    color: var(--tui-fg);
+    transform: translateY(-1px);
+  }
+}
+
+/* Feature grid */
+
+.tui-features {
+  padding: clamp(48px, 8vw, 96px) var(--tui-space-6, 24px);
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+.tui-features__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--tui-space-6, 24px);
+}
+
+.tui-feature {
+  padding: var(--tui-space-6, 24px);
+  border: 1px solid var(--tui-border);
+  border-radius: var(--tui-radius-lg, 12px);
+  background: var(--tui-bg-subtle);
+  transition: transform var(--tui-duration-base, 220ms) var(--tui-ease-spring, ease),
+    box-shadow var(--tui-duration-base, 220ms) var(--tui-ease-out, ease);
+}
+
+@media (hover: hover) {
+  .tui-feature:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--tui-shadow-md, none);
+  }
+}
+
+.tui-feature__title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  margin: 0 0 var(--tui-space-2, 8px);
+  letter-spacing: var(--tui-letter-tight, -0.011em);
+}
+
+.tui-feature__body {
+  font-size: 0.9375rem;
+  color: var(--tui-fg-muted);
+  line-height: 1.55;
+  margin: 0;
 }

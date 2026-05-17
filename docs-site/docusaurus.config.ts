@@ -5,7 +5,7 @@ import path from 'path';
 
 const config: Config = {
   title: 'trust-ui',
-  tagline: 'A lightweight, themeable React UI component library',
+  tagline: 'A mobile-optimized React UI library — 22 themeable components, native touch UX, CSS-variable theming.',
   favicon: 'img/favicon.ico',
 
   future: {
@@ -19,7 +19,12 @@ const config: Config = {
   projectName: 'trust-ui-react',
 
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
 
   i18n: {
     defaultLocale: 'en',
@@ -48,7 +53,7 @@ const config: Config = {
       'classic',
       {
         docs: {
-          routeBasePath: '/',
+          routeBasePath: '/docs',
           sidebarPath: './sidebars.ts',
         },
         blog: false,
@@ -71,6 +76,16 @@ const config: Config = {
           sidebarId: 'docsSidebar',
           position: 'left',
           label: 'Docs',
+        },
+        {
+          to: '/docs/guides/mobile-patterns',
+          label: 'Mobile',
+          position: 'left',
+        },
+        {
+          to: '/docs/design-tokens/colors',
+          label: 'Tokens',
+          position: 'left',
         },
         {
           href: 'https://github.com/trustspirit/trust-ui-react',
