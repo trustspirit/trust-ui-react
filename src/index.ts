@@ -96,3 +96,11 @@ export { StickyFooter } from './components/layout/StickyFooter';
 export type { StickyFooterProps } from './components/layout/StickyFooter';
 export { KeyboardAvoidingView } from './components/layout/KeyboardAvoidingView';
 export type { KeyboardAvoidingViewProps } from './components/layout/KeyboardAvoidingView';
+
+// Mobile-first components
+export { BottomSheet } from './components/BottomSheet';
+export type { BottomSheetProps } from './components/BottomSheet';
+export { ActionSheet } from './components/ActionSheet';
+export type { ActionSheetProps, ActionSheetAction } from './components/ActionSheet';
+export { SegmentedControl } from './components/SegmentedControl';
+export type { SegmentedControlProps, SegmentedControlOption } from './components/SegmentedControl';
