@@ -6,6 +6,20 @@
   cursor: pointer;
   font-family: var(--tui-font-family);
   user-select: none;
+  position: relative;
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  inset: -12px;
+  pointer-events: none;
+}
+
+@media (pointer: coarse) {
+  .container::before {
+    pointer-events: auto;
+  }
 }
 
 .container.disabled {
@@ -37,9 +51,9 @@
   border-radius: var(--tui-radius-full);
   background-color: var(--tui-bg);
   transition:
-    background-color var(--tui-transition),
-    border-color var(--tui-transition),
-    box-shadow var(--tui-transition);
+    background-color var(--tui-duration-fast) var(--tui-ease-out),
+    border-color var(--tui-duration-fast) var(--tui-ease-out),
+    box-shadow var(--tui-duration-fast) var(--tui-ease-out);
   flex-shrink: 0;
 }
 
@@ -49,17 +63,13 @@
   height: 10px;
   border-radius: var(--tui-radius-full);
   transform: scale(0);
-  transition: transform var(--tui-transition);
+  transition: transform var(--tui-duration-base) var(--tui-ease-spring),
+              background-color var(--tui-duration-fast) var(--tui-ease-out);
 }
 
 /* Focus visible */
 .hiddenInput:focus-visible + .indicator {
   box-shadow: var(--tui-focus-ring);
-}
-
-/* Hover */
-.container:hover:not(.disabled) .indicator {
-  border-color: var(--tui-border-hover);
 }
 
 /* ── Checked state - Primary ── */
@@ -72,14 +82,6 @@
   transform: scale(1);
 }
 
-.container:hover:not(.disabled) .hiddenInput:checked + .indicator.primary {
-  border-color: var(--tui-primary-hover);
-}
-
-.container:hover:not(.disabled) .hiddenInput:checked + .indicator.primary .dot {
-  background-color: var(--tui-primary-hover);
-}
-
 /* ── Checked state - Secondary ── */
 .hiddenInput:checked + .indicator.secondary {
   border-color: var(--tui-secondary);
@@ -90,12 +92,27 @@
   transform: scale(1);
 }
 
-.container:hover:not(.disabled) .hiddenInput:checked + .indicator.secondary {
-  border-color: var(--tui-secondary-hover);
-}
+/* ── Hover (pointer-capable devices only) ── */
+@media (hover: hover) {
+  .container:hover:not(.disabled) .indicator {
+    border-color: var(--tui-border-hover);
+  }
 
-.container:hover:not(.disabled) .hiddenInput:checked + .indicator.secondary .dot {
-  background-color: var(--tui-secondary-hover);
+  .container:hover:not(.disabled) .hiddenInput:checked + .indicator.primary {
+    border-color: var(--tui-primary-hover);
+  }
+
+  .container:hover:not(.disabled) .hiddenInput:checked + .indicator.primary .dot {
+    background-color: var(--tui-primary-hover);
+  }
+
+  .container:hover:not(.disabled) .hiddenInput:checked + .indicator.secondary {
+    border-color: var(--tui-secondary-hover);
+  }
+
+  .container:hover:not(.disabled) .hiddenInput:checked + .indicator.secondary .dot {
+    background-color: var(--tui-secondary-hover);
+  }
 }
 
 /* ── Label text ── */
