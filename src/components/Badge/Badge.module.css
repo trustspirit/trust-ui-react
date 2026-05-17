@@ -35,33 +35,66 @@
   border-radius: var(--tui-radius-full);
 }
 
-/* ── Variants ── */
-.primary {
+/* ── Solid variant (default — backwards compatible) ── */
+.solid.primary {
   background-color: var(--tui-primary);
   color: var(--tui-primary-text);
 }
-
-.secondary {
+.solid.secondary {
   background-color: var(--tui-secondary);
   color: var(--tui-secondary-text);
 }
-
-.success {
+.solid.success {
   background-color: var(--tui-success);
   color: var(--tui-success-text);
 }
-
-.danger {
+.solid.danger {
   background-color: var(--tui-danger);
   color: var(--tui-danger-text);
 }
-
-.warning {
+.solid.warning {
   background-color: var(--tui-warning);
   color: var(--tui-warning-text);
 }
-
-.info {
+.solid.info {
   background-color: var(--tui-info);
   color: var(--tui-info-text);
 }
+
+/* ── Subtle variant ── */
+.subtle.primary {
+  background-color: var(--tui-primary-subtle);
+  color: var(--tui-primary);
+}
+.subtle.secondary {
+  background-color: var(--tui-secondary-subtle);
+  color: var(--tui-secondary);
+}
+.subtle.success {
+  background-color: var(--tui-success-subtle);
+  color: var(--tui-success);
+}
+.subtle.danger {
+  background-color: var(--tui-danger-subtle);
+  color: var(--tui-danger);
+}
+.subtle.warning {
+  background-color: var(--tui-warning-subtle);
+  color: var(--tui-warning);
+}
+.subtle.info {
+  background-color: var(--tui-info-subtle);
+  color: var(--tui-info);
+}
+
+/* ── Outline variant ── */
+.outline {
+  background-color: transparent;
+  border: 1px solid;
+}
+.outline.primary { color: var(--tui-primary); border-color: var(--tui-primary); }
+.outline.secondary { color: var(--tui-secondary); border-color: var(--tui-secondary); }
+.outline.success { color: var(--tui-success); border-color: var(--tui-success); }
+.outline.danger { color: var(--tui-danger); border-color: var(--tui-danger); }
+.outline.warning { color: var(--tui-warning); border-color: var(--tui-warning); }
+.outline.info { color: var(--tui-info); border-color: var(--tui-info); }

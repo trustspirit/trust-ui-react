@@ -59,3 +59,20 @@ export const Dot: Story = {
     </div>
   ),
 };
+
+export const FillVariants: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <Badge variant="primary">Solid (default)</Badge>
+        <Badge variant="primary" fillStyle="subtle">Subtle</Badge>
+        <Badge variant="primary" fillStyle="outline">Outline</Badge>
+      </div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <Badge variant="success" fillStyle="subtle">Active</Badge>
+        <Badge variant="warning" fillStyle="subtle">Pending</Badge>
+        <Badge variant="danger" fillStyle="subtle">Failed</Badge>
+      </div>
+    </div>
+  ),
+};

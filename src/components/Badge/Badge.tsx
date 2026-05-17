@@ -6,6 +6,11 @@ export interface BadgeProps {
   variant?: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info';
   /** Size of the badge */
   size?: 'sm' | 'md';
+  /**
+   * Fill style. 'solid' (default) uses solid background. 'subtle' uses subtle tint.
+   * 'outline' uses transparent bg with colored border.
+   */
+  fillStyle?: 'solid' | 'subtle' | 'outline';
   /** Renders as a small colored dot with no text */
   dot?: boolean;
   /** Badge content */
@@ -19,6 +24,7 @@ export interface BadgeProps {
 export function Badge({
   variant = 'primary',
   size = 'md',
+  fillStyle = 'solid',
   dot = false,
   children,
   className,
@@ -26,8 +32,9 @@ export function Badge({
 }: BadgeProps) {
   const classNames = [
     styles.badge,
-    styles[variant],
     styles[size],
+    styles[fillStyle],
+    styles[variant],
     dot ? styles.dot : '',
     className ?? '',
   ]
