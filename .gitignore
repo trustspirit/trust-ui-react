@@ -10,3 +10,6 @@ dist/
 docs-site/.docusaurus/
 docs-site/build/
 docs-site/node_modules/
+
+# Superpowers brainstorming session files
+.superpowers/
