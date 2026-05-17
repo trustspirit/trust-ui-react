@@ -22,6 +22,11 @@ export interface SliderProps {
   showValue?: boolean;
   /** Whether the slider is disabled */
   disabled?: boolean;
+  /**
+   * Use gradient fill for the slider track (Firefox only — WebKit shows
+   * solid color due to platform limitations with range input pseudo-elements).
+   */
+  gradient?: boolean;
   /** Additional CSS class */
   className?: string;
   /** Inline styles */
@@ -41,6 +46,7 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
       size = 'md',
       showValue = false,
       disabled = false,
+      gradient = false,
       className,
       style,
     },
@@ -84,7 +90,7 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
       .filter(Boolean)
       .join(' ');
 
-    const sliderClassNames = [styles.slider, styles[variant]]
+    const sliderClassNames = [styles.slider, styles[variant], gradient && styles.gradient]
       .filter(Boolean)
       .join(' ');
 

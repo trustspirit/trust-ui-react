@@ -1,11 +1,15 @@
+import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { Slider } from './Slider';
 
-export default {
+const meta: Meta<typeof Slider> = {
   title: 'Form/Slider',
   component: Slider,
   tags: ['autodocs'],
 };
+
+export default meta;
+type Story = StoryObj<typeof Slider>;
 
 export const Default = () => {
   const [value, setValue] = useState(50);
@@ -86,6 +90,10 @@ export const Disabled = () => (
 export const Uncontrolled = () => (
   <Slider defaultValue={25} showValue />
 );
+
+export const WithGradient: Story = {
+  args: { gradient: true, defaultValue: 60 },
+};
 
 export const Volume = () => {
   const [volume, setVolume] = useState(75);

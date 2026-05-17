@@ -108,8 +108,8 @@
   box-shadow: var(--tui-shadow-sm);
   cursor: pointer;
   transition:
-    box-shadow var(--tui-transition),
-    transform var(--tui-transition);
+    box-shadow var(--tui-duration-fast) var(--tui-ease-out),
+    transform var(--tui-duration-base) var(--tui-ease-spring);
 }
 
 .sm .slider::-webkit-slider-thumb {
@@ -138,12 +138,15 @@
   box-shadow: var(--tui-focus-ring);
 }
 
-.slider:hover:not(:disabled)::-webkit-slider-thumb {
-  transform: scale(1.1);
+@media (hover: hover) {
+  .slider:hover:not(:disabled)::-webkit-slider-thumb {
+    transform: scale(1.1);
+  }
 }
 
 .slider:active:not(:disabled)::-webkit-slider-thumb {
   transform: scale(1.15);
+  transition: none;  /* drag: instant response */
 }
 
 /* ── Thumb - Firefox ── */
@@ -154,8 +157,8 @@
   box-shadow: var(--tui-shadow-sm);
   cursor: pointer;
   transition:
-    box-shadow var(--tui-transition),
-    transform var(--tui-transition);
+    box-shadow var(--tui-duration-fast) var(--tui-ease-out),
+    transform var(--tui-duration-base) var(--tui-ease-spring);
 }
 
 .sm .slider::-moz-range-thumb {
@@ -179,6 +182,33 @@
 
 .slider:focus-visible::-moz-range-thumb {
   box-shadow: var(--tui-focus-ring);
+}
+
+/* ── Mobile thumb sizes (touch devices) ── */
+@media (pointer: coarse) {
+  .sm .slider::-webkit-slider-thumb,
+  .sm .slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+  }
+  .md .slider::-webkit-slider-thumb,
+  .md .slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+  }
+  .lg .slider::-webkit-slider-thumb,
+  .lg .slider::-moz-range-thumb {
+    width: 28px;
+    height: 28px;
+  }
+  .sm .slider::-webkit-slider-thumb { margin-top: -8px; }
+  .md .slider::-webkit-slider-thumb { margin-top: -9px; }
+  .lg .slider::-webkit-slider-thumb { margin-top: -10px; }
+}
+
+/* ── Gradient fill - Firefox only ── */
+.slider.gradient.primary::-moz-range-progress {
+  background: var(--tui-primary-gradient);
 }
 
 /* ── Value label ── */
