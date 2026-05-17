@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { DateRangePicker } from './DateRangePicker';
 import type { DateRange } from './DateRangePicker';
+import type { StoryObj } from '@storybook/react';
 
 export default {
   title: 'Form/DateRangePicker',
   component: DateRangePicker,
   tags: ['autodocs'],
 };
+
+type Story = StoryObj<typeof DateRangePicker>;
 
 export const Default = () => <DateRangePicker label="Date Range" />;
 
@@ -109,4 +112,14 @@ export const Controlled = () => {
       </span>
     </div>
   );
+};
+
+export const MobileModal: Story = {
+  args: { mobileVariant: 'modal', label: 'Date Range (Modal)' },
+  parameters: { viewport: { defaultViewport: 'mobile1' } },
+};
+
+export const MobileNative: Story = {
+  args: { mobileVariant: 'native', label: 'Date Range (Native)' },
+  parameters: { viewport: { defaultViewport: 'mobile1' } },
 };

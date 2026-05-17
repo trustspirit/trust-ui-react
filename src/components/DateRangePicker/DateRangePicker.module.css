@@ -148,13 +148,26 @@
 .popup {
   position: fixed;
   z-index: var(--tui-z-dropdown);
-  background-color: var(--tui-bg);
-  border: 1px solid var(--tui-border);
-  border-radius: var(--tui-radius-lg);
-  box-shadow: var(--tui-shadow-lg);
+  background-color: var(--tui-glass-bg);
+  border: 1px solid var(--tui-glass-border);
+  box-shadow: var(--tui-glass-shadow);
+  border-radius: var(--tui-radius-xl);
   padding: var(--tui-spacing-md);
   display: flex;
   gap: 0;
+}
+
+@supports ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
+  .popup {
+    backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
+  }
+}
+
+@supports not ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
+  .popup {
+    background-color: var(--tui-bg-subtle);
+  }
 }
 
 /* ── Presets sidebar ── */
@@ -186,9 +199,11 @@
   white-space: nowrap;
 }
 
-.presetButton:hover {
-  background-color: var(--tui-bg-muted);
-  color: var(--tui-text);
+@media (hover: hover) {
+  .presetButton:hover {
+    background-color: var(--tui-bg-muted);
+    color: var(--tui-text);
+  }
 }
 
 .presetButton:focus-visible {
@@ -232,9 +247,11 @@
     color var(--tui-transition-fast);
 }
 
-.navButton:hover {
-  background-color: var(--tui-bg-muted);
-  color: var(--tui-text);
+@media (hover: hover) {
+  .navButton:hover {
+    background-color: var(--tui-bg-muted);
+    color: var(--tui-text);
+  }
 }
 
 .navButton:focus-visible {
@@ -257,4 +274,101 @@
   font-size: var(--tui-font-size-xs);
   color: var(--tui-danger);
   margin: 0;
+}
+
+/* ── Mobile step header ── */
+.stepHeader {
+  display: flex;
+  gap: var(--tui-spacing-md);
+  padding: var(--tui-spacing-md);
+  font-size: var(--tui-font-size-sm);
+  font-weight: var(--tui-font-weight-medium);
+  color: var(--tui-text-muted);
+  border-bottom: 1px solid var(--tui-border);
+  justify-content: center;
+}
+
+.stepActive {
+  color: var(--tui-primary);
+  position: relative;
+}
+
+.stepActive::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--tui-primary);
+  border-radius: var(--tui-radius-full);
+}
+
+/* ── Mobile trigger button ── */
+.mobileTrigger {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-spacing-sm);
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* ── Mobile native input group ── */
+.nativeInputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tui-spacing-sm);
+  width: 100%;
+}
+
+.nativeInput {
+  padding: 8px 12px;
+  border-radius: var(--tui-radius-md);
+  border: 1px solid var(--tui-border);
+  background-color: var(--tui-bg);
+  color: var(--tui-text);
+  font-family: var(--tui-font-sans);
+  font-size: var(--tui-font-size-md);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── Mobile dialog calendar container ── */
+.mobileCalendarContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--tui-spacing-md);
+  overflow-y: auto;
+}
+
+.mobileCalendarActions {
+  display: flex;
+  gap: var(--tui-spacing-sm);
+  padding: var(--tui-spacing-md);
+  border-top: 1px solid var(--tui-border);
+  justify-content: flex-end;
+}
+
+.mobileCancelButton {
+  padding: var(--tui-spacing-sm) var(--tui-spacing-md);
+  border-radius: var(--tui-radius-md);
+  border: 1px solid var(--tui-border);
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--tui-font-size-sm);
+  color: var(--tui-text-secondary);
+}
+
+.mobileHint {
+  font-size: var(--tui-font-size-xs);
+  color: var(--tui-text-muted);
+  text-align: center;
+  padding: var(--tui-spacing-sm) 0;
 }

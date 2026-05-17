@@ -11,6 +11,8 @@ import { createPortal } from 'react-dom';
 import styles from './DateRangePicker.module.css';
 import { Calendar } from '../DatePicker/Calendar';
 import { formatDate, getMonthLabel } from '../DatePicker/utils';
+import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
+import { Dialog } from '../Dialog';
 
 export interface DateRange {
   start: Date | null;
@@ -54,6 +56,12 @@ export interface DateRangePickerProps {
   className?: string;
   /** Inline styles */
   style?: CSSProperties;
+  /**
+   * Mobile rendering strategy.
+   * 'modal' (default): fullscreen Dialog with a 2-step (start → end) flow.
+   * 'native': two HTML <input type="date"> elements stacked vertically.
+   */
+  mobileVariant?: 'modal' | 'native';
 }
 
 function CalendarIcon() {
@@ -134,9 +142,11 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
       presets,
       className,
       style,
+      mobileVariant = 'modal',
     },
     ref,
   ) => {
+    const isTouch = useTouchDevice();
     const isControlled = controlledValue !== undefined;
     const [internalValue, setInternalValue] = useState<DateRange>(
       defaultValue ?? { start: null, end: null },
@@ -148,8 +158,21 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
     const [hoverDate, setHoverDate] = useState<Date | null>(null);
     const [selectingStart, setSelectingStart] = useState(true); // true = next click picks start
 
-    // Calendar navigation
+    // Mobile modal state
+    const [mobileOpen, setMobileOpen] = useState(false);
+    const [mobileStep, setMobileStep] = useState<'start' | 'end'>('start');
+    const [draftRange, setDraftRange] = useState<DateRange>({ start: null, end: null });
+
+    // Mobile calendar navigation
     const now = useMemo(() => new Date(), []);
+    const [mobileMonth, setMobileMonth] = useState(
+      selectedRange.start ? selectedRange.start.getMonth() : now.getMonth(),
+    );
+    const [mobileYear, setMobileYear] = useState(
+      selectedRange.start ? selectedRange.start.getFullYear() : now.getFullYear(),
+    );
+
+    // Calendar navigation
     const [leftMonth, setLeftMonth] = useState(
       selectedRange.start ? selectedRange.start.getMonth() : now.getMonth(),
     );
@@ -280,7 +303,28 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
       });
     }, []);
 
-    // Date selection
+    // Mobile calendar navigation
+    const goToPrevMobileMonth = useCallback(() => {
+      setMobileMonth((m) => {
+        if (m === 0) {
+          setMobileYear((y) => y - 1);
+          return 11;
+        }
+        return m - 1;
+      });
+    }, []);
+
+    const goToNextMobileMonth = useCallback(() => {
+      setMobileMonth((m) => {
+        if (m === 11) {
+          setMobileYear((y) => y + 1);
+          return 0;
+        }
+        return m + 1;
+      });
+    }, []);
+
+    // Date selection (desktop)
     const handleDateClick = useCallback(
       (date: Date) => {
         if (selectingStart) {
@@ -325,6 +369,54 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
       [selectingStart],
     );
 
+    // Mobile date selection (2-step flow)
+    const handleMobileDateClick = useCallback(
+      (date: Date) => {
+        if (mobileStep === 'start') {
+          setDraftRange({ start: date, end: null });
+          setMobileStep('end');
+        } else {
+          // 'end' step
+          const start = draftRange.start;
+          if (!start) {
+            // Restart if no start
+            setDraftRange({ start: date, end: null });
+            setMobileStep('end');
+            return;
+          }
+          let newRange: DateRange;
+          if (date.getTime() < start.getTime()) {
+            // Out-of-order: treat picked date as new start
+            newRange = { start: date, end: start };
+          } else {
+            newRange = { start, end: date };
+          }
+          if (!isControlled) setInternalValue(newRange);
+          onChange?.(newRange);
+          setMobileOpen(false);
+          setMobileStep('start');
+          setDraftRange({ start: null, end: null });
+        }
+      },
+      [mobileStep, draftRange, isControlled, onChange],
+    );
+
+    const openMobileModal = useCallback(() => {
+      if (disabled) return;
+      const d = selectedRange.start ?? new Date();
+      setMobileMonth(d.getMonth());
+      setMobileYear(d.getFullYear());
+      setDraftRange({ start: null, end: null });
+      setMobileStep('start');
+      setMobileOpen(true);
+    }, [disabled, selectedRange.start]);
+
+    const closeMobileModal = useCallback(() => {
+      setMobileOpen(false);
+      setMobileStep('start');
+      setDraftRange({ start: null, end: null });
+    }, []);
+
     // Preset selection
     const handlePresetClick = useCallback(
       (range: DateRange) => {
@@ -337,6 +429,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
       [isControlled, onChange, closePopup],
     );
 
+    const mobileMonthLabel = `${mobileYear}${locale.startsWith('ko') ? '년 ' : ' '}${getMonthLabel(mobileMonth, locale)}`;
     const leftMonthLabel = `${leftYear}${locale.startsWith('ko') ? '년 ' : ' '}${getMonthLabel(leftMonth, locale)}`;
     const rightMonthLabel = `${rightYear}${locale.startsWith('ko') ? '년 ' : ' '}${getMonthLabel(rightMonth, locale)}`;
 
@@ -377,6 +470,160 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
       [selectedRange.start, selectedRange.end],
     );
 
+    // ── Native mobile variant ──
+    if (isTouch && mobileVariant === 'native') {
+      const startStr = selectedRange.start
+        ? formatDate(selectedRange.start, 'yyyy-MM-dd')
+        : '';
+      const endStr = selectedRange.end
+        ? formatDate(selectedRange.end, 'yyyy-MM-dd')
+        : '';
+      return (
+        <div ref={ref} className={containerClassNames} style={style}>
+          {label && (
+            <label className={labelClassNames}>
+              {label}
+              {required && <span className={styles.requiredAsterisk}> *</span>}
+            </label>
+          )}
+          <div className={styles.nativeInputGroup}>
+            <input
+              type="date"
+              className={styles.nativeInput}
+              value={startStr}
+              onChange={(e) => {
+                const newRange: DateRange = {
+                  start: e.target.value ? new Date(e.target.value) : null,
+                  end: selectedRange.end,
+                };
+                if (!isControlled) setInternalValue(newRange);
+                onChange?.(newRange);
+              }}
+              disabled={disabled}
+              aria-label="Start date"
+            />
+            <input
+              type="date"
+              className={styles.nativeInput}
+              value={endStr}
+              onChange={(e) => {
+                const newRange: DateRange = {
+                  start: selectedRange.start,
+                  end: e.target.value ? new Date(e.target.value) : null,
+                };
+                if (!isControlled) setInternalValue(newRange);
+                onChange?.(newRange);
+              }}
+              disabled={disabled}
+              aria-label="End date"
+            />
+          </div>
+          {errorMessage && (
+            <p className={styles.errorMessage} role="alert">
+              {errorMessage}
+            </p>
+          )}
+        </div>
+      );
+    }
+
+    // ── Modal mobile variant ──
+    if (isTouch && mobileVariant === 'modal') {
+      return (
+        <div ref={ref} className={containerClassNames} style={style}>
+          {label && (
+            <label className={labelClassNames}>
+              {label}
+              {required && <span className={styles.requiredAsterisk}> *</span>}
+            </label>
+          )}
+          <button
+            type="button"
+            className={`${styles.mobileTrigger} ${wrapperClassNames}`}
+            onClick={openMobileModal}
+            disabled={disabled}
+            aria-haspopup="dialog"
+          >
+            <input
+              className={styles.input}
+              type="text"
+              value={displayText}
+              placeholder={effectivePlaceholder}
+              disabled={disabled}
+              readOnly
+              tabIndex={-1}
+              aria-invalid={isError || undefined}
+            />
+            <span className={styles.calendarIcon}>
+              <CalendarIcon />
+            </span>
+          </button>
+          {errorMessage && (
+            <p className={styles.errorMessage} role="alert">
+              {errorMessage}
+            </p>
+          )}
+          <Dialog
+            open={mobileOpen}
+            onClose={closeMobileModal}
+            mobileVariant="fullscreen"
+          >
+            <div className={styles.stepHeader}>
+              <span className={mobileStep === 'start' ? styles.stepActive : undefined}>
+                Start
+              </span>
+              <span className={mobileStep === 'end' ? styles.stepActive : undefined}>
+                End
+              </span>
+            </div>
+            <div className={styles.mobileCalendarContainer}>
+              <div className={styles.navHeader}>
+                <button
+                  type="button"
+                  className={styles.navButton}
+                  onClick={goToPrevMobileMonth}
+                  aria-label="Previous month"
+                >
+                  <ChevronLeftIcon />
+                </button>
+                <span className={styles.monthYearLabel}>{mobileMonthLabel}</span>
+                <button
+                  type="button"
+                  className={styles.navButton}
+                  onClick={goToNextMobileMonth}
+                  aria-label="Next month"
+                >
+                  <ChevronRightIcon />
+                </button>
+              </div>
+              <p className={styles.mobileHint}>
+                {mobileStep === 'start' ? 'Select start date' : 'Select end date'}
+              </p>
+              <Calendar
+                currentMonth={mobileMonth}
+                currentYear={mobileYear}
+                selectedRange={draftRange}
+                minDate={minDate}
+                maxDate={maxDate}
+                onDateClick={handleMobileDateClick}
+                locale={locale}
+              />
+            </div>
+            <div className={styles.mobileCalendarActions}>
+              <button
+                type="button"
+                className={styles.mobileCancelButton}
+                onClick={closeMobileModal}
+              >
+                Cancel
+              </button>
+            </div>
+          </Dialog>
+        </div>
+      );
+    }
+
+    // ── Desktop (default) variant ──
     return (
       <div ref={ref} className={containerClassNames} style={style}>
         {label && (
