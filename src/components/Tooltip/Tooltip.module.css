@@ -105,3 +105,24 @@
   border-left: 1px solid var(--tui-border);
   border-bottom: 1px solid var(--tui-border);
 }
+
+/* ── Inline mode (mobile-only on form inputs) ── */
+.inlineContainer {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+}
+
+.inlineHint {
+  display: block;
+  font-size: var(--tui-font-size-xs);
+  color: var(--tui-text-secondary);
+  line-height: var(--tui-line-height);
+}
+
+/* ── Mobile indicator: dotted underline on text triggers ── */
+.indicatorDottedTrigger {
+  text-decoration: underline dotted var(--tui-text-muted);
+  text-underline-offset: 2px;
+}

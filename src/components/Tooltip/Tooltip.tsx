@@ -3,6 +3,7 @@ import {
   useCallback,
   useEffect,
   useId,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
@@ -10,7 +11,11 @@ import {
   type ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
+import { useLongPress } from '../../hooks/touch/useLongPress';
 import styles from './Tooltip.module.css';
+
+export type TooltipMobileBehavior = 'tap' | 'longpress' | 'inline' | 'hidden';
 
 export interface TooltipProps {
   /** Content to display inside the tooltip */
@@ -19,7 +24,7 @@ export interface TooltipProps {
   placement?: 'top' | 'bottom' | 'left' | 'right';
   /** Visual variant (default: 'dark') */
   variant?: 'dark' | 'light';
-  /** Delay in milliseconds before showing (default: 200) */
+  /** Delay in milliseconds before showing on hover/focus (default: 200) */
   delay?: number;
   /** Maximum width in pixels (default: 250) */
   maxWidth?: number;
@@ -27,6 +32,33 @@ export interface TooltipProps {
   children: ReactElement;
   /** Additional CSS class name */
   className?: string;
+
+  /**
+   * Mobile behavior mode. Overrides auto-default detection.
+   * - 'tap': single tap toggles tooltip; auto-dismiss after mobileAutoDismiss ms
+   * - 'longpress': hold for 500ms to show; release dismisses
+   * - 'inline': render content as helper text below trigger
+   * - 'hidden': don't show on mobile
+   * Auto-default: button/link → 'longpress', input/textarea/select → 'inline', else → 'tap'.
+   */
+  mobileBehavior?: TooltipMobileBehavior;
+  /** Auto-dismiss duration (ms) in tap mode. Default 4000. Set 0 to disable. */
+  mobileAutoDismiss?: number;
+  /** Show a visual indicator (dotted underline) on the trigger to hint that a tooltip exists. */
+  mobileIndicator?: boolean;
+  /** Override maxWidth on mobile (default falls back to maxWidth prop). */
+  mobileMaxWidth?: number;
+}
+
+function detectAutoMobileBehavior(child: ReactElement): TooltipMobileBehavior {
+  const type = child.type;
+  const props = child.props as Record<string, unknown>;
+  if (typeof type === 'string') {
+    if (type === 'input' || type === 'textarea' || type === 'select') return 'inline';
+    if (type === 'button' || type === 'a') return 'longpress';
+  }
+  if (props.role === 'button') return 'longpress';
+  return 'tap';
 }
 
 export function Tooltip({
@@ -37,93 +69,119 @@ export function Tooltip({
   maxWidth = 250,
   children,
   className,
+  mobileBehavior,
+  mobileAutoDismiss = 4000,
+  mobileIndicator = false,
+  mobileMaxWidth,
 }: TooltipProps) {
+  const isTouch = useTouchDevice();
+  const effectiveMobileBehavior = useMemo(
+    () => mobileBehavior ?? detectAutoMobileBehavior(children),
+    [mobileBehavior, children],
+  );
+
   const [visible, setVisible] = useState(false);
-  const [position, setPosition] = useState<{ top: number; left: number }>({
-    top: 0,
-    left: 0,
-  });
+  const [position, setPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const triggerRef = useRef<HTMLElement | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const autoDismissTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const tooltipId = useId();
 
   const updatePosition = useCallback(() => {
     const trigger = triggerRef.current;
     const tooltip = tooltipRef.current;
     if (!trigger || !tooltip) return;
-
     const triggerRect = trigger.getBoundingClientRect();
     const tooltipRect = tooltip.getBoundingClientRect();
     const scrollX = window.scrollX;
     const scrollY = window.scrollY;
     const gap = 8;
-
     let top = 0;
     let left = 0;
-
     switch (placement) {
       case 'top':
         top = triggerRect.top + scrollY - tooltipRect.height - gap;
-        left =
-          triggerRect.left +
-          scrollX +
-          triggerRect.width / 2 -
-          tooltipRect.width / 2;
+        left = triggerRect.left + scrollX + triggerRect.width / 2 - tooltipRect.width / 2;
         break;
       case 'bottom':
         top = triggerRect.bottom + scrollY + gap;
-        left =
-          triggerRect.left +
-          scrollX +
-          triggerRect.width / 2 -
-          tooltipRect.width / 2;
+        left = triggerRect.left + scrollX + triggerRect.width / 2 - tooltipRect.width / 2;
         break;
       case 'left':
-        top =
-          triggerRect.top +
-          scrollY +
-          triggerRect.height / 2 -
-          tooltipRect.height / 2;
+        top = triggerRect.top + scrollY + triggerRect.height / 2 - tooltipRect.height / 2;
         left = triggerRect.left + scrollX - tooltipRect.width - gap;
         break;
       case 'right':
-        top =
-          triggerRect.top +
-          scrollY +
-          triggerRect.height / 2 -
-          tooltipRect.height / 2;
+        top = triggerRect.top + scrollY + triggerRect.height / 2 - tooltipRect.height / 2;
         left = triggerRect.right + scrollX + gap;
         break;
     }
-
     setPosition({ top, left });
   }, [placement]);
 
-  const show = useCallback(() => {
-    timerRef.current = setTimeout(() => {
-      setVisible(true);
-    }, delay);
+  const showWithDelay = useCallback(() => {
+    timerRef.current = setTimeout(() => setVisible(true), delay);
   }, [delay]);
 
+  const showImmediate = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setVisible(true);
+  }, []);
+
   const hide = useCallback(() => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (autoDismissTimerRef.current) clearTimeout(autoDismissTimerRef.current);
     setVisible(false);
   }, []);
 
+  useLongPress(
+    triggerRef as React.RefObject<HTMLElement | null>,
+    () => {
+      if (isTouch && effectiveMobileBehavior === 'longpress') {
+        showImmediate();
+      }
+    },
+    { delay: 500 },
+  );
+
+  useEffect(() => {
+    if (!visible || !isTouch || effectiveMobileBehavior !== 'tap') return;
+    const onClickOutside = (e: PointerEvent) => {
+      if (triggerRef.current?.contains(e.target as Node)) return;
+      if (tooltipRef.current?.contains(e.target as Node)) return;
+      hide();
+    };
+    document.addEventListener('pointerdown', onClickOutside);
+    return () => document.removeEventListener('pointerdown', onClickOutside);
+  }, [visible, isTouch, effectiveMobileBehavior, hide]);
+
+  useEffect(() => {
+    if (!visible || !isTouch || effectiveMobileBehavior !== 'tap' || mobileAutoDismiss === 0) return;
+    autoDismissTimerRef.current = setTimeout(hide, mobileAutoDismiss);
+    return () => {
+      if (autoDismissTimerRef.current) clearTimeout(autoDismissTimerRef.current);
+    };
+  }, [visible, isTouch, effectiveMobileBehavior, mobileAutoDismiss, hide]);
+
+  useEffect(() => {
+    if (!visible || !isTouch || effectiveMobileBehavior !== 'longpress') return;
+    const onUp = () => hide();
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
+    return () => {
+      document.removeEventListener('pointerup', onUp);
+      document.removeEventListener('pointercancel', onUp);
+    };
+  }, [visible, isTouch, effectiveMobileBehavior, hide]);
+
   useEffect(() => {
     if (visible) {
-      // Use requestAnimationFrame to ensure tooltip is rendered before measuring
-      const frame = requestAnimationFrame(() => {
-        updatePosition();
-      });
+      const frame = requestAnimationFrame(() => updatePosition());
       return () => cancelAnimationFrame(frame);
     }
   }, [visible, updatePosition]);
 
-  // Reposition on scroll/resize while visible
   useEffect(() => {
     if (!visible) return;
     window.addEventListener('scroll', updatePosition, true);
@@ -136,11 +194,25 @@ export function Tooltip({
 
   useEffect(() => {
     return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (autoDismissTimerRef.current) clearTimeout(autoDismissTimerRef.current);
     };
   }, []);
+
+  if (isTouch && effectiveMobileBehavior === 'inline') {
+    return (
+      <div className={styles.inlineContainer}>
+        {children}
+        <span className={styles.inlineHint} id={tooltipId}>
+          {content}
+        </span>
+      </div>
+    );
+  }
+
+  if (isTouch && effectiveMobileBehavior === 'hidden') {
+    return children;
+  }
 
   const tooltipClassNames = [
     styles.tooltip,
@@ -155,38 +227,56 @@ export function Tooltip({
   const tooltipStyle: CSSProperties = {
     top: position.top,
     left: position.left,
-    maxWidth,
+    maxWidth: isTouch && mobileMaxWidth ? mobileMaxWidth : maxWidth,
   };
 
   const childProps = children.props as Record<string, unknown>;
 
+  const onMouseEnter = (e: React.MouseEvent) => {
+    if (!isTouch) showWithDelay();
+    (childProps.onMouseEnter as ((e: React.MouseEvent) => void) | undefined)?.(e);
+  };
+  const onMouseLeave = (e: React.MouseEvent) => {
+    if (!isTouch) hide();
+    (childProps.onMouseLeave as ((e: React.MouseEvent) => void) | undefined)?.(e);
+  };
+  const onFocus = (e: React.FocusEvent) => {
+    if (!isTouch) showWithDelay();
+    (childProps.onFocus as ((e: React.FocusEvent) => void) | undefined)?.(e);
+  };
+  const onBlur = (e: React.FocusEvent) => {
+    if (!isTouch) hide();
+    (childProps.onBlur as ((e: React.FocusEvent) => void) | undefined)?.(e);
+  };
+  const onClick = (e: React.MouseEvent) => {
+    if (isTouch && effectiveMobileBehavior === 'tap') {
+      e.preventDefault();
+      setVisible((v) => !v);
+    }
+    (childProps.onClick as ((e: React.MouseEvent) => void) | undefined)?.(e);
+  };
+
+  const childExistingClassName = (childProps.className as string | undefined) ?? '';
+  const triggerClassName =
+    isTouch && mobileIndicator
+      ? `${childExistingClassName} ${styles.indicatorDottedTrigger}`.trim()
+      : childExistingClassName;
+
   const triggerElement = cloneElement(children, {
     ref: (node: HTMLElement | null) => {
       triggerRef.current = node;
-      // Preserve the child's ref if it has one
       const childRef = (children as { ref?: React.Ref<HTMLElement> }).ref;
-      if (typeof childRef === 'function') {
-        childRef(node);
-      } else if (childRef && typeof childRef === 'object') {
+      if (typeof childRef === 'function') childRef(node);
+      else if (childRef && typeof childRef === 'object') {
         (childRef as React.MutableRefObject<HTMLElement | null>).current = node;
       }
     },
-    onMouseEnter: (e: React.MouseEvent) => {
-      show();
-      (childProps.onMouseEnter as ((e: React.MouseEvent) => void) | undefined)?.(e);
-    },
-    onMouseLeave: (e: React.MouseEvent) => {
-      hide();
-      (childProps.onMouseLeave as ((e: React.MouseEvent) => void) | undefined)?.(e);
-    },
-    onFocus: (e: React.FocusEvent) => {
-      show();
-      (childProps.onFocus as ((e: React.FocusEvent) => void) | undefined)?.(e);
-    },
-    onBlur: (e: React.FocusEvent) => {
-      hide();
-      (childProps.onBlur as ((e: React.FocusEvent) => void) | undefined)?.(e);
-    },
+    onMouseEnter,
+    onMouseLeave,
+    onFocus,
+    onBlur,
+    onClick,
+    className: triggerClassName,
     'aria-describedby': visible ? tooltipId : undefined,
   } as Record<string, unknown>);
 
@@ -194,11 +284,13 @@ export function Tooltip({
     <>
       {triggerElement}
       {typeof document !== 'undefined' &&
+        visible &&
         createPortal(
           <div
             ref={tooltipRef}
             id={tooltipId}
             role="tooltip"
+            aria-live="polite"
             className={tooltipClassNames}
             style={tooltipStyle}
           >

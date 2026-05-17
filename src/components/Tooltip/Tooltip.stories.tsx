@@ -98,3 +98,39 @@ export const CustomDelay: Story = {
     </div>
   ),
 };
+
+export const MobileTap: Story = {
+  args: { mobileBehavior: 'tap', mobileIndicator: true, content: 'Tap-mode tooltip (4s auto-dismiss)' },
+  render: (args) => (
+    <Tooltip {...args}>
+      <span>Tap me for info</span>
+    </Tooltip>
+  ),
+};
+
+export const MobileLongpress: Story = {
+  args: { mobileBehavior: 'longpress', content: 'Long-press to view (hold 500ms)' },
+  render: (args) => (
+    <Tooltip {...args}>
+      <button>Hold for info</button>
+    </Tooltip>
+  ),
+};
+
+export const MobileInline: Story = {
+  args: { mobileBehavior: 'inline', content: 'Username must be 3–20 characters' },
+  render: (args) => (
+    <Tooltip {...args}>
+      <input placeholder="Username" />
+    </Tooltip>
+  ),
+};
+
+export const MobileHidden: Story = {
+  args: { mobileBehavior: 'hidden', content: 'This tooltip is hidden on mobile' },
+  render: (args) => (
+    <Tooltip {...args}>
+      <span>Hover me on desktop only</span>
+    </Tooltip>
+  ),
+};
