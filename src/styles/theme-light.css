@@ -1,50 +1,68 @@
 [data-theme='light'] {
-  --tui-bg: #ffffff;
-  --tui-bg-subtle: #f8fafc;
-  --tui-bg-muted: #f1f5f9;
-  --tui-bg-hover: #e2e8f0;
+  /* ───── Surface (warm ivory base) ───── */
+  --tui-bg:           #fbfaf7;
+  --tui-bg-subtle:    #ffffff;
+  --tui-bg-muted:     #f4f1ea;
+  --tui-bg-hover:     #ede9df;
+  --tui-bg-active:    #e3dccc;
 
-  --tui-text: #0f172a;
-  --tui-text-secondary: #475569;
-  --tui-text-muted: #94a3b8;
-  --tui-text-inverse: #ffffff;
+  /* ───── Text ───── */
+  --tui-text:           #14151a;
+  --tui-text-secondary: #4b4d59;
+  --tui-text-muted:     #8a8b96;
+  --tui-text-inverse:   #fbfaf7;
 
-  --tui-border: #e2e8f0;
-  --tui-border-hover: #cbd5e1;
-  --tui-border-focus: #3b82f6;
+  /* ───── Border ───── */
+  --tui-border:        #ede9df;
+  --tui-border-hover:  #d8d2c4;
+  --tui-border-strong: #b8b0a0;
+  --tui-border-focus:  #635bff;
 
-  --tui-primary: #2563eb;
-  --tui-primary-hover: #1d4ed8;
-  --tui-primary-active: #1e40af;
-  --tui-primary-subtle: #eff6ff;
-  --tui-primary-text: #ffffff;
+  /* ───── Primary — Indigo ───── */
+  --tui-primary:               #635bff;
+  --tui-primary-hover:         #5048e8;
+  --tui-primary-active:        #4036c4;
+  --tui-primary-subtle:        #f1eef8;
+  --tui-primary-subtle-hover:  #e6e1f4;
+  --tui-primary-text:          #ffffff;
+  --tui-primary-gradient:      linear-gradient(180deg, #635bff 0%, #4f47e0 100%);
 
-  --tui-secondary: #475569;
-  --tui-secondary-hover: #334155;
-  --tui-secondary-active: #1e293b;
-  --tui-secondary-subtle: #f1f5f9;
-  --tui-secondary-text: #ffffff;
+  /* ───── Secondary (neutral charcoal) ───── */
+  --tui-secondary:        #2a2b34;
+  --tui-secondary-hover:  #1e1f27;
+  --tui-secondary-active: #14151a;
+  --tui-secondary-subtle: #f4f1ea;
+  --tui-secondary-text:   #fbfaf7;
 
-  --tui-success: #16a34a;
-  --tui-success-hover: #15803d;
-  --tui-success-subtle: #f0fdf4;
-  --tui-success-text: #ffffff;
+  /* ───── Status colors ───── */
+  --tui-success:        #15803d;
+  --tui-success-hover:  #126632;
+  --tui-success-subtle: #ecfdf3;
+  --tui-success-text:   #ffffff;
 
-  --tui-danger: #dc2626;
-  --tui-danger-hover: #b91c1c;
-  --tui-danger-subtle: #fef2f2;
-  --tui-danger-text: #ffffff;
+  --tui-danger:         #dc2626;
+  --tui-danger-hover:   #b91c1c;
+  --tui-danger-subtle:  #fef2f2;
+  --tui-danger-text:    #ffffff;
 
-  --tui-warning: #d97706;
-  --tui-warning-hover: #b45309;
-  --tui-warning-subtle: #fffbeb;
-  --tui-warning-text: #ffffff;
+  --tui-warning:        #b45309;
+  --tui-warning-hover:  #92400e;
+  --tui-warning-subtle: #fef3c7;
+  --tui-warning-text:   #ffffff;
 
-  --tui-info: #0284c7;
-  --tui-info-hover: #0369a1;
-  --tui-info-subtle: #f0f9ff;
-  --tui-info-text: #ffffff;
+  --tui-info:           #635bff;
+  --tui-info-hover:     #5048e8;
+  --tui-info-subtle:    #f1eef8;
+  --tui-info-text:      #ffffff;
 
-  --tui-focus-ring: 0 0 0 2px #ffffff, 0 0 0 4px #3b82f6;
-  --tui-overlay: rgba(0, 0, 0, 0.5);
+  /* ───── Focus & Overlay ───── */
+  --tui-focus-ring: 0 0 0 2px var(--tui-bg), 0 0 0 4px rgba(99, 91, 255, 0.5);
+  --tui-overlay:    rgba(15, 16, 26, 0.32);
+
+  /* ───── Glass (Tier 3 elevated surfaces) ───── */
+  --tui-glass-bg:     rgba(255, 255, 255, 0.72);
+  --tui-glass-border: rgba(255, 255, 255, 0.5);
+  --tui-glass-shadow:
+    0 8px 32px rgba(15, 16, 26, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
