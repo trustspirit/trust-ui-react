@@ -8,6 +8,7 @@ import {
 import { createPortal } from 'react-dom';
 import { Toast, type ToastVariant } from '../components/Toast';
 import styles from '../components/Toast/Toast.module.css';
+import { useVisualViewport } from '../hooks/touch/useVisualViewport';
 
 export type ToastPosition =
   | 'top-right'
@@ -23,6 +24,7 @@ export interface ToastData {
   message: string;
   description?: string;
   duration?: number;
+  showProgress?: boolean;
 }
 
 export interface ToastContextValue {
@@ -55,6 +57,7 @@ export function ToastProvider({
 }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastData[]>([]);
   const toastCounter = useRef(0);
+  const { keyboardOpen, height } = useVisualViewport();
 
   const dismiss = useCallback((id: string) => {
     setToasts((prev) => prev.filter((t) => t.id !== id));
@@ -77,12 +80,23 @@ export function ToastProvider({
     .filter(Boolean)
     .join(' ');
 
+  const isBottomPosition = position.startsWith('bottom');
+  const keyboardOffset =
+    keyboardOpen && typeof window !== 'undefined' && isBottomPosition
+      ? window.innerHeight - height
+      : 0;
+
+  const containerStyle = {
+    transform: keyboardOffset ? `translateY(-${keyboardOffset}px)` : undefined,
+    transition: 'transform var(--tui-duration-base) var(--tui-ease-out)',
+  };
+
   return (
     <ToastContext.Provider value={{ toast, dismiss, dismissAll }}>
       {children}
       {typeof document !== 'undefined' &&
         createPortal(
-          <div className={containerClass}>
+          <div className={containerClass} style={containerStyle}>
             {toasts.map((t) => (
               <Toast
                 key={t.id}
@@ -91,6 +105,7 @@ export function ToastProvider({
                 message={t.message}
                 description={t.description}
                 duration={t.duration}
+                showProgress={t.showProgress}
                 onClose={() => dismiss(t.id)}
               />
             ))}

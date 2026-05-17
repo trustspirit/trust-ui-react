@@ -26,17 +26,19 @@ function ToastTrigger({
   message,
   description,
   duration,
+  showProgress,
 }: {
   variant: 'success' | 'danger' | 'warning' | 'info';
   message: string;
   description?: string;
   duration?: number;
+  showProgress?: boolean;
 }) {
   const { toast } = useToast();
   return (
     <Button
       variant={variant === 'danger' ? 'danger' : 'primary'}
-      onClick={() => toast({ variant, message, description, duration })}
+      onClick={() => toast({ variant, message, description, duration, showProgress })}
     >
       Show {variant} toast
     </Button>
@@ -75,6 +77,18 @@ export const CustomDuration: Story = {
       variant="info"
       message="This toast lasts 8 seconds"
       duration={8000}
+    />
+  ),
+};
+
+export const WithProgress: Story = {
+  render: () => (
+    <ToastTrigger
+      variant="success"
+      message="Saving changes…"
+      description="Watch the progress bar drain over 4 seconds."
+      showProgress
+      duration={4000}
     />
   ),
 };

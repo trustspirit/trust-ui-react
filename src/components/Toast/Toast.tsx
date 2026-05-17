@@ -14,6 +14,8 @@ export interface ToastProps {
   description?: string;
   /** Auto-dismiss duration in milliseconds (default: 4000) */
   duration?: number;
+  /** Show a progress bar that drains over the duration */
+  showProgress?: boolean;
   /** Callback when toast is closed */
   onClose?: () => void;
   /** Additional CSS class name */
@@ -34,6 +36,7 @@ export function Toast({
   message,
   description,
   duration = 4000,
+  showProgress,
   onClose,
   className,
   style,
@@ -78,6 +81,12 @@ export function Toast({
       >
         ✕
       </button>
+      {showProgress && duration > 0 && (
+        <div
+          className={[styles.progress, styles[variant]].filter(Boolean).join(' ')}
+          style={{ animationDuration: `${duration}ms` }}
+        />
+      )}
     </div>
   );
 }

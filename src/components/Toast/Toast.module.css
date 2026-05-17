@@ -6,12 +6,28 @@
   min-width: 300px;
   max-width: 420px;
   padding: var(--tui-spacing-md);
-  border-radius: var(--tui-radius-lg);
-  box-shadow: var(--tui-shadow-lg);
+  border-radius: var(--tui-radius-xl);
+  background-color: var(--tui-glass-bg);
+  border: 1px solid var(--tui-glass-border);
+  box-shadow: var(--tui-glass-shadow);
   font-family: var(--tui-font-family);
   line-height: var(--tui-line-height);
   pointer-events: auto;
+  position: relative;
   animation: slideIn var(--tui-transition-slow) ease forwards;
+}
+
+@supports ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
+  .toast {
+    backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
+  }
+}
+
+@supports not ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
+  .toast {
+    background-color: var(--tui-bg-subtle);
+  }
 }
 
 .toast.exiting {
@@ -20,25 +36,21 @@
 
 /* ── Variants ── */
 .success {
-  background-color: var(--tui-success-subtle);
   border-left: 4px solid var(--tui-success);
   color: var(--tui-text);
 }
 
 .danger {
-  background-color: var(--tui-danger-subtle);
   border-left: 4px solid var(--tui-danger);
   color: var(--tui-text);
 }
 
 .warning {
-  background-color: var(--tui-warning-subtle);
   border-left: 4px solid var(--tui-warning);
   color: var(--tui-text);
 }
 
 .info {
-  background-color: var(--tui-info-subtle);
   border-left: 4px solid var(--tui-info);
   color: var(--tui-text);
 }
@@ -113,15 +125,39 @@
   transition: background-color var(--tui-transition), color var(--tui-transition);
 }
 
-.closeButton:hover {
-  background-color: var(--tui-bg-hover);
-  color: var(--tui-text);
+@media (hover: hover) {
+  .closeButton:hover {
+    background-color: var(--tui-bg-hover);
+    color: var(--tui-text);
+  }
 }
 
 .closeButton:focus-visible {
   outline: none;
   box-shadow: var(--tui-focus-ring);
 }
+
+/* ── Progress bar ── */
+.progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  background-color: var(--tui-primary);
+  border-bottom-left-radius: var(--tui-radius-xl);
+  border-bottom-right-radius: var(--tui-radius-xl);
+  animation: toastProgress linear forwards;
+}
+
+@keyframes toastProgress {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+.progress.success { background-color: var(--tui-success); }
+.progress.danger  { background-color: var(--tui-danger); }
+.progress.warning { background-color: var(--tui-warning); }
+.progress.info    { background-color: var(--tui-info); }
 
 /* ── Container ── */
 .container {
