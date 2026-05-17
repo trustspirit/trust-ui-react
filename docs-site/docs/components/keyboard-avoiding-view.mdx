@@ -1,0 +1,120 @@
+---
+sidebar_position: 29
+title: KeyboardAvoidingView
+---
+
+import { KeyboardAvoidingView } from 'trust-ui-react';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# KeyboardAvoidingView
+
+A container that adds **bottom padding equal to the on-screen keyboard height** when the keyboard is open. Use it for chat input rows, multi-step forms, and any layout that must stay visible above the keyboard.
+
+Built on the [Visual Viewport API](https://developer.mozilla.org/en-US/docs/Web/API/Visual_Viewport_API) — measures the actual keyboard height at runtime, not a guessed value.
+
+## Basic Usage
+
+```tsx
+import { KeyboardAvoidingView, TextField, Button } from 'trust-ui-react';
+
+function ChatInput() {
+  return (
+    <KeyboardAvoidingView style={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}>
+      <div style={{ display: 'flex', gap: 8, padding: 'var(--tui-space-3)' }}>
+        <TextField fullWidth placeholder="Message…" />
+        <Button>Send</Button>
+      </div>
+    </KeyboardAvoidingView>
+  );
+}
+```
+
+When the user focuses the TextField and the keyboard opens, the container's `padding-bottom` becomes the keyboard height — so the input row stays visible above the keyboard rather than getting covered.
+
+## The problem this solves
+
+On mobile browsers, focusing a text input opens the **virtual keyboard**, which covers the bottom portion of the viewport. Without intervention:
+
+- **iOS Safari** automatically scrolls the focused input into view — but only for plain inputs; sticky elements positioned at `bottom: 0` stay where they were and get covered.
+- **Android Chrome** resizes the viewport when the keyboard opens — so `100vh` shrinks, but fixed/sticky elements behave inconsistently.
+- **iOS WebView** behaves differently from Safari depending on the host app's `keyboardDisplayRequiresUserAction` config.
+
+`KeyboardAvoidingView` normalizes all of this by subscribing to `window.visualViewport` and adding padding equal to `window.innerHeight - visualViewport.height` (the keyboard height) whenever the keyboard is open.
+
+## Offset
+
+`offset` adds extra padding above the keyboard — useful when a navigation bar or other UI sits just above your input.
+
+```tsx
+<KeyboardAvoidingView offset={56}>
+  <ChatInput />
+</KeyboardAvoidingView>
+```
+
+## Browser support
+
+| Environment | `visualViewport` | Behavior |
+|---|---|---|
+| iOS Safari 13+ | ✅ | Correct keyboard tracking |
+| iOS WKWebView | ✅ | Correct keyboard tracking (when host app uses default config) |
+| Android Chrome 61+ | ✅ | Correct keyboard tracking |
+| Older Android WebView | ❌ | No-op — apps should provide alternative layout |
+| Desktop | ✅ (no-op) | `keyboardOpen` stays `false`, no padding applied |
+
+When `visualViewport` is unavailable, the component renders without padding adjustment — it doesn't break, just doesn't help. For older Android WebView, a common fallback is to use `window.addEventListener('resize')` and detect viewport shrink.
+
+## Pairing patterns
+
+### Sticky CTA above keyboard
+
+```tsx
+<KeyboardAvoidingView>
+  <Form />
+  <StickyFooter>
+    <Button fullWidth>Save</Button>
+  </StickyFooter>
+</KeyboardAvoidingView>
+```
+
+StickyFooter pins to the bottom of the KeyboardAvoidingView padding — so as the keyboard rises, the CTA rises with it.
+
+### Chat-style input row
+
+```tsx
+<KeyboardAvoidingView style={{ position: 'fixed', bottom: 0, left: 0, right: 0 }}>
+  <SafeAreaView edges={['bottom']}>
+    <ChatInput />
+  </SafeAreaView>
+</KeyboardAvoidingView>
+```
+
+Nest `SafeAreaView edges={['bottom']}` **inside** the KeyboardAvoidingView so the home-indicator inset still applies when the keyboard is closed.
+
+### Multi-step form with scroll
+
+```tsx
+<KeyboardAvoidingView>
+  <div style={{ overflowY: 'auto', height: '100%' }}>
+    <FormStep />
+  </div>
+</KeyboardAvoidingView>
+```
+
+The KeyboardAvoidingView's bottom padding reserves the keyboard-height area; the scroll container inside fills the remaining space so the user can still scroll the form.
+
+## Limitations & caveats
+
+- **The host app controls keyboard behavior in WebView.** If you're inside an iOS WKWebView and the host app overrides `inputAccessoryView` or sets `keyboardDisplayRequiresUserAction=true`, the keyboard may not raise as expected.
+- **Floating keyboards** (iPad's split/floating keyboard, third-party Android keyboards with floating mode) report height differently — they may not trigger the `keyboardOpen` heuristic.
+- **`useVisualViewport` hook** is exported directly if you need to read the viewport state without applying padding — useful for custom layouts.
+
+## Props
+
+<PropsTable props={[
+  { name: 'offset', type: 'number', default: '0', description: 'Additional bottom padding (px) on top of keyboard height' },
+  { name: 'children', type: 'ReactNode', description: 'Content that should stay visible above the keyboard' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },
+]} />
+
+Also accepts standard `<div>` HTML attributes via spread.

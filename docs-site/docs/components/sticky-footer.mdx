@@ -1,0 +1,89 @@
+---
+sidebar_position: 28
+title: StickyFooter
+---
+
+import { StickyFooter } from 'trust-ui-react';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# StickyFooter
+
+A sticky bottom container with **thumb-zone-safe padding** and built-in safe-area handling. Use it for primary CTAs in mobile forms (e.g., "Continue" at the bottom of a wizard, "Save" on an edit screen) — always reachable by the thumb.
+
+## Basic Usage
+
+```tsx
+import { StickyFooter, Button } from 'trust-ui-react';
+
+function CheckoutScreen() {
+  return (
+    <div style={{ minHeight: '100vh', paddingBottom: 96 }}>
+      <CheckoutForm />
+
+      <StickyFooter>
+        <Button fullWidth>Continue to payment</Button>
+      </StickyFooter>
+    </div>
+  );
+}
+```
+
+The footer pins to the bottom of the viewport (not the scroll container) with `position: sticky` + `bottom: 0`. Its background uses `--tui-bg` so it doesn't bleed scrolled content through it.
+
+## Why this exists
+
+Three things mobile-CTA-at-the-bottom needs to get right:
+
+1. **Safe-area-inset-bottom** — clear the home indicator on iPhone X+.
+2. **Thumb-zone padding** — Apple's HIG recommends at least 24-44px above the screen edge for primary actions to land in the "easy reach" thumb zone.
+3. **Scroll-clear background** — the footer must visually separate from the scrolled content above it (subtle shadow + opaque background).
+
+`StickyFooter` handles all three via the `--tui-thumb-safe-bottom` token (which composes `env(safe-area-inset-bottom)` + thumb-zone padding) and an optional shadow.
+
+## Elevated variant
+
+By default, the footer uses a subtle 1px top border to separate from content. Set `elevated` for a heavier shadow + glass surface — useful when the content above scrolls **through** the footer (e.g., long forms).
+
+```tsx
+<StickyFooter elevated>
+  <Button fullWidth>Submit</Button>
+</StickyFooter>
+```
+
+| Variant | Style |
+|---|---|
+| Default | `--tui-border` 1px top + `--tui-bg` opaque background |
+| `elevated` | `--tui-shadow-lg` + `.tui-glass`-style translucency |
+
+## Mobile considerations
+
+- Bottom inset uses `--tui-thumb-safe-bottom` = `max(env(safe-area-inset-bottom), 16px)` — so non-iOS devices still get thumb-comfortable spacing.
+- Pairs naturally with [`<KeyboardAvoidingView>`](./keyboard-avoiding-view.mdx) — wrap the form in KeyboardAvoidingView and the sticky footer will stay above the keyboard.
+- For tab-bar-style navigation (3-5 items), use the same primitive but consider grouping with `<SegmentedControl>` or a custom layout — StickyFooter is action-focused.
+- Avoid putting destructive actions (Delete) in a StickyFooter without a confirmation step — sticky CTAs invite reflex taps.
+
+## Pairing with KeyboardAvoidingView
+
+When a form has a sticky CTA **and** text inputs, the keyboard opening would otherwise cover the CTA:
+
+```tsx
+<KeyboardAvoidingView>
+  <Form />
+  <StickyFooter>
+    <Button fullWidth>Save</Button>
+  </StickyFooter>
+</KeyboardAvoidingView>
+```
+
+KeyboardAvoidingView reserves space equal to the keyboard height, and the StickyFooter automatically rises above it.
+
+## Props
+
+<PropsTable props={[
+  { name: 'elevated', type: 'boolean', default: 'false', description: 'Apply heavier shadow + glass background for visual lift' },
+  { name: 'children', type: 'ReactNode', description: 'Footer content (typically one or two action Buttons)' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },
+]} />
+
+Also accepts standard `<div>` HTML attributes via spread.

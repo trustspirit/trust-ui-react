@@ -1,0 +1,225 @@
+---
+sidebar_position: 1
+title: Mobile patterns
+---
+
+# Mobile patterns
+
+trust-ui v2 is **mobile-optimized, not just responsive** — every component picks the right behavior for the input device. This guide is the cookbook: which primitive solves which mobile problem, and the touch-aware hooks that power them.
+
+## The mobile-first ladder
+
+When building a screen that should feel native on touch:
+
+1. **Start with the right component.** Each interactive primitive has a mobile variant — pick it up front rather than retrofitting.
+2. **Wrap fullscreen layouts in `<SafeAreaView>`** so iOS notch + home indicator don't clip content.
+3. **Pin primary CTAs in `<StickyFooter>`** so they sit in the thumb zone.
+4. **Add `<KeyboardAvoidingView>` to any form** that has a sticky CTA — the keyboard otherwise covers it.
+5. **Use the touch hooks** (`useTouchDevice`, `useHaptic`, etc.) only when no component already covers the pattern.
+
+## Pick the right primitive
+
+| You want… | Use |
+|---|---|
+| Action picker (Share / Edit / Delete) | [`<ActionSheet>`](../components/action-sheet.mdx) |
+| Filter or detail panel from below | [`<BottomSheet>`](../components/bottom-sheet.mdx) |
+| 2-4 mutually exclusive views | [`<SegmentedControl>`](../components/segmented-control.mdx) |
+| Confirmation centered on screen | [`<Dialog>`](../components/dialog.mdx) (default) |
+| Confirmation as native sheet on mobile | `<Dialog mobileVariant="sheet">` |
+| Multi-step wizard, mobile fullscreen | `<Dialog mobileVariant="fullscreen">` |
+| Dropdown menu → sheet on mobile | `<Menu mobileVariant="sheet">` |
+| Long table on mobile | `<Table mobileLayout="stacked">` |
+| Searchable Select → bottom sheet on touch | `<Select searchable>` (automatic) |
+| Date picker → fullscreen on mobile | `<DatePicker mobileVariant="modal">` (default) |
+| Date picker using OS-native UI | `<DatePicker mobileVariant="native">` |
+
+## Tooltip on touch: the 4 modes
+
+Tooltips are hover-only by definition — but mobile has no hover. v2 ships **four explicit mobile modes**; the component auto-picks the right one based on what's being wrapped, but you can always override.
+
+| Mode | When auto-applied | Interaction |
+|---|---|---|
+| `tap` | Plain text / icon / span | Single tap → toggle. Auto-dismiss after `mobileAutoDismiss` ms (default 4000). |
+| `longpress` | `<button>`, `<a>` | Press-and-hold 500ms → show. Release to dismiss. The button's tap action still fires normally on quick taps. |
+| `inline` | `<input>`, `<textarea>`, `<select>` | Tooltip content renders as helper text **below** the field instead of as a popup. |
+| `hidden` | (opt-in) | No mobile rendering. Use for purely decorative tooltips. |
+
+```tsx
+// Auto: longpress because <Button>
+<Tooltip content="Saves automatically every 5 seconds">
+  <Button>Save</Button>
+</Tooltip>
+
+// Auto: inline because <input>
+<Tooltip content="We never share your email">
+  <input type="email" />
+</Tooltip>
+
+// Manual override
+<Tooltip content="Last updated 5 minutes ago" mobileBehavior="tap" mobileIndicator>
+  <span>Status: Live</span>
+</Tooltip>
+```
+
+### Why these defaults
+
+- **Buttons → longpress**: a tap should still fire the button's action. Longpress is the only gesture that doesn't conflict.
+- **Inputs → inline**: showing a popup tooltip would cover the keyboard or fight focus. Helper text is the established mobile pattern.
+- **Everything else → tap**: when there's no conflicting tap action, the simplest gesture wins.
+
+Pair `tap`-mode tooltips with `mobileIndicator` to add a dotted underline on the trigger — without it, users have no way to know a tooltip exists.
+
+## Haptic feedback
+
+Subtle vibration on key interactions feels native — but trust-ui doesn't trigger haptic by default because:
+
+1. **iOS Safari does not expose the Haptic Engine** — only `navigator.vibrate` (which Android supports but iOS Safari does not).
+2. **WebView containers** often expose haptic via a JS bridge that's app-specific.
+
+The `useHaptic` hook + `<HapticProvider>` give you the abstraction so each app can wire its own implementation:
+
+```tsx
+import { HapticProvider, useHaptic } from 'trust-ui-react';
+
+// In your app root — wire a native bridge if available
+<HapticProvider trigger={(type) => window.NativeBridge?.haptic(type)}>
+  <App />
+</HapticProvider>
+
+// In any component
+function DeleteButton() {
+  const { trigger } = useHaptic();
+  return (
+    <Button
+      variant="danger"
+      onClick={() => {
+        trigger('warning');  // iOS-native haptic via your bridge
+        confirmDelete();
+      }}
+    >
+      Delete
+    </Button>
+  );
+}
+```
+
+| Haptic type | When to use |
+|---|---|
+| `selection` | Picker rolls past a value, segment changes |
+| `impact-light` | Toggle on/off, button tap (sparingly) |
+| `impact-medium` | Action confirmed, item added |
+| `impact-heavy` | Action of weight (delete, submit) |
+| `success` / `warning` / `error` | Toast notification with that semantic |
+
+The default `trigger` (no provider override) falls back to `navigator.vibrate()` on Android and is a no-op on iOS Safari.
+
+## Touch-aware hooks
+
+These hooks let you build mobile-aware behavior in your own components. All are SSR-safe (return sensible defaults when `window` is undefined).
+
+### `useTouchDevice()`
+
+Returns `true` when `(pointer: coarse)` matches — i.e., the primary input is finger/stylus, not mouse. Re-renders if the user switches input device (e.g., plugs in a mouse on iPad).
+
+```tsx
+const isTouch = useTouchDevice();
+return isTouch ? <BottomSheetMenu /> : <DropdownMenu />;
+```
+
+Prefer **media queries** (`@media (hover: hover)`) for purely visual hover styles — they don't cause re-renders. Use `useTouchDevice` only when JS behavior differs (component swap, event wiring).
+
+### `useVisualViewport()`
+
+Subscribes to `window.visualViewport`. Returns `{ height, offsetTop, keyboardOpen }`. Used internally by [`<KeyboardAvoidingView>`](../components/keyboard-avoiding-view.mdx).
+
+```tsx
+const { keyboardOpen, height } = useVisualViewport();
+// Adjust your own layout based on keyboard state
+```
+
+### `useSwipe(ref, options)`
+
+Detects swipe gestures on an element. Caller provides callbacks per direction; threshold + velocity are configurable.
+
+```tsx
+const ref = useRef<HTMLDivElement>(null);
+useSwipe(ref, {
+  onSwipeLeft: () => goToNextPhoto(),
+  onSwipeRight: () => goToPrevPhoto(),
+  threshold: 50,    // min px displacement
+  velocity: 0.3,    // min px/ms
+});
+return <div ref={ref}>{photo}</div>;
+```
+
+### `useLongPress(ref, callback, options)`
+
+Fires `callback` after holding for `delay` ms (default 500). Cancels if the pointer moves more than `threshold` pixels (default 10).
+
+```tsx
+const ref = useRef<HTMLButtonElement>(null);
+useLongPress(ref, () => openContextMenu(), { delay: 500 });
+return <button ref={ref}>Hold for options</button>;
+```
+
+Used internally by Tooltip's `longpress` mode.
+
+### `useDrag(ref, options)`
+
+Pointer-events-based drag tracking. Reports `offset` (x, y) and `velocity` on drag end. Does **not** apply transforms — that's your job.
+
+```tsx
+useDrag(ref, {
+  axis: 'y',
+  onDrag: ({ y }) => setTranslateY(y),
+  onDragEnd: ({ y }, velocity) => snapTo(y, velocity),
+});
+```
+
+Used internally by BottomSheet for drag-to-resize / swipe-to-dismiss.
+
+### `useSnapPoints({ points, flingThreshold })`
+
+Given a current value and a list of snap points, returns the snap target. Factors in velocity ("fling") to jump one slot in the direction of motion instead of snapping to nearest.
+
+```tsx
+const { findTarget } = useSnapPoints({ points: [0, 100, 200, 300] });
+const { target, fling } = findTarget(currentY, velocityY);
+```
+
+Used internally by BottomSheet to snap between `snapPoints`.
+
+## WebView quirks
+
+iOS WKWebView and Android WebView are not 100% the same as their browser counterparts. The most common gotchas:
+
+### iOS WKWebView
+
+- **`viewport-fit=cover` must be set** in the meta tag for `env(safe-area-inset-*)` to return non-zero values.
+- **`webkit-touch-callout: none`** prevents the long-press image/link callout — applied globally in trust-ui's `tokens.css`.
+- **Tap delay (300ms)** was removed in iOS 9.3+, but only if the meta viewport disables zoom. trust-ui assumes the default `user-scalable=yes` and does **not** add a fastclick polyfill.
+- **`input[type=date]` styling is locked** — you cannot fully theme the OS date spinner. Use `<DatePicker mobileVariant="modal">` (default) if you need themed pickers.
+- **Status-bar overlap**: the host app's `WKWebView` config controls whether your content sits below the status bar or behind it. If behind, wrap your header in `<SafeAreaView edges={['top']}>`.
+
+### Android WebView
+
+- **`backdrop-filter` is unsupported** in older Android WebView versions (pre-Chromium 76). trust-ui's `.tui-glass` utility has a `@supports` fallback that drops to opaque `--tui-bg-subtle`.
+- **`env(safe-area-inset-*)` returns 0** on most Android — that's fine, `SafeAreaView` becomes a no-op.
+- **Keyboard behavior** depends on the host app's `android:windowSoftInputMode`. If set to `adjustResize`, the viewport shrinks and `<KeyboardAvoidingView>` works correctly. If `adjustPan`, the viewport doesn't change and the keyboard floats over content — `KeyboardAvoidingView` becomes a no-op.
+- **`navigator.vibrate()`** requires the `VIBRATE` Android permission — without it the call silently fails.
+
+### Both platforms
+
+- **`100vh` doesn't account for browser chrome** — Safari's bottom toolbar and Chrome's URL bar both shrink the visual viewport without changing `100vh`. Use `100dvh` (dynamic viewport height) or `useVisualViewport().height` for accuracy.
+- **`overflow: hidden` on `<body>` can leak scroll** to the document on iOS. trust-ui locks scroll via a fixed positioning trick inside Dialog/BottomSheet, not just `overflow: hidden`.
+- **Pull-to-refresh** can fire when the user pulls down at the top of a sheet. Disable it for fullscreen modals via `overscroll-behavior: contain` on the modal root.
+
+## Testing on real devices
+
+The Storybook custom viewports cover the common screen sizes (iPhone SE, iPhone 15 Pro, Android small/large, iPad). But viewport size is only part of the story — touch behavior, keyboard, safe-area, and haptic only work on **real devices** or a fully simulated environment. Some practical setup:
+
+- **iOS**: Connect your iPhone via USB, open Safari → Develop menu → \[Your phone\] → tab. Live reload, real touch, real keyboard.
+- **Android**: Use Chrome remote debugging via `chrome://inspect`. Same idea.
+- **Cloud**: BrowserStack and LambdaTest both let you test on real iOS / Android devices via the browser.
+
+Don't rely on Chrome DevTools' "device mode" alone — it simulates the viewport but not the touch event model, keyboard behavior, or safe-area insets.

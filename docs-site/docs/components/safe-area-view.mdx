@@ -1,0 +1,111 @@
+---
+sidebar_position: 27
+title: SafeAreaView
+---
+
+import { SafeAreaView } from 'trust-ui-react';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# SafeAreaView
+
+A layout primitive that applies `env(safe-area-inset-*)` padding to its edges. Use it at the root of fullscreen mobile screens, custom modals, and any element near the iOS notch (top) or home indicator (bottom).
+
+## Why you need this
+
+iOS Safari and iOS WebView render web content **edge-to-edge** when the meta viewport is `viewport-fit=cover`. Without insets, your content sits **under** the notch and home indicator — buttons get clipped, headlines get cropped.
+
+`SafeAreaView` reads the `env(safe-area-inset-*)` CSS variables that iOS provides at runtime and turns them into padding on the edges you specify.
+
+```tsx
+import { SafeAreaView } from 'trust-ui-react';
+
+function FullscreenScreen() {
+  return (
+    <SafeAreaView style={{ height: '100vh', background: 'var(--tui-bg)' }}>
+      <Header />
+      <Content />
+    </SafeAreaView>
+  );
+}
+```
+
+## Edges
+
+`edges` controls which sides get the inset. Default is all four. Restrict it when:
+
+- You want the **header** to extend behind the notch but text to clear it → `edges={['top']}` on the text content alone.
+- A **bottom sheet** already pads its bottom — only add `top` if a search field sits at the top.
+- A **toast** container at the top of the screen → `edges={['top']}`.
+
+```tsx
+<SafeAreaView edges={['top', 'bottom']}>
+  {/* clears notch + home indicator, edges flush horizontally */}
+</SafeAreaView>
+```
+
+| Edge | Resolves to | Typical use |
+|---|---|---|
+| `top` | `env(safe-area-inset-top)` | Headers, status bars, top toasts |
+| `bottom` | `env(safe-area-inset-bottom)` | Footers, sticky CTAs, tab bars |
+| `left` / `right` | `env(safe-area-inset-left/right)` | Landscape iPhone (notch on the side) |
+
+## Browser support
+
+| Browser | `env()` support | Behavior |
+|---|---|---|
+| iOS Safari 11.2+ | ✅ Returns actual inset values | Correct padding around notch + home indicator |
+| iOS WebView (WKWebView) | ✅ Same as Safari | Provided the host app sets `viewport-fit=cover` |
+| Android Chrome | ⚠️ Returns 0 | Padding becomes 0 — same as not using `SafeAreaView`, no break |
+| Android WebView | ⚠️ Mostly 0 | Same as Android Chrome |
+| Older browsers | ❌ Falls back to 0 | Via the CSS env() fallback in `tokens.css` |
+
+In short: **using `SafeAreaView` never breaks anything** — non-iOS just gets 0 padding, which is the same as not using it.
+
+## Required HTML meta tag
+
+For `env()` to return non-zero values on iOS, your HTML must declare `viewport-fit=cover` in the viewport meta tag:
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+```
+
+Without `viewport-fit=cover`, iOS reserves the safe area as padding **outside** your content, so `env()` always reads 0 and your background doesn't reach the screen edge.
+
+## Common patterns
+
+### Fullscreen modal / dialog
+
+```tsx
+<Dialog open={open} onClose={close} mobileVariant="fullscreen">
+  {/* SafeAreaView is built in for mobileVariant="fullscreen" — you don't need to add it */}
+</Dialog>
+```
+
+### Custom header that extends behind the notch
+
+```tsx
+<header style={{ background: 'var(--tui-primary)', paddingTop: 0 }}>
+  <SafeAreaView edges={['top']}>
+    <div style={{ padding: 'var(--tui-space-4)' }}>
+      <h1>Settings</h1>
+    </div>
+  </SafeAreaView>
+</header>
+```
+
+The background bleeds behind the notch; the title clears it.
+
+### Sticky footer that clears the home indicator
+
+Use the dedicated [`<StickyFooter>`](./sticky-footer.mdx) primitive — it already handles `safe-area-inset-bottom` plus thumb-zone padding.
+
+## Props
+
+<PropsTable props={[
+  { name: 'edges', type: "Array<'top' | 'right' | 'bottom' | 'left'>", default: "['top', 'right', 'bottom', 'left']", description: 'Which edges should respect safe-area-inset' },
+  { name: 'children', type: 'ReactNode', description: 'Content rendered inside the padded container' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },
+]} />
+
+Also accepts standard `<div>` HTML attributes via spread.

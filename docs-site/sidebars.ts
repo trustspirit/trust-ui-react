@@ -69,9 +69,19 @@ const sidebars: SidebarsConfig = {
         {
           type: 'category',
           label: 'Layout',
-          items: ['components/expander'],
+          items: [
+            'components/expander',
+            'components/safe-area-view',
+            'components/sticky-footer',
+            'components/keyboard-avoiding-view',
+          ],
         },
       ],
+    },
+    {
+      type: 'category',
+      label: 'Guides',
+      items: ['guides/mobile-patterns'],
     },
     {
       type: 'category',
