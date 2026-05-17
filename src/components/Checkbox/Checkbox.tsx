@@ -100,9 +100,18 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
 
     const isControlled = checked !== undefined;
     const [internalChecked, setInternalChecked] = useState(defaultChecked ?? false);
+    // User-interaction clears indeterminate locally (matches native UX where
+    // clicking a mixed-state checkbox commits a definite value). Parent can
+    // re-assert mixed state by toggling the `indeterminate` prop.
+    const [internalIndeterminate, setInternalIndeterminate] = useState(indeterminate);
+
+    useEffect(() => {
+      setInternalIndeterminate(indeterminate);
+    }, [indeterminate]);
 
     const handleChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInternalIndeterminate(false);
         if (!isControlled) {
           setInternalChecked(e.target.checked);
         }
@@ -111,12 +120,13 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       [isControlled, onChange],
     );
 
-    // Sync the indeterminate property (not available as HTML attribute)
+    // Sync the indeterminate property on the underlying input (HTML doesn't
+    // expose it as an attribute, only as a DOM property)
     useEffect(() => {
       if (internalRef.current) {
-        internalRef.current.indeterminate = indeterminate;
+        internalRef.current.indeterminate = internalIndeterminate;
       }
-    }, [indeterminate]);
+    }, [internalIndeterminate]);
 
     const isChecked = isControlled ? checked : internalChecked;
 
@@ -131,8 +141,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     const indicatorClassNames = [
       styles.indicator,
       styles[variant],
-      indeterminate ? styles.indeterminate : '',
-      !indeterminate && isChecked ? styles.checked : '',
+      internalIndeterminate ? styles.indeterminate : '',
+      !internalIndeterminate && isChecked ? styles.checked : '',
     ]
       .filter(Boolean)
       .join(' ');
