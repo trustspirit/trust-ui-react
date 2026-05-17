@@ -62,6 +62,14 @@
   background-color: var(--tui-bg-subtle);
 }
 
+@supports ((backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px))) {
+  .stickyHeader th {
+    background-color: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(8px) saturate(140%);
+    -webkit-backdrop-filter: blur(8px) saturate(140%);
+  }
+}
+
 /* ── Cell ── */
 .td {
   color: var(--tui-text-secondary);
@@ -82,8 +90,10 @@
 }
 
 /* ── Hoverable ── */
-.hoverable tbody tr:hover {
-  background-color: var(--tui-bg-hover);
+@media (hover: hover) {
+  .hoverable tbody tr:hover {
+    background-color: var(--tui-bg-hover);
+  }
 }
 
 /* ── Sizes ── */
@@ -113,8 +123,49 @@
   background-color: var(--tui-bg-subtle);
 }
 
-.striped.hoverable tbody tr:hover {
-  background-color: var(--tui-bg-hover);
+@media (hover: hover) {
+  .striped.hoverable tbody tr:hover {
+    background-color: var(--tui-bg-hover);
+  }
+}
+
+/* ── Zebra ── */
+.zebra tbody tr:nth-child(odd) {
+  background-color: var(--tui-bg-muted);
+}
+
+@media (hover: hover) {
+  .zebra tbody tr:nth-child(odd):hover {
+    background-color: var(--tui-bg-hover);
+  }
+}
+
+/* ── Mobile Stacked ── */
+@media (max-width: 640px) {
+  .mobileStacked thead {
+    display: none;
+  }
+  .mobileStacked tbody tr {
+    display: block;
+    margin-bottom: var(--tui-spacing-md);
+    border: 1px solid var(--tui-border);
+    border-radius: var(--tui-radius-lg);
+    padding: var(--tui-spacing-md);
+    background-color: var(--tui-bg-subtle);
+  }
+  .mobileStacked tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: none;
+    padding: var(--tui-spacing-xs) 0;
+  }
+  .mobileStacked tbody td::before {
+    content: attr(data-label);
+    font-weight: var(--tui-font-weight-medium);
+    color: var(--tui-text-secondary);
+    margin-right: var(--tui-spacing-sm);
+  }
 }
 
 /* ── Variant: bordered ── */

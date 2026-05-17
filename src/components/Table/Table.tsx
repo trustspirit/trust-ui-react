@@ -29,6 +29,10 @@ export interface TableProps<T> {
   size?: 'sm' | 'md' | 'lg';
   /** Sticky header on scroll (default: false) */
   stickyHeader?: boolean;
+  /** Mobile rendering strategy. 'scroll' (default) = horizontal scroll. 'stacked' = each row renders as a card on narrow viewports. */
+  mobileLayout?: 'scroll' | 'stacked';
+  /** Zebra-stripe rows alternating with --tui-bg-muted. Default false. */
+  zebra?: boolean;
   /** Highlight rows on hover (default: true) */
   hoverable?: boolean;
   /** Text shown when data is empty */
@@ -64,6 +68,8 @@ export function Table<T extends Record<string, any>>({
   variant = 'default',
   size = 'md',
   stickyHeader = false,
+  mobileLayout = 'scroll',
+  zebra = false,
   hoverable = true,
   emptyText = 'No data available',
   onRowClick,
@@ -131,6 +137,8 @@ export function Table<T extends Record<string, any>>({
     styles[variant],
     styles[size],
     hoverable ? styles.hoverable : '',
+    zebra ? styles.zebra : '',
+    mobileLayout === 'stacked' ? styles.mobileStacked : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -228,7 +236,12 @@ export function Table<T extends Record<string, any>>({
                   onClick={onRowClick ? () => onRowClick(row, rowIndex) : undefined}
                 >
                   {columns.map((col) => (
-                    <td key={col.key} className={styles.td} style={tdStyle(col)}>
+                    <td
+                      key={col.key}
+                      className={styles.td}
+                      style={tdStyle(col)}
+                      data-label={mobileLayout === 'stacked' ? col.header : undefined}
+                    >
                       {col.render
                         ? col.render(getNestedValue(row, col.key), row, rowIndex)
                         : getNestedValue(row, col.key)}

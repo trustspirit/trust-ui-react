@@ -116,6 +116,29 @@ export const StickyHeader: Story = {
   ),
 };
 
+export const Zebra: Story = {
+  render: () => (
+    <Table<User>
+      columns={columns}
+      data={sampleData}
+      zebra
+      rowKey="id"
+    />
+  ),
+};
+
+export const MobileStacked: Story = {
+  parameters: { viewport: { defaultViewport: 'mobile1' } },
+  render: () => (
+    <Table<User>
+      columns={columns}
+      data={sampleData}
+      mobileLayout="stacked"
+      rowKey="id"
+    />
+  ),
+};
+
 export const EmptyState: Story = {
   render: () => (
     <Table<User>
