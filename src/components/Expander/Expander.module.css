@@ -67,11 +67,15 @@
   color: var(--tui-text);
   text-align: left;
   line-height: var(--tui-line-height);
-  transition: background-color var(--tui-transition-fast);
+  transition:
+    background-color var(--tui-duration-fast) var(--tui-ease-out),
+    color var(--tui-duration-fast) var(--tui-ease-out);
 }
 
-.trigger:hover {
-  background-color: var(--tui-bg-subtle);
+@media (hover: hover) {
+  .trigger:hover {
+    background-color: var(--tui-bg-subtle);
+  }
 }
 
 .trigger:focus-visible {
@@ -93,7 +97,7 @@
   justify-content: center;
   flex-shrink: 0;
   color: var(--tui-text-muted);
-  transition: transform var(--tui-transition);
+  transition: transform var(--tui-duration-base) var(--tui-ease-out);
   transform: rotate(0deg);
 }
 
@@ -105,7 +109,9 @@
 .contentWrapper {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows var(--tui-transition-slow);
+  transition:
+    grid-template-rows var(--tui-duration-base) var(--tui-ease-in-out),
+    opacity var(--tui-duration-fast) var(--tui-ease-out);
 }
 
 .contentWrapperOpen {
