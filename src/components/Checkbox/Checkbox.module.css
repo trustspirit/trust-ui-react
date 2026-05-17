@@ -42,6 +42,7 @@
 
 /* ── Custom checkbox indicator ── */
 .indicator {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -107,9 +108,19 @@
   border-color: var(--tui-secondary);
 }
 
-/* ── Check mark icon — animated draw ── */
-.checkIcon {
+/* ── Check + dash icons — absolutely positioned so they share the same centered slot ── */
+.checkIcon,
+.dashIcon {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--tui-primary-text);
+  pointer-events: none;
+}
+
+.checkIcon {
   opacity: 0;
   transition: opacity var(--tui-duration-fast) var(--tui-ease-out);
 }
@@ -133,14 +144,14 @@
   stroke-dashoffset: 0;
 }
 
-/* Indeterminate dash — simple fade in (no draw animation) */
+/* Indeterminate dash — fade in, no draw animation */
 .dashIcon {
-  display: none;
-  color: var(--tui-primary-text);
+  opacity: 0;
+  transition: opacity var(--tui-duration-fast) var(--tui-ease-out);
 }
 
 .indicator.indeterminate .dashIcon {
-  display: block;
+  opacity: 1;
 }
 
 .indicator.indeterminate .checkIcon {

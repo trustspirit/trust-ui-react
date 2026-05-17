@@ -22,6 +22,23 @@ export function formatDate(date: Date, format: string): string {
   return result;
 }
 
+/**
+ * Parse a "yyyy-MM-dd" string (the value emitted by `<input type="date">`) as a
+ * **local** date at midnight. `new Date(str)` interprets the same string as UTC,
+ * which shifts by one day in UTC+9 / UTC-5 and similar zones.
+ */
+export function parseDateInputValue(str: string): Date | null {
+  const parts = str.split('-');
+  if (parts.length !== 3) return null;
+  const year = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10);
+  const day = parseInt(parts[2], 10);
+  if (isNaN(year) || isNaN(month) || isNaN(day)) return null;
+  if (month < 1 || month > 12) return null;
+  if (day < 1 || day > getDaysInMonth(year, month - 1)) return null;
+  return new Date(year, month - 1, day);
+}
+
 export function parseDate(str: string, format: string): Date | null {
   const yearIndex = format.indexOf('yyyy');
   const monthIndex = format.indexOf('MM');

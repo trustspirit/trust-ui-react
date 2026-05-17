@@ -11,7 +11,7 @@ import {
 import { createPortal } from 'react-dom';
 import styles from './DatePicker.module.css';
 import { Calendar } from './Calendar';
-import { formatDate, getMonthLabel } from './utils';
+import { formatDate, getMonthLabel, parseDateInputValue } from './utils';
 import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
 import { Dialog } from '../Dialog';
 
@@ -367,7 +367,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
             className={styles.nativeInput}
             value={nativeValue}
             onChange={(e) => {
-              const d = e.target.value ? new Date(e.target.value) : null;
+              const d = e.target.value ? parseDateInputValue(e.target.value) : null;
               if (!isControlled) setInternalValue(d);
               onChange?.(d);
             }}
@@ -425,17 +425,75 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
             </p>
           )}
           <Dialog open={isOpen} onClose={() => setIsOpen(false)} mobileVariant="fullscreen">
-            <Calendar
-              currentMonth={viewMonth}
-              currentYear={viewYear}
-              selectedDate={selectedDate}
-              minDate={minDate}
-              maxDate={maxDate}
-              onDateClick={(date) => {
-                handleDateClick(date);
-              }}
-              locale={locale}
-            />
+            <div className={styles.navHeader}>
+              <button
+                type="button"
+                className={styles.navButton}
+                onClick={() => {
+                  if (showYearGrid) setYearRangeStart((s) => s - 12);
+                  else goToPrevMonth();
+                }}
+                aria-label="Previous"
+              >
+                <ChevronLeftIcon />
+              </button>
+              <button
+                type="button"
+                className={styles.monthYearLabel}
+                onClick={() => {
+                  setShowYearGrid(!showYearGrid);
+                  setYearRangeStart(Math.floor(viewYear / 12) * 12);
+                }}
+              >
+                {showYearGrid
+                  ? `${yearRangeStart} - ${yearRangeStart + 11}`
+                  : monthYearLabel}
+              </button>
+              <button
+                type="button"
+                className={styles.navButton}
+                onClick={() => {
+                  if (showYearGrid) setYearRangeStart((s) => s + 12);
+                  else goToNextMonth();
+                }}
+                aria-label="Next"
+              >
+                <ChevronRightIcon />
+              </button>
+            </div>
+            {showYearGrid ? (
+              <div className={styles.yearGrid}>
+                {yearGridYears.map((year) => {
+                  const isSelected = year === viewYear;
+                  const cellClass = [
+                    styles.yearCell,
+                    isSelected ? styles.yearCellSelected : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ');
+                  return (
+                    <button
+                      key={year}
+                      type="button"
+                      className={cellClass}
+                      onClick={() => handleYearClick(year)}
+                    >
+                      {year}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <Calendar
+                currentMonth={viewMonth}
+                currentYear={viewYear}
+                selectedDate={selectedDate}
+                minDate={minDate}
+                maxDate={maxDate}
+                onDateClick={handleDateClick}
+                locale={locale}
+              />
+            )}
           </Dialog>
         </div>
       );

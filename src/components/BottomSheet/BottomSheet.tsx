@@ -58,7 +58,7 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
     const sheetRef = useRef<HTMLDivElement | null>(null);
     const handleRef = useRef<HTMLDivElement | null>(null);
     const [exiting, setExiting] = useState(false);
-    const [mounted, setMounted] = useState(open);
+    const [mounted, setMounted] = useState(false);
     const [currentSnapIdx, setCurrentSnapIdx] = useState(initialSnap);
     const [dragDelta, setDragDelta] = useState(0); // current drag in px (positive = down)
     const [isDragging, setIsDragging] = useState(false);
@@ -111,6 +111,10 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
       document.addEventListener('keydown', onKey);
       return () => document.removeEventListener('keydown', onKey);
     }, [mounted, onClose]);
+
+    // Drag is meaningful only if there's somewhere to drag to:
+    // dismissible (drag-down to close) or multiple snap points (drag between them).
+    const dragEnabled = dismissible || snapPoints.length > 1;
 
     // Snap math
     const { findTarget } = useSnapPoints({ points: snapPoints, flingThreshold: 0.5 });
@@ -200,9 +204,9 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
           aria-modal="true"
           {...rest}
         >
-          {showHandle && (
+          {dragEnabled && (
             <div ref={handleRef} className={styles.handle}>
-              <div className={styles.handleBar} />
+              {showHandle && <div className={styles.handleBar} />}
             </div>
           )}
           <div className={styles.content}>{children}</div>

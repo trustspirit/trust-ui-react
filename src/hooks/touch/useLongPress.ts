@@ -1,4 +1,4 @@
-import { useEffect, type RefObject } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 
 export interface UseLongPressOptions {
   /** Hold duration in ms before firing. Default 500. */
@@ -11,6 +11,9 @@ export interface UseLongPressOptions {
  * Fires `callback` after holding touch/pointer for `delay` ms.
  * Cancels if the pointer moves > threshold pixels or is released early.
  *
+ * Callback is read from a ref so inline lambdas don't reset the in-flight
+ * timer mid-press.
+ *
  * Common use cases: context menu, tooltip-on-longpress, drag handle activation.
  */
 export function useLongPress(
@@ -18,12 +21,14 @@ export function useLongPress(
   callback: () => void,
   options: UseLongPressOptions = {},
 ): void {
+  const callbackRef = useRef(callback);
+  callbackRef.current = callback;
+  const delay = options.delay ?? 500;
+  const threshold = options.threshold ?? 10;
+
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-
-    const delay = options.delay ?? 500;
-    const threshold = options.threshold ?? 10;
 
     let timer: number | null = null;
     let startX = 0;
@@ -39,13 +44,12 @@ export function useLongPress(
     };
 
     const onPointerDown = (e: PointerEvent) => {
-      // Only track primary pointer
       if (activeId != null) return;
       activeId = e.pointerId;
       startX = e.clientX;
       startY = e.clientY;
       timer = window.setTimeout(() => {
-        callback();
+        callbackRef.current();
         timer = null;
       }, delay);
     };
@@ -75,5 +79,5 @@ export function useLongPress(
       el.removeEventListener('pointerleave', onPointerUp);
       clear();
     };
-  }, [ref, callback, options.delay, options.threshold]);
+  }, [ref, delay, threshold]);
 }

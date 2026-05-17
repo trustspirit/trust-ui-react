@@ -1,4 +1,4 @@
-import { useEffect, type RefObject } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 
 export interface UseSwipeOptions {
   onSwipeUp?: () => void;
@@ -15,18 +15,19 @@ export interface UseSwipeOptions {
  * Attaches touchstart/touchend listeners to detect 4-directional swipes.
  * Threshold + velocity must both be met to fire.
  *
- * SSR-safe — useEffect guards against missing element.
+ * Callbacks are read from a ref so inline lambdas do not re-register the
+ * listeners mid-gesture. SSR-safe — useEffect guards against missing element.
  */
 export function useSwipe(
   ref: RefObject<HTMLElement | null>,
   options: UseSwipeOptions,
 ): void {
+  const optsRef = useRef(options);
+  optsRef.current = options;
+
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-
-    const threshold = options.threshold ?? 50;
-    const minVelocity = options.velocity ?? 0.3;
 
     let startX = 0;
     let startY = 0;
@@ -43,6 +44,9 @@ export function useSwipe(
     const onEnd = (e: TouchEvent) => {
       const t = e.changedTouches[0];
       if (!t) return;
+      const opts = optsRef.current;
+      const threshold = opts.threshold ?? 50;
+      const minVelocity = opts.velocity ?? 0.3;
       const dx = t.clientX - startX;
       const dy = t.clientY - startY;
       const dt = Math.max(performance.now() - startTime, 1);
@@ -50,18 +54,16 @@ export function useSwipe(
       const absDy = Math.abs(dy);
 
       if (absDx > absDy) {
-        // Horizontal
         const v = absDx / dt;
         if (absDx > threshold && v > minVelocity) {
-          if (dx > 0) options.onSwipeRight?.();
-          else options.onSwipeLeft?.();
+          if (dx > 0) opts.onSwipeRight?.();
+          else opts.onSwipeLeft?.();
         }
       } else {
-        // Vertical
         const v = absDy / dt;
         if (absDy > threshold && v > minVelocity) {
-          if (dy > 0) options.onSwipeDown?.();
-          else options.onSwipeUp?.();
+          if (dy > 0) opts.onSwipeDown?.();
+          else opts.onSwipeUp?.();
         }
       }
     };
@@ -72,13 +74,5 @@ export function useSwipe(
       el.removeEventListener('touchstart', onStart);
       el.removeEventListener('touchend', onEnd);
     };
-  }, [
-    ref,
-    options.onSwipeUp,
-    options.onSwipeDown,
-    options.onSwipeLeft,
-    options.onSwipeRight,
-    options.threshold,
-    options.velocity,
-  ]);
+  }, [ref]);
 }

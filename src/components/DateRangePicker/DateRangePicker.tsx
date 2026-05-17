@@ -10,7 +10,7 @@ import {
 import { createPortal } from 'react-dom';
 import styles from './DateRangePicker.module.css';
 import { Calendar } from '../DatePicker/Calendar';
-import { formatDate, getMonthLabel } from '../DatePicker/utils';
+import { formatDate, getMonthLabel, parseDateInputValue } from '../DatePicker/utils';
 import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
 import { Dialog } from '../Dialog';
 
@@ -493,7 +493,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
               value={startStr}
               onChange={(e) => {
                 const newRange: DateRange = {
-                  start: e.target.value ? new Date(e.target.value) : null,
+                  start: e.target.value ? parseDateInputValue(e.target.value) : null,
                   end: selectedRange.end,
                 };
                 if (!isControlled) setInternalValue(newRange);
@@ -509,7 +509,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
               onChange={(e) => {
                 const newRange: DateRange = {
                   start: selectedRange.start,
-                  end: e.target.value ? new Date(e.target.value) : null,
+                  end: e.target.value ? parseDateInputValue(e.target.value) : null,
                 };
                 if (!isControlled) setInternalValue(newRange);
                 onChange?.(newRange);
