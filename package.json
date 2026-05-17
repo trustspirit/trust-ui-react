@@ -55,6 +55,8 @@
     ]
   },
   "devDependencies": {
+    "@fontsource-variable/geist": "^5.2.9",
+    "@fontsource-variable/geist-mono": "^5.2.8",
     "@storybook/addon-essentials": "8",
     "@storybook/blocks": "8",
     "@storybook/react": "^8.6.17",

@@ -1,4 +1,5 @@
 // Styles
+import './styles/fonts.css';
 import './styles/tokens.css';
 import './styles/theme-light.css';
 import './styles/theme-dark.css';

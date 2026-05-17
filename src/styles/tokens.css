@@ -1,6 +1,9 @@
 :root {
   /* Font */
-  --tui-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --tui-font-sans: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --tui-font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* Backwards compat alias — 기존 외부 consumer 유지 */
+  --tui-font-family: var(--tui-font-sans);
   --tui-font-size-xs: 0.75rem;
   --tui-font-size-sm: 0.875rem;
   --tui-font-size-md: 1rem;
