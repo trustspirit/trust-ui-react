@@ -38,14 +38,17 @@
   font-size: var(--tui-font-size-sm);
   cursor: pointer;
   transition:
-    background-color var(--tui-transition-fast),
-    color var(--tui-transition-fast);
+    background-color var(--tui-duration-fast) var(--tui-ease-out),
+    color var(--tui-duration-fast) var(--tui-ease-out),
+    box-shadow var(--tui-duration-fast) var(--tui-ease-out);
   color: var(--tui-text);
   position: relative;
 }
 
-.day:hover:not(.dayDisabled):not(.daySelected) {
-  background-color: var(--tui-bg-muted);
+@media (hover: hover) {
+  .day:hover:not(.dayDisabled):not(.daySelected) {
+    background-color: var(--tui-bg-hover);
+  }
 }
 
 /* ── Outside current month ── */
@@ -57,7 +60,8 @@
 /* ── Today indicator ── */
 .dayToday {
   font-weight: var(--tui-font-weight-semibold);
-  box-shadow: inset 0 0 0 1px var(--tui-primary);
+  background-color: var(--tui-primary-subtle);
+  color: var(--tui-primary);
 }
 
 /* ── Selected day ── */
@@ -67,8 +71,10 @@
   font-weight: var(--tui-font-weight-medium);
 }
 
-.daySelected:hover {
-  background-color: var(--tui-primary-hover);
+@media (hover: hover) {
+  .daySelected:hover {
+    background-color: var(--tui-primary-hover);
+  }
 }
 
 /* ── Disabled day ── */
@@ -98,8 +104,10 @@
   border-radius: 0;
 }
 
-.dayInRange:hover {
-  background-color: var(--tui-primary-subtle);
+@media (hover: hover) {
+  .dayInRange:hover {
+    background-color: var(--tui-primary-subtle);
+  }
 }
 
 /* ── Range row cell container for continuous highlight ── */

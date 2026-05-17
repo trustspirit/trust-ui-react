@@ -12,6 +12,8 @@ import { createPortal } from 'react-dom';
 import styles from './DatePicker.module.css';
 import { Calendar } from './Calendar';
 import { formatDate, getMonthLabel } from './utils';
+import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
+import { Dialog } from '../Dialog';
 
 export interface DatePickerProps {
   /** Controlled selected date */
@@ -44,6 +46,12 @@ export interface DatePickerProps {
   label?: string;
   /** Whether the field is required (shows red asterisk) */
   required?: boolean;
+  /**
+   * Mobile rendering strategy.
+   * 'modal' (default): full-screen Dialog with the calendar on touch devices.
+   * 'native': uses the browser's native <input type="date"> picker (iOS/Android system UI).
+   */
+  mobileVariant?: 'modal' | 'native';
   /** Additional CSS class */
   className?: string;
   /** Inline styles */
@@ -125,11 +133,13 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       errorMessage,
       label,
       required = false,
+      mobileVariant = 'modal',
       className,
       style,
     },
     ref,
   ) => {
+    const isTouch = useTouchDevice();
     const isControlled = controlledValue !== undefined;
     const [internalValue, setInternalValue] = useState<Date | null>(
       defaultValue ?? null,
@@ -338,6 +348,98 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     ]
       .filter(Boolean)
       .join(' ');
+
+    // ── Mobile: native <input type="date"> ──
+    if (isTouch && mobileVariant === 'native') {
+      const nativeValue = selectedDate
+        ? `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`
+        : '';
+      return (
+        <div ref={ref} className={containerClassNames} style={style}>
+          {label && (
+            <label className={labelClassNames}>
+              {label}
+              {required && <span className={styles.requiredAsterisk}> *</span>}
+            </label>
+          )}
+          <input
+            type="date"
+            className={styles.nativeInput}
+            value={nativeValue}
+            onChange={(e) => {
+              const d = e.target.value ? new Date(e.target.value) : null;
+              if (!isControlled) setInternalValue(d);
+              onChange?.(d);
+            }}
+            disabled={disabled}
+            aria-invalid={isError || undefined}
+          />
+          {errorMessage && (
+            <p className={styles.errorMessage} role="alert">
+              {errorMessage}
+            </p>
+          )}
+        </div>
+      );
+    }
+
+    // ── Mobile: fullscreen modal ──
+    if (isTouch && mobileVariant === 'modal') {
+      return (
+        <div ref={ref} className={containerClassNames} style={style}>
+          {label && (
+            <label className={labelClassNames}>
+              {label}
+              {required && <span className={styles.requiredAsterisk}> *</span>}
+            </label>
+          )}
+          <div
+            className={wrapperClassNames}
+            onClick={() => {
+              if (!disabled) setIsOpen(true);
+            }}
+            tabIndex={disabled ? -1 : 0}
+            onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
+              if (e.key === 'Enter' && !disabled) setIsOpen(true);
+            }}
+            role="button"
+            aria-disabled={disabled || undefined}
+          >
+            <input
+              className={styles.input}
+              type="text"
+              value={displayText}
+              placeholder={effectivePlaceholder}
+              disabled={disabled}
+              readOnly
+              tabIndex={-1}
+              aria-invalid={isError || undefined}
+            />
+            <span className={styles.calendarIcon}>
+              <CalendarIcon />
+            </span>
+          </div>
+          {errorMessage && (
+            <p className={styles.errorMessage} role="alert">
+              {errorMessage}
+            </p>
+          )}
+          <Dialog open={isOpen} onClose={() => setIsOpen(false)} mobileVariant="fullscreen">
+            <Calendar
+              currentMonth={viewMonth}
+              currentYear={viewYear}
+              selectedDate={selectedDate}
+              minDate={minDate}
+              maxDate={maxDate}
+              onDateClick={(date) => {
+                handleDateClick(date);
+              }}
+              locale={locale}
+            />
+          </Dialog>
+        </div>
+      );
+    }
 
     return (
       <div ref={ref} className={containerClassNames} style={style}>

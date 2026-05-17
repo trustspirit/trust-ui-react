@@ -1,11 +1,15 @@
 import { useState } from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
 import { DatePicker } from './DatePicker';
 
-export default {
+const meta: Meta<typeof DatePicker> = {
   title: 'Form/DatePicker',
   component: DatePicker,
   tags: ['autodocs'],
 };
+
+export default meta;
+type Story = StoryObj<typeof DatePicker>;
 
 export const Default = () => <DatePicker label="Date" />;
 
@@ -83,4 +87,14 @@ export const Controlled = () => {
       </span>
     </div>
   );
+};
+
+export const MobileModal: Story = {
+  args: { mobileVariant: 'modal', label: 'Mobile Modal' },
+  parameters: { viewport: { defaultViewport: 'mobile1' } },
+};
+
+export const MobileNative: Story = {
+  args: { mobileVariant: 'native', label: 'Mobile Native' },
+  parameters: { viewport: { defaultViewport: 'mobile1' } },
 };
