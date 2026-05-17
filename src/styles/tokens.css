@@ -1,51 +1,133 @@
 :root {
-  /* Font */
+  /* ───── Font ───── */
   --tui-font-sans: 'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --tui-font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-  /* Backwards compat alias — 기존 외부 consumer 유지 */
-  --tui-font-family: var(--tui-font-sans);
-  --tui-font-size-xs: 0.75rem;
-  --tui-font-size-sm: 0.875rem;
-  --tui-font-size-md: 1rem;
-  --tui-font-size-lg: 1.125rem;
-  --tui-font-size-xl: 1.25rem;
+  --tui-font-family: var(--tui-font-sans);  /* backwards compat alias */
+
+  --tui-font-size-xs: 0.75rem;      /* 12px */
+  --tui-font-size-sm: 0.8125rem;    /* 13px */
+  --tui-font-size-md: 0.875rem;     /* 14px — desktop body baseline */
+  --tui-font-size-lg: 1rem;         /* 16px */
+  --tui-font-size-xl: 1.125rem;     /* 18px */
+  --tui-font-size-2xl: 1.375rem;    /* 22px */
+
   --tui-font-weight-normal: 400;
   --tui-font-weight-medium: 500;
   --tui-font-weight-semibold: 600;
   --tui-font-weight-bold: 700;
   --tui-line-height: 1.5;
 
-  /* Spacing */
+  --tui-letter-tight: -0.011em;
+  --tui-letter-tighter: -0.022em;
+
+  /* ───── Spacing (desktop baseline) ───── */
   --tui-spacing-xs: 4px;
   --tui-spacing-sm: 8px;
-  --tui-spacing-md: 16px;
-  --tui-spacing-lg: 24px;
-  --tui-spacing-xl: 32px;
-  --tui-spacing-2xl: 48px;
+  --tui-spacing-md: 12px;
+  --tui-spacing-lg: 16px;
+  --tui-spacing-xl: 24px;
+  --tui-spacing-2xl: 32px;
+  --tui-spacing-3xl: 48px;
 
-  /* Radius */
-  --tui-radius-sm: 4px;
-  --tui-radius-md: 6px;
-  --tui-radius-lg: 8px;
-  --tui-radius-xl: 12px;
+  /* ───── Radius ───── */
+  --tui-radius-xs: 4px;
+  --tui-radius-sm: 6px;
+  --tui-radius-md: 8px;
+  --tui-radius-lg: 10px;
+  --tui-radius-xl: 14px;
+  --tui-radius-2xl: 20px;
   --tui-radius-full: 9999px;
 
-  /* Shadows */
-  --tui-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --tui-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --tui-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-  --tui-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  /* ───── Shadows ───── */
+  --tui-shadow-xs: 0 1px 2px rgba(15, 16, 26, 0.04);
+  --tui-shadow-sm: 0 1px 2px rgba(15, 16, 26, 0.05), 0 1px 3px rgba(15, 16, 26, 0.03);
+  --tui-shadow-md: 0 2px 4px rgba(15, 16, 26, 0.06), 0 4px 12px -2px rgba(15, 16, 26, 0.06);
+  --tui-shadow-lg: 0 4px 8px rgba(15, 16, 26, 0.06), 0 12px 32px -8px rgba(15, 16, 26, 0.1);
+  --tui-shadow-xl: 0 8px 16px rgba(15, 16, 26, 0.08), 0 24px 48px -12px rgba(15, 16, 26, 0.14);
 
-  /* Transition */
-  --tui-transition-fast: 100ms ease;
-  --tui-transition: 150ms ease;
-  --tui-transition-slow: 300ms ease;
+  --tui-inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.18);
 
-  /* Z-index */
+  --tui-glass-blur: 20px;
+  /* --tui-glass-bg, --tui-glass-border, --tui-glass-shadow 은 theme-light/dark 에서 정의 */
+
+  /* ───── Motion ───── */
+  --tui-duration-instant: 80ms;
+  --tui-duration-fast: 150ms;
+  --tui-duration-base: 220ms;
+  --tui-duration-medium: 320ms;
+  --tui-duration-slow: 480ms;
+
+  /* backwards compat aliases for existing component CSS that referenced --tui-transition* */
+  --tui-transition-fast: var(--tui-duration-fast) ease;
+  --tui-transition: var(--tui-duration-base) ease;
+  --tui-transition-slow: var(--tui-duration-slow) ease;
+
+  --tui-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --tui-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --tui-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --tui-ease-linear: linear;
+
+  --tui-transition-color:
+    color var(--tui-duration-fast) var(--tui-ease-out),
+    background-color var(--tui-duration-fast) var(--tui-ease-out),
+    border-color var(--tui-duration-fast) var(--tui-ease-out);
+  --tui-transition-transform: transform var(--tui-duration-base) var(--tui-ease-spring);
+  --tui-transition-shadow: box-shadow var(--tui-duration-base) var(--tui-ease-out);
+
+  /* ───── Touch targets & safe area ───── */
+  --tui-touch-target-min: 44px;
+  --tui-touch-target-comfortable: 48px;
+
+  --tui-safe-top: env(safe-area-inset-top, 0px);
+  --tui-safe-right: env(safe-area-inset-right, 0px);
+  --tui-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --tui-safe-left: env(safe-area-inset-left, 0px);
+
+  --tui-thumb-zone-height: 65vh;
+  --tui-thumb-safe-bottom: max(env(safe-area-inset-bottom, 0px), 16px);
+
+  --tui-tap-highlight: transparent;
+
+  /* ───── Z-index ───── */
   --tui-z-dropdown: 1000;
   --tui-z-sticky: 1010;
   --tui-z-popover: 1020;
   --tui-z-modal: 1050;
+  --tui-z-bottom-sheet: 1055;
   --tui-z-tooltip: 1060;
   --tui-z-toast: 1070;
+}
+
+/* ─────────────────────────────────────────────────────────────────── */
+/* Mobile density override — pointer:coarse devices                    */
+/* ─────────────────────────────────────────────────────────────────── */
+@media (pointer: coarse) {
+  :root {
+    --tui-spacing-md: 16px;
+    --tui-spacing-lg: 20px;
+    --tui-spacing-xl: 28px;
+
+    --tui-font-size-xs: 0.8125rem;
+    --tui-font-size-sm: 0.875rem;
+    --tui-font-size-md: 1rem;        /* desktop 14px → mobile 16px (iOS auto-zoom 방지 + 가독성) */
+    --tui-font-size-lg: 1.125rem;
+    --tui-font-size-xl: 1.25rem;
+    --tui-font-size-2xl: 1.5rem;
+
+    --tui-radius-md: 12px;
+    --tui-radius-lg: 14px;
+    --tui-radius-xl: 20px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────── */
+/* Reduced motion — OS 설정 시 모든 transition/animation 비활성       */
+/* ─────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
