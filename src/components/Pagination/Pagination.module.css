@@ -26,16 +26,18 @@
   font-weight: var(--tui-font-weight-medium);
   cursor: pointer;
   transition:
-    background-color var(--tui-transition),
-    border-color var(--tui-transition),
-    color var(--tui-transition),
-    box-shadow var(--tui-transition);
+    background-color var(--tui-duration-fast) var(--tui-ease-out),
+    border-color var(--tui-duration-fast) var(--tui-ease-out),
+    color var(--tui-duration-fast) var(--tui-ease-out),
+    box-shadow var(--tui-duration-fast) var(--tui-ease-out);
   user-select: none;
 }
 
-.button:hover:not(:disabled) {
-  background-color: var(--tui-bg-hover);
-  border-color: var(--tui-border-hover);
+@media (hover: hover) {
+  .button:hover:not(:disabled) {
+    background-color: var(--tui-bg-hover);
+    border-color: var(--tui-border-hover);
+  }
 }
 
 .button:focus-visible {
@@ -55,15 +57,18 @@
 
 /* ── Active page ── */
 .active {
-  background-color: var(--tui-primary);
-  border-color: var(--tui-primary);
-  color: var(--tui-primary-text);
+  background-color: var(--tui-primary-subtle);
+  border-color: var(--tui-primary-subtle);
+  color: var(--tui-primary);
+  font-weight: var(--tui-font-weight-semibold);
 }
 
-.active:hover:not(:disabled) {
-  background-color: var(--tui-primary-hover);
-  border-color: var(--tui-primary-hover);
-  color: var(--tui-primary-text);
+@media (hover: hover) {
+  .active:hover:not(:disabled) {
+    background-color: var(--tui-primary-subtle-hover);
+    border-color: var(--tui-primary-subtle-hover);
+    color: var(--tui-primary);
+  }
 }
 
 /* ── Nav button ── */
