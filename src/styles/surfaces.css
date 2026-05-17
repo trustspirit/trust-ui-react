@@ -1,0 +1,31 @@
+/*
+ * Tier 3 — Elevated Glass surface utility.
+ *
+ * Use via:
+ *   - className="tui-glass"                       (raw HTML)
+ *   - .myComponent { composes: tui-glass from global; }   (CSS Modules)
+ *
+ * Backdrop-filter 지원 여부에 따라 두 단계 fallback:
+ *   1. backdrop-filter 지원   → translucent + blur + saturate
+ *   2. 미지원                  → solid bg-subtle (Tier 2 으로 강등)
+ */
+
+.tui-glass {
+  background-color: var(--tui-glass-bg);
+  border: 1px solid var(--tui-glass-border);
+  box-shadow: var(--tui-glass-shadow);
+  border-radius: var(--tui-radius-xl);
+}
+
+@supports ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
+  .tui-glass {
+    backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
+  }
+}
+
+@supports not ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
+  .tui-glass {
+    background-color: var(--tui-bg-subtle);
+  }
+}

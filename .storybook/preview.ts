@@ -3,6 +3,7 @@ import '../src/styles/fonts.css';
 import '../src/styles/tokens.css';
 import '../src/styles/theme-light.css';
 import '../src/styles/theme-dark.css';
+import '../src/styles/surfaces.css';
 import '../src/styles/reset.css';
 
 const preview: Preview = {
