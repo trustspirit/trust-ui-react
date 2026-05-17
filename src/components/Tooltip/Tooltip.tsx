@@ -135,13 +135,14 @@ export function Tooltip({
     setVisible(false);
   }, []);
 
+  // Only attach the 5 pointer listeners when longpress mode is actually
+  // active. Switching ref identity between triggerRef and noopRef causes
+  // useLongPress's effect to re-run, attaching/detaching listeners on demand.
+  const longPressEnabled = isTouch && effectiveMobileVariant === 'longpress';
+  const noopRef = useRef<HTMLElement | null>(null);
   useLongPress(
-    triggerRef as React.RefObject<HTMLElement | null>,
-    () => {
-      if (isTouch && effectiveMobileVariant === 'longpress') {
-        showImmediate();
-      }
-    },
+    longPressEnabled ? (triggerRef as React.RefObject<HTMLElement | null>) : noopRef,
+    showImmediate,
     { delay: 500 },
   );
 

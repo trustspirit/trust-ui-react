@@ -406,10 +406,13 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
       const d = selectedRange.start ?? new Date();
       setMobileMonth(d.getMonth());
       setMobileYear(d.getFullYear());
-      setDraftRange({ start: null, end: null });
-      setMobileStep('start');
+      // Initialize draftRange from current selection so pre-existing range
+      // stays highlighted when reopening the modal to edit.
+      setDraftRange({ start: selectedRange.start, end: selectedRange.end });
+      // If both start and end already exist, default to editing the end date.
+      setMobileStep(selectedRange.start && !selectedRange.end ? 'end' : 'start');
       setMobileOpen(true);
-    }, [disabled, selectedRange.start]);
+    }, [disabled, selectedRange.start, selectedRange.end]);
 
     const closeMobileModal = useCallback(() => {
       setMobileOpen(false);

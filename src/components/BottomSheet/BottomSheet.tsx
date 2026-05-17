@@ -10,6 +10,7 @@ import {
 import { createPortal } from 'react-dom';
 import { useDrag } from '../../hooks/touch/useDrag';
 import { useSnapPoints } from '../../hooks/touch/useSnapPoints';
+import { acquireScrollLock, releaseScrollLock } from '../../utils/scrollLock';
 import styles from './BottomSheet.module.css';
 
 export interface BottomSheetProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onClose'> {
@@ -60,8 +61,10 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
     const [exiting, setExiting] = useState(false);
     const [mounted, setMounted] = useState(false);
     const [currentSnapIdx, setCurrentSnapIdx] = useState(initialSnap);
-    const [dragDelta, setDragDelta] = useState(0); // current drag in px (positive = down)
     const [isDragging, setIsDragging] = useState(false);
+    // dragDelta is held in a ref + applied directly to the DOM to avoid
+    // re-rendering BottomSheet (and all children) on every pointermove.
+    const dragDeltaRef = useRef(0);
     const viewportHeightRef = useRef(typeof window !== 'undefined' ? window.innerHeight : 0);
 
     // Mount / unmount with exit animation
@@ -70,36 +73,38 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
         setExiting(false);
         setMounted(true);
         setCurrentSnapIdx(initialSnap);
-        setDragDelta(0);
+        dragDeltaRef.current = 0;
       } else if (mounted) {
         setExiting(true);
-        const t = window.setTimeout(() => {
+        const t = setTimeout(() => {
           setMounted(false);
           setExiting(false);
         }, 280);
-        return () => window.clearTimeout(t);
+        return () => clearTimeout(t);
       }
     }, [open, initialSnap, mounted]);
 
-    // Track viewport height
+    // Clamp currentSnapIdx whenever snapPoints shrinks
     useEffect(() => {
-      if (typeof window === 'undefined') return;
+      setCurrentSnapIdx((prev) => Math.min(prev, snapPoints.length - 1));
+    }, [snapPoints]);
+
+    // Track viewport height (only while mounted — saves a permanent listener)
+    useEffect(() => {
+      if (!mounted || typeof window === 'undefined') return;
       const update = () => {
         viewportHeightRef.current = window.innerHeight;
       };
       update();
       window.addEventListener('resize', update);
       return () => window.removeEventListener('resize', update);
-    }, []);
+    }, [mounted]);
 
-    // Body scroll lock while open
+    // Body scroll lock — uses ref-counted shared utility so nested sheets/dialogs cooperate
     useEffect(() => {
       if (!mounted) return;
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => {
-        document.body.style.overflow = prev;
-      };
+      acquireScrollLock();
+      return () => releaseScrollLock();
     }, [mounted]);
 
     // ESC dismiss
@@ -119,56 +124,69 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
     // Snap math
     const { findTarget } = useSnapPoints({ points: snapPoints, flingThreshold: 0.5 });
 
-    const onDragMove = useCallback((offset: { x: number; y: number }) => {
+    // Static (non-drag) translate computation — used for snap rest position
+    const maxSnap = Math.max(...snapPoints);
+    const sheetHeightVh = maxSnap * 100;
+    const currentSnap = snapPoints[currentSnapIdx] ?? snapPoints[0];
+    const hiddenFraction = maxSnap - currentSnap;
+    const baseTranslateY = hiddenFraction * (viewportHeightRef.current || 0);
+
+    const applySheetTransform = useCallback((deltaPx: number) => {
+      if (sheetRef.current) {
+        sheetRef.current.style.transform = `translateY(${baseTranslateY + deltaPx}px)`;
+      }
+    }, [baseTranslateY]);
+
+    const onDragStart = useCallback(() => {
       setIsDragging(true);
-      // Only allow downward drag past current snap (positive y) and upward drag toward next snap
-      const max = Math.max(...snapPoints);
-      const cur = snapPoints[currentSnapIdx];
-      const vh = viewportHeightRef.current || 1;
-      // Limit upward drag to not exceed max snap; allow downward drag unbounded for dismiss math.
-      const minOffsetUpward = -((max - cur) * vh); // negative = drag up
-      setDragDelta(Math.max(offset.y, minOffsetUpward));
-    }, [snapPoints, currentSnapIdx]);
+    }, []);
+
+    const onDragMove = useCallback(
+      (offset: { x: number; y: number }) => {
+        const max = Math.max(...snapPoints);
+        const cur = snapPoints[currentSnapIdx];
+        const vh = viewportHeightRef.current || 1;
+        const minOffsetUpward = -((max - cur) * vh);
+        const delta = Math.max(offset.y, minOffsetUpward);
+        dragDeltaRef.current = delta;
+        applySheetTransform(delta);
+      },
+      [snapPoints, currentSnapIdx, applySheetTransform],
+    );
 
     const onDragEnd = useCallback(
       (_offset: { x: number; y: number }, velocity: { x: number; y: number }) => {
         setIsDragging(false);
         const vh = viewportHeightRef.current || 1;
-        const currentFraction = snapPoints[currentSnapIdx] - dragDelta / vh;
-        // Velocity sign: downward drag is positive y, but for snap math we want the "upward" direction as positive
-        // (i.e., toward a higher snap). So negate.
+        const currentFraction = snapPoints[currentSnapIdx] - dragDeltaRef.current / vh;
+        // Velocity sign: downward drag is positive y; for snap math we want
+        // "upward" (toward bigger snap) as positive, so negate.
         const result = findTarget(currentFraction, -velocity.y * 1000);
 
-        // Dismiss check: if landed below smallest snap (or below dismissThreshold), close
         const smallestSnap = Math.min(...snapPoints);
         const dismissThreshold = smallestSnap * 0.6;
         if (dismissible && result.target < dismissThreshold) {
           onClose();
-          setDragDelta(0);
+          dragDeltaRef.current = 0;
           return;
         }
-        // Snap to target
         const newIdx = snapPoints.indexOf(result.target);
         if (newIdx >= 0) setCurrentSnapIdx(newIdx);
-        setDragDelta(0);
+        dragDeltaRef.current = 0;
+        // Reset inline transform so the rendered baseTranslateY (with new snap) takes over via CSS transition
+        if (sheetRef.current) {
+          sheetRef.current.style.transform = '';
+        }
       },
-      [snapPoints, currentSnapIdx, dragDelta, findTarget, dismissible, onClose],
+      [snapPoints, currentSnapIdx, findTarget, dismissible, onClose],
     );
 
     useDrag(handleRef, {
       axis: 'y',
+      onDragStart,
       onDrag: onDragMove,
       onDragEnd,
     });
-
-    // Compute translateY based on snap + drag
-    const vh = viewportHeightRef.current || (typeof window !== 'undefined' ? window.innerHeight : 0);
-    const maxSnap = Math.max(...snapPoints);
-    const sheetHeightVh = maxSnap * 100;
-    const currentSnap = snapPoints[currentSnapIdx] ?? snapPoints[0];
-    const hiddenFraction = maxSnap - currentSnap; // 0..maxSnap
-    const baseTranslateY = hiddenFraction * vh; // px
-    const translateY = baseTranslateY + dragDelta;
 
     if (!mounted || typeof document === 'undefined') return null;
 
@@ -198,7 +216,7 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
           className={sheetClassName}
           style={{
             height: `${sheetHeightVh}vh`,
-            transform: `translateY(${translateY}px)`,
+            transform: `translateY(${baseTranslateY}px)`,
           }}
           role="dialog"
           aria-modal="true"

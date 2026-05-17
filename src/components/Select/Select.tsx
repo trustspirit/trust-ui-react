@@ -9,6 +9,7 @@ import {
   type KeyboardEvent,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
 import styles from './Select.module.css';
 
 export interface SelectOption {
@@ -109,23 +110,6 @@ function CloseIcon() {
   );
 }
 
-// Detect touch device (coarse pointer = finger/stylus)
-function useIsTouchDevice() {
-  const [isTouch, setIsTouch] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return window.matchMedia('(pointer: coarse)').matches;
-  });
-
-  useEffect(() => {
-    const mq = window.matchMedia('(pointer: coarse)');
-    const handler = (e: MediaQueryListEvent) => setIsTouch(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
-
-  return isTouch;
-}
-
 export const Select = forwardRef<HTMLDivElement, SelectProps>(
   (
     {
@@ -150,7 +134,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     ref,
   ) => {
     const listboxId = useId();
-    const isTouchDevice = useIsTouchDevice();
+    const isTouchDevice = useTouchDevice();
     // Use native <select> on touch devices for simple single selects
     const useNative = isTouchDevice && !multiple && !searchable;
     // Use mobile bottom sheet for searchable selects on touch devices
@@ -232,6 +216,14 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       setSearchQuery('');
       setHighlightedIndex(-1);
     }, []);
+
+    // If the input device changes mid-life (e.g., user connects a mouse to
+    // an iPad), the dropdown variant switches between mobile sheet and
+    // desktop popover. Close it to avoid stale positioning from the previous
+    // variant.
+    useEffect(() => {
+      setIsOpen(false);
+    }, [isTouchDevice]);
 
     const toggleDropdown = useCallback(() => {
       if (isOpen) {
@@ -333,12 +325,27 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     );
 
     // Keyboard navigation
-    const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const handleKeyDown = (e: KeyboardEvent<HTMLDivElement | HTMLInputElement>) => {
       if (disabled) return;
+      // When invoked from the search input, Space must reach the input so the
+      // user can type spaces in their query. Only Enter / Escape / Arrows
+      // are treated as navigation keys there.
+      const fromSearchInput = (e.target as HTMLElement | null)?.tagName === 'INPUT';
 
       switch (e.key) {
         case 'Enter':
+          e.preventDefault();
+          if (!isOpen) {
+            openDropdown();
+          } else if (highlightedIndex >= 0 && highlightedIndex < filteredOptions.length) {
+            const opt = filteredOptions[highlightedIndex];
+            if (!opt.disabled) {
+              handleSelect(opt.value);
+            }
+          }
+          break;
         case ' ':
+          if (fromSearchInput) return; // allow space to be typed
           e.preventDefault();
           if (!isOpen) {
             openDropdown();

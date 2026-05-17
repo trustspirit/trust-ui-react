@@ -396,11 +396,22 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
           <div
             className={wrapperClassNames}
             onClick={() => {
-              if (!disabled) setIsOpen(true);
+              if (disabled) return;
+              const d = selectedDate ?? new Date();
+              setViewMonth(d.getMonth());
+              setViewYear(d.getFullYear());
+              setShowYearGrid(false);
+              setIsOpen(true);
             }}
             tabIndex={disabled ? -1 : 0}
             onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
-              if (e.key === 'Enter' && !disabled) setIsOpen(true);
+              if (e.key === 'Enter' && !disabled) {
+                const d = selectedDate ?? new Date();
+                setViewMonth(d.getMonth());
+                setViewYear(d.getFullYear());
+                setShowYearGrid(false);
+                setIsOpen(true);
+              }
             }}
             role="button"
             aria-disabled={disabled || undefined}
