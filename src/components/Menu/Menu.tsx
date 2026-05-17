@@ -1,4 +1,5 @@
 import {
+  Children,
   cloneElement,
   createContext,
   useCallback,
@@ -14,6 +15,8 @@ import {
   type ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
+import { ActionSheet } from '../ActionSheet';
 import styles from './Menu.module.css';
 
 /* ── Context ── */
@@ -23,6 +26,7 @@ interface MenuContextValue {
   setOpen: (open: boolean) => void;
   triggerRef: React.RefObject<HTMLElement | null>;
   triggerId: string;
+  mobileVariant: 'dropdown' | 'sheet';
 }
 
 const MenuContext = createContext<MenuContextValue | null>(null);
@@ -40,15 +44,20 @@ function useMenuContext() {
 export interface MenuProps {
   /** Menu children (Trigger, Content) */
   children: ReactNode;
+  /**
+   * Mobile-specific rendering. 'dropdown' (default) = same as desktop.
+   * 'sheet' = renders as ActionSheet on viewports with coarse pointer.
+   */
+  mobileVariant?: 'dropdown' | 'sheet';
 }
 
-function MenuRoot({ children }: MenuProps) {
+function MenuRoot({ children, mobileVariant = 'dropdown' }: MenuProps) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLElement | null>(null);
   const triggerId = useId();
 
   return (
-    <MenuContext.Provider value={{ open, setOpen, triggerRef, triggerId }}>
+    <MenuContext.Provider value={{ open, setOpen, triggerRef, triggerId, mobileVariant }}>
       <div className={styles.menu}>{children}</div>
     </MenuContext.Provider>
   );
@@ -127,7 +136,8 @@ function MenuContent({
   align = 'start',
   children,
 }: MenuContentProps) {
-  const { open, setOpen, triggerRef, triggerId } = useMenuContext();
+  const { open, setOpen, triggerRef, triggerId, mobileVariant } = useMenuContext();
+  const isTouch = useTouchDevice();
   const contentRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
 
@@ -262,6 +272,37 @@ function MenuContent({
     },
     [setOpen, triggerRef],
   );
+
+  // Action-sheet variant: render as bottom sheet on touch devices
+  if (mobileVariant === 'sheet' && isTouch) {
+    const actions = Children.toArray(children)
+      .filter((child): child is ReactElement<MenuItemProps> => {
+        return (
+          typeof child === 'object' &&
+          child !== null &&
+          'type' in child &&
+          (child as ReactElement).type === MenuItem
+        );
+      })
+      .map((child) => ({
+        label: typeof child.props.children === 'string' ? child.props.children : String(child.props.children ?? ''),
+        onPress: () => {
+          child.props.onClick?.();
+          setOpen(false);
+        },
+        destructive: child.props.danger,
+        disabled: child.props.disabled,
+      }));
+
+    return (
+      <ActionSheet
+        open={open}
+        onClose={() => setOpen(false)}
+        actions={actions}
+        cancelLabel="Cancel"
+      />
+    );
+  }
 
   if (!open) return null;
 

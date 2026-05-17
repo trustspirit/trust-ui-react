@@ -151,3 +151,22 @@ export const Disabled: Story = {
     </Menu>
   ),
 };
+
+export const MobileSheet: Story = {
+  args: { mobileVariant: 'sheet' },
+  render: (args) => (
+    <Menu mobileVariant={args.mobileVariant as 'dropdown' | 'sheet' | undefined}>
+      <Menu.Trigger>
+        <Button variant="outline">Actions (sheet on touch)</Button>
+      </Menu.Trigger>
+      <Menu.Content>
+        <Menu.Item onClick={() => console.log('Edit')}>Edit</Menu.Item>
+        <Menu.Item onClick={() => console.log('Duplicate')}>Duplicate</Menu.Item>
+        <Menu.Item onClick={() => console.log('Share')}>Share</Menu.Item>
+        <Menu.Item danger onClick={() => console.log('Delete')}>
+          Delete
+        </Menu.Item>
+      </Menu.Content>
+    </Menu>
+  ),
+};
