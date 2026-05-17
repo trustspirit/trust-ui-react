@@ -16,6 +16,10 @@ export interface AvatarProps {
   className?: string;
   /** Inline styles */
   style?: React.CSSProperties;
+  /** Presence indicator dot in the bottom-right corner. */
+  status?: 'online' | 'away' | 'busy' | 'offline';
+  /** Add a ring outline around the avatar (good for stacked avatars). */
+  outlined?: boolean;
 }
 
 function getInitials(name: string): string {
@@ -48,6 +52,8 @@ export function Avatar({
   size = 'md',
   className,
   style,
+  status,
+  outlined,
 }: AvatarProps) {
   const [imgError, setImgError] = useState(false);
 
@@ -59,6 +65,7 @@ export function Avatar({
     styles[size],
     styles[shape],
     !showImage ? styles.fallback : '',
+    outlined ? styles.outlined : '',
     className ?? '',
   ]
     .filter(Boolean)
@@ -66,19 +73,27 @@ export function Avatar({
 
   return (
     <span className={classNames} style={style} role="img" aria-label={alt || name || 'avatar'}>
-      {showImage ? (
-        <img
-          className={styles.image}
-          src={src}
-          alt={alt}
-          onError={() => setImgError(true)}
+      <span className={styles.imageWrapper}>
+        {showImage ? (
+          <img
+            className={styles.image}
+            src={src}
+            alt={alt}
+            onError={() => setImgError(true)}
+          />
+        ) : initials ? (
+          <span className={styles.initials} aria-hidden="true">
+            {initials}
+          </span>
+        ) : (
+          <DefaultIcon />
+        )}
+      </span>
+      {status && (
+        <span
+          className={[styles.statusDot, styles[status]].join(' ')}
+          aria-label={`Status: ${status}`}
         />
-      ) : initials ? (
-        <span className={styles.initials} aria-hidden="true">
-          {initials}
-        </span>
-      ) : (
-        <DefaultIcon />
       )}
     </span>
   );

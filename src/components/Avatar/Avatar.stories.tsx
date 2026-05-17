@@ -61,3 +61,23 @@ export const Sizes: Story = {
     </div>
   ),
 };
+
+export const Status: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+      <Avatar name="John Doe" status="online" />
+      <Avatar name="Mary Kim" status="away" />
+      <Avatar name="Ryan Taylor" status="busy" />
+      <Avatar name="Alex Lee" status="offline" />
+    </div>
+  ),
+};
+
+export const Outlined: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 12 }}>
+      <Avatar name="John Doe" outlined />
+      <Avatar name="Mary Kim" outlined size="lg" />
+    </div>
+  ),
+};
