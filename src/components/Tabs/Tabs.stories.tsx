@@ -127,6 +127,31 @@ export const Disabled: Story = {
   ),
 };
 
+export const Segmented: Story = {
+  render: () => (
+    <Tabs defaultValue="all" variant="segmented">
+      <Tabs.List>
+        <Tabs.Trigger value="all">All</Tabs.Trigger>
+        <Tabs.Trigger value="active">Active</Tabs.Trigger>
+        <Tabs.Trigger value="completed">Completed</Tabs.Trigger>
+        <Tabs.Trigger value="archived">Archived</Tabs.Trigger>
+      </Tabs.List>
+      <Tabs.Content value="all">
+        <p>Showing all items.</p>
+      </Tabs.Content>
+      <Tabs.Content value="active">
+        <p>Showing active items only.</p>
+      </Tabs.Content>
+      <Tabs.Content value="completed">
+        <p>Showing completed items only.</p>
+      </Tabs.Content>
+      <Tabs.Content value="archived">
+        <p>Showing archived items only.</p>
+      </Tabs.Content>
+    </Tabs>
+  ),
+};
+
 export const ManyTabs: Story = {
   render: () => (
     <Tabs defaultValue="tab-1">

@@ -15,6 +15,7 @@
 .listUnderline {
   border-bottom: 1px solid var(--tui-border);
   gap: 0;
+  position: relative;
 }
 
 /* ── List: pill variant ── */
@@ -39,15 +40,17 @@
   cursor: pointer;
   white-space: nowrap;
   transition:
-    color var(--tui-transition),
-    background-color var(--tui-transition),
-    border-color var(--tui-transition),
-    box-shadow var(--tui-transition);
+    color var(--tui-duration-fast) var(--tui-ease-out),
+    background-color var(--tui-duration-fast) var(--tui-ease-out),
+    border-color var(--tui-duration-fast) var(--tui-ease-out),
+    box-shadow var(--tui-duration-fast) var(--tui-ease-out);
   user-select: none;
 }
 
-.trigger:hover:not(:disabled) {
-  color: var(--tui-text);
+@media (hover: hover) {
+  .trigger:hover:not(:disabled) {
+    color: var(--tui-text);
+  }
 }
 
 .trigger:focus-visible {
@@ -70,7 +73,7 @@
 
 .triggerUnderline.triggerActive {
   color: var(--tui-primary);
-  border-bottom-color: var(--tui-primary);
+  /* border-bottom-color removed — handled by absolute .indicator */
 }
 
 /* ── Trigger: pill variant ── */
@@ -83,6 +86,21 @@
   background-color: var(--tui-bg);
   color: var(--tui-text);
   box-shadow: var(--tui-shadow-sm);
+}
+
+/* ── Sliding indicator (underline variant) ── */
+.indicator {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background-color: var(--tui-primary);
+  border-radius: var(--tui-radius-full);
+  /* transform translateX + width set inline by JS */
+  transition:
+    transform var(--tui-duration-base) var(--tui-ease-in-out),
+    width var(--tui-duration-base) var(--tui-ease-in-out);
+  pointer-events: none;
 }
 
 /* ── Content ── */

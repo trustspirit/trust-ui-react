@@ -2,11 +2,14 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useId,
+  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
   type KeyboardEvent,
+  type MutableRefObject,
   type ReactNode,
 } from 'react';
 import styles from './Tabs.module.css';
@@ -18,6 +21,7 @@ interface TabsContextValue {
   setActiveValue: (value: string) => void;
   variant: 'underline' | 'pill';
   baseId: string;
+  triggerRefs: MutableRefObject<Map<string, HTMLButtonElement>>;
 }
 
 const TabsContext = createContext<TabsContextValue | null>(null);
@@ -40,7 +44,7 @@ export interface TabsProps {
   /** Callback when active tab changes */
   onChange?: (value: string) => void;
   /** Visual variant (default: 'underline') */
-  variant?: 'underline' | 'pill';
+  variant?: 'underline' | 'pill' | 'segmented';
   /** Children */
   children: ReactNode;
   /** Additional CSS class name */
@@ -60,9 +64,14 @@ function TabsRoot({
 }: TabsProps) {
   const [internalValue, setInternalValue] = useState(defaultValue ?? '');
   const baseId = useId();
+  const triggerRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
   const isControlled = value !== undefined;
   const activeValue = isControlled ? value : internalValue;
+
+  // Normalize 'segmented' to 'pill' for internal use
+  const normalizedVariant: 'underline' | 'pill' =
+    variant === 'segmented' ? 'pill' : variant;
 
   const setActiveValue = useCallback(
     (newValue: string) => {
@@ -77,7 +86,9 @@ function TabsRoot({
   const classNames = [styles.tabs, className].filter(Boolean).join(' ');
 
   return (
-    <TabsContext.Provider value={{ activeValue, setActiveValue, variant, baseId }}>
+    <TabsContext.Provider
+      value={{ activeValue, setActiveValue, variant: normalizedVariant, baseId, triggerRefs }}
+    >
       <div className={classNames} style={style}>
         {children}
       </div>
@@ -97,8 +108,35 @@ interface TabsListProps {
 }
 
 function TabsList({ children, className }: TabsListProps) {
-  const { variant } = useTabsContext();
+  const { variant, activeValue, triggerRefs } = useTabsContext();
   const listRef = useRef<HTMLDivElement>(null);
+  const [indicatorStyle, setIndicatorStyle] = useState<{ left: number; width: number }>({
+    left: 0,
+    width: 0,
+  });
+
+  const updateIndicator = useCallback(() => {
+    if (variant !== 'underline') return;
+    const activeTrigger = triggerRefs.current.get(activeValue);
+    const list = listRef.current;
+    if (!activeTrigger || !list) return;
+    const listRect = list.getBoundingClientRect();
+    const triggerRect = activeTrigger.getBoundingClientRect();
+    setIndicatorStyle({
+      left: triggerRect.left - listRect.left,
+      width: triggerRect.width,
+    });
+  }, [variant, activeValue, triggerRefs]);
+
+  useLayoutEffect(() => {
+    updateIndicator();
+  }, [updateIndicator]);
+
+  useEffect(() => {
+    if (variant !== 'underline' || typeof window === 'undefined') return;
+    window.addEventListener('resize', updateIndicator);
+    return () => window.removeEventListener('resize', updateIndicator);
+  }, [variant, updateIndicator]);
 
   const handleKeyDown = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
     const list = listRef.current;
@@ -144,6 +182,16 @@ function TabsList({ children, className }: TabsListProps) {
       onKeyDown={handleKeyDown}
     >
       {children}
+      {variant === 'underline' && (
+        <span
+          className={styles.indicator}
+          style={{
+            transform: `translateX(${indicatorStyle.left}px)`,
+            width: indicatorStyle.width,
+          }}
+          aria-hidden="true"
+        />
+      )}
     </div>
   );
 }
@@ -164,7 +212,7 @@ interface TabsTriggerProps {
 }
 
 function TabsTrigger({ value, disabled = false, children, className }: TabsTriggerProps) {
-  const { activeValue, setActiveValue, variant, baseId } = useTabsContext();
+  const { activeValue, setActiveValue, variant, baseId, triggerRefs } = useTabsContext();
   const isActive = activeValue === value;
 
   const triggerId = `${baseId}-trigger-${value}`;
@@ -190,6 +238,10 @@ function TabsTrigger({ value, disabled = false, children, className }: TabsTrigg
       tabIndex={isActive ? 0 : -1}
       disabled={disabled}
       onClick={() => setActiveValue(value)}
+      ref={(el) => {
+        if (el) triggerRefs.current.set(value, el);
+        else triggerRefs.current.delete(value);
+      }}
     >
       {children}
     </button>
