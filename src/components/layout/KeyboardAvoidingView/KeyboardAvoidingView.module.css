@@ -1,0 +1,3 @@
+.container {
+  transition: padding-bottom var(--tui-duration-base) var(--tui-ease-out);
+}
