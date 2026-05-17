@@ -40,13 +40,13 @@
 /* ── Value bar (WebKit) ── */
 .progress::-webkit-progress-value {
   border-radius: var(--tui-radius-full);
-  transition: width var(--tui-transition-slow);
+  transition: width var(--tui-duration-medium) var(--tui-ease-out);
 }
 
 /* ── Value bar (Firefox) ── */
 .progress::-moz-progress-bar {
   border-radius: var(--tui-radius-full);
-  transition: width var(--tui-transition-slow);
+  transition: width var(--tui-duration-medium) var(--tui-ease-out);
 }
 
 /* ── Variant colors (WebKit value) ── */
@@ -83,6 +83,15 @@
   background-color: var(--tui-danger);
 }
 
+/* ── Gradient fill (primary only) ── */
+.gradient.primary::-webkit-progress-value {
+  background: var(--tui-primary-gradient);
+}
+
+.gradient.primary::-moz-progress-bar {
+  background: var(--tui-primary-gradient);
+}
+
 /* ── Indeterminate ── */
 .indeterminate::-webkit-progress-bar {
   background-color: var(--tui-bg-muted);
@@ -111,7 +120,7 @@
   height: 100%;
   width: 40%;
   border-radius: var(--tui-radius-full);
-  animation: indeterminate 1.5s ease-in-out infinite;
+  animation: indeterminate 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .indeterminate.primary::after {
@@ -133,6 +142,9 @@
 @keyframes indeterminate {
   0% {
     left: -40%;
+  }
+  50% {
+    left: 30%;
   }
   100% {
     left: 100%;

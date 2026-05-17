@@ -70,3 +70,7 @@ export const Indeterminate: Story = {
     indeterminate: true,
   },
 };
+
+export const Gradient: Story = {
+  args: { value: 66, gradient: true },
+};
