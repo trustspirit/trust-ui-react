@@ -74,8 +74,10 @@
   background-color: var(--tui-bg);
 }
 
-.outlined .trigger:hover:not(.triggerDisabled) {
-  border-color: var(--tui-border-hover);
+@media (hover: hover) {
+  .outlined .trigger:hover:not(.triggerDisabled) {
+    border-color: var(--tui-border-hover);
+  }
 }
 
 .outlined .trigger.triggerOpen:not(.triggerError) {
@@ -89,8 +91,10 @@
   background-color: var(--tui-bg-muted);
 }
 
-.filled .trigger:hover:not(.triggerDisabled) {
-  background-color: var(--tui-bg-hover);
+@media (hover: hover) {
+  .filled .trigger:hover:not(.triggerDisabled) {
+    background-color: var(--tui-bg-hover);
+  }
 }
 
 .filled .trigger.triggerOpen:not(.triggerError) {
@@ -170,8 +174,10 @@
   flex-shrink: 0;
 }
 
-.chipRemove:hover {
-  color: var(--tui-text);
+@media (hover: hover) {
+  .chipRemove:hover {
+    color: var(--tui-text);
+  }
 }
 
 /* ── Arrow icon ── */
@@ -219,11 +225,24 @@
   position: absolute;
   z-index: var(--tui-z-dropdown);
   min-width: 0;
-  border: 1px solid var(--tui-border);
-  border-radius: var(--tui-radius-md);
-  background-color: var(--tui-bg);
-  box-shadow: var(--tui-shadow-lg);
+  border: 1px solid var(--tui-glass-border);
+  border-radius: var(--tui-radius-xl);
+  background-color: var(--tui-glass-bg);
+  box-shadow: var(--tui-glass-shadow);
   overflow: hidden;
+}
+
+@supports ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
+  .dropdown {
+    backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
+  }
+}
+
+@supports not ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
+  .dropdown {
+    background-color: var(--tui-bg-subtle);
+  }
 }
 
 .optionsList {
@@ -247,9 +266,14 @@
   user-select: none;
 }
 
-.option:hover,
 .optionHighlighted {
   background-color: var(--tui-bg-muted);
+}
+
+@media (hover: hover) {
+  .option:hover {
+    background-color: var(--tui-bg-muted);
+  }
 }
 
 .optionSelected {
@@ -258,9 +282,14 @@
   font-weight: var(--tui-font-weight-medium);
 }
 
-.optionSelected:hover,
 .optionSelected.optionHighlighted {
   background-color: var(--tui-primary-subtle);
+}
+
+@media (hover: hover) {
+  .optionSelected:hover {
+    background-color: var(--tui-primary-subtle);
+  }
 }
 
 .optionDisabled {
@@ -268,8 +297,10 @@
   cursor: not-allowed;
 }
 
-.optionDisabled:hover {
-  background-color: transparent;
+@media (hover: hover) {
+  .optionDisabled:hover {
+    background-color: transparent;
+  }
 }
 
 /* ── Checkmark icon ── */
