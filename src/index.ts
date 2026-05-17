@@ -16,6 +16,30 @@ export type { ToastPosition, ToastData, ToastContextValue } from './providers/To
 export { useTheme } from './hooks/useTheme';
 export { useToast } from './hooks/useToast';
 
+// Touch hooks
+export {
+  useTouchDevice,
+  useHaptic,
+  HapticProvider,
+  useVisualViewport,
+  useSwipe,
+  useLongPress,
+  useDrag,
+  useSnapPoints,
+} from './hooks/touch';
+export type {
+  HapticType,
+  HapticContextValue,
+  VisualViewportState,
+  UseSwipeOptions,
+  UseLongPressOptions,
+  UseDragOptions,
+  DragOffset,
+  DragVelocity,
+  UseSnapPointsOptions,
+  SnapResult,
+} from './hooks/touch';
+
 // Components
 export { Button } from './components/Button';
 export type { ButtonProps } from './components/Button/Button';
@@ -64,3 +88,11 @@ export { Expander } from './components/Expander';
 export type { ExpanderProps } from './components/Expander/Expander';
 export { FileUpload } from './components/FileUpload';
 export type { FileUploadProps, FileUploadFile, ValidationError } from './components/FileUpload/types';
+
+// Layout primitives
+export { SafeAreaView } from './components/layout/SafeAreaView';
+export type { SafeAreaViewProps, SafeAreaEdge } from './components/layout/SafeAreaView';
+export { StickyFooter } from './components/layout/StickyFooter';
+export type { StickyFooterProps } from './components/layout/StickyFooter';
+export { KeyboardAvoidingView } from './components/layout/KeyboardAvoidingView';
+export type { KeyboardAvoidingViewProps } from './components/layout/KeyboardAvoidingView';
