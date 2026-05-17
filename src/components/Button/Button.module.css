@@ -14,6 +14,7 @@
     border-color var(--tui-duration-fast) var(--tui-ease-out),
     color var(--tui-duration-fast) var(--tui-ease-out),
     box-shadow var(--tui-duration-base) var(--tui-ease-out),
+    filter var(--tui-duration-fast) var(--tui-ease-out),
     transform var(--tui-duration-base) var(--tui-ease-spring);
   white-space: nowrap;
   user-select: none;
@@ -58,14 +59,14 @@
 
 @media (hover: hover) {
   .primary:hover:not(:disabled) {
-    background-color: var(--tui-primary-hover);
+    filter: brightness(0.93);
     box-shadow: var(--tui-inset-highlight), var(--tui-shadow-md);
     transform: translateY(-1px);
   }
 }
 
 .primary:active:not(:disabled) {
-  background-color: var(--tui-primary-active);
+  filter: brightness(0.86);
   transform: translateY(0);
   box-shadow: var(--tui-inset-highlight);
   transition-duration: var(--tui-duration-instant);
