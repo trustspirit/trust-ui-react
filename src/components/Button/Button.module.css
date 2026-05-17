@@ -10,10 +10,11 @@
   line-height: var(--tui-line-height);
   cursor: pointer;
   transition:
-    background-color var(--tui-transition),
-    border-color var(--tui-transition),
-    color var(--tui-transition),
-    box-shadow var(--tui-transition);
+    background-color var(--tui-duration-fast) var(--tui-ease-out),
+    border-color var(--tui-duration-fast) var(--tui-ease-out),
+    color var(--tui-duration-fast) var(--tui-ease-out),
+    box-shadow var(--tui-duration-base) var(--tui-ease-out),
+    transform var(--tui-duration-base) var(--tui-ease-spring);
   white-space: nowrap;
   user-select: none;
 }
@@ -49,16 +50,25 @@
 
 /* ── Variants ── */
 .primary {
-  background-color: var(--tui-primary);
+  background: var(--tui-primary-gradient);
+  background-color: var(--tui-primary);  /* fallback */
   color: var(--tui-primary-text);
+  box-shadow: var(--tui-inset-highlight);
 }
 
-.primary:hover:not(:disabled) {
-  background-color: var(--tui-primary-hover);
+@media (hover: hover) {
+  .primary:hover:not(:disabled) {
+    background-color: var(--tui-primary-hover);
+    box-shadow: var(--tui-inset-highlight), var(--tui-shadow-md);
+    transform: translateY(-1px);
+  }
 }
 
 .primary:active:not(:disabled) {
   background-color: var(--tui-primary-active);
+  transform: translateY(0);
+  box-shadow: var(--tui-inset-highlight);
+  transition-duration: var(--tui-duration-instant);
 }
 
 .secondary {
@@ -66,12 +76,15 @@
   color: var(--tui-secondary-text);
 }
 
-.secondary:hover:not(:disabled) {
-  background-color: var(--tui-secondary-hover);
+@media (hover: hover) {
+  .secondary:hover:not(:disabled) {
+    background-color: var(--tui-secondary-hover);
+  }
 }
 
 .secondary:active:not(:disabled) {
   background-color: var(--tui-secondary-active);
+  transition-duration: var(--tui-duration-instant);
 }
 
 .outline {
@@ -80,9 +93,11 @@
   color: var(--tui-text);
 }
 
-.outline:hover:not(:disabled) {
-  background-color: var(--tui-bg-hover);
-  border-color: var(--tui-border-hover);
+@media (hover: hover) {
+  .outline:hover:not(:disabled) {
+    background-color: var(--tui-bg-hover);
+    border-color: var(--tui-border-hover);
+  }
 }
 
 .outline:active:not(:disabled) {
@@ -94,8 +109,10 @@
   color: var(--tui-text);
 }
 
-.ghost:hover:not(:disabled) {
-  background-color: var(--tui-bg-hover);
+@media (hover: hover) {
+  .ghost:hover:not(:disabled) {
+    background-color: var(--tui-bg-hover);
+  }
 }
 
 .ghost:active:not(:disabled) {
@@ -105,14 +122,36 @@
 .danger {
   background-color: var(--tui-danger);
   color: var(--tui-danger-text);
+  box-shadow: var(--tui-inset-highlight);
 }
 
-.danger:hover:not(:disabled) {
-  background-color: var(--tui-danger-hover);
+@media (hover: hover) {
+  .danger:hover:not(:disabled) {
+    background-color: var(--tui-danger-hover);
+    box-shadow: var(--tui-inset-highlight), var(--tui-shadow-md);
+    transform: translateY(-1px);
+  }
 }
 
 .danger:active:not(:disabled) {
   background-color: var(--tui-danger-hover);
+  transform: translateY(0);
+  box-shadow: var(--tui-inset-highlight);
+  transition-duration: var(--tui-duration-instant);
+}
+
+/* ── Elevation override (flat) ── */
+.elevationFlat {
+  box-shadow: none;
+}
+@media (hover: hover) {
+  .elevationFlat:hover:not(:disabled) {
+    transform: none;
+    box-shadow: none;
+  }
+}
+.elevationFlat:active:not(:disabled) {
+  box-shadow: none;
 }
 
 /* ── Shapes ── */

@@ -120,3 +120,14 @@ export const FullWidth: Story = {
     ),
   ],
 };
+
+export const Elevation: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+      <Button variant="primary" elevation="raised">Raised (default)</Button>
+      <Button variant="primary" elevation="flat">Flat</Button>
+      <Button variant="danger" elevation="raised">Danger raised</Button>
+      <Button variant="danger" elevation="flat">Danger flat</Button>
+    </div>
+  ),
+};
