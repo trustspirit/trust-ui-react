@@ -1,6 +1,7 @@
 import type { Preview } from '@storybook/react';
 
-import '../src/styles/fonts.css';
+// Pretendard — 라이브러리는 더 이상 서체를 번들하지 않으므로 Storybook 자체가 소비자로서 임포트한다.
+import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
 import '../src/styles/tokens.css';
 import '../src/styles/theme-light.css';
 import '../src/styles/theme-dark.css';

@@ -1,6 +1,0 @@
-/*
- * Pretendard Variable — 한글과 라틴이 하나의 메트릭으로 설계된 서체.
- * 동적 서브셋을 쓰면 실제로 화면에 나온 글자의 조각만 받아온다.
- * npm 패키지로 번들하므로 오프라인 환경에서도 동작한다.
- */
-@import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
