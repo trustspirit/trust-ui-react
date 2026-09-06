@@ -9,7 +9,7 @@ import './styles/reset.css';
 
 // Providers
 export { ThemeProvider } from './providers/ThemeProvider';
-export type { Theme, ThemeContextValue } from './providers/ThemeProvider';
+export type { Theme, Density, Market, ThemeContextValue } from './providers/ThemeProvider';
 export { ToastProvider } from './providers/ToastProvider';
 export type { ToastPosition, ToastData, ToastContextValue } from './providers/ToastProvider';
 
