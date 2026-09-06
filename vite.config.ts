@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import dts from 'vite-plugin-dts';
 import { resolve } from 'path';
+import { copyFileSync } from 'fs';
 
 export default defineConfig({
   plugins: [
@@ -11,6 +12,17 @@ export default defineConfig({
       include: ['src'],
       exclude: ['**/*.stories.tsx'],
     }),
+    // 시장색 레이어는 선택 사항이라 index.ts가 임포트하지 않는다.
+    // cssCodeSplit이 꺼져 있어 빌드가 이 파일을 자동으로 못 만들므로 직접 복사한다.
+    {
+      name: 'copy-optional-layers',
+      closeBundle() {
+        copyFileSync(
+          resolve(__dirname, 'src/styles/market.css'),
+          resolve(__dirname, 'dist/market.css'),
+        );
+      },
+    },
   ],
   css: {
     modules: {

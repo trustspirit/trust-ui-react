@@ -1,0 +1,28 @@
+/*
+ * 시장색 레이어 — 선택 사항.
+ * 금융 화면이 있는 앱만 임포트한다:  import 'trust-ui-react/market.css';
+ *
+ * 상승/하락 색은 글자에만 쓴다. 배경·배지·테두리에 쓰지 않는다.
+ * 한국·일본·중국은 적색 상승, 미국·유럽은 녹색 상승이다.
+ */
+:root,
+[data-market="kr"] {
+  --tui-rise: var(--tui-p-rise-500);
+  --tui-fall: var(--tui-p-fall-500);
+}
+
+[data-market="us"] {
+  --tui-rise: var(--tui-p-gain-500);
+  --tui-fall: var(--tui-p-rise-500);
+}
+
+[data-theme="dark"],
+[data-theme="dark"] [data-market="kr"] {
+  --tui-rise: var(--tui-p-rise-400);
+  --tui-fall: var(--tui-p-fall-400);
+}
+
+[data-theme="dark"] [data-market="us"] {
+  --tui-rise: var(--tui-p-gain-400);
+  --tui-fall: var(--tui-p-rise-400);
+}
