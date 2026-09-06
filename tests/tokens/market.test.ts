@@ -24,6 +24,12 @@ describe('시장색 레이어', () => {
     expect(css).toContain('--tui-p-rise-400');
   });
 
+  it('한 요소가 테마와 시장 속성을 함께 가져도 맞는 색을 준다', () => {
+    // 자손 결합자만 있으면 <html data-theme="dark" data-market="us"> 에서 매치되지 않는다.
+    expect(css).toContain('[data-theme="dark"][data-market="us"]');
+    expect(css).toContain('[data-theme="dark"][data-market="kr"]');
+  });
+
   it('코어 진입점에서 임포트하지 않는다', () => {
     const index = readFileSync(resolve(root, 'src/index.ts'), 'utf8');
     expect(index).not.toContain('market.css');

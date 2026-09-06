@@ -16,13 +16,20 @@
   --tui-fall: var(--tui-p-rise-500);
 }
 
+/*
+ * data-theme와 data-market이 같은 엘리먼트에 함께 실릴 수 있으므로
+ * (예: <html data-theme="dark" data-market="us">), 자손 결합자 형태만으로는
+ * 매치되지 않는다. 공백 없는 복합 셀렉터를 나란히 둬서 두 형태 모두 커버한다.
+ */
 [data-theme="dark"],
-[data-theme="dark"] [data-market="kr"] {
+[data-theme="dark"] [data-market="kr"],
+[data-theme="dark"][data-market="kr"] {
   --tui-rise: var(--tui-p-rise-400);
   --tui-fall: var(--tui-p-fall-400);
 }
 
-[data-theme="dark"] [data-market="us"] {
+[data-theme="dark"] [data-market="us"],
+[data-theme="dark"][data-market="us"] {
   --tui-rise: var(--tui-p-gain-400);
   --tui-fall: var(--tui-p-rise-400);
 }
