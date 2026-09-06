@@ -36,7 +36,8 @@
 /* ── Variants ── */
 /* 액센트는 기본이 잉크다. 브랜드 색을 켠 앱에서만 채도가 생긴다. */
 .primary { background-color: var(--tui-accent); color: var(--tui-on-accent); }
-.secondary { background-color: var(--tui-field); color: var(--tui-ink); }
+/* field 와 paper 는 한 단계 차이라 면만으로는 경계가 안 보인다. 테두리로 경계를 만든다. */
+.secondary { background-color: var(--tui-field); color: var(--tui-ink); border-color: var(--tui-rule); }
 .outline { background-color: transparent; color: var(--tui-ink); border-color: var(--tui-rule-strong); }
 .ghost { background-color: transparent; color: var(--tui-ink-2); }
 /* 위험은 항상 채워진 면이다. 색을 못 보는 사용자에게도 형태가 남는다. */
@@ -45,7 +46,7 @@
 /* 호버는 색만 바뀐다. 이동도 확대도 그림자도 없다. */
 @media (hover: hover) {
   .primary:hover:not(:disabled) { background-color: var(--tui-accent-hover); }
-  .secondary:hover:not(:disabled) { background-color: var(--tui-rule); }
+  .secondary:hover:not(:disabled) { background-color: var(--tui-rule); border-color: var(--tui-rule-strong); }
   .outline:hover:not(:disabled) { border-color: var(--tui-ink); }
   .ghost:hover:not(:disabled) { background-color: var(--tui-field); color: var(--tui-ink); }
   .danger:hover:not(:disabled) { background-color: var(--tui-danger-hover); }
