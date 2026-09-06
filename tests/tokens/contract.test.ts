@@ -75,7 +75,11 @@ describe('토큰 계약', () => {
     for (const f of migrated) {
       const css = read(f);
       if (/backdrop-filter/.test(css)) bad.push(`${f} → glassmorphism`);
-      if (/linear-gradient/.test(css) && !f.includes('Calendar')) bad.push(`${f} → 장식용 그라데이션`);
+      // Calendar.module.css 하나만 예외: 그라데이션으로 날짜 셀 절반을 칠해 범위 선택을 표시하는
+      // 기능적 기법이지 장식이 아니다. 경로에 "Calendar"가 들어가는지가 아니라 정확히 이 파일인지로
+      // 좁게 검사한다 — 느슨한 substring 매치는 향후 CalendarRange.module.css 같은 파일을
+      // 조용히 통과시켜버릴 수 있다.
+      if (/linear-gradient/.test(css) && !f.endsWith('/Calendar.module.css')) bad.push(`${f} → 장식용 그라데이션`);
       if (/translateY\(-/.test(css)) bad.push(`${f} → 호버 부상`);
     }
     expect(bad).toEqual([]);
