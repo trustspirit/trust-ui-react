@@ -7,10 +7,11 @@
 body {
   margin: 0;
   font-family: var(--tui-font-sans);
-  font-size: var(--tui-font-size-md);
-  line-height: var(--tui-line-height);
-  color: var(--tui-text);
-  background-color: var(--tui-bg);
+  font-size: var(--tui-font-size-base);
+  line-height: var(--tui-line-height-body);
+  letter-spacing: var(--tui-letter-body);
+  color: var(--tui-ink);
+  background-color: var(--tui-paper);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -35,7 +36,7 @@ a,
   input,
   textarea,
   select {
-    font-size: max(16px, var(--tui-font-size-md));
+    font-size: max(16px, var(--tui-font-size-base));
   }
 }
 
