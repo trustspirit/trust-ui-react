@@ -8,7 +8,6 @@ export const UNMIGRATED: string[] = [
   "src/components/Avatar/Avatar.module.css",
   "src/components/Badge/Badge.module.css",
   "src/components/BottomSheet/BottomSheet.module.css",
-  "src/components/Button/Button.module.css",
   "src/components/Checkbox/Checkbox.module.css",
   "src/components/Chip/Chip.module.css",
   "src/components/DatePicker/Calendar.module.css",

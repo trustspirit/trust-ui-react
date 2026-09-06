@@ -16,11 +16,6 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   endIcon?: ReactNode;
   /** Stretches the button to fill its container */
   fullWidth?: boolean;
-  /**
-   * Visual elevation. Default 'raised' for primary/danger (gradient + inset + hover lift),
-   * 'flat' removes elevation effects. Outline/ghost/secondary are always flat regardless.
-   */
-  elevation?: 'flat' | 'raised';
 }
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -34,7 +29,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       startIcon,
       endIcon,
       fullWidth = false,
-      elevation = 'raised',
       className,
       style,
       children,
@@ -49,7 +43,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       styles[shape],
       fullWidth ? styles.fullWidth : '',
       loading ? styles.loading : '',
-      elevation === 'flat' ? styles.elevationFlat : '',
       className ?? '',
     ]
       .filter(Boolean)
