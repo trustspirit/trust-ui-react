@@ -26,7 +26,6 @@ export const UNMIGRATED: string[] = [
   "src/components/Switch/Switch.module.css",
   "src/components/Table/Table.module.css",
   "src/components/Tabs/Tabs.module.css",
-  "src/components/TextField/TextField.module.css",
   "src/components/Toast/Toast.module.css",
   "src/components/Tooltip/Tooltip.module.css",
   "src/components/layout/KeyboardAvoidingView/KeyboardAvoidingView.module.css",

@@ -2,8 +2,8 @@
 .container {
   display: inline-flex;
   flex-direction: column;
-  gap: var(--tui-spacing-xs);
-  font-family: var(--tui-font-family);
+  gap: 4px;
+  font-family: var(--tui-font-sans);
   position: relative;
 }
 
@@ -14,9 +14,9 @@
 /* ── Label ── */
 .label {
   display: block;
-  font-size: var(--tui-font-size-sm);
-  font-weight: var(--tui-font-weight-medium);
-  color: var(--tui-text);
+  font-size: var(--tui-font-size-small);
+  font-weight: var(--tui-weight-medium);
+  color: var(--tui-ink);
   margin-bottom: 2px;
 }
 
@@ -34,11 +34,11 @@
 
 /* ── Shapes ── */
 .shape_square .inputWrapper {
-  border-radius: var(--tui-radius-md);
+  border-radius: var(--tui-radius-control);
 }
 
 .shape_rounded .inputWrapper {
-  border-radius: var(--tui-radius-xl);
+  border-radius: var(--tui-radius-sheet);
 }
 
 .shape_pill .inputWrapper {
@@ -49,10 +49,7 @@
 .inputWrapper {
   display: flex;
   align-items: center;
-  transition:
-    border-color var(--tui-duration-fast) var(--tui-ease-out),
-    background-color var(--tui-duration-fast) var(--tui-ease-out),
-    box-shadow var(--tui-duration-fast) var(--tui-ease-out);
+  transition: var(--tui-transition-color);
   overflow: hidden;
 }
 
@@ -62,79 +59,75 @@
 
 /* ── Outlined variant ── */
 .outlined {
-  border: 1px solid var(--tui-border);
-  background-color: var(--tui-bg);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--tui-rule-strong);
+  background-color: var(--tui-sheet);
 }
 
 @media (hover: hover) {
   .outlined:hover:not(.disabled):not(.error) {
-    border-color: var(--tui-border-hover);
+    border-color: var(--tui-ink-3);
   }
-}
-
-.outlined.focused:not(.error) {
-  border-color: var(--tui-border-focus);
-  box-shadow:
-    0 0 0 1px var(--tui-border-focus),
-    0 0 0 4px rgba(99, 91, 255, 0.18);
 }
 
 /* ── Filled variant ── */
 .filled {
   border: 1px solid transparent;
-  background-color: var(--tui-bg-muted);
+  background-color: var(--tui-field);
 }
 
 @media (hover: hover) {
   .filled:hover:not(.disabled):not(.error) {
-    background-color: var(--tui-bg-hover);
+    background-color: var(--tui-rule);
   }
 }
 
-.filled.focused:not(.error) {
-  border-color: var(--tui-border-focus);
-  box-shadow:
-    0 0 0 1px var(--tui-border-focus),
-    0 0 0 4px rgba(99, 91, 255, 0.18);
-  background-color: var(--tui-bg);
+/*
+ * :focus — "여기에 입력된다".
+ * 테두리를 1px 에서 2px 로 두껍게 하되 inset 으로 그려 칸 크기가 흔들리지 않게 한다.
+ * 신호는 한 겹이다. v1 은 테두리 + 1px 링 + 4px 링으로 세 겹이었다.
+ */
+.inputWrapper:focus-within:not(.error) {
+  border-color: var(--tui-ink);
+  box-shadow: inset 0 0 0 1px var(--tui-ink);
+}
+
+.filled:focus-within:not(.error) {
+  background-color: var(--tui-sheet);
+}
+
+/*
+ * :focus-visible — "키보드로 여기까지 왔다".
+ * 위 신호에 바깥 링을 더한다. 마우스로 클릭했을 때는 나타나지 않는다.
+ * 브라우저가 입력 방식을 판단하므로 JS 상태가 필요 없다.
+ */
+.inputWrapper:has(:focus-visible):not(.error) {
+  box-shadow: inset 0 0 0 1px var(--tui-ink), 0 0 0 3px var(--tui-ring);
 }
 
 /* ── Error state ── */
+/* 오류도 같은 규칙을 따른다. 색만 위험색으로 바뀐다. */
 .error {
   border-color: var(--tui-danger);
 }
 
-.error.focused {
-  box-shadow:
-    0 0 0 1px var(--tui-danger),
-    0 0 0 4px rgba(220, 38, 38, 0.18);
+.error:focus-within {
+  box-shadow: inset 0 0 0 1px var(--tui-danger);
+}
+
+.error:has(:focus-visible) {
+  box-shadow: inset 0 0 0 1px var(--tui-danger), 0 0 0 3px var(--tui-ring);
 }
 
 /* ── Disabled state ── */
 .disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
-/* ── Sizes ── */
-.sm .input {
-  height: 32px;
-  font-size: var(--tui-font-size-sm);
-  padding: 0 var(--tui-spacing-sm);
-}
-
-.md .input {
-  height: 40px;
-  font-size: var(--tui-font-size-md);
-  padding: 0 var(--tui-spacing-md);
-}
-
-.lg .input {
-  height: 48px;
-  font-size: var(--tui-font-size-lg);
-  padding: 0 var(--tui-spacing-md);
-}
+/* ── Sizes — 밀도 축을 따른다 ── */
+.sm .input { height: var(--tui-control-sm); font-size: var(--tui-font-size-small); padding: 0 8px; }
+.md .input { height: var(--tui-control-md); font-size: var(--tui-font-size-base); padding: 0 12px; }
+.lg .input { height: var(--tui-control-lg); font-size: var(--tui-font-size-lead); padding: 0 12px; }
 
 /* ── Input element ── */
 .input {
@@ -142,15 +135,15 @@
   border: none;
   outline: none;
   background: transparent;
-  color: var(--tui-text);
-  font-family: var(--tui-font-family);
-  line-height: var(--tui-line-height);
+  color: var(--tui-ink);
+  font-family: var(--tui-font-sans);
+  line-height: var(--tui-line-height-body);
   width: 100%;
   min-width: 0;
 }
 
 .input::placeholder {
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
 }
 
 .input:disabled {
@@ -163,31 +156,31 @@
   border: none;
   outline: none;
   background: transparent;
-  color: var(--tui-text);
-  font-family: var(--tui-font-family);
-  line-height: var(--tui-line-height);
+  color: var(--tui-ink);
+  font-family: var(--tui-font-sans);
+  line-height: var(--tui-line-height-body);
   width: 100%;
   min-width: 0;
   resize: vertical;
 }
 
 .sm .textarea {
-  font-size: var(--tui-font-size-sm);
-  padding: var(--tui-spacing-sm);
+  font-size: var(--tui-font-size-small);
+  padding: 8px;
 }
 
 .md .textarea {
-  font-size: var(--tui-font-size-md);
-  padding: var(--tui-spacing-md);
+  font-size: var(--tui-font-size-base);
+  padding: 12px;
 }
 
 .lg .textarea {
-  font-size: var(--tui-font-size-lg);
-  padding: var(--tui-spacing-md);
+  font-size: var(--tui-font-size-lead);
+  padding: 12px;
 }
 
 .textarea::placeholder {
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
 }
 
 .textarea:disabled {
@@ -199,32 +192,32 @@
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  color: var(--tui-text-secondary);
+  color: var(--tui-ink-2);
 }
 
 .sm .prefix {
-  padding-left: var(--tui-spacing-sm);
+  padding-left: 8px;
 }
 
 .md .prefix,
 .lg .prefix {
-  padding-left: var(--tui-spacing-md);
+  padding-left: 12px;
 }
 
 .suffix {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  color: var(--tui-text-secondary);
+  color: var(--tui-ink-2);
 }
 
 .sm .suffix {
-  padding-right: var(--tui-spacing-sm);
+  padding-right: 8px;
 }
 
 .md .suffix,
 .lg .suffix {
-  padding-right: var(--tui-spacing-md);
+  padding-right: 12px;
 }
 
 /* ── Visibility toggle ── */
@@ -235,40 +228,40 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
   padding: 4px;
-  border-radius: var(--tui-radius-sm);
-  transition: color var(--tui-transition);
+  border-radius: var(--tui-radius-control);
+  transition: var(--tui-transition-color);
 }
 
 @media (hover: hover) {
   .visibilityToggle:hover {
-    color: var(--tui-text-secondary);
+    color: var(--tui-ink-2);
   }
 }
 
 .visibilityToggle:focus-visible {
   outline: none;
-  box-shadow: var(--tui-focus-ring);
+  box-shadow: 0 0 0 2px var(--tui-sheet), 0 0 0 4px var(--tui-ink);
 }
 
 /* ── Helper text / Error message ── */
 .helperText {
-  font-size: var(--tui-font-size-xs);
-  color: var(--tui-text-secondary);
+  font-size: var(--tui-font-size-caption);
+  color: var(--tui-ink-2);
   margin: 0;
 }
 
 .errorMessage {
-  font-size: var(--tui-font-size-xs);
+  font-size: var(--tui-font-size-caption);
   color: var(--tui-danger);
   margin: 0;
 }
 
 /* ── Character count ── */
 .characterCount {
-  font-size: var(--tui-font-size-xs);
-  color: var(--tui-text-muted);
+  font-size: var(--tui-font-size-caption);
+  color: var(--tui-ink-3);
   text-align: right;
 }
 
@@ -281,5 +274,13 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: var(--tui-spacing-sm);
+  gap: 8px;
+}
+
+/* 서식 있는 숫자 입력은 자릿수를 정렬한다. 장식이 아니라 기능이다. */
+.numeric {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+  letter-spacing: var(--tui-letter-num);
 }
