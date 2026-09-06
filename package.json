@@ -27,7 +27,10 @@
     "build-storybook": "storybook build",
     "docs:dev": "cd docs-site && pnpm start",
     "docs:build": "cd docs-site && pnpm build",
-    "docs:serve": "cd docs-site && pnpm serve"
+    "docs:serve": "cd docs-site && pnpm serve",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "typecheck": "tsc --noEmit"
   },
   "keywords": [
     "react",
@@ -62,14 +65,18 @@
     "@storybook/blocks": "^8.6.18",
     "@storybook/react": "^8.6.18",
     "@storybook/react-vite": "^8.6.18",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.4",
+    "jsdom": "^28.1.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "storybook": "^8.6.18",
     "typescript": "^5.9.3",
     "vite": "^6.4.1",
-    "vite-plugin-dts": "^4.5.4"
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.1.11"
   }
 }
