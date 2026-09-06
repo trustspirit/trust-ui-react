@@ -1,0 +1,38 @@
+/*
+ * 밀도 축 — 높이와 여백만 담당한다. 색은 건드리지 않는다.
+ * 기본값은 comfortable. 데이터 화면만 compact 를 명시적으로 켠다.
+ */
+:root,
+[data-density="comfortable"] {
+  --tui-control-sm: 36px;
+  --tui-control-md: 44px;
+  --tui-control-lg: 52px;
+  --tui-row-height: 56px;
+  --tui-block-gap: 32px;
+  --tui-font-size-base: 0.9375rem; /* 15px */
+}
+
+[data-density="compact"] {
+  --tui-control-sm: 30px;
+  --tui-control-md: 36px;
+  --tui-control-lg: 44px;
+  --tui-row-height: 46px;
+  --tui-block-gap: 24px;
+  --tui-font-size-base: 0.875rem; /* 14px */
+}
+
+/*
+ * 터치 환경에서는 밀도 설정과 무관하게 최소 터치 타깃을 확보한다.
+ * 즉 compact 는 마우스 환경에서만 실제로 조밀해진다.
+ */
+@media (pointer: coarse) {
+  :root,
+  [data-density="comfortable"],
+  [data-density="compact"] {
+    --tui-control-sm: 36px;
+    --tui-control-md: 44px;
+    --tui-control-lg: 52px;
+    --tui-row-height: 64px;
+    --tui-font-size-base: 1rem; /* 16px — iOS 자동 확대 방지 */
+  }
+}
