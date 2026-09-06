@@ -1,9 +1,10 @@
 // Styles
 import './styles/fonts.css';
+import './styles/palette.css';
+import './styles/themes/light.css';
+import './styles/themes/dark.css';
 import './styles/tokens.css';
-import './styles/theme-light.css';
-import './styles/theme-dark.css';
-import './styles/surfaces.css';
+import './styles/surfaces.css'; // 계획 2에서 제거
 import './styles/reset.css';
 
 // Providers
