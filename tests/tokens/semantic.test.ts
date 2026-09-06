@@ -55,7 +55,7 @@ describe('시맨틱 층', () => {
   });
 
   it('그림자는 오버레이 하나뿐이다', () => {
-    const shadows = [...light.keys(), ...tokens.keys()].filter((k) => k.startsWith('--tui-shadow'));
+    const shadows = [...light.keys(), ...dark.keys(), ...tokens.keys()].filter((k) => k.startsWith('--tui-shadow'));
     expect(new Set(shadows)).toEqual(new Set(['--tui-shadow-overlay']));
   });
 
