@@ -2,7 +2,7 @@
 .container {
   display: inline-flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--tui-gap-1);
   font-family: var(--tui-font-sans);
   position: relative;
 }
@@ -17,6 +17,7 @@
   font-size: var(--tui-font-size-small);
   font-weight: var(--tui-weight-medium);
   color: var(--tui-ink);
+  /* 2px는 여백 스케일(최소 4px)보다 작은 라벨-인풋 간 미세 조정값이라 토큰화하지 않는다. */
   margin-bottom: 2px;
 }
 
@@ -125,9 +126,9 @@
 }
 
 /* ── Sizes — 밀도 축을 따른다 ── */
-.sm .input { height: var(--tui-control-sm); font-size: var(--tui-font-size-small); padding: 0 8px; }
-.md .input { height: var(--tui-control-md); font-size: var(--tui-font-size-base); padding: 0 12px; }
-.lg .input { height: var(--tui-control-lg); font-size: var(--tui-font-size-lead); padding: 0 12px; }
+.sm .input { height: var(--tui-control-sm); font-size: var(--tui-font-size-small); padding: 0 var(--tui-pad-2); }
+.md .input { height: var(--tui-control-md); font-size: var(--tui-font-size-base); padding: 0 var(--tui-pad-3); }
+.lg .input { height: var(--tui-control-lg); font-size: var(--tui-font-size-lead); padding: 0 var(--tui-pad-3); }
 
 /* ── Input element ── */
 .input {
@@ -166,17 +167,17 @@
 
 .sm .textarea {
   font-size: var(--tui-font-size-small);
-  padding: 8px;
+  padding: var(--tui-pad-2);
 }
 
 .md .textarea {
   font-size: var(--tui-font-size-base);
-  padding: 12px;
+  padding: var(--tui-pad-3);
 }
 
 .lg .textarea {
   font-size: var(--tui-font-size-lead);
-  padding: 12px;
+  padding: var(--tui-pad-3);
 }
 
 .textarea::placeholder {
@@ -196,12 +197,12 @@
 }
 
 .sm .prefix {
-  padding-left: 8px;
+  padding-left: var(--tui-pad-2);
 }
 
 .md .prefix,
 .lg .prefix {
-  padding-left: 12px;
+  padding-left: var(--tui-pad-3);
 }
 
 .suffix {
@@ -212,12 +213,12 @@
 }
 
 .sm .suffix {
-  padding-right: 8px;
+  padding-right: var(--tui-pad-2);
 }
 
 .md .suffix,
 .lg .suffix {
-  padding-right: 12px;
+  padding-right: var(--tui-pad-3);
 }
 
 /* ── Visibility toggle ── */
@@ -229,7 +230,7 @@
   border: none;
   cursor: pointer;
   color: var(--tui-ink-3);
-  padding: 4px;
+  padding: var(--tui-pad-1);
   border-radius: var(--tui-radius-control);
   transition: var(--tui-transition-color);
 }
@@ -274,7 +275,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
+  gap: var(--tui-gap-2);
 }
 
 /* 서식 있는 숫자 입력은 자릿수를 정렬한다. 장식이 아니라 기능이다. */

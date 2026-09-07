@@ -20,6 +20,7 @@ const LAYER_FILES = [
   'src/styles/themes/light.css',
   'src/styles/themes/dark.css',
   'src/styles/themes/density.css',
+  'src/styles/themes/spacing.css',
   'src/styles/tokens.css',
   'src/styles/market.css',
 ];

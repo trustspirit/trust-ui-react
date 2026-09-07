@@ -2,11 +2,12 @@ import type { Preview } from '@storybook/react';
 
 // Pretendard — 라이브러리는 더 이상 서체를 번들하지 않으므로 Storybook 자체가 소비자로서 임포트한다.
 import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
-// src/index.ts 와 동일한 순서: palette → themes/light → themes/dark → themes/density → tokens → surfaces → reset
+// src/index.ts 와 동일한 순서: palette → themes/light → themes/dark → themes/density → spacing → tokens → surfaces → reset
 import '../src/styles/palette.css';
 import '../src/styles/themes/light.css';
 import '../src/styles/themes/dark.css';
 import '../src/styles/themes/density.css';
+import '../src/styles/themes/spacing.css';
 import '../src/styles/tokens.css';
 import '../src/styles/surfaces.css';
 import '../src/styles/reset.css';

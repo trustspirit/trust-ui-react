@@ -1,0 +1,32 @@
+/*
+ * 여백 — 두 갈래로 나눈다.
+ *
+ * 안쪽(--tui-pad-*)은 밀도에 연동된다. compact 에서 컨트롤 높이가 44px→36px 로
+ * 줄 때 안쪽 여백이 그대로면 글자가 가장자리에 붙어 비율이 깨지기 때문이다.
+ *
+ * 바깥(--tui-gap-*)은 고정이다. 요소 사이 간격까지 밀도를 따라가면 페이지
+ * 레이아웃 전체가 재배치되어, 앱을 만드는 쪽에서 결과를 예측하기 어려워진다.
+ */
+:root {
+  --tui-gap-1: 4px;
+  --tui-gap-2: 8px;
+  --tui-gap-3: 12px;
+  --tui-gap-4: 16px;
+  --tui-gap-5: 24px;
+  --tui-gap-6: 32px;
+}
+
+:root,
+[data-density="comfortable"] {
+  --tui-pad-1: 6px;
+  --tui-pad-2: 10px;
+  --tui-pad-3: 14px;
+  --tui-pad-4: 20px;
+}
+
+[data-density="compact"] {
+  --tui-pad-1: 4px;
+  --tui-pad-2: 8px;
+  --tui-pad-3: 12px;
+  --tui-pad-4: 16px;
+}
