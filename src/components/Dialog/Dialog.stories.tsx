@@ -49,6 +49,29 @@ export const Default: Story = {
   render: () => <DefaultDialog />,
 };
 
+/**
+ * 표면 자체를 찍기 위한 스토리 — 트리거를 누르지 않고 open=true 로 바로 연다.
+ * 불투명한 시트 배경, 1px 룰 테두리, 오버레이 그림자, 그 뒤 어둠막(scrim)을
+ * 시각 회귀가 실제로 잡을 수 있게 한다.
+ */
+export const Open: Story = {
+  render: () => (
+    <Dialog open onClose={() => {}}>
+      <Dialog.Title onClose={() => {}}>Dialog surface</Dialog.Title>
+      <Dialog.Content>
+        <p>
+          An opaque sheet, a 1px rule border, and a single overlay shadow — no
+          translucency, no blur.
+        </p>
+      </Dialog.Content>
+      <Dialog.Actions>
+        <Button variant="outline">Cancel</Button>
+        <Button>Confirm</Button>
+      </Dialog.Actions>
+    </Dialog>
+  ),
+};
+
 function SizeDialog({ size }: { size: 'sm' | 'md' | 'lg' | 'fullscreen' }) {
   const [open, setOpen] = useState(false);
   return (

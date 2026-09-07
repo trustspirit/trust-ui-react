@@ -27,8 +27,10 @@ for (const id of allIds) {
   const component = id.split('--')[0];
   const name = id.split('--')[1];
   const current = byComponent.get(component);
-  // variants 가 있으면 그것을, 없으면 default 를, 둘 다 없으면 첫 스토리를 쓴다.
-  const rank = (n: string) => (n === 'variants' ? 0 : n === 'default' ? 1 : 2);
+  // open(표면이 열린 상태) 이 있으면 그것을, 없으면 variants, 없으면 default,
+  // 셋 다 없으면 첫 스토리를 쓴다. 오버레이 계열은 닫힌 트리거 버튼이 아니라
+  // 실제로 바뀐 표면을 찍어야 회귀를 잡을 수 있다.
+  const rank = (n: string) => (n === 'open' ? 0 : n === 'variants' ? 1 : n === 'default' ? 2 : 3);
   if (!current || rank(name) < rank(current.split('--')[1])) byComponent.set(component, id);
 }
 const STORIES = [...byComponent.values()].sort();

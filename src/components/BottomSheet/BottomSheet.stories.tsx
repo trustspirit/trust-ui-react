@@ -28,6 +28,31 @@ export const Default: Story = {
   },
 };
 
+/**
+ * 표면 자체를 찍기 위한 스토리 — 트리거를 누르지 않고 open=true 로 바로 연다.
+ * 불투명한 시트, 위쪽 모서리만 둥근 라운드, 오버레이 그림자, 그 뒤 어둠막을
+ * 시각 회귀가 실제로 잡을 수 있게 한다.
+ */
+export const Open: Story = {
+  render: () => (
+    <BottomSheet open onClose={() => {}}>
+      <h3 style={{ marginTop: 0 }}>Bottom sheet surface</h3>
+      <p style={{ color: 'var(--tui-ink-2)' }}>
+        An opaque sheet with rounded top corners and a square bottom, rising
+        from the edge it belongs to.
+      </p>
+      <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+        <Button variant="outline" fullWidth>
+          Cancel
+        </Button>
+        <Button variant="primary" fullWidth>
+          Confirm
+        </Button>
+      </div>
+    </BottomSheet>
+  ),
+};
+
 export const TwoSnapPoints: Story = {
   render: () => {
     const [open, setOpen] = useState(false);
