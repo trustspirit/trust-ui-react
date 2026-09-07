@@ -38,6 +38,19 @@ export const Default: Story = {
   ),
 };
 
+/**
+ * 표면 자체를 찍기 위한 스토리 — 호버 없이 defaultVisible 로 바로 보이게 한다.
+ * Tooltip 은 기본값이 opacity: 0 이라, 트리거만 찍는 스토리로는 표면이
+ * 한 번도 캡처되지 않는다.
+ */
+export const Open: Story = {
+  render: () => (
+    <Tooltip content="This is a tooltip" defaultVisible>
+      <Button>Hover me</Button>
+    </Tooltip>
+  ),
+};
+
 export const Placements: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24, alignItems: 'center' }}>

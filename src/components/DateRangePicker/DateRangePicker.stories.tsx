@@ -13,6 +13,20 @@ type Story = StoryObj<typeof DateRangePicker>;
 
 export const Default = () => <DateRangePicker label="Date Range" />;
 
+/**
+ * 표면 자체를 찍기 위한 스토리 — 트리거를 누르지 않고 defaultOpen 으로 바로
+ * 팝오버를 연다. 오늘 날짜가 달력 칸에 섞여 들어와 실행일마다 스냅샷이
+ * 달라지지 않도록, 고정된 과거 달(2025년 1월)을 시작일로 미리 선택해 뷰를
+ * 고정한다.
+ */
+export const Open = () => (
+  <DateRangePicker
+    label="Date Range"
+    defaultValue={{ start: new Date(2025, 0, 10), end: new Date(2025, 0, 20) }}
+    defaultOpen
+  />
+);
+
 export const WithPresets = () => {
   const today = new Date();
   const presets = [

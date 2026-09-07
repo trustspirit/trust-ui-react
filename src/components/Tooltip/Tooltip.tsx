@@ -48,6 +48,8 @@ export interface TooltipProps {
   mobileIndicator?: boolean;
   /** Override maxWidth on mobile (default falls back to maxWidth prop). */
   mobileMaxWidth?: number;
+  /** Renders the tooltip visible on mount without hover/focus (uncontrolled). 표면 자체를 캡처하는 스토리용. */
+  defaultVisible?: boolean;
 }
 
 function detectAutoMobileVariant(child: ReactElement): TooltipMobileVariant {
@@ -73,6 +75,7 @@ export function Tooltip({
   mobileAutoDismiss = 4000,
   mobileIndicator = false,
   mobileMaxWidth,
+  defaultVisible = false,
 }: TooltipProps) {
   const isTouch = useTouchDevice();
   const effectiveMobileVariant = useMemo(
@@ -80,7 +83,7 @@ export function Tooltip({
     [mobileVariant, children],
   );
 
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(defaultVisible);
   const [position, setPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const triggerRef = useRef<HTMLElement | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);

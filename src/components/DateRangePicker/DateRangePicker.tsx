@@ -62,6 +62,8 @@ export interface DateRangePickerProps {
    * 'native': two HTML <input type="date"> elements stacked vertically.
    */
   mobileVariant?: 'modal' | 'native';
+  /** Renders the calendar popover open on mount (uncontrolled). 표면 자체를 캡처하는 스토리용. */
+  defaultOpen?: boolean;
 }
 
 function CalendarIcon() {
@@ -143,6 +145,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
       className,
       style,
       mobileVariant = 'modal',
+      defaultOpen = false,
     },
     ref,
   ) => {
@@ -154,7 +157,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
 
     const selectedRange = isControlled ? controlledValue : internalValue;
 
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(defaultOpen);
     const [hoverDate, setHoverDate] = useState<Date | null>(null);
     const [selectingStart, setSelectingStart] = useState(true); // true = next click picks start
 

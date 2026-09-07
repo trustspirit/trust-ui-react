@@ -13,6 +13,16 @@ type Story = StoryObj<typeof DatePicker>;
 
 export const Default = () => <DatePicker label="Date" />;
 
+/**
+ * 표면 자체를 찍기 위한 스토리 — 트리거를 누르지 않고 defaultOpen 으로 바로
+ * 팝오버를 연다. 오늘 날짜가 달력 칸에 섞여 들어와 실행일마다 스냅샷이
+ * 달라지지 않도록, 고정된 과거 달(2025년 1월)을 defaultValue 로 미리 선택해
+ * 뷰를 고정한다.
+ */
+export const Open = () => (
+  <DatePicker label="Date" defaultValue={new Date(2025, 0, 15)} defaultOpen />
+);
+
 export const WithLabel = () => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
     <DatePicker label="Start Date" placeholder="Select a start date" />

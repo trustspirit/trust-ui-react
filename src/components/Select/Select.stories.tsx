@@ -42,6 +42,16 @@ export const Default = () => {
   );
 };
 
+/**
+ * 표면 자체를 찍기 위한 스토리 — 트리거를 누르지 않고 defaultOpen 으로 바로
+ * 드롭다운을 연다. Select 는 내부 useState 로만 열림 상태를 갖고 제어 prop 이
+ * 없어서, click 에 의존하는 play 함수 없이 표면을 안정적으로 캡처하려면 이
+ * 초기값이 필요하다.
+ */
+export const Open = () => (
+  <Select options={fruitOptions} placeholder="Select a fruit" defaultOpen />
+);
+
 export const WithPlaceholder = () => (
   <Select options={fruitOptions} placeholder="Choose your favorite fruit..." />
 );
