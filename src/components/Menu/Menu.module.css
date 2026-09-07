@@ -40,7 +40,8 @@
 }
 
 @media (hover: hover) {
-  .item:hover:not(.disabled) {
+  /* 클릭 직후 포인터가 위에 남아 hover+focus 가 겹쳐도 포커스 배경이 지워지지 않도록 게이팅한다. */
+  .item:hover:not(.disabled):not(:focus-visible) {
     background-color: var(--tui-field);
   }
 }
@@ -61,7 +62,8 @@
 }
 
 @media (hover: hover) {
-  .danger:hover:not(.disabled) {
+  /* 클릭 직후 포인터가 위에 남아 hover+focus 가 겹쳐도 포커스 배경이 지워지지 않도록 게이팅한다. */
+  .danger:hover:not(.disabled):not(:focus-visible) {
     background-color: var(--tui-danger);
     color: var(--tui-on-danger);
   }

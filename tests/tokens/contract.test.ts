@@ -57,6 +57,52 @@ for (const f of LAYER_FILES) {
 
 const RAW_COLOR = /(#[0-9a-f]{3,8}\b|\brgba?\(|\bhsla?\()/i;
 
+/** CSS 선택자의 명시도를 [id, class/attr/pseudo-class, element] 로 센다. */
+function specificity(sel: string): [number, number, number] {
+  const s = sel.replace(/::[a-z-]+/g, ''); // 의사 요소는 element 급이라 따로 세지 않는다
+  const ids = (s.match(/#[\w-]+/g) ?? []).length;
+  const classes = (s.match(/\.[\w-]+|\[[^\]]+\]|:(?!:)[\w-]+(\([^)]*\))?/g) ?? []).length;
+  const elements = (s.match(/(^|[\s>+~])[a-z][\w-]*/gi) ?? []).length;
+  return [ids, classes, elements];
+}
+
+const ge = (a: [number, number, number], b: [number, number, number]) =>
+  a[0] !== b[0] ? a[0] > b[0] : a[1] !== b[1] ? a[1] > b[1] : a[2] >= b[2];
+
+/** 선택자와 선언을 가진 최상위 규칙들을 뽑는다. @media 안쪽도 포함한다. */
+function rules(css: string): { selector: string; body: string; index: number }[] {
+  const out: { selector: string; body: string; index: number }[] = [];
+  for (const m of css.matchAll(/([^{}]*)\{([^{}]*)\}/g)) {
+    const selector = m[1].trim();
+    if (!selector || selector.startsWith('@')) continue;
+    out.push({ selector, body: m[2], index: m.index ?? 0 });
+  }
+  return out;
+}
+
+const PROP = /(^|;)\s*([a-z-]+)\s*:/g;
+const propsOf = (body: string) =>
+  new Set([...body.matchAll(PROP)].map((m) => m[2]).filter((p) => !p.startsWith('--')));
+
+/**
+ * 선택자가 최종적으로 겨냥하는 요소의 클래스들.
+ * 두 규칙이 같은 요소에 적용될 수 있을 때만 비교해야 한다 —
+ * `.trigger:hover` 와 `.option:focus-visible` 은 서로 다른 요소이므로
+ * 같은 속성을 건드려도 충돌이 아니다.
+ */
+function targetClasses(sel: string): Set<string> {
+  const last = sel.split(/\s+|>|\+|~/).filter(Boolean).pop() ?? '';
+  return new Set((last.match(/\.[\w-]+/g) ?? []).map((c) => c.slice(1)));
+}
+
+const sharesTarget = (a: string, b: string) => {
+  const ta = targetClasses(a);
+  const tb = targetClasses(b);
+  if (ta.size === 0 || tb.size === 0) return true; // 판단 불가 — 안전하게 비교한다
+  for (const c of ta) if (tb.has(c)) return true;
+  return false;
+};
+
 describe('토큰 계약', () => {
   it('마이그레이션한 파일은 v2가 정의하지 않은 토큰을 참조하지 않는다', () => {
     const bad: string[] = [];
@@ -127,6 +173,32 @@ describe('토큰 계약', () => {
       const hoverBlocks = css.match(/[^{}]*:hover[^{}]*\{[^{}]*\}/g) ?? [];
       for (const block of hoverBlocks) {
         if (/transform\s*:/.test(block)) bad.push(`${f} → 호버 시 이동·변형`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it('호버 규칙이 포커스 규칙을 덮지 않는다', () => {
+    // 이 부류의 결함이 다섯 번 재발했고 매번 사람이 훑어서 놓쳤다.
+    // 클릭 직후 포인터가 컨트롤 위에 있는 가장 흔한 상황에서 포커스 표시가 지워진다.
+    const bad: string[] = [];
+    for (const f of componentCss) {
+      const parsed = rules(read(f));
+      const hovers = parsed.filter((r) => /:hover/.test(r.selector));
+      const focuses = parsed.filter((r) => /:focus-visible|:focus-within/.test(r.selector));
+      for (const h of hovers) {
+        const hp = propsOf(h.body);
+        for (const fo of focuses) {
+          const shared = [...propsOf(fo.body)].filter((p) => hp.has(p));
+          if (shared.length === 0) continue;
+          if (/:not\(:focus/.test(h.selector)) continue; // 이미 게이팅됨
+          if (!sharesTarget(h.selector, fo.selector)) continue; // 서로 다른 요소
+          const hs = specificity(h.selector);
+          const fs = specificity(fo.selector);
+          if (ge(hs, fs)) {
+            bad.push(`${f}: "${h.selector}" 가 "${fo.selector}" 의 ${shared.join(', ')} 를 덮는다`);
+          }
+        }
       }
     }
     expect(bad).toEqual([]);
