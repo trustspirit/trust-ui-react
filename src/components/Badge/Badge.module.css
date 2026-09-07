@@ -4,26 +4,26 @@
   align-items: center;
   justify-content: center;
   border-radius: var(--tui-radius-full);
-  font-family: var(--tui-font-family);
-  font-weight: var(--tui-font-weight-medium);
+  font-family: var(--tui-font-sans);
+  font-weight: var(--tui-weight-medium);
   line-height: 1;
   white-space: nowrap;
   vertical-align: middle;
 }
 
-/* ── Sizes ── */
+/* ── Sizes ──
+   높이를 고정 px 대신 pad-1(수직) + line-height 로 계산한다 — v2 스페이싱
+   바닥값(--tui-pad-1)이 뱃지처럼 작은 컨트롤에서도 통하는지 확인하는 자리다. */
 .sm {
-  height: 20px;
   min-width: 20px;
-  padding: 0 6px;
-  font-size: var(--tui-font-size-xs);
+  padding: var(--tui-pad-1) var(--tui-pad-2);
+  font-size: var(--tui-font-size-caption);
 }
 
 .md {
-  height: 24px;
   min-width: 24px;
-  padding: 0 var(--tui-spacing-sm);
-  font-size: var(--tui-font-size-sm);
+  padding: var(--tui-pad-1) var(--tui-pad-3);
+  font-size: var(--tui-font-size-small);
 }
 
 /* ── Dot ── */
@@ -35,56 +35,43 @@
   border-radius: var(--tui-radius-full);
 }
 
-/* ── Solid variant (default — backwards compatible) ── */
+/* ── Solid variant (default — backwards compatible) ──
+   primary 만 accent(잉크) 면을 쓴다. secondary/success/warning/info 는
+   v2 에 전용 색이 없으므로 무채색 위계(field 면 + ink 글자)로 흡수한다.
+   danger 만 위험을 뜻하는 채워진 면을 유지한다. */
 .solid.primary {
-  background-color: var(--tui-primary);
-  color: var(--tui-primary-text);
+  background-color: var(--tui-accent);
+  color: var(--tui-on-accent);
 }
-.solid.secondary {
-  background-color: var(--tui-secondary);
-  color: var(--tui-secondary-text);
-}
-.solid.success {
-  background-color: var(--tui-success);
-  color: var(--tui-success-text);
+.solid.secondary,
+.solid.success,
+.solid.warning,
+.solid.info {
+  background-color: var(--tui-field);
+  color: var(--tui-ink);
 }
 .solid.danger {
   background-color: var(--tui-danger);
-  color: var(--tui-danger-text);
-}
-.solid.warning {
-  background-color: var(--tui-warning);
-  color: var(--tui-warning-text);
-}
-.solid.info {
-  background-color: var(--tui-info);
-  color: var(--tui-info-text);
+  color: var(--tui-on-danger);
 }
 
 /* ── Subtle variant ── */
 .subtle.primary {
-  background-color: var(--tui-primary-subtle);
-  color: var(--tui-primary);
+  background-color: var(--tui-field);
+  color: var(--tui-accent);
 }
-.subtle.secondary {
-  background-color: var(--tui-secondary-subtle);
-  color: var(--tui-secondary);
-}
-.subtle.success {
-  background-color: var(--tui-success-subtle);
-  color: var(--tui-success);
-}
-.subtle.danger {
-  background-color: var(--tui-danger-subtle);
-  color: var(--tui-danger);
-}
-.subtle.warning {
-  background-color: var(--tui-warning-subtle);
-  color: var(--tui-warning);
-}
+.subtle.secondary,
+.subtle.success,
+.subtle.warning,
 .subtle.info {
-  background-color: var(--tui-info-subtle);
-  color: var(--tui-info);
+  background-color: var(--tui-field);
+  color: var(--tui-ink);
+}
+/* danger 는 subtle 에도 전용 tint 토큰이 없다 — field 면 위에 danger 글자색만
+   남겨 의미를 잃지 않으면서 새 색을 만들지 않는다. */
+.subtle.danger {
+  background-color: var(--tui-field);
+  color: var(--tui-danger);
 }
 
 /* ── Outline variant ── */
@@ -92,9 +79,12 @@
   background-color: transparent;
   border: 1px solid;
 }
-.outline.primary { color: var(--tui-primary); border-color: var(--tui-primary); }
-.outline.secondary { color: var(--tui-secondary); border-color: var(--tui-secondary); }
-.outline.success { color: var(--tui-success); border-color: var(--tui-success); }
+.outline.primary { color: var(--tui-accent); border-color: var(--tui-accent); }
+.outline.secondary,
+.outline.success,
+.outline.warning,
+.outline.info {
+  color: var(--tui-ink);
+  border-color: var(--tui-rule-strong);
+}
 .outline.danger { color: var(--tui-danger); border-color: var(--tui-danger); }
-.outline.warning { color: var(--tui-warning); border-color: var(--tui-warning); }
-.outline.info { color: var(--tui-info); border-color: var(--tui-info); }

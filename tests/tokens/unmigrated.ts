@@ -5,11 +5,7 @@
  */
 export const UNMIGRATED: string[] = [
   "src/components/ActionSheet/ActionSheet.module.css",
-  "src/components/Avatar/Avatar.module.css",
-  "src/components/Badge/Badge.module.css",
   "src/components/BottomSheet/BottomSheet.module.css",
-  "src/components/Checkbox/Checkbox.module.css",
-  "src/components/Chip/Chip.module.css",
   "src/components/DatePicker/Calendar.module.css",
   "src/components/DatePicker/DatePicker.module.css",
   "src/components/DateRangePicker/DateRangePicker.module.css",
@@ -19,7 +15,6 @@ export const UNMIGRATED: string[] = [
   "src/components/Menu/Menu.module.css",
   "src/components/Pagination/Pagination.module.css",
   "src/components/Progress/Progress.module.css",
-  "src/components/Radio/Radio.module.css",
   "src/components/SegmentedControl/SegmentedControl.module.css",
   "src/components/Select/Select.module.css",
   "src/components/Slider/Slider.module.css",

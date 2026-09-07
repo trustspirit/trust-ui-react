@@ -2,14 +2,14 @@
 .wrapper {
   display: inline-flex;
   flex-direction: column;
-  gap: var(--tui-space-2);
+  gap: var(--tui-gap-2);
 }
 
 .errorMessage {
   margin: 0;
-  font-size: var(--tui-font-size-sm);
+  font-size: var(--tui-font-size-small);
   color: var(--tui-danger);
-  line-height: var(--tui-line-height);
+  line-height: var(--tui-line-height-body);
 }
 
 .indicator.errorState {
@@ -20,13 +20,15 @@
 .container {
   display: inline-flex;
   align-items: center;
-  gap: var(--tui-spacing-sm);
+  gap: var(--tui-gap-2);
   cursor: pointer;
-  font-family: var(--tui-font-family);
+  font-family: var(--tui-font-sans);
   user-select: none;
   position: relative;
 }
 
+/* ── 터치 타깃 확장 — 시각 크기는 20px 이지만 coarse 포인터에서는
+   라벨을 포함한 행 전체가 44px 이상의 히트 영역을 갖도록 -12px 로 넓힌다 ── */
 .container::before {
   content: '';
   position: absolute;
@@ -66,64 +68,62 @@
   justify-content: center;
   width: 20px;
   height: 20px;
-  border: 2px solid var(--tui-border);
-  border-radius: var(--tui-radius-sm);
-  background-color: var(--tui-bg);
-  transition:
-    background-color var(--tui-duration-fast) var(--tui-ease-out),
-    border-color var(--tui-duration-fast) var(--tui-ease-out),
-    box-shadow var(--tui-duration-fast) var(--tui-ease-out);
+  border: 2px solid var(--tui-rule);
+  border-radius: var(--tui-radius-tight);
+  background-color: var(--tui-paper);
+  transition: var(--tui-transition-color);
   flex-shrink: 0;
 }
 
-/* Focus visible */
+/* Focus visible — 테두리가 있는 요소이므로 테두리를 두껍게 + 바깥 링 */
 .hiddenInput:focus-visible + .indicator {
-  box-shadow: var(--tui-focus-ring);
+  border-color: var(--tui-ink);
+  box-shadow: 0 0 0 3px var(--tui-ring);
 }
 
 /* Hover */
 @media (hover: hover) {
   .container:hover:not(.disabled) .indicator {
-    border-color: var(--tui-border-hover);
+    border-color: var(--tui-rule-strong);
   }
 }
 
 /* ── Checked state - Primary ── */
 .hiddenInput:checked + .indicator.primary {
-  background-color: var(--tui-primary);
-  border-color: var(--tui-primary);
+  background-color: var(--tui-accent);
+  border-color: var(--tui-accent);
 }
 
 @media (hover: hover) {
   .container:hover:not(.disabled) .hiddenInput:checked + .indicator.primary {
-    background-color: var(--tui-primary-hover);
-    border-color: var(--tui-primary-hover);
+    background-color: var(--tui-accent-hover);
+    border-color: var(--tui-accent-hover);
   }
 }
 
-/* ── Checked state - Secondary ── */
+/* ── Checked state - Secondary — ink 위계에서 accent 보다 한 단계 옅은 톤 ── */
 .hiddenInput:checked + .indicator.secondary {
-  background-color: var(--tui-secondary);
-  border-color: var(--tui-secondary);
+  background-color: var(--tui-ink-2);
+  border-color: var(--tui-ink-2);
 }
 
 @media (hover: hover) {
   .container:hover:not(.disabled) .hiddenInput:checked + .indicator.secondary {
-    background-color: var(--tui-secondary-hover);
-    border-color: var(--tui-secondary-hover);
+    background-color: var(--tui-ink);
+    border-color: var(--tui-ink);
   }
 }
 
 /* ── Indeterminate state - Primary ── */
 .indicator.indeterminate.primary {
-  background-color: var(--tui-primary);
-  border-color: var(--tui-primary);
+  background-color: var(--tui-accent);
+  border-color: var(--tui-accent);
 }
 
 /* ── Indeterminate state - Secondary ── */
 .indicator.indeterminate.secondary {
-  background-color: var(--tui-secondary);
-  border-color: var(--tui-secondary);
+  background-color: var(--tui-ink-2);
+  border-color: var(--tui-ink-2);
 }
 
 /* ── Check + dash icons — absolutely positioned so they share the same centered slot ── */
@@ -134,7 +134,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--tui-primary-text);
+  color: var(--tui-on-accent);
   pointer-events: none;
 }
 
@@ -147,7 +147,8 @@
 .checkIcon polyline {
   stroke-dasharray: 24;
   stroke-dashoffset: 24;
-  transition: stroke-dashoffset var(--tui-duration-base) var(--tui-ease-spring);
+  /* v1 의 ease-spring 은 v2 에 없다 — ease-out 으로 대체한다 */
+  transition: stroke-dashoffset var(--tui-duration-base) var(--tui-ease-out);
 }
 
 .hiddenInput:checked ~ .indicator .checkIcon,
@@ -178,9 +179,9 @@
 
 /* ── Label text ── */
 .label {
-  font-size: var(--tui-font-size-md);
-  color: var(--tui-text);
-  line-height: var(--tui-line-height);
+  font-size: var(--tui-font-size-base);
+  color: var(--tui-ink);
+  line-height: var(--tui-line-height-body);
 }
 
 .requiredAsterisk {
