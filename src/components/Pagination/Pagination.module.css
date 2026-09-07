@@ -82,8 +82,9 @@
   font-weight: var(--tui-weight-semibold);
 }
 
+/* :hover 는 :focus-visible 상태에서는 물러난다 — 위 .button 규칙과 같은 이유. */
 @media (hover: hover) {
-  .active:hover:not(:disabled) {
+  .active:hover:not(:disabled):not(:focus-visible) {
     background-color: var(--tui-field);
     border-color: var(--tui-accent-hover);
     color: var(--tui-accent-hover);
