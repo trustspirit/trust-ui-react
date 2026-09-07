@@ -85,26 +85,31 @@ const propsOf = (body: string) =>
   new Set([...body.matchAll(PROP)].map((m) => m[2]).filter((p) => !p.startsWith('--')));
 
 /**
- * 선택자가 최종적으로 겨냥하는 요소의 클래스들.
- * 두 규칙이 같은 요소에 적용될 수 있을 때만 비교해야 한다 —
- * `.trigger:hover` 와 `.option:focus-visible` 은 서로 다른 요소이므로
- * 같은 속성을 건드려도 충돌이 아니다.
+ * 무관하다고 판단한 호버/포커스 쌍. 클래스명이 다르다고 다른 요소인 것은 아니므로
+ * (CSS Modules 에서는 한 요소가 여러 클래스를 함께 갖는다 — 예: Menu 의 danger 항목은
+ * `.item` 과 `.danger` 를 동시에 갖는다) 자동 추론 대신 사람이 확인한 쌍만 여기에 적는다.
+ * 각 항목에 이유를 남긴다.
  */
-function targetClasses(sel: string): Set<string> {
-  // :not(...) / :is(...) 같은 함수형 의사 클래스의 인자는 대상이 아니라 조건이다.
-  // .item:not(.disabled) 이 겨냥하는 것은 .item 이지 .disabled 가 아니다.
-  const withoutArgs = sel.replace(/:[\w-]+\([^)]*\)/g, '');
-  const last = withoutArgs.split(/\s+|>|\+|~/).filter(Boolean).pop() ?? '';
-  return new Set((last.match(/\.[\w-]+/g) ?? []).map((c) => c.slice(1)));
-}
+const UNRELATED_PAIRS: { file: string; hover: string; focus: string; why: string }[] = [];
 
-const sharesTarget = (a: string, b: string) => {
-  const ta = targetClasses(a);
-  const tb = targetClasses(b);
-  if (ta.size === 0 || tb.size === 0) return true; // 판단 불가 — 안전하게 비교한다
-  for (const c of ta) if (tb.has(c)) return true;
+/** file/hover 선택자/focus 선택자 조합이 UNRELATED_PAIRS 에 등록된 쌍과 일치하는지. */
+const isUnrelatedPair = (file: string, hoverSel: string, focusSel: string) =>
+  UNRELATED_PAIRS.some((p) => p.file === file && hoverSel.includes(p.hover) && focusSel.includes(p.focus));
+
+/**
+ * 호버 선택자가 "이 특정 포커스 규칙"에 대해 이미 게이팅되어 있는지.
+ * 게이트는 한 포커스 규칙에 대한 답이지, 파일 전체에 대한 통과권이 아니다 —
+ * `:not(:focus-visible)` 은 `:focus-within` 규칙을 막지 않는다.
+ * `:not(:focus-within)` 은 더 넓은 조건(포커스가 자식에 있어도 제외)이므로
+ * `:focus-visible` 규칙까지 막는다.
+ */
+function isGatedFor(hoverSelector: string, focusSelector: string): boolean {
+  const hasFocusWithinGate = /:not\(:focus-within\)/.test(hoverSelector);
+  const hasFocusVisibleGate = /:not\(:focus-visible\)/.test(hoverSelector);
+  if (/:focus-within/.test(focusSelector)) return hasFocusWithinGate;
+  if (/:focus-visible/.test(focusSelector)) return hasFocusVisibleGate || hasFocusWithinGate;
   return false;
-};
+}
 
 describe('토큰 계약', () => {
   it('마이그레이션한 파일은 v2가 정의하지 않은 토큰을 참조하지 않는다', () => {
@@ -182,7 +187,11 @@ describe('토큰 계약', () => {
   });
 
   it('호버 규칙이 포커스 규칙을 덮지 않는다', () => {
-    // 이 부류의 결함이 다섯 번 재발했고 매번 사람이 훑어서 놓쳤다.
+    // 이 부류의 결함이 일곱 번 재발했다 — 다섯 번은 사람이 훑어서 놓쳤고, 두 번은
+    // (Menu 의 item/danger) 최초 버전의 자동 추론(sharesTarget)이 "다른 요소"로
+    // 잘못 판단해 놓쳤다. CSS Modules 에서는 한 요소가 여러 클래스를 동시에 가지므로
+    // 클래스명이 다르다고 다른 요소인 것은 아니다 — 그래서 지금은 무관 판단을
+    // 사람이 확인한 UNRELATED_PAIRS 로만 하고, 나머지는 전부 비교한다.
     // 클릭 직후 포인터가 컨트롤 위에 있는 가장 흔한 상황에서 포커스 표시가 지워진다.
     const bad: string[] = [];
     for (const f of componentCss) {
@@ -194,8 +203,8 @@ describe('토큰 계약', () => {
         for (const fo of focuses) {
           const shared = [...propsOf(fo.body)].filter((p) => hp.has(p));
           if (shared.length === 0) continue;
-          if (/:not\(:focus/.test(h.selector)) continue; // 이미 게이팅됨
-          if (!sharesTarget(h.selector, fo.selector)) continue; // 서로 다른 요소
+          if (isGatedFor(h.selector, fo.selector)) continue; // 이 포커스 규칙에 대해 이미 게이팅됨
+          if (isUnrelatedPair(f, h.selector, fo.selector)) continue; // 사람이 확인한 무관한 쌍
           const hs = specificity(h.selector);
           const fs = specificity(fo.selector);
           if (ge(hs, fs)) {
