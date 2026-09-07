@@ -18,7 +18,4 @@ export const UNMIGRATED: string[] = [
   "src/components/Table/Table.module.css",
   "src/components/Tabs/Tabs.module.css",
   "src/components/Toast/Toast.module.css",
-  "src/components/layout/KeyboardAvoidingView/KeyboardAvoidingView.module.css",
-  "src/components/layout/SafeAreaView/SafeAreaView.module.css",
-  "src/components/layout/StickyFooter/StickyFooter.module.css",
 ];
