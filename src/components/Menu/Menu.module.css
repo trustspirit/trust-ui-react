@@ -5,78 +5,71 @@
 }
 
 /* ── Content (dropdown) ── */
+/* 오버레이 표면 — 불투명한 한 겹. 뒤가 비치지 않으므로 그 위 글자 대비가 항상 보장된다. */
 .content {
   position: absolute;
   z-index: var(--tui-z-dropdown);
   min-width: 180px;
-  padding: var(--tui-spacing-xs) 0;
-  background-color: var(--tui-glass-bg);
-  border: 1px solid var(--tui-glass-border);
-  border-radius: var(--tui-radius-xl);
-  box-shadow: var(--tui-glass-shadow);
-  font-family: var(--tui-font-family);
-  animation: menuFadeIn var(--tui-transition) ease;
-}
-
-@supports ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
-  .content {
-    backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
-  }
-}
-
-@supports not ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
-  .content {
-    background-color: var(--tui-bg-subtle);
-  }
+  padding: var(--tui-pad-1) 0;
+  background-color: var(--tui-sheet);
+  border: 1px solid var(--tui-rule);
+  border-radius: var(--tui-radius-sheet);
+  box-shadow: var(--tui-shadow-overlay);
+  font-family: var(--tui-font-sans);
+  /* 열리는 동작은 사용자 행동에 대한 응답이므로 등장 애니메이션을 유지한다. */
+  animation: menuFadeIn var(--tui-duration-fast) var(--tui-ease-out);
 }
 
 /* ── Menu item ── */
 .item {
   display: flex;
   align-items: center;
-  gap: var(--tui-spacing-sm);
+  gap: var(--tui-gap-2);
   width: 100%;
-  padding: var(--tui-spacing-sm) var(--tui-spacing-md);
+  padding: var(--tui-pad-2) var(--tui-pad-3);
   border: none;
   background: transparent;
-  color: var(--tui-text);
-  font-size: var(--tui-font-size-sm);
-  font-family: var(--tui-font-family);
-  line-height: var(--tui-line-height);
+  color: var(--tui-ink);
+  font-size: var(--tui-font-size-small);
+  font-family: var(--tui-font-sans);
+  line-height: var(--tui-line-height-body);
   text-align: left;
   cursor: pointer;
-  transition: background-color var(--tui-transition-fast);
+  transition: var(--tui-transition-color);
   outline: none;
 }
 
 @media (hover: hover) {
   .item:hover:not(.disabled) {
-    background-color: var(--tui-bg-hover);
+    background-color: var(--tui-field);
   }
 }
 
 .item:focus-visible:not(.disabled) {
-  background-color: var(--tui-bg-hover);
+  background-color: var(--tui-field);
 }
 
 .item:focus-visible {
-  box-shadow: inset var(--tui-focus-ring);
+  box-shadow: inset 0 0 0 2px var(--tui-ink);
 }
 
 /* ── Danger item ── */
+/* 위험만 채워진 면을 갖는다는 원칙에 따라, 평소엔 글자색만 danger 이고
+   호버·포커스 시 면 전체를 danger 로 채운다. */
 .danger {
   color: var(--tui-danger);
 }
 
 @media (hover: hover) {
   .danger:hover:not(.disabled) {
-    background-color: var(--tui-danger-subtle);
+    background-color: var(--tui-danger);
+    color: var(--tui-on-danger);
   }
 }
 
 .danger:focus-visible:not(.disabled) {
-  background-color: var(--tui-danger-subtle);
+  background-color: var(--tui-danger);
+  color: var(--tui-on-danger);
 }
 
 /* ── Disabled item ── */
@@ -104,10 +97,9 @@
 
 /* ── Divider ── */
 .divider {
-  margin: var(--tui-spacing-xs) 0;
+  margin: var(--tui-gap-1) 0;
   border: none;
-  border-top: 1px solid var(--tui-border);
-  opacity: 0.5;
+  border-top: 1px solid var(--tui-rule);
 }
 
 /* ── Animations ── */

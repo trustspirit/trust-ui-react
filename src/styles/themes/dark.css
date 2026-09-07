@@ -23,5 +23,8 @@
 
   --tui-shadow-overlay: 0 10px 30px -12px rgba(0, 0, 0, 0.7);
 
+  /* 오버레이 뒤 어둠막 — 알파 합성이 필요해 원시 rgba() 를 허용한다 */
+  --tui-scrim: rgba(0, 0, 0, 0.6);
+
   color-scheme: dark;
 }
