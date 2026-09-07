@@ -88,11 +88,26 @@ describe('토큰 계약', () => {
   });
 
   it('허용목록(UNMIGRATED)은 줄어들기만 한다', () => {
-    // 27은 이 가드를 추가하는 시점의 값이다. 컴포넌트를 마이그레이션할 때마다
-    // unmigrated.ts 에서 줄을 지우므로 이 숫자는 앞으로 감소만 해야 한다 —
-    // 다시 늘어난다면 마이그레이션이 되돌려졌거나 허용목록에 항목이
-    // 잘못 추가된 것이다.
-    expect(UNMIGRATED.length).toBeLessThanOrEqual(27);
+    // 1은 Table.module.css 하나만 남은 현재 값이다 (Table 재설계는 계획 3 대상).
+    // 컴포넌트를 마이그레이션할 때마다 unmigrated.ts 에서 줄을 지우므로 이 숫자는
+    // 앞으로 감소만 해야 한다 — 다시 늘어난다면 마이그레이션이 되돌려졌거나
+    // 허용목록에 항목이 잘못 추가된 것이다.
+    expect(UNMIGRATED.length).toBeLessThanOrEqual(1);
+  });
+
+  it('스타일 폴더에도 정의되지 않은 토큰 참조가 없다', () => {
+    // 계약 검사가 컴포넌트만 훑던 탓에 surfaces.css 가 죽은 --tui-glass-* 참조를
+    // dist/styles.css 까지 싣고 있었다. 레이어 파일 자신도 같은 규칙을 지켜야 한다.
+    const styleCss = globSync('src/styles/**/*.css', { cwd: root }).sort();
+    const bad: string[] = [];
+    for (const f of styleCss) {
+      const css = read(f);
+      const declared = collectDeclaredTokens(css);
+      for (const name of collectReferencedTokens(css)) {
+        if (!DEFINED_TOKENS.has(name) && !declared.has(name)) bad.push(`${f} → ${name}`);
+      }
+    }
+    expect(bad).toEqual([]);
   });
 
   it('금지된 시각 기법을 쓰지 않는다', () => {
