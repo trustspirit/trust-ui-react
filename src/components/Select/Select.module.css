@@ -117,11 +117,15 @@
   cursor: not-allowed;
 }
 
-/* ── Focus visible ── */
+/*
+ * ── Focus visible ──
+ * 테두리가 있는 요소이므로 테두리만 두껍게 한다. 바깥 링은 쓰지 않는다.
+ * 신호는 한 겹이어야 한다 — 두께 변화와 링을 함께 쓰지 않는다.
+ */
 .trigger:focus-visible {
   outline: none;
   border-color: var(--tui-ink);
-  box-shadow: inset 0 0 0 1px var(--tui-ink), 0 0 0 3px var(--tui-ring);
+  box-shadow: inset 0 0 0 1px var(--tui-ink);
 }
 
 /* ── Trigger value ── */
