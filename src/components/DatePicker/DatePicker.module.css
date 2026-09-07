@@ -2,8 +2,8 @@
 .container {
   display: inline-flex;
   flex-direction: column;
-  gap: var(--tui-spacing-xs);
-  font-family: var(--tui-font-family);
+  gap: var(--tui-gap-1);
+  font-family: var(--tui-font-sans);
   position: relative;
   min-width: 180px;
 }
@@ -11,10 +11,10 @@
 /* ── Label ── */
 .label {
   display: block;
-  font-size: var(--tui-font-size-sm);
-  font-weight: var(--tui-font-weight-medium);
-  color: var(--tui-text);
-  margin-bottom: 2px;
+  font-size: var(--tui-font-size-small);
+  font-weight: var(--tui-weight-medium);
+  color: var(--tui-ink);
+  margin-bottom: var(--tui-gap-1);
 }
 
 .labelError {
@@ -33,69 +33,73 @@
 .inputWrapper {
   display: flex;
   align-items: center;
-  border-radius: var(--tui-radius-md);
+  border-radius: var(--tui-radius-control);
   cursor: pointer;
-  transition:
-    border-color var(--tui-transition),
-    background-color var(--tui-transition),
-    box-shadow var(--tui-transition);
+  transition: var(--tui-transition-color);
   width: 100%;
   overflow: hidden;
-  gap: var(--tui-spacing-sm);
+  gap: var(--tui-gap-2);
 }
 
 /* ── Sizes ── */
 .sm .inputWrapper {
-  height: 32px;
-  padding: 0 var(--tui-spacing-sm);
-  font-size: var(--tui-font-size-sm);
+  height: var(--tui-control-sm);
+  padding: 0 var(--tui-pad-2);
+  font-size: var(--tui-font-size-small);
 }
 
 .md .inputWrapper {
-  height: 40px;
-  padding: 0 var(--tui-spacing-md);
-  font-size: var(--tui-font-size-md);
+  height: var(--tui-control-md);
+  padding: 0 var(--tui-pad-3);
+  font-size: var(--tui-font-size-base);
 }
 
 .lg .inputWrapper {
-  height: 48px;
-  padding: 0 var(--tui-spacing-md);
-  font-size: var(--tui-font-size-lg);
+  height: var(--tui-control-lg);
+  padding: 0 var(--tui-pad-4);
+  font-size: var(--tui-font-size-lead);
 }
 
 /* ── Outlined variant ── */
 .outlined .inputWrapper {
-  border: 1px solid var(--tui-border);
-  background-color: var(--tui-bg);
+  border: 1px solid var(--tui-rule);
+  background-color: var(--tui-paper);
 }
 
+/* :focus-within 상태에서는 물러난다 — TextField 와 같은 이유로, 포커스된
+   테두리 색(ink)이 hover 색(ink-3)에 덮이지 않도록 한다. */
 @media (hover: hover) {
-  .outlined .inputWrapper:hover:not(.disabled) {
-    border-color: var(--tui-border-hover);
+  .outlined .inputWrapper:hover:not(.disabled):not(:focus-within):not(.focused) {
+    border-color: var(--tui-ink-3);
   }
-}
-
-.outlined .inputWrapper.focused:not(.error) {
-  border-color: var(--tui-border-focus);
-  box-shadow: 0 0 0 1px var(--tui-border-focus);
 }
 
 /* ── Filled variant ── */
 .filled .inputWrapper {
   border: 1px solid transparent;
-  background-color: var(--tui-bg-muted);
+  background-color: var(--tui-field);
 }
 
 @media (hover: hover) {
-  .filled .inputWrapper:hover:not(.disabled) {
-    background-color: var(--tui-bg-hover);
+  .filled .inputWrapper:hover:not(.disabled):not(:focus-within):not(.focused) {
+    background-color: var(--tui-rule);
   }
 }
 
+/* ── Focus ──
+   실제 포커스는 이 div(role="combobox", tabIndex=0) 자신에게 온다. 팝업이
+   열렸을 때도 같은 신호를 보이기 위해 JS 가 붙이는 .focused 클래스를 함께
+   건다. 테두리가 있는 요소이므로 테두리를 두껍게 하는 한 겹만 쓰고 바깥
+   링은 쓰지 않는다. */
+.inputWrapper:focus-within:not(.error),
+.inputWrapper.focused:not(.error) {
+  border-color: var(--tui-ink);
+  box-shadow: inset 0 0 0 1px var(--tui-ink);
+}
+
+.filled .inputWrapper:focus-within:not(.error),
 .filled .inputWrapper.focused:not(.error) {
-  border-color: var(--tui-border-focus);
-  box-shadow: 0 0 0 1px var(--tui-border-focus);
-  background-color: var(--tui-bg);
+  background-color: var(--tui-sheet);
 }
 
 /* ── Error state ── */
@@ -103,8 +107,9 @@
   border-color: var(--tui-danger);
 }
 
+.error .inputWrapper:focus-within,
 .error .inputWrapper.focused {
-  box-shadow: 0 0 0 1px var(--tui-danger);
+  box-shadow: inset 0 0 0 1px var(--tui-danger);
 }
 
 /* ── Disabled ── */
@@ -119,10 +124,10 @@
   border: none;
   outline: none;
   background: transparent;
-  color: var(--tui-text);
-  font-family: var(--tui-font-family);
+  color: var(--tui-ink);
+  font-family: var(--tui-font-sans);
   font-size: inherit;
-  line-height: var(--tui-line-height);
+  line-height: var(--tui-line-height-body);
   min-width: 0;
   cursor: pointer;
   overflow: hidden;
@@ -131,7 +136,7 @@
 }
 
 .input::placeholder {
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
 }
 
 .input:disabled {
@@ -147,41 +152,28 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--tui-text-muted);
-  padding: 4px;
-  border-radius: var(--tui-radius-sm);
-  transition: color var(--tui-transition);
+  color: var(--tui-ink-3);
+  padding: var(--tui-pad-1);
+  border-radius: var(--tui-radius-tight);
+  transition: var(--tui-transition-color);
 }
 
 @media (hover: hover) {
   .calendarIcon:hover {
-    color: var(--tui-text-secondary);
+    color: var(--tui-ink-2);
   }
 }
 
-/* ── Popup ── */
+/* ── Popup — 불투명 오버레이 표면(Task 6 패턴) ── */
 .popup {
   position: fixed;
   z-index: var(--tui-z-dropdown);
-  background-color: var(--tui-glass-bg);
-  border: 1px solid var(--tui-glass-border);
-  box-shadow: var(--tui-glass-shadow);
-  border-radius: var(--tui-radius-xl);
-  padding: var(--tui-spacing-md);
+  background-color: var(--tui-sheet);
+  border: 1px solid var(--tui-rule);
+  box-shadow: var(--tui-shadow-overlay);
+  border-radius: var(--tui-radius-sheet);
+  padding: var(--tui-pad-3);
   min-width: 280px;
-}
-
-@supports ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
-  .popup {
-    backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
-  }
-}
-
-@supports not ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
-  .popup {
-    background-color: var(--tui-bg-subtle);
-  }
 }
 
 /* ── Navigation header ── */
@@ -189,7 +181,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--tui-spacing-sm);
+  margin-bottom: var(--tui-gap-2);
 }
 
 .navButton {
@@ -200,103 +192,123 @@
   height: 32px;
   background: none;
   border: none;
-  border-radius: var(--tui-radius-md);
+  border-radius: var(--tui-radius-control);
   cursor: pointer;
-  color: var(--tui-text-secondary);
-  transition:
-    background-color var(--tui-transition-fast),
-    color var(--tui-transition-fast);
+  color: var(--tui-ink-2);
+  transition: var(--tui-transition-color);
+  position: relative;
+}
+
+/* ── 터치 타깃 확장 — 32px 히트 영역을 coarse 포인터에서 44px 이상으로 ── */
+@media (pointer: coarse) {
+  .navButton::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
 }
 
 @media (hover: hover) {
   .navButton:hover {
-    background-color: var(--tui-bg-muted);
-    color: var(--tui-text);
+    background-color: var(--tui-field);
+    color: var(--tui-ink);
   }
 }
 
 .navButton:focus-visible {
   outline: none;
-  box-shadow: var(--tui-focus-ring);
+  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-ink);
 }
 
 .monthYearLabel {
-  font-size: var(--tui-font-size-md);
-  font-weight: var(--tui-font-weight-semibold);
-  color: var(--tui-text);
+  font-size: var(--tui-font-size-base);
+  font-weight: var(--tui-weight-semibold);
+  color: var(--tui-ink);
   cursor: pointer;
-  padding: var(--tui-spacing-xs) var(--tui-spacing-sm);
-  border-radius: var(--tui-radius-md);
+  padding: var(--tui-pad-1) var(--tui-pad-2);
+  border-radius: var(--tui-radius-control);
   border: none;
   background: none;
-  font-family: var(--tui-font-family);
-  transition: background-color var(--tui-transition-fast);
+  font-family: var(--tui-font-sans);
+  transition: var(--tui-transition-color);
 }
 
 @media (hover: hover) {
   .monthYearLabel:hover {
-    background-color: var(--tui-bg-muted);
+    background-color: var(--tui-field);
   }
+}
+
+.monthYearLabel:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-ink);
 }
 
 /* ── Year grid ── */
 .yearGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--tui-spacing-xs);
-  padding: var(--tui-spacing-sm) 0;
+  gap: var(--tui-gap-1);
+  padding: var(--tui-pad-2) 0;
 }
 
 .yearCell {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--tui-spacing-sm);
-  border-radius: var(--tui-radius-md);
-  font-size: var(--tui-font-size-sm);
+  padding: var(--tui-pad-2);
+  border-radius: var(--tui-radius-control);
+  font-size: var(--tui-font-size-small);
   cursor: pointer;
-  transition:
-    background-color var(--tui-transition-fast),
-    color var(--tui-transition-fast);
-  color: var(--tui-text);
+  transition: var(--tui-transition-color);
+  color: var(--tui-ink);
   border: none;
   background: none;
-  font-family: var(--tui-font-family);
+  font-family: var(--tui-font-sans);
+  font-variant-numeric: tabular-nums;
 }
 
 @media (hover: hover) {
   .yearCell:hover {
-    background-color: var(--tui-bg-muted);
+    background-color: var(--tui-field);
   }
 }
 
+.yearCell:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-ink);
+}
+
 .yearCellSelected {
-  background-color: var(--tui-primary);
-  color: var(--tui-primary-text);
+  background-color: var(--tui-accent);
+  color: var(--tui-on-accent);
 }
 
 @media (hover: hover) {
   .yearCellSelected:hover {
-    background-color: var(--tui-primary-hover);
+    background-color: var(--tui-accent-hover);
   }
 }
 
 /* ── Error message ── */
 .errorMessage {
-  font-size: var(--tui-font-size-xs);
+  font-size: var(--tui-font-size-caption);
   color: var(--tui-danger);
   margin: 0;
 }
 
 /* ── Native date input (mobile native variant) ── */
 .nativeInput {
-  padding: 8px 12px;
-  border-radius: var(--tui-radius-md);
-  border: 1px solid var(--tui-border);
-  background-color: var(--tui-bg);
-  color: var(--tui-text);
+  padding: var(--tui-pad-2) var(--tui-pad-3);
+  border-radius: var(--tui-radius-control);
+  border: 1px solid var(--tui-rule);
+  background-color: var(--tui-paper);
+  color: var(--tui-ink);
   font-family: var(--tui-font-sans);
-  font-size: var(--tui-font-size-md);
+  font-size: var(--tui-font-size-base);
   width: 100%;
   box-sizing: border-box;
 }
