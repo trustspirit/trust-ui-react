@@ -284,3 +284,16 @@
   font-feature-settings: 'tnum' 1;
   letter-spacing: var(--tui-letter-num);
 }
+
+/*
+ * iOS는 포커스된 입력 요소의 글자 크기가 16px 미만이면 페이지를 확대해버린다.
+ * reset.css에도 같은 규칙(input/textarea/select 엘리먼트 셀렉터, 명시도 0,0,1)이
+ * 있지만 위 .sm .input / .sm .textarea(명시도 0,2,0)에 밀려 여기서는 무효화된다.
+ * 그래서 이 규칙은 reset.css가 아니라 여기, sm 사이즈를 정의하는 파일에 있어야 한다.
+ */
+@media (pointer: coarse) {
+  .sm .input,
+  .sm .textarea {
+    font-size: max(16px, var(--tui-font-size-small));
+  }
+}
