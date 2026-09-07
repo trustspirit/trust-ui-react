@@ -5,8 +5,6 @@
  */
 export const UNMIGRATED: string[] = [
   "src/components/FileUpload/FileUpload.module.css",
-  "src/components/Progress/Progress.module.css",
-  "src/components/Slider/Slider.module.css",
   "src/components/Table/Table.module.css",
   "src/components/Tabs/Tabs.module.css",
 ];

@@ -11,8 +11,6 @@ export interface ProgressProps {
   indeterminate?: boolean;
   /** Shows the percentage label */
   showLabel?: boolean;
-  /** Use gradient fill for the progress bar (primary variant only). */
-  gradient?: boolean;
   /** Additional CSS class */
   className?: string;
   /** Inline styles */
@@ -25,7 +23,6 @@ export function Progress({
   size = 'md',
   indeterminate = false,
   showLabel = false,
-  gradient = false,
   className,
   style,
 }: ProgressProps) {
@@ -43,7 +40,6 @@ export function Progress({
     styles[variant],
     styles[size],
     indeterminate ? styles.indeterminate : '',
-    gradient ? styles.gradient : '',
   ]
     .filter(Boolean)
     .join(' ');

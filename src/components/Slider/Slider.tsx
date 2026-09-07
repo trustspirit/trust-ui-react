@@ -22,11 +22,6 @@ export interface SliderProps {
   showValue?: boolean;
   /** Whether the slider is disabled */
   disabled?: boolean;
-  /**
-   * Use gradient fill for the slider track (Firefox only — WebKit shows
-   * solid color due to platform limitations with range input pseudo-elements).
-   */
-  gradient?: boolean;
   /** Additional CSS class */
   className?: string;
   /** Inline styles */
@@ -46,7 +41,6 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
       size = 'md',
       showValue = false,
       disabled = false,
-      gradient = false,
       className,
       style,
     },
@@ -74,11 +68,11 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
       return ((currentValue - min) / (max - min)) * 100;
     }, [currentValue, min, max]);
 
-    // CSS custom property for WebKit track gradient
+    // WebKit 은 range input 의 채워진/빈 트랙을 별도 의사 요소로 못 그리므로
+    // 채움 비율을 그라데이션으로 표현한다 — 장식이 아니라 트랙을 채우는 기법이다.
     const trackBackground = useMemo(() => {
-      const variantColor =
-        variant === 'primary' ? 'var(--tui-primary)' : 'var(--tui-secondary)';
-      return `linear-gradient(to right, ${variantColor} 0%, ${variantColor} ${fillPercent}%, var(--tui-bg-hover) ${fillPercent}%, var(--tui-bg-hover) 100%)`;
+      const variantColor = variant === 'primary' ? 'var(--tui-accent)' : 'var(--tui-ink-2)';
+      return `linear-gradient(to right, ${variantColor} 0%, ${variantColor} ${fillPercent}%, var(--tui-rule) ${fillPercent}%, var(--tui-rule) 100%)`;
     }, [variant, fillPercent]);
 
     const containerClassNames = [
@@ -90,9 +84,7 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
       .filter(Boolean)
       .join(' ');
 
-    const sliderClassNames = [styles.slider, styles[variant], gradient && styles.gradient]
-      .filter(Boolean)
-      .join(' ');
+    const sliderClassNames = [styles.slider, styles[variant]].filter(Boolean).join(' ');
 
     return (
       <div className={containerClassNames} style={style}>

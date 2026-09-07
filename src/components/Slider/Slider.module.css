@@ -2,8 +2,8 @@
 .container {
   display: inline-flex;
   flex-direction: column;
-  gap: var(--tui-spacing-xs);
-  font-family: var(--tui-font-family);
+  gap: var(--tui-gap-1);
+  font-family: var(--tui-font-sans);
   width: 100%;
 }
 
@@ -13,9 +13,9 @@
 
 /* ── Slider wrapper (for value label positioning) ── */
 .sliderWrapper {
-  position: relative;
   display: flex;
   align-items: center;
+  position: relative;
 }
 
 /* ── Native range input ── */
@@ -36,11 +36,13 @@
   outline: none;
 }
 
-/* ── Track - WebKit ── */
+/* ── Track - WebKit — 여기서 background 를 지정하면 안 된다. 이 의사 요소는
+   자기 자신의 배경을 그리는데, 그러면 Slider.tsx 가 input 자체에 인라인으로
+   건 채움 비율 그라데이션(트랙 쉬는 상태와 같은 --tui-rule 을 빈 구간에
+   쓴다)을 완전히 덮어버려 채워진 부분이 보이지 않는다. 직접 확인한 결과다. ── */
 .slider::-webkit-slider-runnable-track {
   width: 100%;
   border-radius: var(--tui-radius-full);
-  background: var(--tui-bg-hover);
 }
 
 .sm .slider::-webkit-slider-runnable-track {
@@ -59,7 +61,7 @@
 .slider::-moz-range-track {
   width: 100%;
   border-radius: var(--tui-radius-full);
-  background: var(--tui-bg-hover);
+  background: var(--tui-rule);
   border: none;
 }
 
@@ -75,14 +77,16 @@
   height: 8px;
 }
 
-/* ── Filled portion - Firefox ── */
+/* ── Filled portion - Firefox ──
+   secondary 는 v2 전용 색이 없어 ink 위계로 흡수한다(Switch 의 secondary 와
+   같은 결정: --tui-ink-2). ── */
 .slider.primary::-moz-range-progress {
-  background: var(--tui-primary);
+  background: var(--tui-accent);
   border-radius: var(--tui-radius-full);
 }
 
 .slider.secondary::-moz-range-progress {
-  background: var(--tui-secondary);
+  background: var(--tui-ink-2);
   border-radius: var(--tui-radius-full);
 }
 
@@ -103,13 +107,12 @@
   -webkit-appearance: none;
   appearance: none;
   border-radius: var(--tui-radius-full);
-  background: white;
-  border: 2px solid var(--tui-primary);
-  box-shadow: var(--tui-shadow-sm);
+  background: var(--tui-paper);
+  border: 2px solid var(--tui-accent);
   cursor: pointer;
   transition:
-    box-shadow var(--tui-duration-fast) var(--tui-ease-out),
-    transform var(--tui-duration-base) var(--tui-ease-spring);
+    border-color var(--tui-duration-fast) var(--tui-ease-out),
+    transform var(--tui-duration-base) var(--tui-ease-out);
 }
 
 .sm .slider::-webkit-slider-thumb {
@@ -131,34 +134,37 @@
 }
 
 .slider.secondary::-webkit-slider-thumb {
-  border-color: var(--tui-secondary);
+  border-color: var(--tui-ink-2);
 }
 
 .slider:focus-visible::-webkit-slider-thumb {
-  box-shadow: var(--tui-focus-ring);
+  border-color: var(--tui-ink);
+  box-shadow: inset 0 0 0 1px var(--tui-ink);
 }
 
+/* 호버는 색만 바뀐다 — 이동·확대는 금지 기법이다(Button 과 같은 원칙). */
 @media (hover: hover) {
-  .slider:hover:not(:disabled)::-webkit-slider-thumb {
-    transform: scale(1.1);
+  .slider.primary:hover:not(:disabled)::-webkit-slider-thumb {
+    border-color: var(--tui-accent-hover);
+  }
+  .slider.secondary:hover:not(:disabled)::-webkit-slider-thumb {
+    border-color: var(--tui-ink);
   }
 }
 
 .slider:active:not(:disabled)::-webkit-slider-thumb {
-  transform: scale(1.15);
   transition: none;  /* drag: instant response */
 }
 
 /* ── Thumb - Firefox ── */
 .slider::-moz-range-thumb {
   border-radius: var(--tui-radius-full);
-  background: white;
-  border: 2px solid var(--tui-primary);
-  box-shadow: var(--tui-shadow-sm);
+  background: var(--tui-paper);
+  border: 2px solid var(--tui-accent);
   cursor: pointer;
   transition:
-    box-shadow var(--tui-duration-fast) var(--tui-ease-out),
-    transform var(--tui-duration-base) var(--tui-ease-spring);
+    border-color var(--tui-duration-fast) var(--tui-ease-out),
+    transform var(--tui-duration-base) var(--tui-ease-out);
 }
 
 .sm .slider::-moz-range-thumb {
@@ -177,11 +183,12 @@
 }
 
 .slider.secondary::-moz-range-thumb {
-  border-color: var(--tui-secondary);
+  border-color: var(--tui-ink-2);
 }
 
 .slider:focus-visible::-moz-range-thumb {
-  box-shadow: var(--tui-focus-ring);
+  border-color: var(--tui-ink);
+  box-shadow: inset 0 0 0 1px var(--tui-ink);
 }
 
 /* ── Mobile thumb sizes (touch devices) ── */
@@ -206,18 +213,14 @@
   .lg .slider::-webkit-slider-thumb { margin-top: -10px; }
 }
 
-/* ── Gradient fill - Firefox only ── */
-.slider.gradient.primary::-moz-range-progress {
-  background: var(--tui-primary-gradient);
-}
-
 /* ── Value label ── */
 .valueLabel {
-  font-size: var(--tui-font-size-sm);
-  font-weight: var(--tui-font-weight-medium);
-  color: var(--tui-text);
+  font-size: var(--tui-font-size-small);
+  font-weight: var(--tui-weight-medium);
+  color: var(--tui-ink);
   text-align: center;
   min-width: 32px;
-  margin-left: var(--tui-spacing-sm);
+  margin-left: var(--tui-gap-2);
   flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
 }
