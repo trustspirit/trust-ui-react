@@ -96,9 +96,13 @@
 }
 
 /* ── Trigger: pill variant ── */
+/* 비활성 상태에도 투명 1px 테두리를 미리 깔아둔다 — active 에서 테두리 색만
+   바뀌게 하여, 테두리 유무로 셀 크기가 바뀌고 행 전체가 리플로우되는(그리고
+   JS 로 측정하는 인디케이터까지 밀리는) 문제를 막는다. */
 .triggerPill {
   padding: var(--tui-pad-1) var(--tui-pad-3);
   border-radius: var(--tui-radius-control);
+  border: 1px solid transparent;
 }
 
 /*
@@ -111,7 +115,7 @@
  */
 .triggerPill.triggerActive {
   background-color: var(--tui-sheet);
-  border: 1px solid var(--tui-rule);
+  border-color: var(--tui-rule);
   color: var(--tui-ink);
 }
 
