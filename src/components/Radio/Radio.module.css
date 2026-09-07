@@ -159,3 +159,18 @@
   flex-direction: row;
   gap: var(--tui-gap-4);
 }
+
+/* ── 터치 타깃 확장이 이웃 요소와 겹치는 문제 보정 ──
+   coarse pointer 환경에서는 .container::after 가 44px 로 확장되고, 동시에
+   density.css 가 --tui-font-size-base 를 16px 로 올린다(iOS 자동 확대 방지).
+   그 결과 세로 배치 한 행의 실측 높이는 16px × line-height 1.6 ≈ 25.6px(렌더 시
+   26px) 로, 44px 히트박스가 위아래로 약 9px 씩 삐져나온다. 기본 세로 배치의
+   8px(--tui-gap-2) 간격으로는 이웃 히트박스와 겹쳐 탭이 엉뚱한 라디오로
+   튄다. 겹침이 없으려면 간격이 (44 − 행높이) 이상이어야 하므로(≈18.4px),
+   이를 안전하게 덮는 가장 작은 토큰인 24px(--tui-gap-5) 로 확장이 일어나는
+   환경에서만 간격을 넓힌다. ── */
+@media (pointer: coarse) {
+  .group {
+    gap: var(--tui-gap-5);
+  }
+}
