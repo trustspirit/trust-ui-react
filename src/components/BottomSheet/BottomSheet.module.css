@@ -2,9 +2,9 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background-color: var(--tui-overlay);
+  background-color: var(--tui-scrim);
   z-index: 1054;
-  animation: bs-backdrop-in var(--tui-duration-medium) var(--tui-ease-out);
+  animation: bs-backdrop-in var(--tui-duration-base) var(--tui-ease-out);
 }
 
 .backdropExit {
@@ -22,6 +22,7 @@
 }
 
 /* Sheet container */
+/* 오버레이 표면 — 불투명한 한 겹. 바닥에서 올라오므로 위쪽 모서리만 둥글다. */
 .sheet {
   position: fixed;
   left: 0;
@@ -30,20 +31,19 @@
   z-index: var(--tui-z-bottom-sheet);
   display: flex;
   flex-direction: column;
-  border-top-left-radius: var(--tui-radius-2xl);
-  border-top-right-radius: var(--tui-radius-2xl);
-  /* Glass — but only top corners radius, override .tui-glass border-radius. */
-  /* Note: .tui-glass class added via className in TSX, providing bg + backdrop-filter + box-shadow. */
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+  background-color: var(--tui-sheet);
+  border: 1px solid var(--tui-rule);
+  box-shadow: var(--tui-shadow-overlay);
+  border-radius: var(--tui-radius-sheet) var(--tui-radius-sheet) 0 0;
   max-height: 95vh;
   overflow: hidden;
   /* transform is set inline based on snap + drag state */
   /* transition appears only when not dragging */
 }
 
+/* 시트가 올라오는 동작은 사용자 행동에 대한 응답이므로 등장 애니메이션을 유지한다. */
 .sheetAnimating {
-  transition: transform var(--tui-duration-medium) var(--tui-ease-out);
+  transition: transform var(--tui-duration-base) var(--tui-ease-out);
 }
 
 .sheetExit {
@@ -67,7 +67,7 @@
   width: 40px;
   height: 4px;
   border-radius: var(--tui-radius-full);
-  background-color: var(--tui-border-strong);
+  background-color: var(--tui-rule-strong);
   opacity: 0.5;
 }
 
@@ -77,6 +77,6 @@
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
-  padding: var(--tui-spacing-md);
+  padding: var(--tui-pad-3);
   padding-bottom: var(--tui-thumb-safe-bottom);
 }

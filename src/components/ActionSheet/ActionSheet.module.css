@@ -1,10 +1,10 @@
 .title {
-  font-size: var(--tui-font-size-sm);
-  font-weight: var(--tui-font-weight-medium);
-  color: var(--tui-text-secondary);
+  font-size: var(--tui-font-size-small);
+  font-weight: var(--tui-weight-medium);
+  color: var(--tui-ink-2);
   text-align: center;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--tui-border);
+  border-bottom: 1px solid var(--tui-rule);
   margin: 0;
 }
 
@@ -25,24 +25,24 @@
   padding: 0 16px;
   background-color: transparent;
   border: none;
-  border-bottom: 1px solid var(--tui-border);
+  border-bottom: 1px solid var(--tui-rule);
   cursor: pointer;
   font-family: var(--tui-font-sans);
-  font-size: var(--tui-font-size-lg);
-  color: var(--tui-text);
-  transition: background-color var(--tui-duration-fast) var(--tui-ease-out);
+  font-size: var(--tui-font-size-lead);
+  color: var(--tui-ink);
+  transition: var(--tui-transition-color);
 }
 
 .actionItem:last-child { border-bottom: none; }
 
 @media (hover: hover) {
   .actionItem:hover:not(:disabled) {
-    background-color: var(--tui-bg-hover);
+    background-color: var(--tui-field);
   }
 }
 
 .actionItem:active:not(:disabled) {
-  background-color: var(--tui-bg-active);
+  background-color: var(--tui-rule);
 }
 
 .actionItem:disabled {
@@ -52,14 +52,16 @@
 
 .destructive {
   color: var(--tui-danger);
-  font-weight: var(--tui-font-weight-semibold);
+  font-weight: var(--tui-weight-semibold);
 }
 
+/* 취소 버튼 — 부모 BottomSheet 도 같은 --tui-sheet 면이므로, 구분되도록
+   한 단계 위 표면인 --tui-field 를 쓴다. */
 .cancel {
-  font-weight: var(--tui-font-weight-semibold);
-  color: var(--tui-text);
+  font-weight: var(--tui-weight-semibold);
+  color: var(--tui-ink);
   margin-top: 8px;
-  border-radius: var(--tui-radius-lg);
-  background-color: var(--tui-bg-subtle);
-  border: 1px solid var(--tui-border);
+  border-radius: var(--tui-radius-control);
+  background-color: var(--tui-field);
+  border: 1px solid var(--tui-rule);
 }

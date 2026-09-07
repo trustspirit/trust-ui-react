@@ -1,30 +1,19 @@
 /* ── Dialog element ── */
+/* 오버레이 표면 — 불투명한 한 겹. 뒤가 비치지 않으므로 그 위 글자 대비가 항상 보장된다. */
 .dialog {
   position: fixed;
   margin: auto;
-  border: 1px solid var(--tui-glass-border);
-  border-radius: var(--tui-radius-xl);
+  border: 1px solid var(--tui-rule);
+  border-radius: var(--tui-radius-sheet);
   padding: 0;
-  background-color: var(--tui-glass-bg);
-  color: var(--tui-text);
-  font-family: var(--tui-font-family);
-  box-shadow: var(--tui-glass-shadow);
+  background-color: var(--tui-sheet);
+  color: var(--tui-ink);
+  font-family: var(--tui-font-sans);
+  box-shadow: var(--tui-shadow-overlay);
   max-height: 85vh;
   overflow: hidden;
-  animation: dialogEnter var(--tui-duration-medium) var(--tui-ease-out);
-}
-
-@supports ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
-  .dialog {
-    backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
-  }
-}
-
-@supports not ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
-  .dialog {
-    background-color: var(--tui-bg-subtle);
-  }
+  /* 다이얼로그가 뜨는 동작은 사용자 행동에 대한 응답이므로 등장 애니메이션을 유지한다. */
+  animation: dialogEnter var(--tui-duration-base) var(--tui-ease-out);
 }
 
 /* ── Enter animation ── */
@@ -41,9 +30,9 @@
 
 /* ── Backdrop ── */
 .dialog::backdrop {
-  background-color: var(--tui-overlay);
+  background-color: var(--tui-scrim);
   opacity: 0;
-  transition: opacity var(--tui-transition-slow);
+  transition: opacity var(--tui-duration-base) var(--tui-ease-out);
 }
 
 .dialog[open]::backdrop {
@@ -83,10 +72,10 @@
   max-width: none;
   max-height: none;
   border-radius: 0;
-  padding-top: max(var(--tui-spacing-md), var(--tui-safe-top));
-  padding-bottom: max(var(--tui-spacing-md), var(--tui-safe-bottom));
-  padding-left: max(var(--tui-spacing-md), var(--tui-safe-left));
-  padding-right: max(var(--tui-spacing-md), var(--tui-safe-right));
+  padding-top: max(var(--tui-pad-3), var(--tui-safe-top));
+  padding-bottom: max(var(--tui-pad-3), var(--tui-safe-bottom));
+  padding-left: max(var(--tui-pad-3), var(--tui-safe-left));
+  padding-right: max(var(--tui-pad-3), var(--tui-safe-right));
 }
 
 /* ── Inner wrapper ── */
@@ -106,16 +95,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--tui-spacing-lg) var(--tui-spacing-lg) var(--tui-spacing-md);
+  padding: var(--tui-pad-4) var(--tui-pad-4) var(--tui-pad-3);
   flex-shrink: 0;
 }
 
 .title {
   margin: 0;
-  font-size: var(--tui-font-size-lg);
-  font-weight: var(--tui-font-weight-semibold);
-  color: var(--tui-text);
-  line-height: var(--tui-line-height);
+  font-size: var(--tui-font-size-lead);
+  font-weight: var(--tui-weight-semibold);
+  color: var(--tui-ink);
+  line-height: var(--tui-line-height-body);
 }
 
 /* ── Close button ── */
@@ -127,34 +116,34 @@
   height: 32px;
   padding: 0;
   border: none;
-  border-radius: var(--tui-radius-md);
+  border-radius: var(--tui-radius-control);
   background: transparent;
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
   cursor: pointer;
-  transition: background-color var(--tui-transition), color var(--tui-transition);
+  transition: var(--tui-transition-color);
   flex-shrink: 0;
 }
 
 @media (hover: hover) {
   .closeButton:hover {
-    background-color: var(--tui-bg-hover);
-    color: var(--tui-text);
+    background-color: var(--tui-field);
+    color: var(--tui-ink);
   }
 }
 
 .closeButton:focus-visible {
   outline: none;
-  box-shadow: var(--tui-focus-ring);
+  box-shadow: 0 0 0 2px var(--tui-sheet), 0 0 0 4px var(--tui-ink);
 }
 
 /* ── Content ── */
 .content {
   flex: 1;
-  padding: 0 var(--tui-spacing-lg);
+  padding: 0 var(--tui-pad-4);
   overflow-y: auto;
-  font-size: var(--tui-font-size-md);
-  line-height: var(--tui-line-height);
-  color: var(--tui-text-secondary);
+  font-size: var(--tui-font-size-base);
+  line-height: var(--tui-line-height-body);
+  color: var(--tui-ink-2);
 }
 
 /* ── Actions ── */
@@ -162,7 +151,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--tui-spacing-sm);
-  padding: var(--tui-spacing-md) var(--tui-spacing-lg) var(--tui-spacing-lg);
+  gap: var(--tui-gap-2);
+  padding: var(--tui-pad-3) var(--tui-pad-4) var(--tui-pad-4);
   flex-shrink: 0;
 }

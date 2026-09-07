@@ -2,14 +2,14 @@
 .wrapper {
   display: inline-flex;
   flex-direction: column;
-  gap: var(--tui-space-2);
+  gap: var(--tui-gap-2);
 }
 
 .errorMessage {
   margin: 0;
-  font-size: var(--tui-font-size-sm);
+  font-size: var(--tui-font-size-small);
   color: var(--tui-danger);
-  line-height: var(--tui-line-height);
+  line-height: var(--tui-line-height-body);
 }
 
 .switch.errorState {
@@ -22,8 +22,8 @@
 .container {
   display: inline-flex;
   align-items: center;
-  gap: var(--tui-spacing-sm);
-  font-family: var(--tui-font-family);
+  gap: var(--tui-gap-2);
+  font-family: var(--tui-font-sans);
 }
 
 /* ── Switch button ── */
@@ -33,16 +33,16 @@
   align-items: center;
   border: none;
   border-radius: var(--tui-radius-full);
-  background-color: var(--tui-bg-hover);
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+  /* 꺼짐 상태의 면 — 트랙 쉬는 상태(rule). hover에서 rule-strong 으로 진해진다. */
+  background-color: var(--tui-rule);
   cursor: pointer;
   padding: 2px;
-  transition:
-    background-color var(--tui-duration-base) var(--tui-ease-in-out),
-    box-shadow var(--tui-duration-fast) var(--tui-ease-out);
+  transition: var(--tui-transition-color);
   flex-shrink: 0;
 }
 
+/* ── 터치 타깃 확장 — 트랙 높이가 20~28px 이지만 coarse 포인터에서는
+   -12px 인셋으로 최소 44px(sm 기준 20+24) 히트 영역을 확보한다 ── */
 .switch::before {
   content: '';
   position: absolute;
@@ -55,14 +55,23 @@
   }
 }
 
+/* Focus visible — 테두리를 둘 수 없는 요소이므로 바깥 링 모델 */
 .switch:focus-visible {
   outline: none;
-  box-shadow: var(--tui-focus-ring);
+  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-ink);
 }
 
 .switch:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* ── Unchecked hover — 트랙은 쉬는 상태에서 rule, hover에서 rule-strong
+   으로 한 단계 진해진다(Progress/Slider 트랙과 같은 결정) ── */
+@media (hover: hover) {
+  .switch:hover:not(:disabled):not(.checked) {
+    background-color: var(--tui-rule-strong);
+  }
 }
 
 /* ── Sizes ── */
@@ -84,10 +93,9 @@
 /* ── Thumb ── */
 .thumb {
   display: block;
-  background-color: white;
+  background-color: var(--tui-on-accent);
   border-radius: var(--tui-radius-full);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-  transition: transform var(--tui-duration-base) var(--tui-ease-in-out);
+  transition: transform var(--tui-duration-base) var(--tui-ease-out);
 }
 
 .sm .thumb {
@@ -120,38 +128,31 @@
 
 /* ── Checked state - Primary ── */
 .checked.primary {
-  background-color: var(--tui-primary);
+  background-color: var(--tui-accent);
 }
 
 @media (hover: hover) {
   .checked.primary:hover:not(:disabled) {
-    background-color: var(--tui-primary-hover);
+    background-color: var(--tui-accent-hover);
   }
 }
 
-/* ── Checked state - Secondary ── */
+/* ── Checked state - Secondary — ink 위계에서 accent 보다 한 단계 옅은 톤 ── */
 .checked.secondary {
-  background-color: var(--tui-secondary);
+  background-color: var(--tui-ink-2);
 }
 
 @media (hover: hover) {
   .checked.secondary:hover:not(:disabled) {
-    background-color: var(--tui-secondary-hover);
-  }
-}
-
-/* ── Unchecked hover ── */
-@media (hover: hover) {
-  .switch:hover:not(:disabled):not(.checked) {
-    background-color: var(--tui-border-hover);
+    background-color: var(--tui-ink);
   }
 }
 
 /* ── Label ── */
 .label {
-  font-size: var(--tui-font-size-md);
-  color: var(--tui-text);
-  line-height: var(--tui-line-height);
+  font-size: var(--tui-font-size-base);
+  color: var(--tui-ink);
+  line-height: var(--tui-line-height-body);
   cursor: pointer;
   user-select: none;
 }

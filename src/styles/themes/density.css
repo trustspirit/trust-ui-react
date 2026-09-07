@@ -8,7 +8,6 @@
   --tui-control-md: 44px;
   --tui-control-lg: 52px;
   --tui-row-height: 56px;
-  --tui-block-gap: 32px;
   --tui-font-size-base: 0.9375rem; /* 15px */
 }
 
@@ -17,7 +16,6 @@
   --tui-control-md: 36px;
   --tui-control-lg: 44px;
   --tui-row-height: 46px;
-  --tui-block-gap: 24px;
   --tui-font-size-base: 0.875rem; /* 14px */
 }
 

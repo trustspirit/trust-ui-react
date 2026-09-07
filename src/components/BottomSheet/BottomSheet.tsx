@@ -34,7 +34,7 @@ export interface BottomSheetProps extends Omit<HTMLAttributes<HTMLDivElement>, '
 }
 
 /**
- * Mobile-first bottom sheet with drag-to-snap, swipe-to-dismiss, glass surface.
+ * Mobile-first bottom sheet with drag-to-snap, swipe-to-dismiss, opaque sheet surface.
  * Renders via Portal at document.body. Honors --tui-z-bottom-sheet token.
  *
  * Mount the sheet element only when `open` is true — entry animation runs on mount.
@@ -192,7 +192,6 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
 
     const sheetClassName = [
       styles.sheet,
-      'tui-glass',
       !isDragging && styles.sheetAnimating,
       exiting && styles.sheetExit,
       className,

@@ -49,10 +49,16 @@ export interface MenuProps {
    * 'sheet' = renders as ActionSheet on viewports with coarse pointer.
    */
   mobileVariant?: 'dropdown' | 'sheet';
+  /**
+   * 내부 open 상태의 초기값. 트리거를 거치지 않고 이미 열린 메뉴를 렌더링하고
+   * 싶은 소비자를 위한 것 — 시각 회귀 스토리 전용 탈출구가 아니다. 이후에도
+   * 계속 비제어(uncontrolled)로 남으며, 이 prop 은 최초 상태만 정할 뿐이다.
+   */
+  defaultOpen?: boolean;
 }
 
-function MenuRoot({ children, mobileVariant = 'dropdown' }: MenuProps) {
-  const [open, setOpen] = useState(false);
+function MenuRoot({ children, mobileVariant = 'dropdown', defaultOpen = false }: MenuProps) {
+  const [open, setOpen] = useState(defaultOpen);
   const triggerRef = useRef<HTMLElement | null>(null);
   const triggerId = useId();
 

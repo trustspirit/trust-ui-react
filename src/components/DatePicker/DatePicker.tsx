@@ -56,6 +56,8 @@ export interface DatePickerProps {
   className?: string;
   /** Inline styles */
   style?: CSSProperties;
+  /** Renders the calendar popover open on mount (uncontrolled). 표면 자체를 캡처하는 스토리용. */
+  defaultOpen?: boolean;
 }
 
 function CalendarIcon() {
@@ -136,6 +138,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       mobileVariant = 'modal',
       className,
       style,
+      defaultOpen = false,
     },
     ref,
   ) => {
@@ -147,7 +150,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
 
     const selectedDate = isControlled ? controlledValue : internalValue;
 
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(defaultOpen);
     const [showYearGrid, setShowYearGrid] = useState(false);
 
     // Calendar navigation state

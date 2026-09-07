@@ -1,15 +1,15 @@
-/* ── Base ── */
+/* ── Base — 떠 있는 표면이므로 sheet + rule 테두리 + shadow-overlay 를 쓴다 ── */
 .tooltip {
   position: absolute;
   z-index: var(--tui-z-tooltip);
-  padding: var(--tui-spacing-xs) var(--tui-spacing-sm);
-  border-radius: var(--tui-radius-md);
-  font-family: var(--tui-font-family);
-  font-size: var(--tui-font-size-sm);
-  line-height: var(--tui-line-height);
+  padding: var(--tui-pad-1) var(--tui-pad-2);
+  border-radius: var(--tui-radius-control);
+  font-family: var(--tui-font-sans);
+  font-size: var(--tui-font-size-small);
+  line-height: var(--tui-line-height-body);
   pointer-events: none;
   opacity: 0;
-  transition: opacity var(--tui-transition);
+  transition: opacity var(--tui-duration-base) var(--tui-ease-out);
   word-wrap: break-word;
 }
 
@@ -17,18 +17,21 @@
   opacity: 1;
 }
 
-/* ── Variants ── */
+/* ── Variants — dark/light 는 API 로 유지하지만 시각은 동일한 시트 표면으로
+   통일한다. 예전 dark 배리언트는 어두운 칩(밝은 글자)이었으나 v2 에서는
+   danger 만 채워진 면을 갖는 원칙에 따라 두 배리언트 모두 오버레이 표면으로 바꾼다. ── */
 .dark {
-  background-color: var(--tui-text);
-  color: var(--tui-text-inverse);
-  box-shadow: var(--tui-shadow-md);
+  background-color: var(--tui-sheet);
+  color: var(--tui-ink);
+  border: 1px solid var(--tui-rule);
+  box-shadow: var(--tui-shadow-overlay);
 }
 
 .light {
-  background-color: var(--tui-bg);
-  color: var(--tui-text);
-  border: 1px solid var(--tui-border);
-  box-shadow: var(--tui-shadow-md);
+  background-color: var(--tui-sheet);
+  color: var(--tui-ink);
+  border: 1px solid var(--tui-rule);
+  box-shadow: var(--tui-shadow-overlay);
 }
 
 /* ── Arrow ── */
@@ -45,14 +48,11 @@
   transform: translateX(-50%) rotate(45deg);
 }
 
-.top.dark .arrow {
-  background-color: var(--tui-text);
-}
-
+.top.dark .arrow,
 .top.light .arrow {
-  background-color: var(--tui-bg);
-  border-right: 1px solid var(--tui-border);
-  border-bottom: 1px solid var(--tui-border);
+  background-color: var(--tui-sheet);
+  border-right: 1px solid var(--tui-rule);
+  border-bottom: 1px solid var(--tui-rule);
 }
 
 /* Bottom placement: arrow at top */
@@ -62,14 +62,11 @@
   transform: translateX(-50%) rotate(45deg);
 }
 
-.bottom.dark .arrow {
-  background-color: var(--tui-text);
-}
-
+.bottom.dark .arrow,
 .bottom.light .arrow {
-  background-color: var(--tui-bg);
-  border-left: 1px solid var(--tui-border);
-  border-top: 1px solid var(--tui-border);
+  background-color: var(--tui-sheet);
+  border-left: 1px solid var(--tui-rule);
+  border-top: 1px solid var(--tui-rule);
 }
 
 /* Left placement: arrow at right */
@@ -79,14 +76,11 @@
   transform: translateY(-50%) rotate(45deg);
 }
 
-.left.dark .arrow {
-  background-color: var(--tui-text);
-}
-
+.left.dark .arrow,
 .left.light .arrow {
-  background-color: var(--tui-bg);
-  border-right: 1px solid var(--tui-border);
-  border-top: 1px solid var(--tui-border);
+  background-color: var(--tui-sheet);
+  border-right: 1px solid var(--tui-rule);
+  border-top: 1px solid var(--tui-rule);
 }
 
 /* Right placement: arrow at left */
@@ -96,14 +90,11 @@
   transform: translateY(-50%) rotate(45deg);
 }
 
-.right.dark .arrow {
-  background-color: var(--tui-text);
-}
-
+.right.dark .arrow,
 .right.light .arrow {
-  background-color: var(--tui-bg);
-  border-left: 1px solid var(--tui-border);
-  border-bottom: 1px solid var(--tui-border);
+  background-color: var(--tui-sheet);
+  border-left: 1px solid var(--tui-rule);
+  border-bottom: 1px solid var(--tui-rule);
 }
 
 /* ── Inline mode (mobile-only on form inputs) ── */
@@ -116,13 +107,13 @@
 
 .inlineHint {
   display: block;
-  font-size: var(--tui-font-size-xs);
-  color: var(--tui-text-secondary);
-  line-height: var(--tui-line-height);
+  font-size: var(--tui-font-size-caption);
+  color: var(--tui-ink-2);
+  line-height: var(--tui-line-height-body);
 }
 
 /* ── Mobile indicator: dotted underline on text triggers ── */
 .indicatorDottedTrigger {
-  text-decoration: underline dotted var(--tui-text-muted);
+  text-decoration: underline dotted var(--tui-ink-3);
   text-underline-offset: 2px;
 }

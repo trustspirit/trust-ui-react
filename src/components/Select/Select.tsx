@@ -53,6 +53,8 @@ export interface SelectProps {
   className?: string;
   /** Inline styles */
   style?: React.CSSProperties;
+  /** Renders the dropdown open on mount (uncontrolled). 표면 자체를 캡처하는 스토리용. */
+  defaultOpen?: boolean;
 }
 
 function ChevronIcon() {
@@ -130,6 +132,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       fullWidth = false,
       className,
       style,
+      defaultOpen = false,
     },
     ref,
   ) => {
@@ -140,7 +143,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     // Use mobile bottom sheet for searchable selects on touch devices
     const useMobileSheet = isTouchDevice && searchable;
 
-    const [isOpen, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(defaultOpen);
     const [internalValue, setInternalValue] = useState<string | string[]>(
       defaultValue ?? (multiple ? [] : ''),
     );
@@ -217,11 +220,24 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       setHighlightedIndex(-1);
     }, []);
 
+    // Position the dropdown once it's open. openDropdown() already computes
+    // this before setting isOpen, but defaultOpen skips that path entirely —
+    // this effect covers the initial-mount case too.
+    useEffect(() => {
+      if (isOpen && !useMobileSheet) updateDropdownPosition();
+    }, [isOpen, useMobileSheet, updateDropdownPosition]);
+
     // If the input device changes mid-life (e.g., user connects a mouse to
     // an iPad), the dropdown variant switches between mobile sheet and
     // desktop popover. Close it to avoid stale positioning from the previous
-    // variant.
+    // variant. Skip the very first run — otherwise this fires on mount and
+    // immediately closes a dropdown opened via defaultOpen.
+    const isFirstTouchCheck = useRef(true);
     useEffect(() => {
+      if (isFirstTouchCheck.current) {
+        isFirstTouchCheck.current = false;
+        return;
+      }
       setIsOpen(false);
     }, [isTouchDevice]);
 

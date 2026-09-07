@@ -2,38 +2,37 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: var(--tui-spacing-md);
+  gap: var(--tui-gap-3);
   width: 100%;
-  font-family: var(--tui-font-family);
+  font-family: var(--tui-font-sans);
 }
 
 /* ── Dropzone ── */
 .dropzone {
   display: flex;
   align-items: center;
-  border: 2px dashed var(--tui-border);
-  border-radius: var(--tui-radius-lg);
+  border: 2px dashed var(--tui-rule-strong);
+  border-radius: var(--tui-radius-control);
   cursor: pointer;
-  background-color: var(--tui-bg);
+  background-color: var(--tui-paper);
+  /* 모션은 색 전환만 — v1 의 spring 바운스(호버 시 이동)는 걷어낸다. */
   transition:
     background-color var(--tui-duration-fast) var(--tui-ease-out),
-    border-color var(--tui-duration-fast) var(--tui-ease-out),
-    transform var(--tui-duration-base) var(--tui-ease-spring),
-    box-shadow var(--tui-duration-base) var(--tui-ease-out);
+    border-color var(--tui-duration-fast) var(--tui-ease-out);
 }
 
+/* 호버는 배경만 옅게 바꾼다 — 테두리 색은 대기/드래그 두 상태 전용이라 건드리지 않는다. */
 @media (hover: hover) {
   .dropzone:hover:not(.dropzoneDisabled) {
-    border-color: var(--tui-border-hover);
-    background-color: var(--tui-bg-subtle);
-    transform: translateY(-1px);
-    box-shadow: var(--tui-shadow-md);
+    background-color: var(--tui-field);
   }
 }
 
+/* 테두리가 있는 요소이므로 테두리를 두껍게 한다. 바깥 링은 쓰지 않는다. */
 .dropzone:focus-visible {
   outline: none;
-  box-shadow: var(--tui-focus-ring);
+  border-color: var(--tui-ink);
+  box-shadow: inset 0 0 0 1px var(--tui-ink);
 }
 
 /* ── Dropzone: area variant ── */
@@ -41,38 +40,38 @@
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  gap: var(--tui-spacing-sm);
+  gap: var(--tui-gap-2);
 }
 
 /* ── Dropzone: inline variant ── */
 .inline {
   flex-direction: row;
   justify-content: center;
-  gap: var(--tui-spacing-sm);
+  gap: var(--tui-gap-2);
 }
 
 /* ── Dropzone: sizes ── */
 .dropzoneSm {
-  padding: var(--tui-spacing-md);
-  font-size: var(--tui-font-size-sm);
+  padding: var(--tui-pad-3);
+  font-size: var(--tui-font-size-small);
 }
 
 .dropzoneMd {
-  padding: var(--tui-spacing-lg);
-  font-size: var(--tui-font-size-md);
+  padding: var(--tui-pad-4);
+  font-size: var(--tui-font-size-base);
 }
 
 .dropzoneLg {
-  padding: var(--tui-spacing-xl);
-  font-size: var(--tui-font-size-md);
+  padding: var(--tui-pad-4);
+  font-size: var(--tui-font-size-base);
 }
 
-/* ── Dropzone: drag over state ── */
+/* ── Dropzone: drag over state ──
+   대기 상태(--tui-rule-strong)와 드래그 중(--tui-ink)의 테두리 색이
+   분명히 갈려야 이 컴포넌트의 전체 어포던스가 성립한다. */
 .dropzone.dragOver {
-  background-color: var(--tui-primary-subtle);
-  border-color: var(--tui-primary);
-  transform: none;
-  box-shadow: none;
+  background-color: var(--tui-field);
+  border-color: var(--tui-ink);
 }
 
 /* ── Dropzone: disabled ── */
@@ -86,20 +85,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
 }
 
 /* ── Text elements ── */
 .dropzoneText {
-  color: var(--tui-text-secondary);
+  color: var(--tui-ink-2);
   font-size: inherit;
   line-height: 1.4;
 }
 
 /* ── Browse button ── */
 .browseText {
-  color: var(--tui-primary);
-  font-weight: var(--tui-font-weight-semibold);
+  color: var(--tui-accent);
+  font-weight: var(--tui-weight-semibold);
   cursor: pointer;
 }
 
@@ -113,30 +112,31 @@
 .fileListList {
   display: flex;
   flex-direction: column;
-  gap: var(--tui-spacing-xs);
+  gap: var(--tui-gap-1);
 }
 
 /* ── File List (grid mode) ── */
 .fileListGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: var(--tui-spacing-sm);
+  gap: var(--tui-gap-2);
 }
 
 /* ── File Item (list) ── */
 .fileItem {
   display: flex;
   align-items: center;
-  gap: var(--tui-spacing-sm);
-  padding: var(--tui-spacing-sm) var(--tui-spacing-md);
-  border: 1px solid var(--tui-border);
-  border-radius: var(--tui-radius-md);
-  background-color: var(--tui-bg);
-  font-family: var(--tui-font-family);
-  font-size: var(--tui-font-size-sm);
-  transition: border-color var(--tui-transition);
+  gap: var(--tui-gap-2);
+  padding: var(--tui-pad-2) var(--tui-pad-3);
+  border: 1px solid var(--tui-rule);
+  border-radius: var(--tui-radius-control);
+  background-color: var(--tui-paper);
+  font-family: var(--tui-font-sans);
+  font-size: var(--tui-font-size-small);
+  transition: var(--tui-transition-color);
 }
 
+/* 파괴 동작이 아니라 상태 표시이므로 danger 를 테두리·글자로만 쓴다(면을 채우지 않는다). */
 .fileItemError {
   border-color: var(--tui-danger);
 }
@@ -146,7 +146,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
 }
 
 .fileItemName {
@@ -155,24 +155,26 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--tui-text);
-  font-weight: var(--tui-font-weight-medium);
+  color: var(--tui-ink);
+  font-weight: var(--tui-weight-medium);
 }
 
 .fileItemSize {
   flex-shrink: 0;
-  color: var(--tui-text-muted);
-  font-size: var(--tui-font-size-xs);
+  color: var(--tui-ink-3);
+  font-size: var(--tui-font-size-caption);
 }
 
 .fileItemMeta {
   display: flex;
   align-items: center;
-  gap: var(--tui-spacing-sm);
+  gap: var(--tui-gap-2);
   flex-shrink: 0;
 }
 
-/* ── File Item: progress bar ── */
+/* ── File Item: progress bar ──
+   진행바의 채움은 누를 수 있는 동작 표면이 아니라 값의 시각화이므로
+   상태색(accent)을 면으로 써도 된다(스펙 원칙 1). */
 .fileItemProgress {
   width: 80px;
   height: 4px;
@@ -185,20 +187,20 @@
 }
 
 .fileItemProgress::-webkit-progress-bar {
-  background-color: var(--tui-bg-muted);
+  background-color: var(--tui-field);
   border-radius: var(--tui-radius-full);
 }
 
 .fileItemProgress::-webkit-progress-value {
-  background-color: var(--tui-primary);
+  background-color: var(--tui-accent);
   border-radius: var(--tui-radius-full);
-  transition: width var(--tui-transition-slow);
+  transition: width var(--tui-duration-base) var(--tui-ease-out);
 }
 
 .fileItemProgress::-moz-progress-bar {
-  background-color: var(--tui-primary);
+  background-color: var(--tui-accent);
   border-radius: var(--tui-radius-full);
-  transition: width var(--tui-transition-slow);
+  transition: width var(--tui-duration-base) var(--tui-ease-out);
 }
 
 /* ── File Item: status icons ── */
@@ -211,13 +213,14 @@
 .statusError {
   display: flex;
   align-items: center;
-  gap: var(--tui-spacing-xs);
+  gap: var(--tui-gap-1);
   color: var(--tui-danger);
-  font-size: var(--tui-font-size-xs);
+  font-size: var(--tui-font-size-caption);
 }
 
 /* ── Remove button ── */
 .removeButton {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -226,10 +229,10 @@
   padding: 2px;
   margin: 0;
   cursor: pointer;
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
   opacity: 0.7;
   border-radius: var(--tui-radius-full);
-  transition: opacity var(--tui-transition);
+  transition: opacity var(--tui-duration-fast) var(--tui-ease-out);
   flex-shrink: 0;
 }
 
@@ -239,21 +242,34 @@
   }
 }
 
+/* 테두리를 두껍게 할 수 없는 아이콘 버튼이므로 바깥 링만 쓴다. */
 .removeButton:focus-visible {
   outline: none;
-  box-shadow: var(--tui-focus-ring);
+  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-ink);
+}
+
+/* 시각 크기가 44px 에 못 미치므로 coarse 포인터에서 의사 요소로 히트 영역을 넓힌다. */
+@media (pointer: coarse) {
+  .removeButton::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
 }
 
 /* ── Grid Item (card) ── */
 .gridItem {
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--tui-border);
-  border-radius: var(--tui-radius-md);
-  background-color: var(--tui-bg);
+  border: 1px solid var(--tui-rule);
+  border-radius: var(--tui-radius-control);
+  background-color: var(--tui-paper);
   overflow: hidden;
-  font-family: var(--tui-font-family);
-  transition: border-color var(--tui-transition);
+  font-family: var(--tui-font-sans);
+  transition: var(--tui-transition-color);
 }
 
 .gridItemError {
@@ -266,7 +282,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--tui-bg-subtle);
+  background-color: var(--tui-sheet);
   overflow: hidden;
 }
 
@@ -280,22 +296,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
 }
 
 /* ── Grid Item: footer ── */
 .gridItemFooter {
   display: flex;
   flex-direction: column;
-  gap: var(--tui-spacing-xs);
-  padding: var(--tui-spacing-sm);
+  gap: var(--tui-gap-1);
+  padding: var(--tui-pad-2);
 }
 
 .gridItemFooterRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--tui-spacing-xs);
+  gap: var(--tui-gap-1);
 }
 
 .gridItemName {
@@ -304,14 +320,14 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: var(--tui-font-size-xs);
-  font-weight: var(--tui-font-weight-medium);
-  color: var(--tui-text);
+  font-size: var(--tui-font-size-caption);
+  font-weight: var(--tui-weight-medium);
+  color: var(--tui-ink);
 }
 
 .gridItemSize {
-  font-size: var(--tui-font-size-xs);
-  color: var(--tui-text-muted);
+  font-size: var(--tui-font-size-caption);
+  color: var(--tui-ink-3);
   flex-shrink: 0;
 }
 
@@ -327,20 +343,20 @@
 }
 
 .gridItemProgress::-webkit-progress-bar {
-  background-color: var(--tui-bg-muted);
+  background-color: var(--tui-field);
   border-radius: var(--tui-radius-full);
 }
 
 .gridItemProgress::-webkit-progress-value {
-  background-color: var(--tui-primary);
+  background-color: var(--tui-accent);
   border-radius: var(--tui-radius-full);
-  transition: width var(--tui-transition-slow);
+  transition: width var(--tui-duration-base) var(--tui-ease-out);
 }
 
 .gridItemProgress::-moz-progress-bar {
-  background-color: var(--tui-primary);
+  background-color: var(--tui-accent);
   border-radius: var(--tui-radius-full);
-  transition: width var(--tui-transition-slow);
+  transition: width var(--tui-duration-base) var(--tui-ease-out);
 }
 
 .gridItemStatus {
@@ -349,35 +365,31 @@
   flex-shrink: 0;
 }
 
-/* ── Mobile button variant ── */
+/* ── Mobile button variant ──
+   --tui-primary-gradient 는 이전 단계에서 삭제된 죽은 토큰이었다 — 이 면은
+   배경이 아예 렌더되지 않고 있었다. 단색 accent 로 교체한다. */
 .mobileButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--tui-spacing-sm);
+  gap: var(--tui-gap-2);
   width: 100%;
   height: 56px;
-  border-radius: var(--tui-radius-lg);
-  background: var(--tui-primary-gradient);
-  background-color: var(--tui-primary);
-  color: var(--tui-primary-text);
+  border-radius: var(--tui-radius-control);
+  background-color: var(--tui-accent);
+  color: var(--tui-on-accent);
   font-family: var(--tui-font-sans);
-  font-weight: var(--tui-font-weight-medium);
-  font-size: var(--tui-font-size-md);
+  font-weight: var(--tui-weight-medium);
+  font-size: var(--tui-font-size-base);
   cursor: pointer;
   border: none;
-  box-shadow: var(--tui-inset-highlight);
-  transition: filter var(--tui-duration-fast) var(--tui-ease-out);
+  transition: var(--tui-transition-color);
 }
 
 @media (hover: hover) {
   .mobileButton:hover:not(:disabled) {
-    filter: brightness(0.93);
+    background-color: var(--tui-accent-hover);
   }
-}
-
-.mobileButton:active:not(:disabled) {
-  filter: brightness(0.86);
 }
 
 .mobileButton:disabled {

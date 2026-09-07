@@ -2,8 +2,8 @@
 .container {
   display: inline-flex;
   flex-direction: column;
-  gap: var(--tui-spacing-xs);
-  font-family: var(--tui-font-family);
+  gap: var(--tui-gap-1);
+  font-family: var(--tui-font-sans);
   position: relative;
 }
 
@@ -14,9 +14,9 @@
 /* ── Label ── */
 .label {
   display: block;
-  font-size: var(--tui-font-size-sm);
-  font-weight: var(--tui-font-weight-medium);
-  color: var(--tui-text);
+  font-size: var(--tui-font-size-small);
+  font-weight: var(--tui-weight-medium);
+  color: var(--tui-ink);
   margin-bottom: 2px;
 }
 
@@ -37,13 +37,12 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--tui-spacing-sm);
-  border-radius: var(--tui-radius-md);
+  gap: var(--tui-gap-2);
+  border-radius: var(--tui-radius-control);
   cursor: pointer;
   transition:
-    border-color var(--tui-transition),
-    background-color var(--tui-transition),
-    box-shadow var(--tui-transition);
+    var(--tui-transition-color),
+    box-shadow var(--tui-duration-fast) var(--tui-ease-out);
   user-select: none;
   width: 100%;
   min-width: 0;
@@ -52,55 +51,63 @@
 /* ── Sizes ── */
 .sm .trigger {
   height: 32px;
-  padding: 0 var(--tui-spacing-sm);
-  font-size: var(--tui-font-size-sm);
+  padding: 0 var(--tui-pad-2);
+  font-size: var(--tui-font-size-small);
 }
 
 .md .trigger {
   height: 40px;
-  padding: 0 var(--tui-spacing-md);
-  font-size: var(--tui-font-size-md);
+  padding: 0 var(--tui-pad-3);
+  font-size: var(--tui-font-size-base);
 }
 
 .lg .trigger {
   height: 48px;
-  padding: 0 var(--tui-spacing-md);
-  font-size: var(--tui-font-size-lg);
+  padding: 0 var(--tui-pad-3);
+  font-size: var(--tui-font-size-lead);
 }
 
 /* ── Outlined variant ── */
 .outlined .trigger {
-  border: 1px solid var(--tui-border);
-  background-color: var(--tui-bg);
+  border: 1px solid var(--tui-rule);
+  background-color: var(--tui-paper);
 }
 
+/*
+ * :hover 는 :focus-visible 상태에서도, triggerOpen 상태에서도 물러난다.
+ * 그렇지 않으면 :hover 의 특이도(0,4,0)가 :focus-visible 의 특이도(0,2,0)를
+ * 이겨서, 키보드로 트리거에 온 뒤 마우스가 그 위에 놓여 있으면 테두리 색이
+ * --tui-ink 에서 --tui-rule-strong 으로 되돌아간다. triggerOpen 은
+ * :not() 가드 없이도 특이도(0,4,0)로 :hover 보다 낮아 밀리므로, 마우스로 열어
+ * 포커스 없이 hover 만 남은 상태에서도 같은 문제가 생긴다 — 명시적으로 막는다.
+ */
 @media (hover: hover) {
-  .outlined .trigger:hover:not(.triggerDisabled) {
-    border-color: var(--tui-border-hover);
+  .outlined .trigger:hover:not(.triggerDisabled):not(:focus-visible):not(.triggerOpen) {
+    border-color: var(--tui-rule-strong);
   }
 }
 
 .outlined .trigger.triggerOpen:not(.triggerError) {
-  border-color: var(--tui-border-focus);
-  box-shadow: 0 0 0 1px var(--tui-border-focus);
+  border-color: var(--tui-ink);
+  box-shadow: inset 0 0 0 1px var(--tui-ink);
 }
 
 /* ── Filled variant ── */
 .filled .trigger {
   border: 1px solid transparent;
-  background-color: var(--tui-bg-muted);
+  background-color: var(--tui-field);
 }
 
 @media (hover: hover) {
   .filled .trigger:hover:not(.triggerDisabled) {
-    background-color: var(--tui-bg-hover);
+    background-color: var(--tui-rule);
   }
 }
 
 .filled .trigger.triggerOpen:not(.triggerError) {
-  border-color: var(--tui-border-focus);
-  box-shadow: 0 0 0 1px var(--tui-border-focus);
-  background-color: var(--tui-bg);
+  border-color: var(--tui-ink);
+  box-shadow: inset 0 0 0 1px var(--tui-ink);
+  background-color: var(--tui-paper);
 }
 
 /* ── Error state ── */
@@ -109,7 +116,9 @@
 }
 
 .triggerError.triggerOpen {
-  box-shadow: 0 0 0 1px var(--tui-danger) !important;
+  /* .trigger:focus-visible 과 특이도(0,2,0)가 같고 소스 순서상 뒤에 오므로,
+     !important 없이는 포커스 시 에러 신호가 포커스 색에 덮인다 — 유지한다. */
+  box-shadow: inset 0 0 0 1px var(--tui-danger) !important;
 }
 
 /* ── Disabled ── */
@@ -118,10 +127,15 @@
   cursor: not-allowed;
 }
 
-/* ── Focus visible ── */
+/*
+ * ── Focus visible ──
+ * 테두리가 있는 요소이므로 테두리만 두껍게 한다. 바깥 링은 쓰지 않는다.
+ * 신호는 한 겹이어야 한다 — 두께 변화와 링을 함께 쓰지 않는다.
+ */
 .trigger:focus-visible {
   outline: none;
-  box-shadow: var(--tui-focus-ring);
+  border-color: var(--tui-ink);
+  box-shadow: inset 0 0 0 1px var(--tui-ink);
 }
 
 /* ── Trigger value ── */
@@ -131,11 +145,11 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--tui-text);
+  color: var(--tui-ink);
 }
 
 .triggerPlaceholder {
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
 }
 
 /* ── Multi-select chips area ── */
@@ -152,10 +166,10 @@
   align-items: center;
   gap: 2px;
   padding: 1px 6px;
-  border-radius: var(--tui-radius-sm);
-  background-color: var(--tui-bg-muted);
-  font-size: var(--tui-font-size-xs);
-  color: var(--tui-text);
+  border-radius: var(--tui-radius-tight);
+  background-color: var(--tui-field);
+  font-size: var(--tui-font-size-caption);
+  color: var(--tui-ink);
   max-width: 120px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -170,13 +184,13 @@
   border: none;
   cursor: pointer;
   padding: 0;
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
   flex-shrink: 0;
 }
 
 @media (hover: hover) {
   .chipRemove:hover {
-    color: var(--tui-text);
+    color: var(--tui-ink);
   }
 }
 
@@ -186,8 +200,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--tui-text-muted);
-  transition: transform var(--tui-transition);
+  color: var(--tui-ink-3);
+  transition: transform var(--tui-duration-fast) var(--tui-ease-out);
 }
 
 .arrowOpen {
@@ -196,99 +210,85 @@
 
 /* ── Search input in dropdown ── */
 .searchWrapper {
-  padding: var(--tui-spacing-sm);
-  border-bottom: 1px solid var(--tui-border);
+  padding: var(--tui-pad-2);
+  border-bottom: 1px solid var(--tui-rule);
 }
 
 .searchInput {
   width: 100%;
-  border: 1px solid var(--tui-border);
-  border-radius: var(--tui-radius-sm);
-  padding: 6px var(--tui-spacing-sm);
-  font-size: var(--tui-font-size-sm);
-  font-family: var(--tui-font-family);
-  background-color: var(--tui-bg);
-  color: var(--tui-text);
+  border: 1px solid var(--tui-rule);
+  border-radius: var(--tui-radius-tight);
+  padding: 6px var(--tui-pad-2);
+  font-size: var(--tui-font-size-small);
+  font-family: var(--tui-font-sans);
+  background-color: var(--tui-paper);
+  color: var(--tui-ink);
   outline: none;
 }
 
 .searchInput:focus {
-  border-color: var(--tui-border-focus);
+  border-color: var(--tui-ink);
 }
 
 .searchInput::placeholder {
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
 }
 
 /* ── Dropdown ── */
+/* 오버레이 표면 — 불투명한 한 겹. 뒤가 비치지 않으므로 그 위 글자 대비가 항상 보장된다. */
 .dropdown {
   position: absolute;
   z-index: var(--tui-z-dropdown);
   min-width: 0;
-  border: 1px solid var(--tui-glass-border);
-  border-radius: var(--tui-radius-xl);
-  background-color: var(--tui-glass-bg);
-  box-shadow: var(--tui-glass-shadow);
+  border: 1px solid var(--tui-rule);
+  border-radius: var(--tui-radius-sheet);
+  background-color: var(--tui-sheet);
+  box-shadow: var(--tui-shadow-overlay);
   overflow: hidden;
-}
-
-@supports ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
-  .dropdown {
-    backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
-  }
-}
-
-@supports not ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
-  .dropdown {
-    background-color: var(--tui-bg-subtle);
-  }
 }
 
 .optionsList {
   max-height: 240px;
   overflow-y: auto;
-  padding: var(--tui-spacing-xs) 0;
+  padding: var(--tui-pad-1) 0;
 }
 
 /* ── Option ── */
 .option {
   display: flex;
   align-items: center;
-  gap: var(--tui-spacing-sm);
-  padding: var(--tui-spacing-sm) var(--tui-spacing-md);
+  gap: var(--tui-gap-2);
+  padding: var(--tui-pad-2) var(--tui-pad-3);
   cursor: pointer;
-  transition:
-    background-color var(--tui-transition-fast),
-    color var(--tui-transition-fast);
-  font-size: var(--tui-font-size-md);
-  color: var(--tui-text);
+  transition: var(--tui-transition-color);
+  font-size: var(--tui-font-size-base);
+  color: var(--tui-ink);
   user-select: none;
 }
 
 .optionHighlighted {
-  background-color: var(--tui-bg-muted);
+  background-color: var(--tui-field);
 }
 
 @media (hover: hover) {
   .option:hover {
-    background-color: var(--tui-bg-muted);
+    background-color: var(--tui-field);
   }
 }
 
 .optionSelected {
-  background-color: var(--tui-primary-subtle);
-  color: var(--tui-primary);
-  font-weight: var(--tui-font-weight-medium);
+  background-color: var(--tui-field);
+  color: var(--tui-accent);
+  font-weight: var(--tui-weight-medium);
 }
 
 .optionSelected.optionHighlighted {
-  background-color: var(--tui-primary-subtle);
+  background-color: var(--tui-field);
 }
 
 @media (hover: hover) {
   .optionSelected:hover {
-    background-color: var(--tui-primary-subtle);
+    background-color: var(--tui-field);
   }
 }
 
@@ -311,7 +311,7 @@
   width: 16px;
   height: 16px;
   flex-shrink: 0;
-  color: var(--tui-primary);
+  color: var(--tui-accent);
 }
 
 .checkmarkHidden {
@@ -320,10 +320,10 @@
 
 /* ── No results ── */
 .noResults {
-  padding: var(--tui-spacing-md);
+  padding: var(--tui-pad-3);
   text-align: center;
-  color: var(--tui-text-muted);
-  font-size: var(--tui-font-size-sm);
+  color: var(--tui-ink-3);
+  font-size: var(--tui-font-size-small);
 }
 
 /* ── Native select overlay (mobile) ── */
@@ -343,16 +343,18 @@
   cursor: not-allowed;
 }
 
-/* ── Mobile bottom sheet overlay (for searchable selects on touch devices) ── */
+/* ── Mobile bottom sheet overlay (for searchable selects on touch devices) ──
+   바닥에서 올라오는 시트이므로 어둠막은 --tui-scrim, 시트 표면은 위쪽 모서리만 둥글다. */
 .mobileOverlay {
   position: fixed;
   inset: 0;
   z-index: var(--tui-z-dropdown);
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: var(--tui-scrim);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  animation: fadeIn 0.15s ease-out;
+  /* 시트가 열리는 동작은 사용자 행동에 대한 응답이므로 등장 애니메이션을 유지한다. */
+  animation: fadeIn var(--tui-duration-base) var(--tui-ease-out);
 }
 
 @keyframes fadeIn {
@@ -366,77 +368,78 @@
 }
 
 .mobileSheet {
-  background-color: var(--tui-bg);
-  border-radius: var(--tui-radius-lg, 16px) var(--tui-radius-lg, 16px) 0 0;
+  background-color: var(--tui-sheet);
+  border-radius: var(--tui-radius-sheet) var(--tui-radius-sheet) 0 0;
   max-height: 70vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: slideUp 0.2s ease-out;
+  animation: slideUp var(--tui-duration-base) var(--tui-ease-out);
+  padding-bottom: var(--tui-safe-bottom);
 }
 
 .mobileSheetHandle {
   width: 36px;
   height: 4px;
-  background-color: var(--tui-border);
+  background-color: var(--tui-rule);
   border-radius: 2px;
   margin: 10px auto 6px;
   flex-shrink: 0;
 }
 
 .mobileSheetSearch {
-  padding: var(--tui-spacing-sm) var(--tui-spacing-md);
-  border-bottom: 1px solid var(--tui-border);
+  padding: var(--tui-pad-2) var(--tui-pad-3);
+  border-bottom: 1px solid var(--tui-rule);
   flex-shrink: 0;
 }
 
 .mobileSheetSearchInput {
   width: 100%;
-  border: 1px solid var(--tui-border);
-  border-radius: var(--tui-radius-md);
-  padding: 12px var(--tui-spacing-md);
+  border: 1px solid var(--tui-rule);
+  border-radius: var(--tui-radius-control);
+  padding: 12px var(--tui-pad-3);
   font-size: 16px; /* prevents iOS zoom */
-  font-family: var(--tui-font-family);
-  background-color: var(--tui-bg);
-  color: var(--tui-text);
+  font-family: var(--tui-font-sans);
+  background-color: var(--tui-paper);
+  color: var(--tui-ink);
   outline: none;
 }
 
 .mobileSheetSearchInput:focus {
-  border-color: var(--tui-border-focus);
+  border-color: var(--tui-ink);
 }
 
 .mobileSheetSearchInput::placeholder {
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
 }
 
 .mobileSheetOptions {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding: var(--tui-spacing-xs) 0;
+  padding: var(--tui-pad-1) 0;
 }
 
 .mobileOption {
   display: flex;
   align-items: center;
-  gap: var(--tui-spacing-sm);
-  padding: 14px var(--tui-spacing-md);
+  gap: var(--tui-gap-2);
+  padding: 14px var(--tui-pad-3);
   cursor: pointer;
   font-size: 16px;
-  color: var(--tui-text);
+  color: var(--tui-ink);
   user-select: none;
-  transition: background-color var(--tui-transition-fast);
+  transition: var(--tui-transition-color);
 }
 
 .mobileOption:active {
-  background-color: var(--tui-bg-muted);
+  background-color: var(--tui-field);
 }
 
 .mobileOptionSelected {
-  background-color: var(--tui-primary-subtle);
-  color: var(--tui-primary);
-  font-weight: var(--tui-font-weight-medium);
+  background-color: var(--tui-field);
+  color: var(--tui-accent);
+  font-weight: var(--tui-weight-medium);
 }
 
 .mobileOptionDisabled {
@@ -445,15 +448,15 @@
 }
 
 .mobileNoResults {
-  padding: var(--tui-spacing-lg) var(--tui-spacing-md);
+  padding: var(--tui-pad-4) var(--tui-pad-3);
   text-align: center;
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
   font-size: 16px;
 }
 
 /* ── Error message ── */
 .errorMessage {
-  font-size: var(--tui-font-size-xs);
+  font-size: var(--tui-font-size-caption);
   color: var(--tui-danger);
   margin: 0;
 }

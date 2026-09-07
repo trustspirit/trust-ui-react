@@ -11,9 +11,10 @@ const tokens = parseCustomProperties(read('tokens.css'), ':root');
 const SEMANTIC = [
   '--tui-paper', '--tui-sheet', '--tui-field',
   '--tui-ink', '--tui-ink-2', '--tui-ink-3',
-  '--tui-rule', '--tui-rule-strong', '--tui-on-ink', '--tui-ring',
+  '--tui-rule', '--tui-rule-strong', '--tui-on-ink',
   '--tui-danger', '--tui-danger-hover', '--tui-on-danger',
-  '--tui-shadow-overlay',
+  '--tui-success', '--tui-warning',
+  '--tui-shadow-overlay', '--tui-scrim',
 ];
 
 describe('시맨틱 층', () => {
@@ -27,7 +28,7 @@ describe('시맨틱 층', () => {
   it('테마는 팔레트만 참조하고 원시 색을 직접 쓰지 않는다', () => {
     for (const map of [light, dark]) {
       for (const [name, value] of map) {
-        if (name === '--tui-shadow-overlay' || name === '--tui-ring') continue; // 알파 합성 허용
+        if (name === '--tui-shadow-overlay' || name === '--tui-scrim') continue; // 알파 합성 허용
         expect(value, `${name} 이 원시 색을 직접 쓴다`).not.toMatch(/#[0-9a-f]{3,8}\b/i);
       }
     }

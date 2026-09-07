@@ -32,6 +32,27 @@ export const Default: Story = {
   ),
 };
 
+/**
+ * 표면 자체를 찍기 위한 스토리 — 트리거를 누르지 않고 defaultOpen 으로 바로
+ * 연다. Menu 는 내부 useState 로만 열림 상태를 갖고 제어 prop 이 없어서,
+ * click 애니메이션에 의존하는 play 함수 없이 표면을 안정적으로 캡처하려면
+ * 이 초기값이 필요하다.
+ */
+export const Open: Story = {
+  render: () => (
+    <Menu defaultOpen>
+      <Menu.Trigger>
+        <Button variant="outline">Open Menu</Button>
+      </Menu.Trigger>
+      <Menu.Content>
+        <Menu.Item onClick={() => console.log('Edit')}>Edit</Menu.Item>
+        <Menu.Item onClick={() => console.log('Duplicate')}>Duplicate</Menu.Item>
+        <Menu.Item onClick={() => console.log('Share')}>Share</Menu.Item>
+      </Menu.Content>
+    </Menu>
+  ),
+};
+
 const EditIcon = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
     <path d="M11 2l3 3L5 14H2v-3L11 2z" />

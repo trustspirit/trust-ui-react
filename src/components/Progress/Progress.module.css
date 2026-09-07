@@ -2,7 +2,7 @@
 .wrapper {
   display: flex;
   align-items: center;
-  gap: var(--tui-spacing-sm);
+  gap: var(--tui-gap-2);
   width: 100%;
 }
 
@@ -31,31 +31,38 @@
   height: 12px;
 }
 
-/* ── Track (WebKit) ── */
+/* ── Track (WebKit) — 트랙의 쉬는 상태는 --tui-rule 한 단계, 채움과의 대비를
+   위해 --tui-rule-strong 하나를 더 남겨둔다(Switch/Slider 와 같은 결정). ── */
 .progress::-webkit-progress-bar {
-  background-color: var(--tui-bg-muted);
+  background-color: var(--tui-rule);
   border-radius: var(--tui-radius-full);
 }
 
 /* ── Value bar (WebKit) ── */
 .progress::-webkit-progress-value {
   border-radius: var(--tui-radius-full);
-  transition: width var(--tui-duration-medium) var(--tui-ease-out);
+  transition: width var(--tui-duration-base) var(--tui-ease-out);
 }
 
 /* ── Value bar (Firefox) ── */
 .progress::-moz-progress-bar {
   border-radius: var(--tui-radius-full);
-  transition: width var(--tui-duration-medium) var(--tui-ease-out);
+  transition: width var(--tui-duration-base) var(--tui-ease-out);
 }
 
-/* ── Variant colors (WebKit value) ── */
+/* ── Variant colors (WebKit value) ──
+   행동 표면(버튼 등)과 데이터 표면(진행률)은 다르다 — danger 를 액션에
+   채우면 파괴적 동작으로 오인되지만, 진행 막대는 누를 수 있는 게 아니라
+   오인될 여지가 없다. 진행률의 채움은 스펙 원칙 1이 말하는 수치이고,
+   수치는 색을 가질 수 있다(길이로 표현된 숫자). 그래서 success 는
+   --tui-success 를 면으로 그대로 쓴다. secondary 만 v2 전용 색이 없어
+   ink 위계로 흡수한다. */
 .primary::-webkit-progress-value {
-  background-color: var(--tui-primary);
+  background-color: var(--tui-accent);
 }
 
 .secondary::-webkit-progress-value {
-  background-color: var(--tui-secondary);
+  background-color: var(--tui-ink-2);
 }
 
 .success::-webkit-progress-value {
@@ -68,11 +75,11 @@
 
 /* ── Variant colors (Firefox) ── */
 .primary::-moz-progress-bar {
-  background-color: var(--tui-primary);
+  background-color: var(--tui-accent);
 }
 
 .secondary::-moz-progress-bar {
-  background-color: var(--tui-secondary);
+  background-color: var(--tui-ink-2);
 }
 
 .success::-moz-progress-bar {
@@ -83,18 +90,9 @@
   background-color: var(--tui-danger);
 }
 
-/* ── Gradient fill (primary only) ── */
-.gradient.primary::-webkit-progress-value {
-  background: var(--tui-primary-gradient);
-}
-
-.gradient.primary::-moz-progress-bar {
-  background: var(--tui-primary-gradient);
-}
-
 /* ── Indeterminate ── */
 .indeterminate::-webkit-progress-bar {
-  background-color: var(--tui-bg-muted);
+  background-color: var(--tui-rule);
   border-radius: var(--tui-radius-full);
   overflow: hidden;
 }
@@ -109,7 +107,7 @@
 
 .indeterminate {
   position: relative;
-  background-color: var(--tui-bg-muted);
+  background-color: var(--tui-rule);
 }
 
 .indeterminate::after {
@@ -124,11 +122,11 @@
 }
 
 .indeterminate.primary::after {
-  background-color: var(--tui-primary);
+  background-color: var(--tui-accent);
 }
 
 .indeterminate.secondary::after {
-  background-color: var(--tui-secondary);
+  background-color: var(--tui-ink-2);
 }
 
 .indeterminate.success::after {
@@ -153,11 +151,12 @@
 
 /* ── Label ── */
 .label {
-  font-family: var(--tui-font-family);
-  font-size: var(--tui-font-size-sm);
-  font-weight: var(--tui-font-weight-medium);
-  color: var(--tui-text-secondary);
+  font-family: var(--tui-font-sans);
+  font-size: var(--tui-font-size-small);
+  font-weight: var(--tui-weight-medium);
+  color: var(--tui-ink-2);
   white-space: nowrap;
   min-width: 3ch;
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }

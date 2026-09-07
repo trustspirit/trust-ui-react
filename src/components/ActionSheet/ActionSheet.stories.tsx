@@ -33,6 +33,27 @@ export const Default: Story = {
   },
 };
 
+/**
+ * 표면 자체를 찍기 위한 스토리 — 트리거를 누르지 않고 open=true 로 바로 연다.
+ * 리스트 아이템·취소 버튼(field 면)·시트 표면을 시각 회귀가 실제로 잡을 수
+ * 있게 한다.
+ */
+export const Open: Story = {
+  render: () => (
+    <ActionSheet
+      open
+      onClose={() => {}}
+      title="Share this photo"
+      actions={[
+        { label: 'Save Image', onClick: () => {} },
+        { label: 'Copy', onClick: () => {} },
+        { label: 'Remove', destructive: true, onClick: () => {} },
+      ]}
+      cancelLabel="Cancel"
+    />
+  ),
+};
+
 export const WithDestructive: Story = {
   render: () => {
     const [open, setOpen] = useState(false);

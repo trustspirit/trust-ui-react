@@ -2,32 +2,29 @@
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: var(--tui-spacing-xs);
+  gap: var(--tui-gap-1);
   border-radius: var(--tui-radius-full);
-  font-family: var(--tui-font-family);
-  font-weight: var(--tui-font-weight-medium);
+  font-family: var(--tui-font-sans);
+  font-weight: var(--tui-weight-medium);
   line-height: 1;
   white-space: nowrap;
   vertical-align: middle;
   border: 1px solid transparent;
-  transition:
-    background-color var(--tui-duration-fast) var(--tui-ease-out),
-    border-color var(--tui-duration-fast) var(--tui-ease-out),
-    box-shadow var(--tui-duration-base) var(--tui-ease-out),
-    transform var(--tui-duration-base) var(--tui-ease-spring);
+  /* 모션은 색 전환만 — v1 의 spring 바운스(호버 시 translateY)는 걷어낸다. */
+  transition: var(--tui-transition-color), box-shadow var(--tui-duration-fast) var(--tui-ease-out);
 }
 
-/* ── Sizes ── */
+/* ── Sizes ──
+   sm 은 --tui-pad-1(수직) 로 높이를 계산해 스페이싱 바닥값을 시험한다.
+   md 는 클릭 가능한 필 형태라 --tui-pad-2 로 원래의 넉넉한 손맛을 유지한다. */
 .sm {
-  height: 24px;
-  padding: 0 var(--tui-spacing-sm);
-  font-size: var(--tui-font-size-xs);
+  padding: var(--tui-pad-1) var(--tui-pad-2);
+  font-size: var(--tui-font-size-caption);
 }
 
 .md {
-  height: 32px;
-  padding: 0 var(--tui-spacing-sm);
-  font-size: var(--tui-font-size-sm);
+  padding: var(--tui-pad-2) var(--tui-pad-3);
+  font-size: var(--tui-font-size-small);
 }
 
 /* ── Clickable ── */
@@ -36,64 +33,63 @@
   user-select: none;
 }
 
+/*
+ * filled/subtle 변형은 테두리가 투명해 두껍게 할 대상이 없다 — 변형에 따라
+ * 테두리 유무가 갈리는 요소이므로(버튼과 같은 사정) 모든 변형에 동일하게
+ * 적용되는 바깥 링만 쓴다. 테두리 두께 변화는 겹치지 않는다.
+ */
 .clickable:focus-visible {
   outline: none;
-  box-shadow: var(--tui-focus-ring);
+  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-ink);
 }
 
-/* ── Filled variants ── */
+/* ── Filled variants ──
+   채도가 있는 색은 의미 있는 자리(수치·상태·위험)에만 쓴다 — 스펙 원칙 1.
+   danger 만 위험을 뜻하는 채워진 면(원칙 2: 위험의 색은 면에)을 갖는다.
+   success/warning 은 상태를 나타내지만 면을 채우면 danger 와 같은 무게로
+   읽혀 혼동을 준다 — field 면 위에 글자·테두리 색으로만 드러낸다(원칙 2:
+   수치의 색은 글자에). secondary/info 는 전용 색이 없어 무채색으로 남는다. */
 .filled.primary {
-  background-color: var(--tui-primary);
-  color: var(--tui-primary-text);
+  background-color: var(--tui-accent);
+  color: var(--tui-on-accent);
 }
 
-
-.filled.secondary {
-  background-color: var(--tui-secondary);
-  color: var(--tui-secondary-text);
+.filled.secondary,
+.filled.info {
+  background-color: var(--tui-field);
+  color: var(--tui-ink);
 }
-
 
 .filled.success {
-  background-color: var(--tui-success);
-  color: var(--tui-success-text);
+  background-color: var(--tui-field);
+  color: var(--tui-success);
+  border-color: var(--tui-success);
 }
 
+.filled.warning {
+  background-color: var(--tui-field);
+  color: var(--tui-warning);
+  border-color: var(--tui-warning);
+}
 
 .filled.danger {
   background-color: var(--tui-danger);
-  color: var(--tui-danger-text);
+  color: var(--tui-on-danger);
 }
-
-
-/* ── Filled: warning ── */
-.filled.warning {
-  background-color: var(--tui-warning);
-  color: var(--tui-warning-text);
-}
-
-
-/* ── Filled: info ── */
-.filled.info {
-  background-color: var(--tui-info);
-  color: var(--tui-info-text);
-}
-
 
 /* ── Outlined variants ── */
 .outlined.primary {
   background-color: transparent;
-  border-color: var(--tui-primary);
-  color: var(--tui-primary);
+  border-color: var(--tui-accent);
+  color: var(--tui-accent);
 }
 
-
-.outlined.secondary {
+.outlined.secondary,
+.outlined.info {
   background-color: transparent;
-  border-color: var(--tui-secondary);
-  color: var(--tui-secondary);
+  border-color: var(--tui-rule-strong);
+  color: var(--tui-ink);
 }
-
 
 .outlined.success {
   background-color: transparent;
@@ -101,29 +97,17 @@
   color: var(--tui-success);
 }
 
-
-.outlined.danger {
-  background-color: transparent;
-  border-color: var(--tui-danger);
-  color: var(--tui-danger);
-}
-
-
-/* ── Outlined: warning ── */
 .outlined.warning {
   background-color: transparent;
   border-color: var(--tui-warning);
   color: var(--tui-warning);
 }
 
-
-/* ── Outlined: info ── */
-.outlined.info {
+.outlined.danger {
   background-color: transparent;
-  border-color: var(--tui-info);
-  color: var(--tui-info);
+  border-color: var(--tui-danger);
+  color: var(--tui-danger);
 }
-
 
 /* ── Icon ── */
 .icon {
@@ -152,103 +136,62 @@
   color: inherit;
   opacity: 0.7;
   border-radius: var(--tui-radius-full);
-  transition: opacity var(--tui-transition);
+  transition: opacity var(--tui-duration-fast) var(--tui-ease-out);
 }
 
 .deleteButton:hover {
   opacity: 1;
 }
 
-/* ── Hover guard: all clickable hover states ── */
+/* ── Hover: 색만 바뀐다 — v1 의 translateY 부상은 금지 항목이라 제거했다 ── */
 @media (hover: hover) {
-  .clickable:hover {
-    transform: translateY(-1px);
-  }
-
-  /* Filled hover */
   .filled.primary.clickable:hover {
-    background-color: var(--tui-primary-hover);
+    background-color: var(--tui-accent-hover);
   }
-  .filled.secondary.clickable:hover {
-    background-color: var(--tui-secondary-hover);
-  }
-  .filled.success.clickable:hover {
-    background-color: var(--tui-success-hover);
+  .filled.secondary.clickable:hover,
+  .filled.success.clickable:hover,
+  .filled.warning.clickable:hover,
+  .filled.info.clickable:hover {
+    background-color: var(--tui-rule);
   }
   .filled.danger.clickable:hover {
     background-color: var(--tui-danger-hover);
   }
-  .filled.warning.clickable:hover {
-    background-color: var(--tui-warning-hover);
-  }
-  .filled.info.clickable:hover {
-    background-color: var(--tui-info-hover);
-  }
 
-  /* Outlined hover */
-  .outlined.primary.clickable:hover {
-    background-color: var(--tui-primary-subtle);
-  }
-  .outlined.secondary.clickable:hover {
-    background-color: var(--tui-secondary-subtle);
-  }
-  .outlined.success.clickable:hover {
-    background-color: var(--tui-success-subtle);
-  }
-  .outlined.danger.clickable:hover {
-    background-color: var(--tui-danger-subtle);
-  }
-  .outlined.warning.clickable:hover {
-    background-color: var(--tui-warning-subtle);
-  }
-  .outlined.info.clickable:hover {
-    background-color: var(--tui-info-subtle);
+  /* Outlined hover — 투명 면 위에 중립 tint 만 얹는다 */
+  .outlined.clickable:hover {
+    background-color: var(--tui-field);
   }
 }
 
-/* ── Micro-lift: active resets ── */
-.clickable:active {
-  transform: translateY(0);
-  transition-duration: var(--tui-duration-instant);
-}
-
-/* ── Subtle variants ── */
+/* ── Subtle variants — filled 과 같은 색 규칙을 쓴다 ── */
 .subtle.primary {
-  background-color: var(--tui-primary-subtle);
-  color: var(--tui-primary);
+  background-color: var(--tui-field);
+  color: var(--tui-accent);
 }
-.subtle.secondary {
-  background-color: var(--tui-secondary-subtle);
-  color: var(--tui-text);
+.subtle.secondary,
+.subtle.info {
+  background-color: var(--tui-field);
+  color: var(--tui-ink);
 }
 .subtle.success {
-  background-color: var(--tui-success-subtle);
+  background-color: var(--tui-field);
   color: var(--tui-success);
-}
-.subtle.danger {
-  background-color: var(--tui-danger-subtle);
-  color: var(--tui-danger);
+  border-color: var(--tui-success);
 }
 .subtle.warning {
-  background-color: var(--tui-warning-subtle);
+  background-color: var(--tui-field);
   color: var(--tui-warning);
+  border-color: var(--tui-warning);
 }
-.subtle.info {
-  background-color: var(--tui-info-subtle);
-  color: var(--tui-info);
+/* danger 는 subtle 전용 tint 토큰이 없다 — field 면 위에 danger 글자색만 남긴다 */
+.subtle.danger {
+  background-color: var(--tui-field);
+  color: var(--tui-danger);
 }
 
 @media (hover: hover) {
-  .subtle.primary.clickable:hover {
-    background-color: var(--tui-primary-subtle-hover);
-  }
-  .subtle.secondary.clickable:hover {
-    background-color: var(--tui-bg-hover);
-  }
-  .subtle.success.clickable:hover,
-  .subtle.danger.clickable:hover,
-  .subtle.warning.clickable:hover,
-  .subtle.info.clickable:hover {
-    filter: brightness(0.97);
+  .subtle.clickable:hover {
+    background-color: var(--tui-rule);
   }
 }

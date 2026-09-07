@@ -13,13 +13,17 @@
   --tui-rule: var(--tui-p-neutral-200);
   --tui-rule-strong: var(--tui-p-neutral-300);
 
-  --tui-ring: rgba(0, 0, 0, 0.16);
-
   --tui-danger: var(--tui-p-danger-600);
   --tui-danger-hover: var(--tui-p-danger-700);
   --tui-on-danger: var(--tui-p-neutral-0);
 
+  --tui-success: var(--tui-p-success-600);
+  --tui-warning: var(--tui-p-warning-700);
+
   --tui-shadow-overlay: 0 1px 1px rgba(0, 0, 0, 0.04), 0 10px 30px -12px rgba(0, 0, 0, 0.22);
+
+  /* 오버레이 뒤 어둠막 — 알파 합성이 필요해 원시 rgba() 를 허용한다 */
+  --tui-scrim: rgba(0, 0, 0, 0.32);
 
   color-scheme: light;
 }

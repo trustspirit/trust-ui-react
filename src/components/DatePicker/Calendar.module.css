@@ -1,6 +1,6 @@
 /* ── Calendar grid ── */
 .calendar {
-  font-family: var(--tui-font-family);
+  font-family: var(--tui-font-sans);
   user-select: none;
 }
 
@@ -9,14 +9,14 @@
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   text-align: center;
-  margin-bottom: var(--tui-spacing-xs);
+  margin-bottom: var(--tui-gap-1);
 }
 
 .weekLabel {
-  padding: var(--tui-spacing-xs) 0;
-  font-size: var(--tui-font-size-xs);
-  font-weight: var(--tui-font-weight-medium);
-  color: var(--tui-text-muted);
+  padding: var(--tui-pad-1) 0;
+  font-size: var(--tui-font-size-caption);
+  font-weight: var(--tui-weight-medium);
+  color: var(--tui-ink-3);
 }
 
 /* ── Days grid ── */
@@ -35,45 +35,57 @@
   height: 36px;
   margin: 0 auto;
   border-radius: var(--tui-radius-full);
-  font-size: var(--tui-font-size-sm);
+  font-size: var(--tui-font-size-small);
+  font-variant-numeric: tabular-nums;
   cursor: pointer;
-  transition:
-    background-color var(--tui-duration-fast) var(--tui-ease-out),
-    color var(--tui-duration-fast) var(--tui-ease-out),
-    box-shadow var(--tui-duration-fast) var(--tui-ease-out);
-  color: var(--tui-text);
+  transition: var(--tui-transition-color);
+  color: var(--tui-ink);
+  border: 1px solid transparent;
   position: relative;
+}
+
+/* ── 터치 타깃 확장 — 셀은 36px 이지만 coarse 포인터에서는 44px 이상의
+   히트 영역을 확보한다 ── */
+@media (pointer: coarse) {
+  .day::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
 }
 
 @media (hover: hover) {
   .day:hover:not(.dayDisabled):not(.daySelected) {
-    background-color: var(--tui-bg-hover);
+    background-color: var(--tui-field);
   }
 }
 
 /* ── Outside current month ── */
 .dayOutside {
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
   opacity: 0.4;
 }
 
-/* ── Today indicator ── */
+/* ── Today indicator — 면을 채우지 않고 테두리만. 선택된 날짜(면 채움)와
+   섞이면 구분이 안 되므로 다른 방식을 쓴다. ── */
 .dayToday {
-  font-weight: var(--tui-font-weight-semibold);
-  background-color: var(--tui-primary-subtle);
-  color: var(--tui-primary);
+  font-weight: var(--tui-weight-semibold);
+  border-color: var(--tui-ink);
 }
 
-/* ── Selected day ── */
+/* ── Selected day — accent 면 + on-accent 글자 ── */
 .daySelected {
-  background-color: var(--tui-primary);
-  color: var(--tui-primary-text);
-  font-weight: var(--tui-font-weight-medium);
+  background-color: var(--tui-accent);
+  color: var(--tui-on-accent);
+  font-weight: var(--tui-weight-medium);
 }
 
 @media (hover: hover) {
   .daySelected:hover {
-    background-color: var(--tui-primary-hover);
+    background-color: var(--tui-accent-hover);
   }
 }
 
@@ -85,28 +97,28 @@
 
 /* ── Range styles ── */
 .dayRangeStart {
-  background-color: var(--tui-primary);
-  color: var(--tui-primary-text);
-  font-weight: var(--tui-font-weight-medium);
+  background-color: var(--tui-accent);
+  color: var(--tui-on-accent);
+  font-weight: var(--tui-weight-medium);
   border-radius: var(--tui-radius-full);
 }
 
 .dayRangeEnd {
-  background-color: var(--tui-primary);
-  color: var(--tui-primary-text);
-  font-weight: var(--tui-font-weight-medium);
+  background-color: var(--tui-accent);
+  color: var(--tui-on-accent);
+  font-weight: var(--tui-weight-medium);
   border-radius: var(--tui-radius-full);
 }
 
 .dayInRange {
-  background-color: var(--tui-primary-subtle);
-  color: var(--tui-primary);
+  background-color: var(--tui-field);
+  color: var(--tui-accent);
   border-radius: 0;
 }
 
 @media (hover: hover) {
   .dayInRange:hover {
-    background-color: var(--tui-primary-subtle);
+    background-color: var(--tui-field);
   }
 }
 
@@ -119,15 +131,17 @@
 }
 
 .dayCellRangeMiddle {
-  background-color: var(--tui-primary-subtle);
+  background-color: var(--tui-field);
 }
 
+/* ── 셀 절반만 칠해 범위의 가장자리를 표시하는 기법 — 장식이 아니다.
+   계약 검사가 이 파일만 예외로 둔다. 색은 v2 토큰(--tui-field)이다. ── */
 .dayCellRangeStart {
-  background: linear-gradient(to right, transparent 50%, var(--tui-primary-subtle) 50%);
+  background: linear-gradient(to right, transparent 50%, var(--tui-field) 50%);
 }
 
 .dayCellRangeEnd {
-  background: linear-gradient(to left, transparent 50%, var(--tui-primary-subtle) 50%);
+  background: linear-gradient(to left, transparent 50%, var(--tui-field) 50%);
 }
 
 .dayCellRangeStartEnd {

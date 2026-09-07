@@ -2,7 +2,7 @@
 .container {
   display: inline-flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--tui-gap-1);
   font-family: var(--tui-font-sans);
   position: relative;
 }
@@ -17,7 +17,7 @@
   font-size: var(--tui-font-size-small);
   font-weight: var(--tui-weight-medium);
   color: var(--tui-ink);
-  margin-bottom: 2px;
+  margin-bottom: var(--tui-gap-1);
 }
 
 .labelError {
@@ -63,8 +63,15 @@
   background-color: var(--tui-sheet);
 }
 
+/*
+ * :hover 는 포커스 상태에서는 물러난다. 그렇지 않으면 :hover 의 특이도(0,4,0)가
+ * :focus-within 의 특이도(0,3,0)를 이겨서, 포커스된 입력 위에 마우스가 그대로
+ * 놓여 있는(클릭 직후의 흔한 상황) 동안 테두리 색이 --tui-ink 에서
+ * --tui-ink-3 으로 되돌아간다. 링을 없앤 지금은 테두리 색이 유일한 포커스
+ * 신호이므로 이 되돌아감이 포커스 표시를 사실상 지워버린다.
+ */
 @media (hover: hover) {
-  .outlined:hover:not(.disabled):not(.error) {
+  .outlined:hover:not(.disabled):not(.error):not(:focus-within) {
     border-color: var(--tui-ink-3);
   }
 }
@@ -75,8 +82,9 @@
   background-color: var(--tui-field);
 }
 
+/* 같은 이유로 :focus-within 에서는 물러난다 — 배경색이 포커스 신호(sheet)이기 때문. */
 @media (hover: hover) {
-  .filled:hover:not(.disabled):not(.error) {
+  .filled:hover:not(.disabled):not(.error):not(:focus-within) {
     background-color: var(--tui-rule);
   }
 }
@@ -85,6 +93,12 @@
  * :focus — "여기에 입력된다".
  * 테두리를 1px 에서 2px 로 두껍게 하되 inset 으로 그려 칸 크기가 흔들리지 않게 한다.
  * 신호는 한 겹이다. v1 은 테두리 + 1px 링 + 4px 링으로 세 겹이었다.
+ *
+ * 바깥 링은 쓰지 않는다. :focus-visible 은 입력 요소(텍스트 필드)에서는
+ * 클릭이든 키보드든 항상 매치된다 — CSS Selectors 명세가 그렇게 정의한다.
+ * 따라서 "키보드일 때만 링" 이라는 조건부 신호를 텍스트 입력에 걸 수 없다.
+ * 링은 테두리를 두껍게 할 수 없는 요소(버튼 등)에만 쓰고, 테두리가 있는
+ * 이 요소는 테두리 두께 변화 한 겹만으로 포커스를 표현한다.
  */
 .inputWrapper:focus-within:not(.error) {
   border-color: var(--tui-ink);
@@ -93,15 +107,6 @@
 
 .filled:focus-within:not(.error) {
   background-color: var(--tui-sheet);
-}
-
-/*
- * :focus-visible — "키보드로 여기까지 왔다".
- * 위 신호에 바깥 링을 더한다. 마우스로 클릭했을 때는 나타나지 않는다.
- * 브라우저가 입력 방식을 판단하므로 JS 상태가 필요 없다.
- */
-.inputWrapper:has(:focus-visible):not(.error) {
-  box-shadow: inset 0 0 0 1px var(--tui-ink), 0 0 0 3px var(--tui-ring);
 }
 
 /* ── Error state ── */
@@ -114,10 +119,6 @@
   box-shadow: inset 0 0 0 1px var(--tui-danger);
 }
 
-.error:has(:focus-visible) {
-  box-shadow: inset 0 0 0 1px var(--tui-danger), 0 0 0 3px var(--tui-ring);
-}
-
 /* ── Disabled state ── */
 .disabled {
   opacity: 0.45;
@@ -125,9 +126,9 @@
 }
 
 /* ── Sizes — 밀도 축을 따른다 ── */
-.sm .input { height: var(--tui-control-sm); font-size: var(--tui-font-size-small); padding: 0 8px; }
-.md .input { height: var(--tui-control-md); font-size: var(--tui-font-size-base); padding: 0 12px; }
-.lg .input { height: var(--tui-control-lg); font-size: var(--tui-font-size-lead); padding: 0 12px; }
+.sm .input { height: var(--tui-control-sm); font-size: var(--tui-font-size-small); padding: 0 var(--tui-pad-2); }
+.md .input { height: var(--tui-control-md); font-size: var(--tui-font-size-base); padding: 0 var(--tui-pad-3); }
+.lg .input { height: var(--tui-control-lg); font-size: var(--tui-font-size-lead); padding: 0 var(--tui-pad-4); }
 
 /* ── Input element ── */
 .input {
@@ -166,17 +167,17 @@
 
 .sm .textarea {
   font-size: var(--tui-font-size-small);
-  padding: 8px;
+  padding: var(--tui-pad-2);
 }
 
 .md .textarea {
   font-size: var(--tui-font-size-base);
-  padding: 12px;
+  padding: var(--tui-pad-3);
 }
 
 .lg .textarea {
   font-size: var(--tui-font-size-lead);
-  padding: 12px;
+  padding: var(--tui-pad-4);
 }
 
 .textarea::placeholder {
@@ -196,12 +197,15 @@
 }
 
 .sm .prefix {
-  padding-left: 8px;
+  padding-left: var(--tui-pad-2);
 }
 
-.md .prefix,
+.md .prefix {
+  padding-left: var(--tui-pad-3);
+}
+
 .lg .prefix {
-  padding-left: 12px;
+  padding-left: var(--tui-pad-4);
 }
 
 .suffix {
@@ -212,12 +216,15 @@
 }
 
 .sm .suffix {
-  padding-right: 8px;
+  padding-right: var(--tui-pad-2);
 }
 
-.md .suffix,
+.md .suffix {
+  padding-right: var(--tui-pad-3);
+}
+
 .lg .suffix {
-  padding-right: 12px;
+  padding-right: var(--tui-pad-4);
 }
 
 /* ── Visibility toggle ── */
@@ -229,7 +236,7 @@
   border: none;
   cursor: pointer;
   color: var(--tui-ink-3);
-  padding: 4px;
+  padding: var(--tui-pad-1);
   border-radius: var(--tui-radius-control);
   transition: var(--tui-transition-color);
 }
@@ -274,7 +281,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 8px;
+  gap: var(--tui-gap-2);
 }
 
 /* 서식 있는 숫자 입력은 자릿수를 정렬한다. 장식이 아니라 기능이다. */

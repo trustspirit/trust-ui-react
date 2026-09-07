@@ -19,26 +19,26 @@
 }
 
 .outlined {
-  box-shadow: 0 0 0 2px var(--tui-bg), 0 0 0 4px var(--tui-border);
+  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-rule);
 }
 
 /* ── Sizes ── */
 .sm {
   width: 32px;
   height: 32px;
-  font-size: var(--tui-font-size-xs);
+  font-size: var(--tui-font-size-caption);
 }
 
 .md {
   width: 40px;
   height: 40px;
-  font-size: var(--tui-font-size-sm);
+  font-size: var(--tui-font-size-small);
 }
 
 .lg {
   width: 48px;
   height: 48px;
-  font-size: var(--tui-font-size-md);
+  font-size: var(--tui-font-size-base);
 }
 
 /* ── Shapes ── */
@@ -47,7 +47,7 @@
 }
 
 .square {
-  border-radius: var(--tui-radius-lg);
+  border-radius: var(--tui-radius-control);
 }
 
 /* ── Image ── */
@@ -57,21 +57,23 @@
   object-fit: cover;
 }
 
-/* ── Fallback ── */
+/* ── Fallback — 사진이 없을 때만 쓰이는 이니셜 배경 ── */
 .fallback {
-  background-color: var(--tui-primary-subtle);
-  color: var(--tui-primary);
+  background-color: var(--tui-field);
+  color: var(--tui-ink-2);
 }
 
 /* ── Initials ── */
 .initials {
-  font-family: var(--tui-font-family);
-  font-weight: var(--tui-font-weight-semibold);
+  font-family: var(--tui-font-sans);
+  font-weight: var(--tui-weight-semibold);
   line-height: 1;
   user-select: none;
 }
 
-/* ── Status Dot ── */
+/* ── Status Dot ──
+   v2 에는 success/warning 색이 없다. danger(busy)만 채도를 유지하고,
+   online/away/offline 은 ink 위계(진하다→연하다)로 구분한다. */
 .statusDot {
   position: absolute;
   bottom: 0;
@@ -81,11 +83,11 @@
   min-width: 8px;
   min-height: 8px;
   border-radius: var(--tui-radius-full);
-  border: 2px solid var(--tui-bg);
+  border: 2px solid var(--tui-paper);
   box-sizing: content-box;
 }
 
-.statusDot.online { background-color: var(--tui-success); }
-.statusDot.away { background-color: var(--tui-warning); }
+.statusDot.online { background-color: var(--tui-ink); }
+.statusDot.away { background-color: var(--tui-ink-2); }
 .statusDot.busy { background-color: var(--tui-danger); }
-.statusDot.offline { background-color: var(--tui-text-muted); }
+.statusDot.offline { background-color: var(--tui-ink-3); }

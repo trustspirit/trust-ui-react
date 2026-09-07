@@ -2,13 +2,15 @@
 .container {
   display: inline-flex;
   align-items: center;
-  gap: var(--tui-spacing-sm);
+  gap: var(--tui-gap-2);
   cursor: pointer;
-  font-family: var(--tui-font-family);
+  font-family: var(--tui-font-sans);
   user-select: none;
   position: relative;
 }
 
+/* ── 터치 타깃 확장 — 시각 크기는 20px 이지만 coarse 포인터에서는
+   라벨을 포함한 행 전체가 44px 이상의 히트 영역을 갖도록 -12px 로 넓힌다 ── */
 .container::before {
   content: '';
   position: absolute;
@@ -47,13 +49,10 @@
   justify-content: center;
   width: 20px;
   height: 20px;
-  border: 2px solid var(--tui-border);
+  border: 2px solid var(--tui-rule);
   border-radius: var(--tui-radius-full);
-  background-color: var(--tui-bg);
-  transition:
-    background-color var(--tui-duration-fast) var(--tui-ease-out),
-    border-color var(--tui-duration-fast) var(--tui-ease-out),
-    box-shadow var(--tui-duration-fast) var(--tui-ease-out);
+  background-color: var(--tui-paper);
+  transition: var(--tui-transition-color);
   flex-shrink: 0;
 }
 
@@ -63,63 +62,66 @@
   height: 10px;
   border-radius: var(--tui-radius-full);
   transform: scale(0);
-  transition: transform var(--tui-duration-base) var(--tui-ease-spring),
+  /* v1 의 ease-spring 은 v2 에 없다 — ease-out 으로 대체한다 */
+  transition: transform var(--tui-duration-base) var(--tui-ease-out),
               background-color var(--tui-duration-fast) var(--tui-ease-out);
 }
 
-/* Focus visible */
+/* Focus visible — 테두리가 있는 요소이므로 신호는 테두리 두께 변화 한 겹뿐이다.
+   바깥 링은 쓰지 않는다 — inset 으로 그려 칸 크기가 흔들리지 않게 한다. */
 .hiddenInput:focus-visible + .indicator {
-  box-shadow: var(--tui-focus-ring);
+  border-color: var(--tui-ink);
+  box-shadow: inset 0 0 0 1px var(--tui-ink);
 }
 
 /* ── Checked state - Primary ── */
 .hiddenInput:checked + .indicator.primary {
-  border-color: var(--tui-primary);
+  border-color: var(--tui-accent);
 }
 
 .hiddenInput:checked + .indicator.primary .dot {
-  background-color: var(--tui-primary);
+  background-color: var(--tui-accent);
   transform: scale(1);
 }
 
-/* ── Checked state - Secondary ── */
+/* ── Checked state - Secondary — ink 위계에서 accent 보다 한 단계 옅은 톤 ── */
 .hiddenInput:checked + .indicator.secondary {
-  border-color: var(--tui-secondary);
+  border-color: var(--tui-ink-2);
 }
 
 .hiddenInput:checked + .indicator.secondary .dot {
-  background-color: var(--tui-secondary);
+  background-color: var(--tui-ink-2);
   transform: scale(1);
 }
 
-/* ── Hover (pointer-capable devices only) ── */
+/* ── Hover (pointer-capable devices only) ── 포커스 중에는 hover 가 focus 신호를 덮어쓰지 않도록 물러난다 */
 @media (hover: hover) {
-  .container:hover:not(.disabled) .indicator {
-    border-color: var(--tui-border-hover);
+  .container:hover:not(.disabled):not(:focus-within) .indicator {
+    border-color: var(--tui-rule-strong);
   }
 
-  .container:hover:not(.disabled) .hiddenInput:checked + .indicator.primary {
-    border-color: var(--tui-primary-hover);
+  .container:hover:not(.disabled):not(:focus-within) .hiddenInput:checked + .indicator.primary {
+    border-color: var(--tui-accent-hover);
   }
 
-  .container:hover:not(.disabled) .hiddenInput:checked + .indicator.primary .dot {
-    background-color: var(--tui-primary-hover);
+  .container:hover:not(.disabled):not(:focus-within) .hiddenInput:checked + .indicator.primary .dot {
+    background-color: var(--tui-accent-hover);
   }
 
-  .container:hover:not(.disabled) .hiddenInput:checked + .indicator.secondary {
-    border-color: var(--tui-secondary-hover);
+  .container:hover:not(.disabled):not(:focus-within) .hiddenInput:checked + .indicator.secondary {
+    border-color: var(--tui-ink);
   }
 
-  .container:hover:not(.disabled) .hiddenInput:checked + .indicator.secondary .dot {
-    background-color: var(--tui-secondary-hover);
+  .container:hover:not(.disabled):not(:focus-within) .hiddenInput:checked + .indicator.secondary .dot {
+    background-color: var(--tui-ink);
   }
 }
 
 /* ── Label text ── */
 .label {
-  font-size: var(--tui-font-size-md);
-  color: var(--tui-text);
-  line-height: var(--tui-line-height);
+  font-size: var(--tui-font-size-base);
+  color: var(--tui-ink);
+  line-height: var(--tui-line-height-body);
 }
 
 .requiredAsterisk {
@@ -130,14 +132,14 @@
 .wrapper {
   display: inline-flex;
   flex-direction: column;
-  gap: var(--tui-space-2);
+  gap: var(--tui-gap-2);
 }
 
 .errorMessage {
   margin: 0;
-  font-size: var(--tui-font-size-sm);
+  font-size: var(--tui-font-size-small);
   color: var(--tui-danger);
-  line-height: var(--tui-line-height);
+  line-height: var(--tui-line-height-body);
 }
 
 .indicator.errorState {
@@ -146,7 +148,7 @@
 
 .group {
   display: flex;
-  gap: var(--tui-spacing-sm);
+  gap: var(--tui-gap-2);
 }
 
 .vertical {
@@ -155,5 +157,5 @@
 
 .horizontal {
   flex-direction: row;
-  gap: var(--tui-spacing-lg);
+  gap: var(--tui-gap-4);
 }

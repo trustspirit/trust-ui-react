@@ -20,6 +20,7 @@ const LAYER_FILES = [
   'src/styles/themes/light.css',
   'src/styles/themes/dark.css',
   'src/styles/themes/density.css',
+  'src/styles/themes/spacing.css',
   'src/styles/tokens.css',
   'src/styles/market.css',
 ];
@@ -87,11 +88,26 @@ describe('토큰 계약', () => {
   });
 
   it('허용목록(UNMIGRATED)은 줄어들기만 한다', () => {
-    // 27은 이 가드를 추가하는 시점의 값이다. 컴포넌트를 마이그레이션할 때마다
-    // unmigrated.ts 에서 줄을 지우므로 이 숫자는 앞으로 감소만 해야 한다 —
-    // 다시 늘어난다면 마이그레이션이 되돌려졌거나 허용목록에 항목이
-    // 잘못 추가된 것이다.
-    expect(UNMIGRATED.length).toBeLessThanOrEqual(27);
+    // 1은 Table.module.css 하나만 남은 현재 값이다 (Table 재설계는 계획 3 대상).
+    // 컴포넌트를 마이그레이션할 때마다 unmigrated.ts 에서 줄을 지우므로 이 숫자는
+    // 앞으로 감소만 해야 한다 — 다시 늘어난다면 마이그레이션이 되돌려졌거나
+    // 허용목록에 항목이 잘못 추가된 것이다.
+    expect(UNMIGRATED.length).toBeLessThanOrEqual(1);
+  });
+
+  it('스타일 폴더에도 정의되지 않은 토큰 참조가 없다', () => {
+    // 계약 검사가 컴포넌트만 훑던 탓에 surfaces.css 가 죽은 --tui-glass-* 참조를
+    // dist/styles.css 까지 싣고 있었다. 레이어 파일 자신도 같은 규칙을 지켜야 한다.
+    const styleCss = globSync('src/styles/**/*.css', { cwd: root }).sort();
+    const bad: string[] = [];
+    for (const f of styleCss) {
+      const css = read(f);
+      const declared = collectDeclaredTokens(css);
+      for (const name of collectReferencedTokens(css)) {
+        if (!DEFINED_TOKENS.has(name) && !declared.has(name)) bad.push(`${f} → ${name}`);
+      }
+    }
+    expect(bad).toEqual([]);
   });
 
   it('금지된 시각 기법을 쓰지 않는다', () => {
@@ -104,7 +120,14 @@ describe('토큰 계약', () => {
       // 좁게 검사한다 — 느슨한 substring 매치는 향후 CalendarRange.module.css 같은 파일을
       // 조용히 통과시켜버릴 수 있다.
       if (/linear-gradient/.test(css) && !f.endsWith('/Calendar.module.css')) bad.push(`${f} → 장식용 그라데이션`);
-      if (/translateY\(-/.test(css)) bad.push(`${f} → 호버 부상`);
+      // 호버 부상 금지는 ":hover 규칙 안의 transform" 을 겨냥한다.
+      // 파일 전역에서 translateY(-…) 를 찾으면 화살표 중앙 정렬 같은 정당한 용법까지
+      // 잡혀, 구현자가 더 나쁜 기법으로 우회하게 된다. 반대로 그 방식은
+      // translate3d·scale 로 쓴 부상을 놓친다.
+      const hoverBlocks = css.match(/[^{}]*:hover[^{}]*\{[^{}]*\}/g) ?? [];
+      for (const block of hoverBlocks) {
+        if (/transform\s*:/.test(block)) bad.push(`${f} → 호버 시 이동·변형`);
+      }
     }
     expect(bad).toEqual([]);
   });

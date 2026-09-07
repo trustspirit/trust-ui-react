@@ -3,7 +3,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: var(--tui-gap-1);
   border: 1px solid transparent;
   font-family: var(--tui-font-sans);
   font-size: var(--tui-font-size-body);
@@ -29,9 +29,9 @@
 }
 
 /* ── Sizes — 밀도 축을 따른다 ── */
-.sm { height: var(--tui-control-sm); padding: 0 10px; font-size: var(--tui-font-size-small); }
-.md { height: var(--tui-control-md); padding: 0 15px; }
-.lg { height: var(--tui-control-lg); padding: 0 19px; font-size: var(--tui-font-size-lead); }
+.sm { height: var(--tui-control-sm); padding: 0 var(--tui-pad-2); font-size: var(--tui-font-size-small); }
+.md { height: var(--tui-control-md); padding: 0 var(--tui-pad-3); }
+.lg { height: var(--tui-control-lg); padding: 0 var(--tui-pad-4); font-size: var(--tui-font-size-lead); }
 
 /* ── Variants ── */
 /* 액센트는 기본이 잉크다. 브랜드 색을 켠 앱에서만 채도가 생긴다. */

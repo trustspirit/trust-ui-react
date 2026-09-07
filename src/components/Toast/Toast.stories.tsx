@@ -45,6 +45,27 @@ function ToastTrigger({
   );
 }
 
+/**
+ * 표면 자체와 상태별 변형을 한 번에 찍기 위한 스토리 — ToastProvider 의 트리거
+ * 버튼을 거치지 않고 Toast 컴포넌트를 직접, 네 변형 모두 정적으로 렌더링한다.
+ * duration=0 으로 자동 닫힘 타이머를 비활성화해 스크린샷 타이밍과 무관하게
+ * 항상 같은 모습을 유지한다(결정론적 스냅샷).
+ *
+ * danger 만 채워진 면(아이콘 원)을 갖고, success/warning 은 테두리 + 글자색만,
+ * info 는 v2 에 시맨틱 색이 없어 무채색이다 — 이 차이가 실제로 구분되는지
+ * 이 스토리로 확인할 수 있다.
+ */
+export const Open: Story = {
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+      <Toast id="open-success" variant="success" message="Changes saved successfully!" description="Your changes are now live." duration={0} />
+      <Toast id="open-danger" variant="danger" message="Failed to delete item." description="Check your connection and try again." duration={0} />
+      <Toast id="open-warning" variant="warning" message="Your session is about to expire." description="Save your work to avoid losing it." duration={0} />
+      <Toast id="open-info" variant="info" message="A new version is available." description="Refresh to get the latest updates." duration={0} />
+    </div>
+  ),
+};
+
 export const Success: Story = {
   render: () => <ToastTrigger variant="success" message="Changes saved successfully!" />,
 };

@@ -1,58 +1,49 @@
 /* ── Base ── */
+/* 오버레이 표면 — 불투명한 한 겹. 뒤가 비치지 않으므로 그 위 글자 대비가 항상 보장된다. */
 .toast {
   display: flex;
   align-items: flex-start;
-  gap: var(--tui-spacing-sm);
+  gap: var(--tui-gap-2);
   min-width: 300px;
   max-width: 420px;
-  padding: var(--tui-spacing-md);
-  border-radius: var(--tui-radius-xl);
-  background-color: var(--tui-glass-bg);
-  border: 1px solid var(--tui-glass-border);
-  box-shadow: var(--tui-glass-shadow);
-  font-family: var(--tui-font-family);
-  line-height: var(--tui-line-height);
+  padding: var(--tui-pad-3);
+  border-radius: var(--tui-radius-sheet);
+  background-color: var(--tui-sheet);
+  border: 1px solid var(--tui-rule);
+  box-shadow: var(--tui-shadow-overlay);
+  font-family: var(--tui-font-sans);
+  line-height: var(--tui-line-height-body);
   pointer-events: auto;
   position: relative;
-  animation: slideIn var(--tui-transition-slow) ease forwards;
-}
-
-@supports ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
-  .toast {
-    backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
-    -webkit-backdrop-filter: blur(var(--tui-glass-blur)) saturate(180%);
-  }
-}
-
-@supports not ((backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px))) {
-  .toast {
-    background-color: var(--tui-bg-subtle);
-  }
+  /* 등장은 토스트가 뜨는 사용자 행동(액션 완료 알림)에 대한 응답이므로 유지한다. */
+  animation: slideIn var(--tui-duration-base) var(--tui-ease-out) forwards;
 }
 
 .toast.exiting {
-  animation: slideOut var(--tui-transition-slow) ease forwards;
+  animation: slideOut var(--tui-duration-base) var(--tui-ease-out) forwards;
 }
 
-/* ── Variants ── */
+/* ── Variants ──
+   위험(danger)만 채워진 면을 쓴다. success/warning 은 글자·테두리로만 상태를 표시하고
+   면은 채우지 않는다. info 는 v2 에 시맨틱 색이 없어 무채색(ink)으로 흡수한다. */
 .success {
   border-left: 4px solid var(--tui-success);
-  color: var(--tui-text);
+  color: var(--tui-ink);
 }
 
 .danger {
   border-left: 4px solid var(--tui-danger);
-  color: var(--tui-text);
+  color: var(--tui-ink);
 }
 
 .warning {
   border-left: 4px solid var(--tui-warning);
-  color: var(--tui-text);
+  color: var(--tui-ink);
 }
 
 .info {
-  border-left: 4px solid var(--tui-info);
-  color: var(--tui-text);
+  border-left: 4px solid var(--tui-rule-strong);
+  color: var(--tui-ink);
 }
 
 /* ── Icon ── */
@@ -64,28 +55,32 @@
   width: 24px;
   height: 24px;
   border-radius: var(--tui-radius-full);
-  font-size: var(--tui-font-size-sm);
-  font-weight: var(--tui-font-weight-bold);
+  font-size: var(--tui-font-size-small);
+  font-weight: var(--tui-weight-semibold);
+}
+
+/* danger 만 채워진 면 — 나머지는 테두리 + 글자색만으로 상태를 나타낸다 */
+.danger .icon {
+  background-color: var(--tui-danger);
+  color: var(--tui-on-danger);
 }
 
 .success .icon {
-  background-color: var(--tui-success);
-  color: var(--tui-success-text);
-}
-
-.danger .icon {
-  background-color: var(--tui-danger);
-  color: var(--tui-danger-text);
+  background: transparent;
+  border: 1px solid var(--tui-success);
+  color: var(--tui-success);
 }
 
 .warning .icon {
-  background-color: var(--tui-warning);
-  color: var(--tui-warning-text);
+  background: transparent;
+  border: 1px solid var(--tui-warning);
+  color: var(--tui-warning);
 }
 
 .info .icon {
-  background-color: var(--tui-info);
-  color: var(--tui-info-text);
+  background: transparent;
+  border: 1px solid var(--tui-rule-strong);
+  color: var(--tui-ink-2);
 }
 
 /* ── Body ── */
@@ -96,15 +91,15 @@
 
 .message {
   margin: 0;
-  font-size: var(--tui-font-size-sm);
-  font-weight: var(--tui-font-weight-semibold);
-  color: var(--tui-text);
+  font-size: var(--tui-font-size-small);
+  font-weight: var(--tui-weight-semibold);
+  color: var(--tui-ink);
 }
 
 .description {
-  margin: var(--tui-spacing-xs) 0 0;
-  font-size: var(--tui-font-size-sm);
-  color: var(--tui-text-secondary);
+  margin: var(--tui-gap-1) 0 0;
+  font-size: var(--tui-font-size-small);
+  color: var(--tui-ink-2);
 }
 
 /* ── Close button ── */
@@ -117,24 +112,24 @@
   height: 24px;
   padding: 0;
   border: none;
-  border-radius: var(--tui-radius-sm);
+  border-radius: var(--tui-radius-tight);
   background: transparent;
-  color: var(--tui-text-muted);
-  font-size: var(--tui-font-size-xs);
+  color: var(--tui-ink-3);
+  font-size: var(--tui-font-size-caption);
   cursor: pointer;
-  transition: background-color var(--tui-transition), color var(--tui-transition);
+  transition: var(--tui-transition-color);
 }
 
 @media (hover: hover) {
   .closeButton:hover {
-    background-color: var(--tui-bg-hover);
-    color: var(--tui-text);
+    background-color: var(--tui-field);
+    color: var(--tui-ink);
   }
 }
 
 .closeButton:focus-visible {
   outline: none;
-  box-shadow: var(--tui-focus-ring);
+  box-shadow: 0 0 0 2px var(--tui-sheet), 0 0 0 4px var(--tui-ink);
 }
 
 /* ── Progress bar ── */
@@ -143,9 +138,9 @@
   left: 0;
   bottom: 0;
   height: 2px;
-  background-color: var(--tui-primary);
-  border-bottom-left-radius: var(--tui-radius-xl);
-  border-bottom-right-radius: var(--tui-radius-xl);
+  background-color: var(--tui-accent);
+  border-bottom-left-radius: var(--tui-radius-sheet);
+  border-bottom-right-radius: var(--tui-radius-sheet);
   animation: toastProgress linear forwards;
 }
 
@@ -157,17 +152,17 @@
 .progress.success { background-color: var(--tui-success); }
 .progress.danger  { background-color: var(--tui-danger); }
 .progress.warning { background-color: var(--tui-warning); }
-.progress.info    { background-color: var(--tui-info); }
+.progress.info    { background-color: var(--tui-rule-strong); }
 
 /* ── Container ── */
 .container {
   position: fixed;
   display: flex;
   flex-direction: column;
-  gap: var(--tui-spacing-sm);
+  gap: var(--tui-gap-2);
   z-index: var(--tui-z-toast);
   pointer-events: none;
-  padding: var(--tui-spacing-md);
+  padding: var(--tui-pad-3);
 }
 
 /* ── Positions ── */
