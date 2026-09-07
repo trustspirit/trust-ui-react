@@ -42,6 +42,9 @@ export const Default: Story = {
 };
 
 export const PillVariant: Story = {
+  // 선택된 pill 셀의 회귀(헤어라인 링 수정)를 대표 스토리 열거기가 놓치므로
+  // 시각 회귀 스위트에 별도로 편입시킨다.
+  tags: ['visual'],
   render: () => (
     <Tabs defaultValue="all" variant="pill">
       <Tabs.List>

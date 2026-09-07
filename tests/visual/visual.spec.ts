@@ -19,7 +19,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const index = JSON.parse(
   readFileSync(resolve(__dirname, '../../storybook-static/index.json'), 'utf8'),
 );
-const allIds: string[] = Object.keys(index.entries ?? index.stories ?? {});
+const entries: Record<string, { tags?: string[] }> = index.entries ?? index.stories ?? {};
+const allIds: string[] = Object.keys(entries);
 
 const byComponent = new Map<string, string>();
 for (const id of allIds) {
@@ -33,7 +34,14 @@ for (const id of allIds) {
   const rank = (n: string) => (n === 'open' ? 0 : n === 'variants' ? 1 : n === 'default' ? 2 : 3);
   if (!current || rank(name) < rank(current.split('--')[1])) byComponent.set(component, id);
 }
-const STORIES = [...byComponent.values()].sort();
+
+// 컴포넌트당 대표 하나만으로는 Tabs의 pill 변형처럼 대표로 뽑히지 못한
+// 상태가 회귀 커버리지에서 영구히 빠진다. tags 에 'visual' 을 명시한
+// 스토리는 대표 여부와 무관하게 추가로 찍는다 — opt-in 이므로 스냅샷 수가
+// 무한정 늘지 않는다.
+const taggedVisual = allIds.filter((id) => !id.endsWith('--docs') && (entries[id].tags ?? []).includes('visual'));
+
+const STORIES = [...new Set([...byComponent.values(), ...taggedVisual])].sort();
 
 const COMBOS = [
   { theme: 'light', density: 'comfortable' },
