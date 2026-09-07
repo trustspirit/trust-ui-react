@@ -69,13 +69,11 @@
   border-top: 1px solid var(--tui-rule);
 }
 
-/* Left placement: arrow at right — translateY 대신 margin-top 으로 중앙 정렬해
-   금지된 "호버 시 translateY" 패턴과 겹치지 않게 한다 */
+/* Left placement: arrow at right */
 .left .arrow {
   right: -4px;
   top: 50%;
-  margin-top: -4px;
-  transform: rotate(45deg);
+  transform: translateY(-50%) rotate(45deg);
 }
 
 .left.dark .arrow,
@@ -85,12 +83,11 @@
   border-top: 1px solid var(--tui-rule);
 }
 
-/* Right placement: arrow at left — 위와 동일한 이유로 margin-top 사용 */
+/* Right placement: arrow at left */
 .right .arrow {
   left: -4px;
   top: 50%;
-  margin-top: -4px;
-  transform: rotate(45deg);
+  transform: translateY(-50%) rotate(45deg);
 }
 
 .right.dark .arrow,

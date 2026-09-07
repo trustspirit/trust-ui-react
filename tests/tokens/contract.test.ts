@@ -105,7 +105,14 @@ describe('토큰 계약', () => {
       // 좁게 검사한다 — 느슨한 substring 매치는 향후 CalendarRange.module.css 같은 파일을
       // 조용히 통과시켜버릴 수 있다.
       if (/linear-gradient/.test(css) && !f.endsWith('/Calendar.module.css')) bad.push(`${f} → 장식용 그라데이션`);
-      if (/translateY\(-/.test(css)) bad.push(`${f} → 호버 부상`);
+      // 호버 부상 금지는 ":hover 규칙 안의 transform" 을 겨냥한다.
+      // 파일 전역에서 translateY(-…) 를 찾으면 화살표 중앙 정렬 같은 정당한 용법까지
+      // 잡혀, 구현자가 더 나쁜 기법으로 우회하게 된다. 반대로 그 방식은
+      // translate3d·scale 로 쓴 부상을 놓친다.
+      const hoverBlocks = css.match(/[^{}]*:hover[^{}]*\{[^{}]*\}/g) ?? [];
+      for (const block of hoverBlocks) {
+        if (/transform\s*:/.test(block)) bad.push(`${f} → 호버 시 이동·변형`);
+      }
     }
     expect(bad).toEqual([]);
   });

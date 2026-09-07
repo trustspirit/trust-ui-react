@@ -66,6 +66,15 @@
   cursor: not-allowed;
 }
 
+/* ── Unchecked hover — v2 에서 border-hover/-strong 이 rule-strong 하나로
+   수렴해 기본값과 같아지므로, 배경을 쓰는 요소이니 border-color 대신
+   같은 자리(면 색)에 한 단계 더 진한 --tui-ink-3 를 써서 hover 피드백을 남긴다 ── */
+@media (hover: hover) {
+  .switch:hover:not(:disabled):not(.checked) {
+    background-color: var(--tui-ink-3);
+  }
+}
+
 /* ── Sizes ── */
 .sm {
   width: 36px;
