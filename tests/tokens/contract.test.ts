@@ -9,48 +9,64 @@ const read = (f: string) => readFileSync(resolve(root, f), 'utf8').replace(/\/\*
 const componentCss = globSync('src/components/**/*.module.css', { cwd: root }).sort();
 const migrated = componentCss.filter((f) => !UNMIGRATED.includes(f));
 
-/** v2 에서 사라진 토큰. 참조가 남아 있으면 조용히 색이 빠진다. */
-const REMOVED = [
-  '--tui-primary-gradient',
-  '--tui-inset-highlight',
-  '--tui-glass-bg',
-  '--tui-glass-border',
-  '--tui-glass-shadow',
-  '--tui-glass-blur',
-  '--tui-shadow-xs',
-  '--tui-shadow-sm',
-  '--tui-shadow-md',
-  '--tui-shadow-lg',
-  '--tui-shadow-xl',
-  '--tui-ease-spring',
-  '--tui-bg',
-  '--tui-bg-subtle',
-  '--tui-bg-muted',
-  '--tui-bg-hover',
-  '--tui-bg-active',
-  '--tui-text',
-  '--tui-text-secondary',
-  '--tui-text-muted',
-  '--tui-text-inverse',
-  '--tui-border',
-  '--tui-border-hover',
-  '--tui-border-strong',
-  '--tui-border-focus',
-  '--tui-primary',
-  '--tui-secondary',
-  '--tui-info',
+/**
+ * v2 시맨틱 층을 이루는 파일들. 컴포넌트가 참조할 수 있는 토큰은
+ * 이 파일들이 실제로 정의하는 것뿐이어야 한다 — 블랙리스트(REMOVED)로
+ * "사라진 27개"만 막던 예전 방식은 v2가 아예 정의하지 않는 나머지
+ * 토큰(spacing, radius, font-size 등 73개)을 그대로 통과시켰다.
+ */
+const LAYER_FILES = [
+  'src/styles/palette.css',
+  'src/styles/themes/light.css',
+  'src/styles/themes/dark.css',
+  'src/styles/themes/density.css',
+  'src/styles/tokens.css',
+  'src/styles/market.css',
 ];
+
+/** "이름: 값" 형태의 커스텀 프로퍼티 선언 하나를 잡는다. */
+const DECLARATION = /(--[a-zA-Z0-9-]+)\s*:/g;
+
+/**
+ * CSS 텍스트에서 실제로 "정의"된 커스텀 프로퍼티 이름만 골라낸다.
+ * :root, [data-theme=...], @media 로 감싼 블록 등 셀렉터 형태와 무관하게
+ * 동작한다 — var(--foo) 같은 참조 뒤에는 콜론이 오지 않으므로
+ * "var(" 바로 뒤에서 매치된 경우만 걸러내면 된다.
+ */
+function collectDeclaredTokens(css: string): Set<string> {
+  const declared = new Set<string>();
+  for (const m of css.matchAll(DECLARATION)) {
+    const before = css.slice(Math.max(0, m.index - 4), m.index);
+    if (before.endsWith('var(')) continue;
+    declared.add(m[1]);
+  }
+  return declared;
+}
+
+/** CSS 텍스트에서 var(--foo) 형태로 참조되는 커스텀 프로퍼티 이름 전체. */
+function collectReferencedTokens(css: string): string[] {
+  return [...css.matchAll(/var\(\s*(--[a-zA-Z0-9-]+)/g)].map((m) => m[1]);
+}
+
+/** v2 층이 정의하는 토큰 이름 전체 — 컴포넌트가 참조해도 되는 화이트리스트. */
+const DEFINED_TOKENS = new Set<string>();
+for (const f of LAYER_FILES) {
+  for (const name of collectDeclaredTokens(read(f))) DEFINED_TOKENS.add(name);
+}
 
 const RAW_COLOR = /(#[0-9a-f]{3,8}\b|\brgba?\(|\bhsla?\()/i;
 
 describe('토큰 계약', () => {
-  it('마이그레이션한 파일은 사라진 토큰을 참조하지 않는다', () => {
+  it('마이그레이션한 파일은 v2가 정의하지 않은 토큰을 참조하지 않는다', () => {
     const bad: string[] = [];
     for (const f of migrated) {
       const css = read(f);
-      for (const token of REMOVED) {
-        // --tui-bg 가 --tui-bg-subtle 에 걸리지 않도록 경계를 붙인다.
-        if (new RegExp(`${token}(?![\\w-])`).test(css)) bad.push(`${f} → ${token}`);
+      // 컴포넌트가 스스로 선언한 스코프 커스텀 프로퍼티(예: SegmentedControl의
+      // --tui-seg-*)는 v2 시맨틱 토큰이 아니라 그 파일만의 내부 계약이므로 허용한다.
+      const selfDeclared = collectDeclaredTokens(css);
+      for (const token of collectReferencedTokens(css)) {
+        if (DEFINED_TOKENS.has(token) || selfDeclared.has(token)) continue;
+        bad.push(`${f} → ${token}`);
       }
     }
     expect(bad).toEqual([]);
@@ -68,6 +84,14 @@ describe('토큰 계약', () => {
 
   it('허용목록에 실존하지 않는 파일이 남아 있지 않다', () => {
     expect(UNMIGRATED.filter((f) => !componentCss.includes(f))).toEqual([]);
+  });
+
+  it('허용목록(UNMIGRATED)은 줄어들기만 한다', () => {
+    // 27은 이 가드를 추가하는 시점의 값이다. 컴포넌트를 마이그레이션할 때마다
+    // unmigrated.ts 에서 줄을 지우므로 이 숫자는 앞으로 감소만 해야 한다 —
+    // 다시 늘어난다면 마이그레이션이 되돌려졌거나 허용목록에 항목이
+    // 잘못 추가된 것이다.
+    expect(UNMIGRATED.length).toBeLessThanOrEqual(27);
   });
 
   it('금지된 시각 기법을 쓰지 않는다', () => {
