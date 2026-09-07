@@ -133,6 +133,80 @@ function isGatedFor(hoverSelector: string, focusSelector: string): boolean {
   return false;
 }
 
+/*
+ * padding/margin/gap 의 리터럴 px 는 밀도(density) 축을 무시한다 —
+ * ActionSheet/SegmentedControl/Select 가 마이그레이션 이후에도 이렇게
+ * 남아 있었다(Task 7). 값의 절대값이 1px 이하면 예외다: 그 정도는 대개
+ * 헤어라인이나 인접 요소와의 정렬 보정이지 "숨쉴 공간"이 아니다.
+ *
+ * 그 밖에도 컴포넌트 전체를 훑으면 같은 세 속성에 걸리는 리터럴이 더
+ * 나온다 — 이번 계획의 대상 파일(ActionSheet/SegmentedControl/Select)
+ * 밖에 있는 것들이다. 훑어서 나온 두 부류를 파일+선택자 단위로 여기
+ * 남긴다: (1) 다른 리터럴과 1:1로 묶인 기하 계산(썸 중앙 정렬, 인디케이터
+ * 홈 두께)이라 애초에 "여백"이 아닌 것, (2) 진짜 밀도 부채이지만 이번
+ * 계획의 파일 목록 밖이라 손대지 않은 것 — 둘 다 이유를 남기고, 후자는
+ * 향후 정리 대상임을 명시한다. 이유 없는 예외, 파일 전체를 통째로 빼는
+ * 예외는 두지 않는다 — 그러면 그 파일의 다른 위반까지 조용히 통과한다.
+ */
+const SPACING_PX_EXCEPTIONS: { file: string; selector: string; reason: string }[] = [
+  {
+    file: 'src/components/SegmentedControl/SegmentedControl.module.css',
+    selector: '.track',
+    reason:
+      '슬라이딩 인디케이터 홈 두께 — .indicator 의 top/bottom/width 계산 리터럴과 1:1로 동기화되어야 하는 기하값이지 여백이 아니다.',
+  },
+  {
+    file: 'src/components/Switch/Switch.module.css',
+    selector: '.switch',
+    reason: '트랙 안쪽 썸 인셋 — .thumb 크기와 짝을 이루는 기하값. SegmentedControl 의 .track 과 같은 사정.',
+  },
+  {
+    file: 'src/components/Slider/Slider.module.css',
+    selector: '.sm .slider::-webkit-slider-thumb',
+    reason:
+      '썸 높이와 트랙 높이 차이의 절반 — 크기 리터럴과 1:1로 묶인 중앙 정렬 계산, 여백이 아니다. Slider 는 이번 Task 7 파일 목록 밖.',
+  },
+  {
+    file: 'src/components/Slider/Slider.module.css',
+    selector: '.md .slider::-webkit-slider-thumb',
+    reason: '위와 같음 — md 크기의 썸 중앙 정렬 계산.',
+  },
+  {
+    file: 'src/components/Slider/Slider.module.css',
+    selector: '.lg .slider::-webkit-slider-thumb',
+    reason: '위와 같음 — lg 크기의 썸 중앙 정렬 계산.',
+  },
+  {
+    file: 'src/components/BottomSheet/BottomSheet.module.css',
+    selector: '.handle',
+    reason:
+      '드래그 핸들 장식 여백 — Select 의 같은 패턴(mobileSheetHandle)은 이번에 토큰화했지만, 이 파일은 Task 7 파일 목록 밖이라 손대지 않았다. 향후 정리 대상.',
+  },
+  {
+    file: 'src/components/Chip/Chip.module.css',
+    selector: '.deleteButton',
+    reason: '아이콘 광학 보정 넛지 — 내용이 늘어난다고 커지지 않는 고정 정렬값. Chip 은 Task 7 파일 목록 밖.',
+  },
+  {
+    file: 'src/components/FileUpload/FileUpload.module.css',
+    selector: '.removeButton',
+    reason: '아이콘 버튼 히트 패딩 — FileUpload 는 Task 7 파일 목록 밖. 향후 정리 대상.',
+  },
+  {
+    file: 'src/components/Tooltip/Tooltip.module.css',
+    selector: '.inlineContainer',
+    reason: '인라인 힌트의 아이콘·텍스트 사이 여백 — Tooltip 은 Task 7 파일 목록 밖. 향후 정리 대상.',
+  },
+];
+
+const isSpacingException = (file: string, selector: string) =>
+  SPACING_PX_EXCEPTIONS.some((e) => e.file === file && e.selector === selector);
+
+/** 선언 하나(속성 이름 + 콜론 뒤 값)를 잡는다. 롱핸드 방향 접미사까지 포함한다. */
+const SPACING_DECLARATION =
+  /(?:^|;)\s*(padding|margin|gap)(-(?:top|right|bottom|left|inline(?:-start|-end)?|block(?:-start|-end)?))?\s*:\s*([^;]+)/gi;
+const PX_NUMBER = /-?\d*\.?\d+px/g;
+
 describe('토큰 계약', () => {
   it('마이그레이션한 파일은 v2가 정의하지 않은 토큰을 참조하지 않는다', () => {
     const bad: string[] = [];
@@ -317,6 +391,26 @@ describe('토큰 계약', () => {
         if (!coarseSelectors.has(r.selector)) continue;
         const m = r.body.match(/inset\s*:\s*(-[\d.]+px[^;]*)/);
         if (m) bad.push(`${f}: "${r.selector}" (pointer:coarse 확장 대상) 가 고정 음수 inset "${m[1]}" 을 쓴다`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it('padding/margin/gap 에 밀도와 무관한 리터럴 px 를 쓰지 않는다', () => {
+    // 이 결함이 마이그레이션 이후에도 ActionSheet/SegmentedControl/Select 에
+    // 남아 있었다 — 밀도를 바꿔도 안쪽 여백·사이 간격·컨트롤 높이가 그대로였다.
+    const bad: string[] = [];
+    for (const f of componentCss) {
+      for (const r of rules(read(f))) {
+        for (const m of r.body.matchAll(SPACING_DECLARATION)) {
+          const prop = m[1] + (m[2] ?? '');
+          const value = m[3];
+          const pxValues = [...value.matchAll(PX_NUMBER)].map((pm) => Math.abs(parseFloat(pm[0])));
+          if (pxValues.length === 0) continue; // var()/calc() 만 쓴 값
+          if (Math.max(...pxValues) <= 1) continue; // 헤어라인·정렬 보정 허용
+          if (isSpacingException(f, r.selector)) continue;
+          bad.push(`${f}: "${r.selector}" 의 ${prop} 이 리터럴 "${value.trim()}" 를 쓴다`);
+        }
       }
     }
     expect(bad).toEqual([]);

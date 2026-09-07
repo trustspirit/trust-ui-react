@@ -17,7 +17,7 @@
   font-size: var(--tui-font-size-small);
   font-weight: var(--tui-weight-medium);
   color: var(--tui-ink);
-  margin-bottom: 2px;
+  margin-bottom: var(--tui-gap-1);
 }
 
 .labelError {
@@ -49,20 +49,22 @@
 }
 
 /* ── Sizes ── */
+/* 트리거 높이가 리터럴 px 였다 — 밀도를 바꿔도 반응하지 않았다.
+   Button/TextField 와 같은 --tui-control-* 로 맞춘다. */
 .sm .trigger {
-  height: 32px;
+  height: var(--tui-control-sm);
   padding: 0 var(--tui-pad-2);
   font-size: var(--tui-font-size-small);
 }
 
 .md .trigger {
-  height: 40px;
+  height: var(--tui-control-md);
   padding: 0 var(--tui-pad-3);
   font-size: var(--tui-font-size-base);
 }
 
 .lg .trigger {
-  height: 48px;
+  height: var(--tui-control-lg);
   padding: 0 var(--tui-pad-3);
   font-size: var(--tui-font-size-lead);
 }
@@ -157,15 +159,15 @@
   flex: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: var(--tui-gap-1);
   overflow: hidden;
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  padding: 1px 6px;
+  gap: var(--tui-gap-1);
+  padding: 1px var(--tui-pad-1);
   border-radius: var(--tui-radius-tight);
   background-color: var(--tui-field);
   font-size: var(--tui-font-size-caption);
@@ -218,7 +220,7 @@
   width: 100%;
   border: 1px solid var(--tui-rule);
   border-radius: var(--tui-radius-tight);
-  padding: 6px var(--tui-pad-2);
+  padding: var(--tui-pad-1) var(--tui-pad-2);
   font-size: var(--tui-font-size-small);
   font-family: var(--tui-font-sans);
   background-color: var(--tui-paper);
@@ -383,7 +385,7 @@
   height: 4px;
   background-color: var(--tui-rule);
   border-radius: 2px;
-  margin: 10px auto 6px;
+  margin: var(--tui-gap-2) auto var(--tui-gap-1);
   flex-shrink: 0;
 }
 
@@ -397,7 +399,7 @@
   width: 100%;
   border: 1px solid var(--tui-rule);
   border-radius: var(--tui-radius-control);
-  padding: 12px var(--tui-pad-3);
+  padding: var(--tui-pad-3);
   font-size: 16px; /* prevents iOS zoom */
   font-family: var(--tui-font-sans);
   background-color: var(--tui-paper);
@@ -424,7 +426,7 @@
   display: flex;
   align-items: center;
   gap: var(--tui-gap-2);
-  padding: 14px var(--tui-pad-3);
+  padding: var(--tui-pad-3);
   cursor: pointer;
   font-size: 16px;
   color: var(--tui-ink);

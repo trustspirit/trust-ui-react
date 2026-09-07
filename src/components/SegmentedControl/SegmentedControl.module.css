@@ -7,6 +7,13 @@
   display: inline-grid;
   grid-auto-columns: 1fr;
   grid-auto-flow: column;
+  /* gap/padding 은 토큰으로 옮기지 않는다 — 슬라이딩 인디케이터의 홈
+     두께(border 두께에 준하는 신호값)이고, 아래 .indicator 의
+     top/bottom/width/translateX 리터럴과 정확히 짝을 이뤄야 한다.
+     밀도를 태우려면 이 넷을 전부 var() 로 동기화해야 하는데, 그러면
+     밀도가 바뀔 때마다 인디케이터 홈 두께가 세그먼트 크기와 무관하게
+     따로 요동친다 — 여기서 실제로 반응해야 할 밀도 신호는 .segment 의
+     안쪽 여백이지 이 홈이 아니다. */
   gap: 2px;
   padding: 3px;
   background-color: var(--tui-field);
@@ -37,14 +44,19 @@
   z-index: 0;
 }
 
+/*
+ * 높이를 리터럴 px 대신 --tui-pad-*(수직) + line-height 로 계산한다 —
+ * Chip/Badge 의 작은 필(pill) 컨트롤과 같은 관용구다. --tui-control-* 는
+ * 28~36px 필에 비해 너무 커서(36~52px) 쓰지 않는다.
+ */
 .segment {
   position: relative;
   z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 12px;
-  height: 28px;
+  padding: var(--tui-pad-1) var(--tui-pad-3);
+  line-height: 1;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -74,4 +86,4 @@
 }
 
 /* Sizes */
-.md .segment { height: 36px; padding: 0 16px; font-size: var(--tui-font-size-base); }
+.md .segment { padding: var(--tui-pad-2) var(--tui-pad-4); font-size: var(--tui-font-size-base); }
