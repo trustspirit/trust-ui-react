@@ -4,7 +4,5 @@
  * 이 배열이 비면 마이그레이션이 끝난 것이다.
  */
 export const UNMIGRATED: string[] = [
-  "src/components/FileUpload/FileUpload.module.css",
   "src/components/Table/Table.module.css",
-  "src/components/Tabs/Tabs.module.css",
 ];
