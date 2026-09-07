@@ -5,7 +5,6 @@ import './styles/themes/dark.css';
 import './styles/themes/density.css';
 import './styles/themes/spacing.css';
 import './styles/tokens.css';
-import './styles/surfaces.css'; // 계획 2에서 제거
 import './styles/reset.css';
 
 // Providers

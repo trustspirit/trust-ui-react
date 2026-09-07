@@ -2,14 +2,13 @@ import type { Preview } from '@storybook/react';
 
 // Pretendard — 라이브러리는 더 이상 서체를 번들하지 않으므로 Storybook 자체가 소비자로서 임포트한다.
 import 'pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css';
-// src/index.ts 와 동일한 순서: palette → themes/light → themes/dark → themes/density → spacing → tokens → surfaces → reset
+// src/index.ts 와 동일한 순서: palette → themes/light → themes/dark → themes/density → spacing → tokens → reset
 import '../src/styles/palette.css';
 import '../src/styles/themes/light.css';
 import '../src/styles/themes/dark.css';
 import '../src/styles/themes/density.css';
 import '../src/styles/themes/spacing.css';
 import '../src/styles/tokens.css';
-import '../src/styles/surfaces.css';
 import '../src/styles/reset.css';
 // market.css 는 라이브러리가 임포트하지 않는 선택적 레이어다. Storybook 은 소비자이므로
 // 시장(data-market) 축을 실제로 보려면 여기서 직접 임포트해야 한다.
