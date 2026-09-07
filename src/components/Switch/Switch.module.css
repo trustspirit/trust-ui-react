@@ -33,8 +33,8 @@
   align-items: center;
   border: none;
   border-radius: var(--tui-radius-full);
-  /* 꺼짐 상태의 면 */
-  background-color: var(--tui-rule-strong);
+  /* 꺼짐 상태의 면 — 트랙 쉬는 상태(rule). hover에서 rule-strong 으로 진해진다. */
+  background-color: var(--tui-rule);
   cursor: pointer;
   padding: 2px;
   transition: var(--tui-transition-color);
@@ -66,12 +66,11 @@
   cursor: not-allowed;
 }
 
-/* ── Unchecked hover — v2 에서 border-hover/-strong 이 rule-strong 하나로
-   수렴해 기본값과 같아지므로, 배경을 쓰는 요소이니 border-color 대신
-   같은 자리(면 색)에 한 단계 더 진한 --tui-ink-3 를 써서 hover 피드백을 남긴다 ── */
+/* ── Unchecked hover — 트랙은 쉬는 상태에서 rule, hover에서 rule-strong
+   으로 한 단계 진해진다(Progress/Slider 트랙과 같은 결정) ── */
 @media (hover: hover) {
   .switch:hover:not(:disabled):not(.checked) {
-    background-color: var(--tui-ink-3);
+    background-color: var(--tui-rule-strong);
   }
 }
 
