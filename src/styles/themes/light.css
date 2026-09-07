@@ -13,8 +13,6 @@
   --tui-rule: var(--tui-p-neutral-200);
   --tui-rule-strong: var(--tui-p-neutral-300);
 
-  --tui-ring: rgba(0, 0, 0, 0.16);
-
   --tui-danger: var(--tui-p-danger-600);
   --tui-danger-hover: var(--tui-p-danger-700);
   --tui-on-danger: var(--tui-p-neutral-0);

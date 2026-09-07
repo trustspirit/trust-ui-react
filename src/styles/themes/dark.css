@@ -12,8 +12,6 @@
   --tui-rule: var(--tui-p-neutral-850);
   --tui-rule-strong: var(--tui-p-neutral-800);
 
-  --tui-ring: rgba(246, 246, 246, 0.26);
-
   --tui-danger: var(--tui-p-danger-500);
   --tui-danger-hover: var(--tui-p-danger-400);
   --tui-on-danger: var(--tui-p-neutral-0);
