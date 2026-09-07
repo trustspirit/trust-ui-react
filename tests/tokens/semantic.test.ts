@@ -13,6 +13,7 @@ const SEMANTIC = [
   '--tui-ink', '--tui-ink-2', '--tui-ink-3',
   '--tui-rule', '--tui-rule-strong', '--tui-on-ink', '--tui-ring',
   '--tui-danger', '--tui-danger-hover', '--tui-on-danger',
+  '--tui-success', '--tui-warning',
   '--tui-shadow-overlay',
 ];
 

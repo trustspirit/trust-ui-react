@@ -35,6 +35,15 @@ describe('대비 — WCAG AA', () => {
     expect(contrastRatio(hex('--tui-p-danger-500'), N('0'))).toBeGreaterThanOrEqual(4.5);
   });
 
+  it('상태색(success/warning) 글자: 각 테마의 paper 위에서 4.5:1 이상', () => {
+    // light: --tui-success → success-600, --tui-warning → warning-700 (paper = neutral-0)
+    expect(contrastRatio(hex('--tui-p-success-600'), N('0'))).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(hex('--tui-p-warning-700'), N('0'))).toBeGreaterThanOrEqual(4.5);
+    // dark: --tui-success → success-400, --tui-warning → warning-400 (paper = neutral-950)
+    expect(contrastRatio(hex('--tui-p-success-400'), N('950'))).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(hex('--tui-p-warning-400'), N('950'))).toBeGreaterThanOrEqual(4.5);
+  });
+
   it('상승/하락 글자: 각 바탕에서 4.5:1 이상', () => {
     expect(contrastRatio(hex('--tui-p-rise-500'), N('0'))).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(hex('--tui-p-fall-500'), N('0'))).toBeGreaterThanOrEqual(4.5);

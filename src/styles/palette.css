@@ -33,4 +33,13 @@
   --tui-p-danger-600: #a81026;
   --tui-p-danger-500: #c9273c;
   --tui-p-danger-400: #dd3a4f;
+
+  /* 상태색 — success/warning. 글자·테두리 전용이며 면을 채우지 않는다
+     (면을 채우는 채도는 danger 의 배타적 자리다). */
+  --tui-p-success-600: #15803d;
+  --tui-p-success-500: #1a9d4d;
+  --tui-p-success-400: #35c47c;
+  --tui-p-warning-700: #92400e;
+  --tui-p-warning-600: #b45309;
+  --tui-p-warning-400: #f0a92e;
 }

@@ -36,39 +36,56 @@
 }
 
 /* ── Solid variant (default — backwards compatible) ──
-   primary 만 accent(잉크) 면을 쓴다. secondary/success/warning/info 는
-   v2 에 전용 색이 없으므로 무채색 위계(field 면 + ink 글자)로 흡수한다.
-   danger 만 위험을 뜻하는 채워진 면을 유지한다. */
+   채도가 있는 색은 의미 있는 자리(수치·상태·위험)에만 쓴다 — 스펙 원칙 1.
+   danger 만 위험을 뜻하는 채워진 면(원칙 2: 위험의 색은 면에)을 갖는다.
+   success/warning 은 상태를 나타내지만 면을 채우면 위험(danger)과 같은
+   무게로 읽혀 혼동을 준다 — 그래서 field 면 위에 글자·테두리 색으로만
+   드러낸다(원칙 2: 수치의 색은 글자에). secondary/info 는 v2 에 전용 색이
+   없어 무채색(field 면 + ink 글자)으로 남는다. */
 .solid.primary {
   background-color: var(--tui-accent);
   color: var(--tui-on-accent);
 }
 .solid.secondary,
-.solid.success,
-.solid.warning,
 .solid.info {
   background-color: var(--tui-field);
   color: var(--tui-ink);
+}
+.solid.success {
+  background-color: var(--tui-field);
+  color: var(--tui-success);
+  border: 1px solid var(--tui-success);
+}
+.solid.warning {
+  background-color: var(--tui-field);
+  color: var(--tui-warning);
+  border: 1px solid var(--tui-warning);
 }
 .solid.danger {
   background-color: var(--tui-danger);
   color: var(--tui-on-danger);
 }
 
-/* ── Subtle variant ── */
+/* ── Subtle variant — solid 과 같은 색 규칙을 쓴다 ── */
 .subtle.primary {
   background-color: var(--tui-field);
   color: var(--tui-accent);
 }
 .subtle.secondary,
-.subtle.success,
-.subtle.warning,
 .subtle.info {
   background-color: var(--tui-field);
   color: var(--tui-ink);
 }
-/* danger 는 subtle 에도 전용 tint 토큰이 없다 — field 면 위에 danger 글자색만
-   남겨 의미를 잃지 않으면서 새 색을 만들지 않는다. */
+.subtle.success {
+  background-color: var(--tui-field);
+  color: var(--tui-success);
+  border: 1px solid var(--tui-success);
+}
+.subtle.warning {
+  background-color: var(--tui-field);
+  color: var(--tui-warning);
+  border: 1px solid var(--tui-warning);
+}
 .subtle.danger {
   background-color: var(--tui-field);
   color: var(--tui-danger);
@@ -81,10 +98,10 @@
 }
 .outline.primary { color: var(--tui-accent); border-color: var(--tui-accent); }
 .outline.secondary,
-.outline.success,
-.outline.warning,
 .outline.info {
   color: var(--tui-ink);
   border-color: var(--tui-rule-strong);
 }
+.outline.success { color: var(--tui-success); border-color: var(--tui-success); }
+.outline.warning { color: var(--tui-warning); border-color: var(--tui-warning); }
 .outline.danger { color: var(--tui-danger); border-color: var(--tui-danger); }

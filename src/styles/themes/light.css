@@ -19,6 +19,9 @@
   --tui-danger-hover: var(--tui-p-danger-700);
   --tui-on-danger: var(--tui-p-neutral-0);
 
+  --tui-success: var(--tui-p-success-600);
+  --tui-warning: var(--tui-p-warning-700);
+
   --tui-shadow-overlay: 0 1px 1px rgba(0, 0, 0, 0.04), 0 10px 30px -12px rgba(0, 0, 0, 0.22);
 
   color-scheme: light;

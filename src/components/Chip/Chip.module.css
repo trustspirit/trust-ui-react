@@ -41,20 +41,32 @@
 }
 
 /* ── Filled variants ──
-   primary 만 accent(잉크) 면을 쓴다. secondary/success/warning/info 는
-   전용 색이 없으므로 field 면 + ink 글자로 흡수한다. danger 만 위험을
-   뜻하는 채워진 면을 유지한다. */
+   채도가 있는 색은 의미 있는 자리(수치·상태·위험)에만 쓴다 — 스펙 원칙 1.
+   danger 만 위험을 뜻하는 채워진 면(원칙 2: 위험의 색은 면에)을 갖는다.
+   success/warning 은 상태를 나타내지만 면을 채우면 danger 와 같은 무게로
+   읽혀 혼동을 준다 — field 면 위에 글자·테두리 색으로만 드러낸다(원칙 2:
+   수치의 색은 글자에). secondary/info 는 전용 색이 없어 무채색으로 남는다. */
 .filled.primary {
   background-color: var(--tui-accent);
   color: var(--tui-on-accent);
 }
 
 .filled.secondary,
-.filled.success,
-.filled.warning,
 .filled.info {
   background-color: var(--tui-field);
   color: var(--tui-ink);
+}
+
+.filled.success {
+  background-color: var(--tui-field);
+  color: var(--tui-success);
+  border-color: var(--tui-success);
+}
+
+.filled.warning {
+  background-color: var(--tui-field);
+  color: var(--tui-warning);
+  border-color: var(--tui-warning);
 }
 
 .filled.danger {
@@ -70,12 +82,22 @@
 }
 
 .outlined.secondary,
-.outlined.success,
-.outlined.warning,
 .outlined.info {
   background-color: transparent;
   border-color: var(--tui-rule-strong);
   color: var(--tui-ink);
+}
+
+.outlined.success {
+  background-color: transparent;
+  border-color: var(--tui-success);
+  color: var(--tui-success);
+}
+
+.outlined.warning {
+  background-color: transparent;
+  border-color: var(--tui-warning);
+  color: var(--tui-warning);
 }
 
 .outlined.danger {
@@ -139,17 +161,25 @@
   }
 }
 
-/* ── Subtle variants ── */
+/* ── Subtle variants — filled 과 같은 색 규칙을 쓴다 ── */
 .subtle.primary {
   background-color: var(--tui-field);
   color: var(--tui-accent);
 }
 .subtle.secondary,
-.subtle.success,
-.subtle.warning,
 .subtle.info {
   background-color: var(--tui-field);
   color: var(--tui-ink);
+}
+.subtle.success {
+  background-color: var(--tui-field);
+  color: var(--tui-success);
+  border-color: var(--tui-success);
+}
+.subtle.warning {
+  background-color: var(--tui-field);
+  color: var(--tui-warning);
+  border-color: var(--tui-warning);
 }
 /* danger 는 subtle 전용 tint 토큰이 없다 — field 면 위에 danger 글자색만 남긴다 */
 .subtle.danger {
