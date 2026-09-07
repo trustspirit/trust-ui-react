@@ -69,7 +69,7 @@
 }
 
 .segment:disabled {
-  opacity: 0.45;
+  opacity: var(--tui-opacity-disabled);
   cursor: not-allowed;
 }
 

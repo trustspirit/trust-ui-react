@@ -250,4 +250,26 @@ describe('토큰 계약', () => {
     }
     expect(bad).toEqual([]);
   });
+
+  it('비활성 상태에 리터럴 opacity 를 쓰지 않는다', () => {
+    // 브리프가 준 정규식(:disabled|\.disabled|\[disabled\]|aria-disabled)은
+    // CSS 의사 클래스/속성 선택자 형태만 잡는다. 그런데 실측해보니 DatePicker·
+    // TextField·Select·Expander·FileUpload 등은 disabled prop 을 className 조건부
+    // 토글로 표현한다(예: `.labelDisabled`, `.dropzoneDisabled`, `.dayDisabled`) —
+    // ".disabled" 라는 부분 문자열이 아니라 카멜케이스 클래스명 안에 섞여 있어
+    // 원래 정규식으로는 못 잡는다. 실제 disabled 시맨틱은 대소문자만 다를 뿐
+    // 전부 "disabled" 라는 단어를 포함하므로, 대소문자 무시 매치로 넓혀서
+    // 이 컴포넌트들도 함께 보증한다 — 브리프 정규식이 잡는 4가지 형태를 모두
+    // 포함하는 상위집합이다.
+    const DISABLED_SELECTOR = /disabled/i;
+    const bad: string[] = [];
+    for (const f of componentCss) {
+      for (const r of rules(read(f))) {
+        if (!DISABLED_SELECTOR.test(r.selector)) continue;
+        const m = r.body.match(/opacity\s*:\s*(0?\.\d+|\d)/);
+        if (m) bad.push(`${f}: "${r.selector}" 가 리터럴 ${m[1]} 을 쓴다`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
 });

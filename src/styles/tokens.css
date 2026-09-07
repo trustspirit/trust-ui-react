@@ -55,6 +55,11 @@
   --tui-on-accent: var(--tui-on-ink);
   --tui-accent-hover: var(--tui-ink-2);
 
+  /* ── 상태 ── */
+  /* 비활성 상태에서 요소를 얼마나 흐리게 할지. 마이그레이션 과정에서 0.5·0.45·0.4·0.3 이 뒤섞였는데,
+     Button·TextField·SegmentedControl 이 의도적으로 고른 0.45 를 표준으로 삼는다. */
+  --tui-opacity-disabled: 0.45;
+
   /* ── 안전영역 (v1 계승) ── */
   --tui-safe-top: env(safe-area-inset-top, 0px);
   --tui-safe-right: env(safe-area-inset-right, 0px);

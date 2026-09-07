@@ -47,7 +47,7 @@
 }
 
 .itemDisabled {
-  opacity: 0.5;
+  opacity: var(--tui-opacity-disabled);
   pointer-events: none;
 }
 

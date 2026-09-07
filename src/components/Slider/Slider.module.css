@@ -8,7 +8,7 @@
 }
 
 .disabled {
-  opacity: 0.5;
+  opacity: var(--tui-opacity-disabled);
 }
 
 /* ── Slider wrapper (for value label positioning) ── */

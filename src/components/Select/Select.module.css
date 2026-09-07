@@ -25,7 +25,7 @@
 }
 
 .labelDisabled {
-  opacity: 0.5;
+  opacity: var(--tui-opacity-disabled);
 }
 
 .requiredAsterisk {
@@ -123,7 +123,7 @@
 
 /* ── Disabled ── */
 .triggerDisabled {
-  opacity: 0.5;
+  opacity: var(--tui-opacity-disabled);
   cursor: not-allowed;
 }
 
@@ -293,7 +293,7 @@
 }
 
 .optionDisabled {
-  opacity: 0.5;
+  opacity: var(--tui-opacity-disabled);
   cursor: not-allowed;
 }
 
@@ -443,7 +443,7 @@
 }
 
 .mobileOptionDisabled {
-  opacity: 0.5;
+  opacity: var(--tui-opacity-disabled);
   cursor: not-allowed;
 }
 

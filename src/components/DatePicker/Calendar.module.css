@@ -91,7 +91,7 @@
 
 /* ── Disabled day ── */
 .dayDisabled {
-  opacity: 0.3;
+  opacity: var(--tui-opacity-disabled);
   cursor: not-allowed;
 }
 

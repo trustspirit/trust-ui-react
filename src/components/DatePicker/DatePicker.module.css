@@ -22,7 +22,7 @@
 }
 
 .labelDisabled {
-  opacity: 0.5;
+  opacity: var(--tui-opacity-disabled);
 }
 
 .requiredAsterisk {
@@ -114,7 +114,7 @@
 
 /* ── Disabled ── */
 .disabled .inputWrapper {
-  opacity: 0.5;
+  opacity: var(--tui-opacity-disabled);
   cursor: not-allowed;
 }
 

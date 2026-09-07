@@ -46,7 +46,7 @@
 }
 
 .actionItem:disabled {
-  opacity: 0.5;
+  opacity: var(--tui-opacity-disabled);
   cursor: not-allowed;
 }
 
