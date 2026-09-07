@@ -1,0 +1,25 @@
+/* 명암 축 — 라이트. 뉴트럴 매핑만 담당한다. */
+:root,
+[data-theme="light"] {
+  --tui-paper: var(--tui-p-neutral-0);
+  --tui-sheet: var(--tui-p-neutral-0);
+  --tui-field: var(--tui-p-neutral-50);
+
+  --tui-ink: var(--tui-p-neutral-1000);
+  --tui-ink-2: var(--tui-p-neutral-700);
+  --tui-ink-3: var(--tui-p-neutral-500);
+  --tui-on-ink: var(--tui-p-neutral-0);
+
+  --tui-rule: var(--tui-p-neutral-200);
+  --tui-rule-strong: var(--tui-p-neutral-300);
+
+  --tui-ring: rgba(0, 0, 0, 0.16);
+
+  --tui-danger: var(--tui-p-danger-600);
+  --tui-danger-hover: var(--tui-p-danger-700);
+  --tui-on-danger: var(--tui-p-neutral-0);
+
+  --tui-shadow-overlay: 0 1px 1px rgba(0, 0, 0, 0.04), 0 10px 30px -12px rgba(0, 0, 0, 0.22);
+
+  color-scheme: light;
+}

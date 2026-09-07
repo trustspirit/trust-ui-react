@@ -142,15 +142,18 @@ export const TextField = forwardRef<
       value: controlledValue,
       defaultValue,
       onChange,
+      id: idProp,
       ...rest
     },
     ref,
   ) => {
     const uid = useId();
+    // 사용자가 id를 직접 넘기면 그 값을 쓴다. label의 htmlFor와 항상 같은 값을 참조해야 하므로
+    // rest 스프레드가 뒤에서 덮어쓰지 못하도록 여기서 미리 구조분해해 둔다.
+    const inputId = idProp ?? `${uid}-input`;
     const errorId = `${uid}-error`;
     const helperId = `${uid}-helper`;
 
-    const [focused, setFocused] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [internalValue, setInternalValue] = useState<string>(
       (defaultValue as string) ?? '',
@@ -280,11 +283,15 @@ export const TextField = forwardRef<
       styles[variant],
       styles[size],
       styles[`shape_${shape}`],
-      focused ? styles.focused : '',
       isError ? styles.error : '',
       disabled ? styles.disabled : '',
       multiline ? styles.inputWrapperMultiline : '',
     ]
+      .filter(Boolean)
+      .join(' ');
+
+    // 서식 있는 숫자 입력은 자릿수 정렬을 위해 등폭 클래스를 붙인다.
+    const inputClassNames = [styles.input, format ? styles.numeric : '']
       .filter(Boolean)
       .join(' ');
 
@@ -314,7 +321,7 @@ export const TextField = forwardRef<
     return (
       <div className={containerClassNames} style={style}>
         {label && (
-          <label className={labelClassNames}>
+          <label className={labelClassNames} htmlFor={inputId}>
             {label}
             {required && <span className={styles.requiredAsterisk}> *</span>}
           </label>
@@ -324,6 +331,7 @@ export const TextField = forwardRef<
           {multiline ? (
             <textarea
               ref={ref as React.Ref<HTMLTextAreaElement>}
+              id={inputId}
               className={styles.textarea}
               placeholder={placeholder}
               disabled={disabled}
@@ -331,8 +339,6 @@ export const TextField = forwardRef<
               maxLength={maxLength}
               value={isControlled ? displayValue : internalValue}
               onChange={handleChange as (e: ChangeEvent<HTMLTextAreaElement>) => void}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
               aria-invalid={isError || undefined}
               aria-describedby={
                 errorMessage ? errorId : helperText ? helperId : undefined
@@ -342,7 +348,8 @@ export const TextField = forwardRef<
           ) : (
             <input
               ref={mergedRef}
-              className={styles.input}
+              id={inputId}
+              className={inputClassNames}
               type={inputType}
               placeholder={placeholder}
               disabled={disabled}
@@ -353,8 +360,6 @@ export const TextField = forwardRef<
               }
               value={renderedValue}
               onChange={handleChange as (e: ChangeEvent<HTMLInputElement>) => void}
-              onFocus={() => setFocused(true)}
-              onBlur={() => setFocused(false)}
               aria-invalid={isError || undefined}
               aria-describedby={
                 errorMessage ? errorId : helperText ? helperId : undefined

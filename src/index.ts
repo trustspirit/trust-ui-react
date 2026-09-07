@@ -1,14 +1,15 @@
 // Styles
-import './styles/fonts.css';
+import './styles/palette.css';
+import './styles/themes/light.css';
+import './styles/themes/dark.css';
+import './styles/themes/density.css';
 import './styles/tokens.css';
-import './styles/theme-light.css';
-import './styles/theme-dark.css';
-import './styles/surfaces.css';
+import './styles/surfaces.css'; // 계획 2에서 제거
 import './styles/reset.css';
 
 // Providers
 export { ThemeProvider } from './providers/ThemeProvider';
-export type { Theme, ThemeContextValue } from './providers/ThemeProvider';
+export type { Theme, Density, Market, ThemeContextValue } from './providers/ThemeProvider';
 export { ToastProvider } from './providers/ToastProvider';
 export type { ToastPosition, ToastData, ToastContextValue } from './providers/ToastProvider';
 

@@ -1,0 +1,36 @@
+/*
+ * 팔레트 층 — 원시 색상값.
+ * 의미를 담지 않으며 테마와 무관하게 고정된다.
+ * 컴포넌트는 이 층을 참조하지 않는다. themes/*.css 만 참조한다.
+ */
+:root {
+  /* 뉴트럴 — hue 0, sat 0. 색조를 섞지 않는다. */
+  --tui-p-neutral-0: #ffffff;
+  --tui-p-neutral-50: #f6f6f6;
+  --tui-p-neutral-100: #ededed;
+  --tui-p-neutral-200: #e4e4e4;
+  --tui-p-neutral-300: #c9c9c9;
+  --tui-p-neutral-400: #a8a8a8;
+  --tui-p-neutral-500: #8e8e8e;
+  --tui-p-neutral-600: #6e6e6e;
+  --tui-p-neutral-700: #5a5a5a;
+  --tui-p-neutral-800: #3d3d3d;
+  --tui-p-neutral-850: #262626;
+  --tui-p-neutral-900: #1a1a1a;
+  --tui-p-neutral-950: #0d0d0d;
+  --tui-p-neutral-1000: #000000;
+
+  /* 시장색 — 상승/하락. 글자 전용이며 market.css 를 통해서만 노출된다. */
+  --tui-p-rise-500: #d92f45;
+  --tui-p-rise-400: #ff5c6e;
+  --tui-p-fall-500: #1f62d9;
+  --tui-p-fall-400: #5b92ff;
+  --tui-p-gain-500: #0f8a4d;
+  --tui-p-gain-400: #35c47c;
+
+  /* 위험색 — 면 전용. 상승색보다 어둡게 잡아 형태와 값 양쪽으로 구분한다. */
+  --tui-p-danger-700: #8a0c1e;
+  --tui-p-danger-600: #a81026;
+  --tui-p-danger-500: #c9273c;
+  --tui-p-danger-400: #dd3a4f;
+}
