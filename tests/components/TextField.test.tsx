@@ -33,4 +33,16 @@ describe('TextField', () => {
     const input = container.querySelector('input')!;
     expect(input.className).toMatch(/numeric/);
   });
+
+  it('사용자가 넘긴 id를 rest 스프레드가 덮어쓰지 않는다', () => {
+    const { container } = render(
+      <TextField label="주문 단가" id="custom-id" />,
+    );
+
+    // rest 스프레드로 인해 생성된 id가 사용자 id로 되돌아가는 회귀를 막는다.
+    expect(screen.getByLabelText(/주문 단가/)).toBe(
+      container.querySelector('#custom-id'),
+    );
+    expect(container.querySelector('input')!.id).toBe('custom-id');
+  });
 });

@@ -142,12 +142,15 @@ export const TextField = forwardRef<
       value: controlledValue,
       defaultValue,
       onChange,
+      id: idProp,
       ...rest
     },
     ref,
   ) => {
     const uid = useId();
-    const inputId = `${uid}-input`;
+    // 사용자가 id를 직접 넘기면 그 값을 쓴다. label의 htmlFor와 항상 같은 값을 참조해야 하므로
+    // rest 스프레드가 뒤에서 덮어쓰지 못하도록 여기서 미리 구조분해해 둔다.
+    const inputId = idProp ?? `${uid}-input`;
     const errorId = `${uid}-error`;
     const helperId = `${uid}-helper`;
 
