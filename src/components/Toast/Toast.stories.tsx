@@ -152,7 +152,7 @@ function PositionDemo() {
 export const AllPositions: Story = {
   render: () => (
     <div>
-      <p style={{ marginBottom: 16, color: 'var(--tui-text-secondary)', fontFamily: 'var(--tui-font-family)' }}>
+      <p style={{ marginBottom: 16, color: 'var(--tui-ink-2)', fontFamily: 'var(--tui-font-sans)' }}>
         The position is controlled by the ToastProvider. This story uses the default top-right position.
         To change position, wrap your app with{' '}
         <code>&lt;ToastProvider position="bottom-left"&gt;</code>

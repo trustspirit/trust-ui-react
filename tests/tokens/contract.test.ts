@@ -215,4 +215,29 @@ describe('토큰 계약', () => {
     }
     expect(bad).toEqual([]);
   });
+
+  it('tsx 안의 토큰 참조도 정의된 것이어야 한다', () => {
+    // Slider.tsx 가 죽은 v1 토큰을 참조한 채 배포될 뻔했고 사람이 눈으로 찾았다.
+    // CSS 만 훑는 검사로는 원리적으로 볼 수 없는 자리다.
+    // .stories.tsx 는 제외하지 않는다. Toast.stories.tsx 등 10개 스토리 파일이
+    // v1 토큰(--tui-text-secondary, --tui-primary, --tui-border 등)을 참조한 채
+    // 남아 있었다 — 개발 전용이라 해도 Storybook에서 렌더링이 깨지고,
+    // 그 Storybook이 바로 시각 베이스라인의 출처다.
+    const tsx = globSync('src/**/*.tsx', { cwd: root })
+      // Tokens.stories.tsx 는 팔레트 스텝을 `var(--tui-p-neutral-${step})` 처럼
+      // 템플릿 리터럴로 동적 렌더링하는 문서 페이지다. 정규식은 `${` 앞에서
+      // 멈춰 `--tui-p-neutral-` 라는 불완전한 이름을 만들어내므로 오탐이다 —
+      // Calendar.module.css의 그라데이션 예외와 같은 성격의 의도된 예외다.
+      .filter((f) => f !== 'src/styles/Tokens.stories.tsx')
+      .sort();
+    const bad: string[] = [];
+    for (const f of tsx) {
+      const src = read(f);
+      const declared = collectDeclaredTokens(src);
+      for (const name of collectReferencedTokens(src)) {
+        if (!DEFINED_TOKENS.has(name) && !declared.has(name)) bad.push(`${f} → ${name}`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
 });

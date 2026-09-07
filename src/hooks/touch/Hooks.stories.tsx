@@ -15,11 +15,11 @@ type Story = StoryObj;
 
 const cardStyle: React.CSSProperties = {
   padding: 24,
-  borderRadius: 'var(--tui-radius-lg)',
-  border: '1px solid var(--tui-border)',
-  background: 'var(--tui-bg-subtle)',
+  borderRadius: 'var(--tui-radius-control)',
+  border: '1px solid var(--tui-rule)',
+  background: 'var(--tui-sheet)',
   fontFamily: 'var(--tui-font-sans)',
-  color: 'var(--tui-text)',
+  color: 'var(--tui-ink)',
 };
 
 export const UseTouchDevice: Story = {
@@ -29,7 +29,7 @@ export const UseTouchDevice: Story = {
       <div style={cardStyle}>
         <h3>useTouchDevice</h3>
         <p>Current pointer environment: <strong>{isTouch ? 'touch (coarse)' : 'mouse (fine)'}</strong></p>
-        <p style={{ fontSize: 13, color: 'var(--tui-text-muted)' }}>
+        <p style={{ fontSize: 13, color: 'var(--tui-ink-3)' }}>
           Try opening Chrome DevTools → Device toolbar → enable mobile emulation, then reload.
         </p>
       </div>
@@ -43,7 +43,7 @@ export const UseHaptic: Story = {
     return (
       <div style={cardStyle}>
         <h3>useHaptic</h3>
-        <p style={{ fontSize: 13, color: 'var(--tui-text-muted)' }}>
+        <p style={{ fontSize: 13, color: 'var(--tui-ink-3)' }}>
           Best-effort Vibration API (Android only; iOS Safari silently no-ops).
           Mount HapticProvider with a native bridge trigger to enable iOS.
         </p>
@@ -54,9 +54,9 @@ export const UseHaptic: Story = {
               onClick={() => haptic(type)}
               style={{
                 padding: '8px 14px',
-                borderRadius: 'var(--tui-radius-md)',
-                background: 'var(--tui-primary)',
-                color: 'var(--tui-primary-text)',
+                borderRadius: 'var(--tui-radius-control)',
+                background: 'var(--tui-accent)',
+                color: 'var(--tui-on-accent)',
                 border: 'none',
                 cursor: 'pointer',
               }}
@@ -76,7 +76,7 @@ export const UseVisualViewport: Story = {
     return (
       <div style={cardStyle}>
         <h3>useVisualViewport</h3>
-        <pre style={{ fontSize: 13, fontFamily: 'var(--tui-font-mono)' }}>
+        <pre style={{ fontSize: 13, fontFamily: 'ui-monospace, SFMono-Regular, monospace' }}>
           {`height:       ${vv.height}
 offsetTop:    ${vv.offsetTop}
 keyboardOpen: ${vv.keyboardOpen}`}
@@ -85,10 +85,10 @@ keyboardOpen: ${vv.keyboardOpen}`}
           style={{
             marginTop: 12,
             padding: 10,
-            borderRadius: 'var(--tui-radius-md)',
-            border: '1px solid var(--tui-border)',
-            background: 'var(--tui-bg)',
-            color: 'var(--tui-text)',
+            borderRadius: 'var(--tui-radius-control)',
+            border: '1px solid var(--tui-rule)',
+            background: 'var(--tui-paper)',
+            color: 'var(--tui-ink)',
             width: '100%',
           }}
           placeholder="Focus me on a mobile device to open keyboard"
@@ -119,9 +119,9 @@ export const UseSwipe: Story = {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            background: 'var(--tui-primary-subtle)',
-            color: 'var(--tui-primary)',
-            borderRadius: 'var(--tui-radius-lg)',
+            background: 'var(--tui-field)',
+            color: 'var(--tui-accent)',
+            borderRadius: 'var(--tui-radius-control)',
             userSelect: 'none',
             touchAction: 'none',
           }}
@@ -147,10 +147,10 @@ export const UseLongPress: Story = {
           style={{
             marginTop: 12,
             padding: '12px 20px',
-            background: 'var(--tui-primary)',
-            color: 'var(--tui-primary-text)',
+            background: 'var(--tui-accent)',
+            color: 'var(--tui-on-accent)',
             border: 'none',
-            borderRadius: 'var(--tui-radius-md)',
+            borderRadius: 'var(--tui-radius-control)',
             cursor: 'pointer',
           }}
         >
@@ -172,7 +172,7 @@ export const UseDrag: Story = {
     return (
       <div style={cardStyle}>
         <h3>useDrag</h3>
-        <div style={{ height: 200, position: 'relative', background: 'var(--tui-bg-muted)', borderRadius: 'var(--tui-radius-lg)', marginTop: 12 }}>
+        <div style={{ height: 200, position: 'relative', background: 'var(--tui-field)', borderRadius: 'var(--tui-radius-control)', marginTop: 12 }}>
           <div
             ref={ref}
             style={{
@@ -181,8 +181,8 @@ export const UseDrag: Story = {
               left: 80,
               width: 60,
               height: 60,
-              borderRadius: 'var(--tui-radius-md)',
-              background: 'var(--tui-primary)',
+              borderRadius: 'var(--tui-radius-control)',
+              background: 'var(--tui-accent)',
               transform: `translate(${offset.x}px, ${offset.y}px)`,
               touchAction: 'none',
               cursor: 'grab',

@@ -57,15 +57,15 @@ export const Sizes: Story = {
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div>
-        <p style={{ margin: '0 0 8px', color: 'var(--tui-text-secondary)' }}>Small</p>
+        <p style={{ margin: '0 0 8px', color: 'var(--tui-ink-2)' }}>Small</p>
         <PaginationExample totalPages={10} size="sm" />
       </div>
       <div>
-        <p style={{ margin: '0 0 8px', color: 'var(--tui-text-secondary)' }}>Medium (default)</p>
+        <p style={{ margin: '0 0 8px', color: 'var(--tui-ink-2)' }}>Medium (default)</p>
         <PaginationExample totalPages={10} size="md" />
       </div>
       <div>
-        <p style={{ margin: '0 0 8px', color: 'var(--tui-text-secondary)' }}>Large</p>
+        <p style={{ margin: '0 0 8px', color: 'var(--tui-ink-2)' }}>Large</p>
         <PaginationExample totalPages={10} size="lg" />
       </div>
     </div>
