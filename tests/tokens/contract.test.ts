@@ -223,16 +223,26 @@ describe('토큰 계약', () => {
     // v1 토큰(--tui-text-secondary, --tui-primary, --tui-border 등)을 참조한 채
     // 남아 있었다 — 개발 전용이라 해도 Storybook에서 렌더링이 깨지고,
     // 그 Storybook이 바로 시각 베이스라인의 출처다.
-    const tsx = globSync('src/**/*.tsx', { cwd: root })
-      // Tokens.stories.tsx 는 팔레트 스텝을 `var(--tui-p-neutral-${step})` 처럼
-      // 템플릿 리터럴로 동적 렌더링하는 문서 페이지다. 정규식은 `${` 앞에서
-      // 멈춰 `--tui-p-neutral-` 라는 불완전한 이름을 만들어내므로 오탐이다 —
-      // Calendar.module.css의 그라데이션 예외와 같은 성격의 의도된 예외다.
-      .filter((f) => f !== 'src/styles/Tokens.stories.tsx')
-      .sort();
+    //
+    // 템플릿 리터럴로 이름을 조립하는 곳(Tokens.stories.tsx의 `var(--tui-p-neutral-${step})`
+    // 같은 팔레트 스와치 렌더링)은 정적으로 검증할 수 없다. 파일 전체를 빼면
+    // 같은 파일의 나머지 73개 정적 참조까지 검사에서 사라진다 — 토큰 문서 페이지야말로
+    // 낡은 참조가 가장 쌓이기 쉬운 곳인데 그곳만 무방비가 된다. 대신 동적으로 조립된
+    // var(...) 호출 자체만 지워, 같은 파일의 정적 참조는 계속 검사한다.
+    //
+    // ${...} 부분만 지우는 방식은 시도해봤지만 안 통했다: collectReferencedTokens 의
+    // 이름 문자 클래스([a-zA-Z0-9-]+)는 `$` 앞에서 이미 멈추므로, `var(--tui-p-neutral-${step})`
+    // 는 마스킹 전에도 후에도 똑같이 `--tui-p-neutral-` 라는 (하이픈으로 끝나는) 불완전한
+    // 이름을 그대로 남긴다 — 오탐이 사라지지 않는다(before=after=74, 직접 확인함).
+    // 그래서 `${...}` 조각이 아니라 그 조각을 포함한 var(...) 호출 전체를 지운다 —
+    // 동적으로 조립되는 참조 하나만 없어지고 정적 참조 73개는 그대로 남는다
+    // (before=74 → after=73, 사라진 건 정확히 그 하나뿐임을 확인했다).
+    const maskDynamicVarCalls = (src: string) => src.replace(/var\([^()]*\$\{[^}]*\}[^()]*\)/g, '');
+
+    const tsx = globSync('src/**/*.tsx', { cwd: root }).sort();
     const bad: string[] = [];
     for (const f of tsx) {
-      const src = read(f);
+      const src = maskDynamicVarCalls(read(f));
       const declared = collectDeclaredTokens(src);
       for (const name of collectReferencedTokens(src)) {
         if (!DEFINED_TOKENS.has(name) && !declared.has(name)) bad.push(`${f} → ${name}`);
