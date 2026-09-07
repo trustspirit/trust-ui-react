@@ -17,8 +17,7 @@
   font-size: var(--tui-font-size-small);
   font-weight: var(--tui-weight-medium);
   color: var(--tui-ink);
-  /* 2px는 여백 스케일(최소 4px)보다 작은 라벨-인풋 간 미세 조정값이라 토큰화하지 않는다. */
-  margin-bottom: 2px;
+  margin-bottom: var(--tui-gap-1);
 }
 
 .labelError {
@@ -128,7 +127,7 @@
 /* ── Sizes — 밀도 축을 따른다 ── */
 .sm .input { height: var(--tui-control-sm); font-size: var(--tui-font-size-small); padding: 0 var(--tui-pad-2); }
 .md .input { height: var(--tui-control-md); font-size: var(--tui-font-size-base); padding: 0 var(--tui-pad-3); }
-.lg .input { height: var(--tui-control-lg); font-size: var(--tui-font-size-lead); padding: 0 var(--tui-pad-3); }
+.lg .input { height: var(--tui-control-lg); font-size: var(--tui-font-size-lead); padding: 0 var(--tui-pad-4); }
 
 /* ── Input element ── */
 .input {
@@ -177,7 +176,7 @@
 
 .lg .textarea {
   font-size: var(--tui-font-size-lead);
-  padding: var(--tui-pad-3);
+  padding: var(--tui-pad-4);
 }
 
 .textarea::placeholder {
@@ -200,9 +199,12 @@
   padding-left: var(--tui-pad-2);
 }
 
-.md .prefix,
-.lg .prefix {
+.md .prefix {
   padding-left: var(--tui-pad-3);
+}
+
+.lg .prefix {
+  padding-left: var(--tui-pad-4);
 }
 
 .suffix {
@@ -216,9 +218,12 @@
   padding-right: var(--tui-pad-2);
 }
 
-.md .suffix,
-.lg .suffix {
+.md .suffix {
   padding-right: var(--tui-pad-3);
+}
+
+.lg .suffix {
+  padding-right: var(--tui-pad-4);
 }
 
 /* ── Visibility toggle ── */
