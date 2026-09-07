@@ -80,6 +80,28 @@ function rules(css: string): { selector: string; body: string; index: number }[]
   return out;
 }
 
+/**
+ * `@media (pointer: coarse) { ... }` 블록의 본문 텍스트만 뽑는다.
+ * 블록 안에 중첩된 규칙(`{ ... }`)이 있으므로 `rules()` 처럼 첫 `}` 에서
+ * 멈추는 non-greedy 매치로는 못 잡는다 — 중괄호 깊이를 직접 센다.
+ */
+function coarsePointerBlocks(css: string): string[] {
+  const out: string[] = [];
+  const openRe = /@media\s*\(\s*pointer\s*:\s*coarse\s*\)\s*\{/g;
+  for (const m of css.matchAll(openRe)) {
+    let depth = 1;
+    let i = m.index + m[0].length;
+    const start = i;
+    while (i < css.length && depth > 0) {
+      if (css[i] === '{') depth++;
+      else if (css[i] === '}') depth--;
+      i++;
+    }
+    out.push(css.slice(start, i - 1));
+  }
+  return out;
+}
+
 const PROP = /(^|;)\s*([a-z-]+)\s*:/g;
 const propsOf = (body: string) =>
   new Set([...body.matchAll(PROP)].map((m) => m[2]).filter((p) => !p.startsWith('--')));
@@ -268,6 +290,33 @@ describe('토큰 계약', () => {
         if (!DISABLED_SELECTOR.test(r.selector)) continue;
         const m = r.body.match(/opacity\s*:\s*(0?\.\d+|\d)/);
         if (m) bad.push(`${f}: "${r.selector}" 가 리터럴 ${m[1]} 을 쓴다`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it('coarse 포인터 히트 영역 확장에 고정 음수 inset 을 쓰지 않는다', () => {
+    // 고정 -12px 같은 인셋은 요소 크기와 무관하게 상수만 더한다 — 작은 요소는
+    // 44px 에 못 미치고 큰 요소는 필요 이상으로 넓어진다. max(100%, 44px) 는
+    // 크기와 무관하게 44px 하한을 직접 보장하므로 이쪽으로 통일했다(Task 5).
+    //
+    // Checkbox/Radio/Switch 가 실제로 썼던 옛 패턴은 inset 선언 자체는
+    // pointer:coarse 블록 "밖"(항상 존재하는 ::before)에 두고, 블록 "안"에서는
+    // pointer-events 만 토글했다 — 그래서 블록 본문 텍스트만 정규식으로 훑으면
+    // 이 옛 패턴이 되돌아와도 못 잡는다. pointer:coarse 블록에서 "언급되는"
+    // 선택자(생성이든 토글이든)를 먼저 모으고, 그 선택자의 파일 전체 선언을
+    // 다시 검사해 두 패턴 모두를 잡는다.
+    const bad: string[] = [];
+    for (const f of componentCss) {
+      const css = read(f);
+      const coarseSelectors = new Set<string>();
+      for (const block of coarsePointerBlocks(css)) {
+        for (const r of rules(block)) coarseSelectors.add(r.selector);
+      }
+      for (const r of rules(css)) {
+        if (!coarseSelectors.has(r.selector)) continue;
+        const m = r.body.match(/inset\s*:\s*(-[\d.]+px[^;]*)/);
+        if (m) bad.push(`${f}: "${r.selector}" (pointer:coarse 확장 대상) 가 고정 음수 inset "${m[1]}" 을 쓴다`);
       }
     }
     expect(bad).toEqual([]);

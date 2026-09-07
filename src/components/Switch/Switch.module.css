@@ -41,17 +41,18 @@
   flex-shrink: 0;
 }
 
-/* ── 터치 타깃 확장 — 트랙 높이가 20~28px 이지만 coarse 포인터에서는
-   -12px 인셋으로 최소 44px(sm 기준 20+24) 히트 영역을 확보한다 ── */
-.switch::before {
-  content: '';
-  position: absolute;
-  inset: -12px;
-  pointer-events: none;
-}
+/* ── 터치 타깃 확장 — max(100%, 44px) 로 하한을 직접 보장한다.
+   고정 -12px 인셋은 sm(36×20)에서는 60×44 로 정확히 44px 에 걸쳤을 뿐이고
+   md·lg(44×24, 52×28)에서는 68×48, 76×52 로 필요 이상 넓어졌다 —
+   요소 크기가 커질수록 함께 커지는 값이라 44px 라는 하한과 무관했다. ── */
 @media (pointer: coarse) {
-  .switch::before {
-    pointer-events: auto;
+  .switch::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
   }
 }
 
