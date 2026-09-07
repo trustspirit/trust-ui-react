@@ -1,12 +1,12 @@
 /* ── Root ── */
 .expander {
-  font-family: var(--tui-font-family);
+  font-family: var(--tui-font-sans);
   width: 100%;
 }
 
 /* ── Variant: default ── */
 .variantDefault .item {
-  border-bottom: 1px solid var(--tui-border);
+  border-bottom: 1px solid var(--tui-rule);
 }
 
 .variantDefault .item:last-child {
@@ -15,13 +15,13 @@
 
 /* ── Variant: bordered ── */
 .variantBordered {
-  border: 1px solid var(--tui-border);
-  border-radius: var(--tui-radius-lg);
+  border: 1px solid var(--tui-rule);
+  border-radius: var(--tui-radius-control);
   overflow: hidden;
 }
 
 .variantBordered .item {
-  border-bottom: 1px solid var(--tui-border);
+  border-bottom: 1px solid var(--tui-rule);
 }
 
 .variantBordered .item:last-child {
@@ -32,12 +32,12 @@
 .variantSeparated {
   display: flex;
   flex-direction: column;
-  gap: var(--tui-spacing-sm);
+  gap: var(--tui-gap-2);
 }
 
 .variantSeparated .item {
-  border: 1px solid var(--tui-border);
-  border-radius: var(--tui-radius-lg);
+  border: 1px solid var(--tui-rule);
+  border-radius: var(--tui-radius-control);
   overflow: hidden;
 }
 
@@ -57,30 +57,29 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: var(--tui-spacing-md);
+  padding: var(--tui-pad-3);
   background: none;
   border: none;
   cursor: pointer;
-  font-family: var(--tui-font-family);
-  font-size: var(--tui-font-size-md);
-  font-weight: var(--tui-font-weight-medium);
-  color: var(--tui-text);
+  font-family: var(--tui-font-sans);
+  font-size: var(--tui-font-size-base);
+  font-weight: var(--tui-weight-medium);
+  color: var(--tui-ink);
   text-align: left;
-  line-height: var(--tui-line-height);
-  transition:
-    background-color var(--tui-duration-fast) var(--tui-ease-out),
-    color var(--tui-duration-fast) var(--tui-ease-out);
+  line-height: var(--tui-line-height-body);
+  transition: var(--tui-transition-color);
 }
 
 @media (hover: hover) {
   .trigger:hover {
-    background-color: var(--tui-bg-subtle);
+    background-color: var(--tui-sheet);
   }
 }
 
+/* Focus visible — 테두리를 둘 수 없는 요소이므로 바깥 링 모델 */
 .trigger:focus-visible {
   outline: none;
-  box-shadow: var(--tui-focus-ring);
+  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-ink);
   position: relative;
   z-index: 1;
 }
@@ -96,7 +95,7 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: var(--tui-text-muted);
+  color: var(--tui-ink-3);
   transition: transform var(--tui-duration-base) var(--tui-ease-out);
   transform: rotate(0deg);
 }
@@ -110,7 +109,7 @@
   display: grid;
   grid-template-rows: 0fr;
   transition:
-    grid-template-rows var(--tui-duration-base) var(--tui-ease-in-out),
+    grid-template-rows var(--tui-duration-base) var(--tui-ease-out),
     opacity var(--tui-duration-fast) var(--tui-ease-out);
 }
 
@@ -124,8 +123,8 @@
 
 /* ── Content ── */
 .content {
-  padding: 0 var(--tui-spacing-md) var(--tui-spacing-md);
-  font-size: var(--tui-font-size-md);
-  line-height: var(--tui-line-height);
-  color: var(--tui-text-secondary);
+  padding: 0 var(--tui-pad-3) var(--tui-pad-3);
+  font-size: var(--tui-font-size-base);
+  line-height: var(--tui-line-height-body);
+  color: var(--tui-ink-2);
 }
