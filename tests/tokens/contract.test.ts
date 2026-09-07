@@ -91,7 +91,10 @@ const propsOf = (body: string) =>
  * 같은 속성을 건드려도 충돌이 아니다.
  */
 function targetClasses(sel: string): Set<string> {
-  const last = sel.split(/\s+|>|\+|~/).filter(Boolean).pop() ?? '';
+  // :not(...) / :is(...) 같은 함수형 의사 클래스의 인자는 대상이 아니라 조건이다.
+  // .item:not(.disabled) 이 겨냥하는 것은 .item 이지 .disabled 가 아니다.
+  const withoutArgs = sel.replace(/:[\w-]+\([^)]*\)/g, '');
+  const last = withoutArgs.split(/\s+|>|\+|~/).filter(Boolean).pop() ?? '';
   return new Set((last.match(/\.[\w-]+/g) ?? []).map((c) => c.slice(1)));
 }
 
