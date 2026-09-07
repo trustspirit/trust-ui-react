@@ -13,3 +13,8 @@ docs-site/node_modules/
 
 # Superpowers brainstorming session files
 .superpowers/
+
+# Playwright 시각 회귀 하네스 — 스토리북 정적 빌드와 테스트 결과물 (스냅샷 __snapshots__/ 는 예외로 커밋한다)
+storybook-static/
+test-results/
+playwright-report/
