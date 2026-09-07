@@ -101,8 +101,17 @@
   border-radius: var(--tui-radius-control);
 }
 
-/* underline 변형과 같은 원칙 — 면이나 그림자로 채우지 않고 글자색만 바꾼다. */
+/*
+ * pill 변형은 underline 과 다른 원칙이다 — 밑줄이 없는 대신 "채워진 셀이
+ * 움직인다"는 것 자체가 어포던스이므로 면을 채워야 한다. 글자색만으로는
+ * --tui-field 트랙 위에서 선택 상태가 거의 보이지 않는다.
+ * --tui-field 과 --tui-sheet 은 명도 차가 한 단계뿐이라 헤어라인을 더해
+ * 떠 있는 셀처럼 보이게 한다 — Button 의 secondary, SegmentedControl 의
+ * indicator 와 같은 해법.
+ */
 .triggerPill.triggerActive {
+  background-color: var(--tui-sheet);
+  border: 1px solid var(--tui-rule);
   color: var(--tui-ink);
 }
 

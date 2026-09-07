@@ -26,6 +26,10 @@
   width: calc((100% - 6px) / var(--tui-seg-count, 1));
   border-radius: var(--tui-radius-full);
   background-color: var(--tui-sheet);
+  /* --tui-field 과 --tui-sheet 은 명도 차가 한 단계뿐이라 채움만으로는
+     선택 상태가 잘 보이지 않는다(다크 테마에서 특히). 헤어라인을 더해
+     떠 있는 셀처럼 보이게 한다 — Button 의 secondary 와 같은 해법. */
+  border: 1px solid var(--tui-rule);
   transform: translateX(calc(var(--tui-seg-active, 0) * (100% + 2px)));
   transition:
     transform var(--tui-duration-base) var(--tui-ease-out),
