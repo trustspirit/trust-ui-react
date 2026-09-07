@@ -4,8 +4,6 @@
  * 이 배열이 비면 마이그레이션이 끝난 것이다.
  */
 export const UNMIGRATED: string[] = [
-  "src/components/ActionSheet/ActionSheet.module.css",
-  "src/components/BottomSheet/BottomSheet.module.css",
   "src/components/DatePicker/Calendar.module.css",
   "src/components/DatePicker/DatePicker.module.css",
   "src/components/DateRangePicker/DateRangePicker.module.css",
@@ -14,5 +12,4 @@ export const UNMIGRATED: string[] = [
   "src/components/Slider/Slider.module.css",
   "src/components/Table/Table.module.css",
   "src/components/Tabs/Tabs.module.css",
-  "src/components/Toast/Toast.module.css",
 ];
