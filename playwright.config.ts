@@ -17,8 +17,21 @@ export default defineConfig({
   // maxDiffPixels 를 아무리 낮춰도 SegmentedControl 헤어라인 링 회귀를 잡지
   // 못했다. threshold 를 낮춰 인접 뉴트럴 차이가 실제로 카운트되게 하고,
   // maxDiffPixels 는 안티에일리어싱 지터 예산으로만 남긴다.
+  //
+  // 0.05는 실측으로 부족했다 — SegmentedControl 선택 셀의 채움을 --tui-sheet →
+  // --tui-field로 되돌리는 실험에서 라이트 테마(0.04에서도 미검출, 0.03에서
+  // 검출)와 다크 테마(0.04에서 검출)의 임계가 서로 달라, 0.05는 두 테마 모두를
+  // 놓쳤다. 여유를 두고 0.02로 낮춘다 — 두 테마 모두에서 이 회귀를 잡으면서도
+  // 무변경 코드로 두 차례 전체 실행이 안정적으로 통과함을 확인했다.
+  //
+  // 검증 중 무관한 기존 결함 하나를 발견했다: Avatar의 with-image 스토리는
+  // 실제 네트워크 이미지(i.pravatar.cc)를 불러오는데, 고정 300ms 대기가
+  // 이미지 로드를 항상 기다려주지 못해 실행마다 빈 화면 · 대체 아이콘 · 실제
+  // 사진 중 하나로 임의로 정착한다. 이 threshold 변경과 무관하게 재현되며
+  // (0.2 기본값에서도 간헐적으로 재현됨), 이 파일에서 고칠 성격의 문제가
+  // 아니라 스토리가 네트워크에 의존한다는 설계 자체의 결함이다.
   expect: {
-    toHaveScreenshot: { threshold: 0.05, maxDiffPixels: 120, animations: 'disabled' },
+    toHaveScreenshot: { threshold: 0.02, maxDiffPixels: 120, animations: 'disabled' },
   },
   use: { baseURL: 'http://localhost:6008' },
   webServer: {
