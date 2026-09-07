@@ -50,7 +50,8 @@
   background-color: var(--tui-field);
 }
 
-.item:focus-visible {
+/* 비활성 항목도 이 규칙의 대상이라 :not(.disabled) 없이는 포커스 링을 그렸다. */
+.item:focus-visible:not(.disabled) {
   box-shadow: inset 0 0 0 2px var(--tui-ink);
 }
 

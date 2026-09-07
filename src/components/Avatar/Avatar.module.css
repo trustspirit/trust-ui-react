@@ -18,8 +18,14 @@
   border-radius: inherit;
 }
 
+/*
+ * 예전엔 포커스 링과 기하가 같았다(0 0 0 2px paper, 0 0 0 4px rule) — 색만
+ * 다르고 "안쪽 여백 + 바깥 링" 두 겹 구조는 동일해, 테두리 있는 아바타가
+ * 포커스된 것처럼 읽혔다. paper 간격 층을 없애고 --tui-rule 한 겹만 남겨
+ * 장식(단순한 테두리)과 포커스(두 겹 링)를 모양 자체로 구분한다.
+ */
 .outlined {
-  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-rule);
+  box-shadow: 0 0 0 3px var(--tui-rule);
 }
 
 /* ── Sizes ── */

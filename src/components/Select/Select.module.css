@@ -268,8 +268,17 @@
   user-select: none;
 }
 
+/*
+ * 키보드 커서(highlighted)가 선택(selected)과 같은 표현(--tui-field 배경)을
+ * 써서, 커서가 선택된 행 위에 있으면(열자마자 그 자리다) 아무 신호도 안
+ * 보였다. Menu 가 쓴 방식(Menu.module.css:53)을 그대로 적용한다: 선택은
+ * 면(--tui-field), 키보드 커서는 안쪽 테두리(inset box-shadow). 클래스
+ * 선택자는 요소가 어떤 클래스를 더 갖든 독립적으로 매치되므로, 이 둘을
+ * 동시에 갖는 행에는 두 규칙이 함께 적용되어 면과 테두리가 겹쳐 보인다 —
+ * 별도의 .optionSelected.optionHighlighted 규칙은 필요 없다.
+ */
 .optionHighlighted {
-  background-color: var(--tui-field);
+  box-shadow: inset 0 0 0 2px var(--tui-ink);
 }
 
 @media (hover: hover) {
@@ -282,16 +291,6 @@
   background-color: var(--tui-field);
   color: var(--tui-accent);
   font-weight: var(--tui-weight-medium);
-}
-
-.optionSelected.optionHighlighted {
-  background-color: var(--tui-field);
-}
-
-@media (hover: hover) {
-  .optionSelected:hover {
-    background-color: var(--tui-field);
-  }
 }
 
 .optionDisabled {

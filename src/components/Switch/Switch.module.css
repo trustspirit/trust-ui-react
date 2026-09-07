@@ -12,10 +12,23 @@
   line-height: var(--tui-line-height-body);
 }
 
+/*
+ * outline 이 이 시스템에서 상태 표시에 쓰는 유일한 곳이었다 — 게다가
+ * :focus-visible 의 outline: none (아래) 이 포커스 시 그 outline 을
+ * 지워버렸다. 테두리를 둘 수 없는 트랙이므로(Menu 의 키보드 커서와 같은
+ * 이유) --tui-danger 를 안쪽 box-shadow 로 그려 두께 있는 테두리를
+ * 흉내낸다. 포커스 링은 바깥 층이라 서로 다른 box-shadow 레이어로
+ * 겹쳐 그리면 포커스 시에도 오류 표시가 함께 보인다.
+ */
 .switch.errorState {
-  outline: 1px solid var(--tui-danger);
-  outline-offset: 2px;
-  border-radius: var(--tui-radius-full);
+  box-shadow: inset 0 0 0 1px var(--tui-danger);
+}
+
+.switch.errorState:focus-visible {
+  box-shadow:
+    inset 0 0 0 1px var(--tui-danger),
+    0 0 0 2px var(--tui-paper),
+    0 0 0 4px var(--tui-ink);
 }
 
 /* ── Container ── */
