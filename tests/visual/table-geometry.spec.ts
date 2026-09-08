@@ -61,6 +61,9 @@ test('이웃한 정렬 버튼의 히트 영역이 겹치지 않는다', async ({
 
   const buttons = page.locator(`${ROOT} thead th button`);
   const count = await buttons.count();
+  // 대상이 0개면 이중 루프가 아예 돌지 않아 overlaps 가 빈 배열로 남고,
+  // 아무것도 재지 않은 채 통과해 버린다 — 개수부터 단언한다.
+  expect(count, '정렬 가능한 열이 하나도 없다 — 겹침을 잴 대상이 없다').toBeGreaterThan(0);
   const rects = [];
   for (let i = 0; i < count; i += 1) rects.push(await hitRect(buttons.nth(i)));
 
@@ -91,6 +94,13 @@ test('모바일 요약 행은 64px 이상이다', async ({ page }) => {
 
 test('요약 모드에서 데스크톱 칸은 그려지지 않는다', async ({ page }) => {
   await open(page, 'components-table--mobile-summary');
+
+  // evaluateAll 은 빈 노드 집합을 조용히 받아들인다(.evaluate() 와 달리 던지지
+  // 않는다) — 데스크톱 칸이 DOM 에 아예 없어도 visibleCells 가 0이 되어
+  // "감춰짐"과 "안 그려짐"을 구분하지 못한 채 통과해 버린다. 가시성을 재기
+  // 전에 대상이 실제로 존재하는지부터 단언한다.
+  const totalCells = await page.locator(`${ROOT} tbody td:not([colspan])`).count();
+  expect(totalCells, '데스크톱 칸이 DOM 에 아예 없다 — 감춰진 것이 아니라 안 그려진 것이다').toBeGreaterThan(0);
 
   // 같은 내용을 두 벌 렌더링하므로, 좁은 화면에서 한쪽이 확실히 감춰져야
   // 스크린 리더가 중복해 읽지 않는다.
@@ -133,4 +143,16 @@ test('scroll 모드의 첫 열은 스크롤해도 왼쪽에 남는다', async ({
 
   const after = (await hitRect(firstCell)).x;
   expect(Math.abs(after - before), `x: ${before} → ${after}`).toBeLessThan(1);
+});
+
+test('내용이 성긴 요약 행도 64px 로 지탱된다 — 바닥이 실제로 일한다', async ({ page }) => {
+  await open(page, 'components-table--mobile-summary-sparse');
+
+  const cells = page.locator(`${ROOT} tbody td[colspan]`);
+  const count = await cells.count();
+  expect(count, '요약 셀이 렌더링되지 않았다').toBeGreaterThan(0);
+
+  const heights: number[] = [];
+  for (let i = 0; i < count; i += 1) heights.push((await hitRect(cells.nth(i))).height);
+  expect(heights.every((h) => h >= 64), `높이: ${heights.join(', ')}`).toBe(true);
 });

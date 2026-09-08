@@ -154,6 +154,24 @@ export const MobileSummary: Story = {
   render: () => <Table columns={holdingColumns} data={holdings} />,
 };
 
+/**
+ * 슬롯이 성기게 찬 요약 행. 두 줄이 아니라 한 줄뿐이라 내용만으로는
+ * 행 높이가 44px 에도 못 미친다 — 이때 행을 64px 로 지탱하는 것은
+ * --tui-row-height 바닥 하나뿐이다.
+ */
+export const MobileSummarySparse: Story = {
+  tags: ['visual-mobile'],
+  render: () => (
+    <Table
+      columns={[
+        { key: 'name', header: '종목' },
+        { key: 'price', header: '현재가', numeric: true, render: (v: number) => won(v) },
+      ]}
+      data={holdings}
+    />
+  ),
+};
+
 /** 모든 열을 비교해야 하는 화면은 가로 스크롤을 명시적으로 고른다. */
 export const MobileScroll: Story = {
   tags: ['visual-mobile'],
