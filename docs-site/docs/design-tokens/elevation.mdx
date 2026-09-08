@@ -24,8 +24,13 @@ Only components that are genuinely floating above the page — rendered outside 
 - Toast
 - ActionSheet
 - BottomSheet
+- Tooltip
+- DatePicker (its popover)
+- DateRangePicker (its popover)
 
-Nothing else casts a shadow. A Card, a Table row, a Panel, a Button — none of these are actually floating, so none of them get one. If a component you're building isn't in the list above, don't reach for `--tui-shadow-overlay`.
+**Named exception:** `layout/StickyFooter` also uses `--tui-shadow-overlay`, but only on its `.elevated` class, applied opt-in when the footer needs to visually lift above scrolling content below it. It doesn't fit the criterion above — it sits in normal document flow, isn't dismissable, and isn't temporary — so it's called out here rather than folded into the list as if it belonged. Its default state uses a 1px top rule like everything else outside this list; only `.elevated` reaches for the shadow.
+
+Aside from that one named exception, nothing else casts a shadow. A Card, a Table row, a Panel, a Button — none of these are actually floating, so none of them get one. If a component you're building isn't in the list above, don't reach for `--tui-shadow-overlay`.
 
 ## Hierarchy comes from rules, not shadows
 

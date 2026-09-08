@@ -678,7 +678,7 @@ Scope token overrides to a container to theme a specific section without affecti
 All components accept an inline `style` prop for one-off adjustments:
 
 ```tsx
-<Badge variant="success" style={{ fontSize: '0.7rem', letterSpacing: '0.05em' }}>
+<Badge color="success" style={{ fontSize: '0.7rem', letterSpacing: '0.05em' }}>
   NEW
 </Badge>
 ```
@@ -689,7 +689,7 @@ All components accept an inline `style` prop for one-off adjustments:
 
 All components follow a consistent API pattern:
 
-- **`variant`** -- visual style variant (e.g., `'primary'`, `'outlined'`, `'ghost'`)
+- **`variant`** -- visual style variant (e.g., `'primary'`, `'outline'`, `'ghost'`)
 - **`size`** -- component size (`'sm'`, `'md'`, `'lg'`)
 - **`shape`** -- border radius shape (`'square'`, `'rounded'`, `'pill'`) on Button and TextField
 - **`disabled`** -- disables the component

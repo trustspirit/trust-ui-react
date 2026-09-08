@@ -92,7 +92,7 @@ Set `dismissible={false}` to prevent swipe-down dismiss (e.g., for confirmation 
 - Drag is GPU-accelerated (`transform: translateY`) — stays smooth even with heavy children.
 - Body scroll is locked while the sheet is open and restored on close.
 - Respects iOS safe-area-inset-bottom automatically (so content doesn't sit under the home indicator).
-- On `prefers-reduced-motion: reduce`, the slide-up animation is replaced with instant fade.
+- On `prefers-reduced-motion: reduce`, there's no component-level fade to replace the slide-up with — the global rule in `src/styles/tokens.css` collapses the animation duration to near-zero, so the sheet just appears instead of sliding in.
 - Pointer events use [`useDrag`](../design-tokens/spacing.mdx) hook internally — both touch and mouse drag work.
 
 ## Related components

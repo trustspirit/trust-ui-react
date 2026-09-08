@@ -68,7 +68,7 @@ Set `showProgress` to draw a 1px rule along the bottom edge that drains from ful
 ## Mobile considerations
 
 - Toast surface is an opaque `--tui-sheet` with a `--tui-shadow-overlay` shadow — the toast is genuinely floating above the page, which is why it's one of the few components that uses a shadow at all.
-- On `prefers-reduced-motion: reduce`, slide-in animation is replaced with instant fade.
+- On `prefers-reduced-motion: reduce`, there's no component-level fade to replace the slide-in with — the global rule in `src/styles/tokens.css` collapses the animation duration to near-zero, so the toast just appears instead of sliding in.
 - Toast container should be wrapped in [`<SafeAreaView edges={['top']}>`](../design-tokens/spacing.mdx#touch-targets--safe-area) so notifications clear iOS notch / status bar.
 
 ## Usage

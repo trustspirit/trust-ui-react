@@ -109,4 +109,19 @@ describe('문서 계약', () => {
     // 배열이어야 한다. 이 상한은 0에서 다시 올라갈 수 없다.
     expect(STALE.length).toBeLessThanOrEqual(0);
   });
+
+  it('마이그레이션이 끝났으니 STALE 은 빈 배열이다', () => {
+    // 위 상한(0) 검사와 별개로 값 자체를 못박는다 — 나중에 새 마이그레이션이
+    // 생기면 이 자리에 다시 항목이 늘 수 있으므로 메커니즘(STALE 배열과
+    // 래칫 검사)은 남겨두되, 지금 이 시점에는 반드시 비어 있어야 한다.
+    expect(STALE).toEqual([]);
+  });
+
+  it('영구 예외는 마이그레이션 문서 하나뿐이다', () => {
+    // EXEMPT 는 STALE 과 달리 숫자 래칫이 없다 — 누군가 아직 정리 안 된
+    // 문서를 EXEMPT 로 옮겨 넣고 초록 스위트를 유지하는 걸 막기 위해
+    // 이름을 못박는다. migration-v1-to-v2.mdx 는 원리상 검사 1~3 이
+    // 적용될 수 없는 유일한 문서다(위 stale.ts 주석 참고).
+    expect(EXEMPT).toEqual(['docs-site/docs/getting-started/migration-v1-to-v2.mdx']);
+  });
 });

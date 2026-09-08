@@ -5,6 +5,13 @@
  * 단방향 별칭이다 — v1 이름 → v2 값으로만 흐르고, v2 토큰을 재정의하지
  * 않는다. 그래서 이 파일을 임포트해도 v2 의 시각적 결과는 달라지지
  * 않는다. 2.1 에서 폐기 경고를 붙이고, 3.0 에서 제거한다.
+ *
+ * 예외 3개(아래 각 자리에 사유를 남겼다) — 별칭하면 오히려 무효한 CSS 나
+ * 완전히 다른 결과를 낳아서, v1 이름 그대로 두고 별칭을 만들지 않는다:
+ * --tui-focus-ring, --tui-inset-highlight, --tui-thumb-zone-height.
+ * (--tui-transition-shadow/-transform 는 같은 문제로 의심돼 점검했지만
+ * --tui-transition-color 로 별칭해도 문법상 무효가 되진 않아 — 값만
+ * 고쳐서 계속 별칭한다. 아래 모션 절 주석 참고.)
  */
 :root {
   /* ── 배경 ── */
@@ -24,7 +31,14 @@
   --tui-border: var(--tui-rule);
   --tui-border-hover: var(--tui-rule-strong);
   --tui-border-focus: var(--tui-rule-strong);
-  --tui-focus-ring: var(--tui-ink); /* v2 의 포커스는 잉크색 한 겹이다 */
+  /*
+   * --tui-focus-ring 은 의도적으로 별칭을 만들지 않는다.
+   * v1 값은 완결된 box-shadow 값이었다(`0 0 0 2px var(--tui-bg), 0 0 0 4px
+   * rgba(99, 91, 255, 0.5)`) — v1 컴포넌트는 `box-shadow: var(--tui-focus-ring)`
+   * 로 그대로 대입했다. v2 에 같은 문법의 값이 없어 `var(--tui-ink)` 같은
+   * 색 하나로 별칭하면 `box-shadow: #000000` 이 되어 무효한 CSS 가 되고,
+   * 선언 자체가 버려져 포커스 링이 사라진다. 그래서 별칭하지 않는다.
+   */
 
   /* ── 액센트(primary) ── */
   --tui-primary: var(--tui-accent);
@@ -67,7 +81,13 @@
   --tui-shadow-md: var(--tui-shadow-overlay);
   --tui-shadow-lg: var(--tui-shadow-overlay);
   --tui-shadow-xl: var(--tui-shadow-overlay);
-  --tui-inset-highlight: none;
+  /*
+   * --tui-inset-highlight 도 의도적으로 별칭을 만들지 않는다.
+   * v1 Button 은 `box-shadow: var(--tui-inset-highlight), var(--tui-shadow-md)`
+   * 처럼 다른 그림자와 리스트로 합성해 썼다. `none` 은 box-shadow 리스트의
+   * 항목으로 올 수 없는 값이라 `box-shadow: none, <shadow>` 는 전체가
+   * 무효한 CSS 가 되어 합성된 그림자 자체가 사라진다. 그래서 별칭하지 않는다.
+   */
 
   /* ── 라운드 ── */
   --tui-radius-xs: var(--tui-radius-tight);
@@ -117,14 +137,38 @@
   --tui-ease-in-out: var(--tui-ease-out); /* v2 는 이징이 하나다 */
   --tui-ease-linear: var(--tui-ease-out);
   --tui-ease-spring: var(--tui-ease-out);
-  --tui-transition: var(--tui-transition-color);
-  --tui-transition-fast: var(--tui-transition-color);
-  --tui-transition-slow: var(--tui-transition-color);
-  --tui-transition-shadow: var(--tui-transition-color);
-  --tui-transition-transform: var(--tui-transition-color);
+  /*
+   * v1 의 --tui-transition/-fast/-slow 는 "지속시간 이징" 조각값이었다
+   * (예: `var(--tui-duration-fast) ease`) — v1 컴포넌트는
+   * `transition: opacity var(--tui-transition-fast)` 처럼 속성명 뒤에
+   * 이어 붙여 썼다. --tui-transition-color 는 "color X, background-color
+   * X, border-color X" 형태의 완결된 세 속성 목록이라, 그 앞에 다른
+   * 속성명을 붙이면(`opacity color 150ms.., …`) 통째로 무효한 CSS 가
+   * 된다. 그래서 속성명 없이 그대로 이어붙일 수 있는 "지속시간 이징"
+   * 조각값으로 고친다.
+   * --tui-transition-shadow/-transform 는 v1 에서 `box-shadow 220ms
+   * cubic-bezier(...)` 처럼 속성명까지 포함한 완결값이었고(문서상
+   * `transition: var(--tui-transition-color), var(--tui-transition-shadow)`
+   * 식으로 콤마 목록에 그대로 얹어 썼다) --tui-transition-color 로
+   * 별칭해도 문법상 무효가 되지는 않는다. 다만 그러면 box-shadow/transform
+   * 자체는 전환 목록에서 빠져 애니메이션 없이 뚝 끊겨 바뀌므로, 나머지
+   * 셋과 같은 조각값으로 통일해 실제로 전환되게 한다.
+   */
+  --tui-transition: var(--tui-duration-base) var(--tui-ease-out);
+  --tui-transition-fast: var(--tui-duration-base) var(--tui-ease-out);
+  --tui-transition-slow: var(--tui-duration-base) var(--tui-ease-out);
+  --tui-transition-shadow: var(--tui-duration-base) var(--tui-ease-out);
+  --tui-transition-transform: var(--tui-duration-base) var(--tui-ease-out);
 
   /* ── 터치 타깃 ── */
   --tui-touch-target-min: 44px;
   --tui-touch-target-comfortable: var(--tui-control-lg);
-  --tui-thumb-zone-height: var(--tui-thumb-safe-bottom);
+  /*
+   * --tui-thumb-zone-height 도 의도적으로 별칭을 만들지 않는다.
+   * v1 값은 `65vh`(뷰포트 높이의 65%를 차지하는 영역)였다. v2 의
+   * --tui-thumb-safe-bottom 은 약 16px 짜리 "하단 여백"으로 전혀 다른
+   * 개념이다. `height: var(--tui-thumb-zone-height)` 로 쓰던 v1 앱은
+   * 별칭하면 화면의 약 65% 크기에서 16px 로 주저앉는다 — 값이 유효한
+   * CSS 라 조용히 깨지므로, 별칭 없이 두는 편이 낫다.
+   */
 }

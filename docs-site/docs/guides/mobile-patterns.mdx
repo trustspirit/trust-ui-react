@@ -71,9 +71,9 @@ import { HapticProvider, useHaptic } from 'trust-ui-react';
 </HapticProvider>
 
 function DeleteButton() {
-  const { trigger } = useHaptic();
+  const haptic = useHaptic();
   return (
-    <Button variant="danger" onClick={() => { trigger('warning'); confirmDelete(); }}>
+    <Button variant="danger" onClick={() => { haptic('warning'); confirmDelete(); }}>
       Delete
     </Button>
   );

@@ -30,7 +30,7 @@ If you upgrade and nothing turns red in your editor, that is not evidence the up
 
 | Component | Removed | Do instead |
 |---|---|---|
-| `Button` | `elevation` | Nothing — v2 has exactly one shadow (`--tui-shadow-overlay`), reserved for components that genuinely float above the page (Dialog, Menu, Select's popover, Toast, ActionSheet, BottomSheet). A Button was never one of them. Hierarchy elsewhere comes from `--tui-rule`/`--tui-rule-strong`, not a shadow. See [Elevation](../design-tokens/elevation.mdx). |
+| `Button` | `elevation` | Nothing — v2 has exactly one shadow (`--tui-shadow-overlay`), reserved for components that genuinely float above the page (Dialog, Menu, Select's popover, Toast, ActionSheet, BottomSheet, Tooltip, DatePicker's popover, DateRangePicker's popover). A Button was never one of them. Hierarchy elsewhere comes from `--tui-rule`/`--tui-rule-strong`, not a shadow. See [Elevation](../design-tokens/elevation.mdx). |
 | `Progress` | `gradient` | Nothing — the fill is a solid color only. |
 | `Slider` | `gradient` | Nothing — the fill is a solid color only. |
 | `Table` | `size` | Nothing — Table has one size. Row height now comes from `data-density` (`comfortable`/`compact`), applied app-wide or per-scope, not per-table. See [Spacing & Radius](../design-tokens/spacing.mdx#control-heights). |
@@ -116,7 +116,6 @@ This is what `compat.css` actually aliases, grouped the way the file groups them
 | `--tui-text-inverse` | `--tui-on-ink` |
 | `--tui-border` | `--tui-rule` |
 | `--tui-border-hover`, `--tui-border-focus` | `--tui-rule-strong` |
-| `--tui-focus-ring` | `--tui-ink` (v2's focus ring is one ink-colored ring, not a two-layer box-shadow) |
 | `--tui-primary` | `--tui-accent` |
 | `--tui-primary-hover`, `--tui-primary-active` | `--tui-accent-hover` |
 | `--tui-primary-text` | `--tui-on-accent` |
@@ -134,7 +133,6 @@ This is what `compat.css` actually aliases, grouped the way the file groups them
 | `--tui-glass-shadow` | `--tui-shadow-overlay` |
 | `--tui-glass-blur` | `0` (the concept doesn't exist in v2) |
 | `--tui-shadow-xs` … `--tui-shadow-xl` | `--tui-shadow-overlay` (five steps collapse to the one shadow) |
-| `--tui-inset-highlight` | `none` |
 | `--tui-radius-xs` | `--tui-radius-tight` |
 | `--tui-radius-sm`, `--tui-radius-md` | `--tui-radius-control` |
 | `--tui-radius-lg`, `--tui-radius-xl`, `--tui-radius-2xl` | `--tui-radius-sheet` |
@@ -148,12 +146,34 @@ This is what `compat.css` actually aliases, grouped the way the file groups them
 | `--tui-letter-tighter` | `--tui-letter-heading` |
 | `--tui-duration-medium`, `--tui-duration-slow` | `--tui-duration-base` |
 | `--tui-ease-in-out`, `--tui-ease-linear`, `--tui-ease-spring` | `--tui-ease-out` (v2 has one easing curve) |
-| `--tui-transition`, `--tui-transition-fast`, `--tui-transition-slow`, `--tui-transition-shadow`, `--tui-transition-transform` | `--tui-transition-color` |
+| `--tui-transition`, `--tui-transition-fast`, `--tui-transition-slow`, `--tui-transition-shadow`, `--tui-transition-transform` | `var(--tui-duration-base) var(--tui-ease-out)` (a bare duration+easing fragment — not `--tui-transition-color`, which is a complete three-property shorthand and invalid CSS in the fragment position v1 used these in) |
 | `--tui-touch-target-min` | `44px` (literal, not aliased) |
 | `--tui-touch-target-comfortable` | `--tui-control-lg` |
-| `--tui-thumb-zone-height` | `--tui-thumb-safe-bottom` |
 
-**One entry above doesn't do what a quick skim of the spacing plan suggests, so it's worth calling out directly: `--tui-spacing-3xl` does *not* alias to `--tui-gap-6`.** v1's spacing scale has seven steps (4/8/12/16/24/32/48px); v2's outer-gap scale has six (4/8/12/16/24/32px). The first six line up exactly, so `xs`…`2xl` alias cleanly onto `gap-1`…`gap-6`. The seventh, `3xl` at 48px, has nothing to land on — the nearest v2 step, `gap-6`, is 32px, a third smaller. Aliasing `3xl` to `gap-6` would mean the mere act of importing `compat.css` shrinks your largest spacing value, which breaks the one rule the whole file exists to keep: importing it must never change what your app looks like. So the shipped `compat.css` leaves `--tui-spacing-3xl` defined as the literal value `48px` instead of a `var()` alias. If your CSS uses `--tui-spacing-3xl`, it keeps rendering at 48px under `compat.css` — it just isn't tied to any token v2 defines, so treat it as one you should replace with an explicit `48px` (or a deliberate `--tui-gap-6`, if 32px is actually fine there) rather than something to keep relying on past 3.0.
+**One entry above doesn't do what a quick skim of the spacing plan suggests, so it's worth calling out directly: `--tui-spacing-3xl` does *not* alias to `--tui-gap-6`.** v1's spacing scale has seven steps (4/8/12/16/24/32/48px); v2's outer-gap scale has six (4/8/12/16/24/32px). The first six line up exactly, so `xs`…`2xl` alias cleanly onto `gap-1`…`gap-6`. The seventh, `3xl` at 48px, has nothing to land on — the nearest v2 step, `gap-6`, is 32px, a third smaller. Aliasing `3xl` to `gap-6` would shrink your largest spacing value the moment you import `compat.css`, which is exactly the kind of visible change the file exists to avoid. So the shipped `compat.css` leaves `--tui-spacing-3xl` defined as the literal value `48px` instead of a `var()` alias. If your CSS uses `--tui-spacing-3xl`, it keeps rendering at 48px under `compat.css` — it just isn't tied to any token v2 defines, so treat it as one you should replace with an explicit `48px` (or a deliberate `--tui-gap-6`, if 32px is actually fine there) rather than something to keep relying on past 3.0.
+
+**`--tui-spacing-md`, `-lg`, `-xl` only match exactly on desktop.** v1's spacing scale had a `@media (pointer: coarse)` override that bumped three of the seven steps up on touch devices — `md` 12px→16px, `lg` 16px→20px, `xl` 24px→28px (the other four steps were unaffected). v2's `--tui-gap-*` scale is fixed; it doesn't have a pointer-coarse override. So `--tui-spacing-md`/`-lg`/`-xl` alias to a value that matches v1's *desktop* number exactly, but on a touch device where v1 would have silently bumped up, `compat.css` no longer does — those three steps get a few pixels tighter than v1 gave you there. The other spacing aliases (`xs`, `sm`, `2xl`, `3xl`) don't have this gap; they matched on every pointer type in v1.
+
+**Below is the full list of aliases whose *value* changes shape under `compat.css` — not just renamed, but visibly different** — so you can decide per-project whether the difference matters before you rely on the bridge:
+
+| v1 token | v1 value | value under `compat.css` |
+|---|---|---|
+| `--tui-glass-blur` | `20px` | `0` |
+| `--tui-radius-xl` / `--tui-radius-2xl` | `14px` / `20px` | `10px` |
+| `--tui-shadow-xs` … `--tui-shadow-xl` | five distinct shadows | one shadow (`--tui-shadow-overlay`) |
+| `--tui-duration-medium` / `--tui-duration-slow` | `320ms` / `480ms` | `200ms` |
+
+## Tokens with no CSS bridge — rewrite these by hand
+
+Three v1 tokens are **not** aliased at all, on purpose — aliasing them would either produce invalid CSS or silently swap in a different concept, and both are worse than a token that simply resolves to nothing so you notice it during upgrade:
+
+| v1 token | what it did in v1 | why there's no bridge | replace with |
+|---|---|---|---|
+| `--tui-focus-ring` | A complete two-layer `box-shadow` value (`0 0 0 2px var(--tui-bg), 0 0 0 4px rgba(99, 91, 255, 0.5)`), used as `box-shadow: var(--tui-focus-ring)`. | v2's focus ring is one ink-colored ring, not a box-shadow value — aliasing it to a color would produce `box-shadow: #14151a`, which is invalid, and the whole declaration would be dropped. | Write your own `box-shadow` (or `outline`) using `--tui-ink` and whatever background color the ring sits on. |
+| `--tui-inset-highlight` | A single `box-shadow` layer (`inset 0 1px 0 rgba(255, 255, 255, 0.18)`) composed with another shadow: `box-shadow: var(--tui-inset-highlight), var(--tui-shadow-md)`. | v2 has no inset-highlight concept. Aliasing it to `none` would produce `box-shadow: none, <shadow>`, which is invalid CSS — `none` can't appear inside a shadow list — so the entire composed shadow would be dropped, not just the highlight. | Drop it, or write your own inset shadow layer directly if you still want the effect. |
+| `--tui-thumb-zone-height` | `65vh` — a viewport-relative height for a "thumb reachable zone" layout region. | v2's closest-named concept, `--tui-thumb-safe-bottom`, is a ~16px bottom inset, not a viewport-fraction height. They solve different problems; aliasing one to the other would be valid CSS that quietly collapses your layout region from ~65% of the screen to 16px. | Use an explicit `65vh` (or your own value) if you still need a thumb-reachable region sized as a fraction of the viewport. |
+
+If your CSS reads any of these three names, `compat.css` leaves them unresolved on purpose — that's what surfaces them as something to fix rather than a silent visual regression.
 
 ## Load Pretendard yourself
 

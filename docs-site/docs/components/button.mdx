@@ -63,7 +63,7 @@ v2 has no raised/elevated state and no color-blended fills — every variant ren
 
 ## Mobile considerations
 
-- All hover effects (lift + brightness) are guarded by `@media (hover: hover)` so they don't get "stuck" after a tap on touch devices.
+- All hover effects (a `background-color`/`border-color` change, per variant) are guarded by `@media (hover: hover)` so they don't get "stuck" after a tap on touch devices.
 - Active press uses `--tui-duration-instant` (80ms) for immediate feedback.
 - Buttons meet the 44×44px tap-target minimum at `size="md"` and `lg`. For `size="sm"`, ensure the surrounding row gives at least 8px vertical padding.
 
