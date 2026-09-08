@@ -316,17 +316,20 @@
   .mobileScroll .td:first-child {
     position: sticky;
     left: 0;
-    background-color: var(--tui-paper);
     border-right: 1px solid var(--tui-rule);
   }
 
-  /* 머리 고정과 열 고정이 겹치는 모서리 칸이 다른 머리 칸 아래로 깔리지
-     않도록, 머리 쪽을 본문보다 높은 층에 둔다. */
+  /* 머리 칸은 머리 바탕을, 본문 칸은 본문 바탕을 쓴다 — 다른 머리 칸은
+     모두 --tui-field 인데 고정된 첫 칸만 --tui-paper 를 쓰면 색이 어긋난다.
+     모서리 칸은 형제 머리 칸보다 한 층 위에 있어야 스크롤해 들어오는
+     칸에 덮이지 않는다. */
   .mobileScroll .th:first-child {
-    z-index: var(--tui-z-sticky);
+    background-color: var(--tui-field);
+    z-index: calc(var(--tui-z-sticky) + 1);
   }
 
   .mobileScroll .td:first-child {
+    background-color: var(--tui-paper);
     z-index: 1;
   }
 }

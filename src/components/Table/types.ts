@@ -11,7 +11,11 @@ export interface Column<T> {
   key: string;
   /** 열 머리 글자 */
   header: string;
-  /** 셀 렌더러. 지정하지 않으면 값을 그대로 그린다 */
+  /**
+   * 셀 렌더러. 지정하지 않으면 값을 그대로 그린다.
+   * 요약 행과 데스크톱 칸이 같은 결과를 써야 하므로 render 는 순수해야
+   * 한다(부수 효과를 넣지 않는다) — 행마다 한 번만 호출되고 두 곳이 나눠 쓴다.
+   */
   render?: (value: any, row: T, index: number) => ReactNode;
   /** 정렬 가능 여부 */
   sortable?: boolean;

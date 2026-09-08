@@ -36,12 +36,23 @@ function cellContent<T>(col: Column<T>, row: T, index: number): ReactNode {
 /**
  * 요약 행의 값 하나. 좁은 화면에서는 열 머리가 사라지므로, 화면에 보이지
  * 않는 라벨을 붙여 스크린 리더가 데스크톱과 같은 정보를 읽게 한다.
+ *
+ * 내용은 이미 렌더된 노드를 받는다 — render 를 여기서 다시 부르면 데스크톱
+ * 칸과 같은 값을 두 번 계산하게 된다.
  */
-function SummaryItem<T>({ col, row, index }: { col: Column<T>; row: T; index: number }) {
+function SummaryItem<T>({
+  col,
+  row,
+  content,
+}: {
+  col: Column<T>;
+  row: T;
+  content: ReactNode;
+}) {
   return (
     <span className={cx(styles.slotItem, TONE_CLASS[toneOf(col, row)])}>
       <span className={styles.srOnly}>{col.header}</span>
-      {cellContent(col, row, index)}
+      {content}
     </span>
   );
 }
@@ -175,55 +186,80 @@ export function Table<T extends Record<string, any>>({
               </td>
             </tr>
           ) : (
-            sorted.map((row, rowIndex) => (
-              <tr
-                key={getRowKey(row, rowIndex)}
-                className={onRowClick ? styles.clickableRow : undefined}
-                onClick={onRowClick ? () => onRowClick(row, rowIndex) : undefined}
-              >
-                {columns.map((col) => (
-                  <td
-                    key={col.key}
-                    className={cx(
-                      styles.td,
-                      alignClass(col),
-                      isToned(col) && styles.toned,
-                      TONE_CLASS[toneOf(col, row)],
-                    )}
-                  >
-                    {cellContent(col, row, rowIndex)}
-                  </td>
-                ))}
-                {showSummary && (
-                  <td className={styles.summaryCell} colSpan={Math.max(columns.length, 1)}>
-                    {summary.primary && (
-                      <span className={styles.slotPrimary}>
-                        <SummaryItem col={summary.primary} row={row} index={rowIndex} />
-                      </span>
-                    )}
-                    {summary.value && (
-                      <span className={styles.slotValue}>
-                        <SummaryItem col={summary.value} row={row} index={rowIndex} />
-                      </span>
-                    )}
-                    {summary.secondary.length > 0 && (
-                      <span className={styles.slotSecondary}>
-                        {summary.secondary.map((col) => (
-                          <SummaryItem key={col.key} col={col} row={row} index={rowIndex} />
-                        ))}
-                      </span>
-                    )}
-                    {summary.delta.length > 0 && (
-                      <span className={styles.slotDelta}>
-                        {summary.delta.map((col) => (
-                          <SummaryItem key={col.key} col={col} row={row} index={rowIndex} />
-                        ))}
-                      </span>
-                    )}
-                  </td>
-                )}
-              </tr>
-            ))
+            sorted.map((row, rowIndex) => {
+              // 요약 셀과 데스크톱 칸이 같은 내용을 그리므로, 행마다 한 번만
+              // 렌더하고 두 곳이 나눠 쓴다 — display:none 은 React 호출을 막지 못한다.
+              const cells = new Map<string, ReactNode>(
+                columns.map((col) => [col.key, cellContent(col, row, rowIndex)]),
+              );
+              return (
+                <tr
+                  key={getRowKey(row, rowIndex)}
+                  className={onRowClick ? styles.clickableRow : undefined}
+                  onClick={onRowClick ? () => onRowClick(row, rowIndex) : undefined}
+                >
+                  {columns.map((col) => (
+                    <td
+                      key={col.key}
+                      className={cx(
+                        styles.td,
+                        alignClass(col),
+                        isToned(col) && styles.toned,
+                        TONE_CLASS[toneOf(col, row)],
+                      )}
+                    >
+                      {cells.get(col.key)}
+                    </td>
+                  ))}
+                  {showSummary && (
+                    <td className={styles.summaryCell} colSpan={Math.max(columns.length, 1)}>
+                      {summary.primary && (
+                        <span className={styles.slotPrimary}>
+                          <SummaryItem
+                            col={summary.primary}
+                            row={row}
+                            content={cells.get(summary.primary.key)}
+                          />
+                        </span>
+                      )}
+                      {summary.value && (
+                        <span className={styles.slotValue}>
+                          <SummaryItem
+                            col={summary.value}
+                            row={row}
+                            content={cells.get(summary.value.key)}
+                          />
+                        </span>
+                      )}
+                      {summary.secondary.length > 0 && (
+                        <span className={styles.slotSecondary}>
+                          {summary.secondary.map((col) => (
+                            <SummaryItem
+                              key={col.key}
+                              col={col}
+                              row={row}
+                              content={cells.get(col.key)}
+                            />
+                          ))}
+                        </span>
+                      )}
+                      {summary.delta.length > 0 && (
+                        <span className={styles.slotDelta}>
+                          {summary.delta.map((col) => (
+                            <SummaryItem
+                              key={col.key}
+                              col={col}
+                              row={row}
+                              content={cells.get(col.key)}
+                            />
+                          ))}
+                        </span>
+                      )}
+                    </td>
+                  )}
+                </tr>
+              );
+            })
           )}
         </tbody>
       </table>
