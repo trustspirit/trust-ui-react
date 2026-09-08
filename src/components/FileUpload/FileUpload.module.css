@@ -76,7 +76,7 @@
 
 /* ── Dropzone: disabled ── */
 .dropzoneDisabled {
-  opacity: 0.5;
+  opacity: var(--tui-opacity-disabled);
   cursor: not-allowed;
 }
 
@@ -393,6 +393,6 @@
 }
 
 .mobileButton:disabled {
-  opacity: 0.5;
+  opacity: var(--tui-opacity-disabled);
   cursor: not-allowed;
 }

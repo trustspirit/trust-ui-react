@@ -27,23 +27,23 @@
   position: relative;
 }
 
-/* ── 터치 타깃 확장 — 시각 크기는 20px 이지만 coarse 포인터에서는
-   라벨을 포함한 행 전체가 44px 이상의 히트 영역을 갖도록 -12px 로 넓힌다 ── */
-.container::before {
-  content: '';
-  position: absolute;
-  inset: -12px;
-  pointer-events: none;
-}
-
+/* ── 터치 타깃 확장 — max(100%, 44px) 로 하한을 직접 보장한다.
+   고정 -12px 인셋은 라벨 없이 20×20 인디케이터만 있을 때는 44×44 로 정확히
+   걸쳤을 뿐이고, 라벨이 붙어 행이 넓어지면 필요 이상으로 커졌다 —
+   요소 크기와 무관하게 44px 하한만 보장하는 표현으로 통일한다. ── */
 @media (pointer: coarse) {
-  .container::before {
-    pointer-events: auto;
+  .container::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
   }
 }
 
 .container.disabled {
-  opacity: 0.5;
+  opacity: var(--tui-opacity-disabled);
   cursor: not-allowed;
 }
 

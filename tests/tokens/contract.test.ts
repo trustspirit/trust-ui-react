@@ -57,6 +57,156 @@ for (const f of LAYER_FILES) {
 
 const RAW_COLOR = /(#[0-9a-f]{3,8}\b|\brgba?\(|\bhsla?\()/i;
 
+/** CSS 선택자의 명시도를 [id, class/attr/pseudo-class, element] 로 센다. */
+function specificity(sel: string): [number, number, number] {
+  const s = sel.replace(/::[a-z-]+/g, ''); // 의사 요소는 element 급이라 따로 세지 않는다
+  const ids = (s.match(/#[\w-]+/g) ?? []).length;
+  const classes = (s.match(/\.[\w-]+|\[[^\]]+\]|:(?!:)[\w-]+(\([^)]*\))?/g) ?? []).length;
+  const elements = (s.match(/(^|[\s>+~])[a-z][\w-]*/gi) ?? []).length;
+  return [ids, classes, elements];
+}
+
+const ge = (a: [number, number, number], b: [number, number, number]) =>
+  a[0] !== b[0] ? a[0] > b[0] : a[1] !== b[1] ? a[1] > b[1] : a[2] >= b[2];
+
+/** 선택자와 선언을 가진 최상위 규칙들을 뽑는다. @media 안쪽도 포함한다. */
+function rules(css: string): { selector: string; body: string; index: number }[] {
+  const out: { selector: string; body: string; index: number }[] = [];
+  for (const m of css.matchAll(/([^{}]*)\{([^{}]*)\}/g)) {
+    const selector = m[1].trim();
+    if (!selector || selector.startsWith('@')) continue;
+    out.push({ selector, body: m[2], index: m.index ?? 0 });
+  }
+  return out;
+}
+
+/**
+ * `@media (pointer: coarse) { ... }` 블록의 본문 텍스트만 뽑는다.
+ * 블록 안에 중첩된 규칙(`{ ... }`)이 있으므로 `rules()` 처럼 첫 `}` 에서
+ * 멈추는 non-greedy 매치로는 못 잡는다 — 중괄호 깊이를 직접 센다.
+ */
+function coarsePointerBlocks(css: string): string[] {
+  const out: string[] = [];
+  const openRe = /@media\s*\(\s*pointer\s*:\s*coarse\s*\)\s*\{/g;
+  for (const m of css.matchAll(openRe)) {
+    let depth = 1;
+    let i = m.index + m[0].length;
+    const start = i;
+    while (i < css.length && depth > 0) {
+      if (css[i] === '{') depth++;
+      else if (css[i] === '}') depth--;
+      i++;
+    }
+    out.push(css.slice(start, i - 1));
+  }
+  return out;
+}
+
+const PROP = /(^|;)\s*([a-z-]+)\s*:/g;
+const propsOf = (body: string) =>
+  new Set([...body.matchAll(PROP)].map((m) => m[2]).filter((p) => !p.startsWith('--')));
+
+/**
+ * 무관하다고 판단한 호버/포커스 쌍. 클래스명이 다르다고 다른 요소인 것은 아니므로
+ * (CSS Modules 에서는 한 요소가 여러 클래스를 함께 갖는다 — 예: Menu 의 danger 항목은
+ * `.item` 과 `.danger` 를 동시에 갖는다) 자동 추론 대신 사람이 확인한 쌍만 여기에 적는다.
+ * 각 항목에 이유를 남긴다.
+ */
+const UNRELATED_PAIRS: { file: string; hover: string; focus: string; why: string }[] = [];
+
+/** file/hover 선택자/focus 선택자 조합이 UNRELATED_PAIRS 에 등록된 쌍과 일치하는지. */
+const isUnrelatedPair = (file: string, hoverSel: string, focusSel: string) =>
+  UNRELATED_PAIRS.some((p) => p.file === file && hoverSel.includes(p.hover) && focusSel.includes(p.focus));
+
+/**
+ * 호버 선택자가 "이 특정 포커스 규칙"에 대해 이미 게이팅되어 있는지.
+ * 게이트는 한 포커스 규칙에 대한 답이지, 파일 전체에 대한 통과권이 아니다 —
+ * `:not(:focus-visible)` 은 `:focus-within` 규칙을 막지 않는다.
+ * `:not(:focus-within)` 은 더 넓은 조건(포커스가 자식에 있어도 제외)이므로
+ * `:focus-visible` 규칙까지 막는다.
+ */
+function isGatedFor(hoverSelector: string, focusSelector: string): boolean {
+  const hasFocusWithinGate = /:not\(:focus-within\)/.test(hoverSelector);
+  const hasFocusVisibleGate = /:not\(:focus-visible\)/.test(hoverSelector);
+  if (/:focus-within/.test(focusSelector)) return hasFocusWithinGate;
+  if (/:focus-visible/.test(focusSelector)) return hasFocusVisibleGate || hasFocusWithinGate;
+  return false;
+}
+
+/*
+ * padding/margin/gap 의 리터럴 px 는 밀도(density) 축을 무시한다 —
+ * ActionSheet/SegmentedControl/Select 가 마이그레이션 이후에도 이렇게
+ * 남아 있었다(Task 7). 값의 절대값이 1px 이하면 예외다: 그 정도는 대개
+ * 헤어라인이나 인접 요소와의 정렬 보정이지 "숨쉴 공간"이 아니다.
+ *
+ * 그 밖에도 컴포넌트 전체를 훑으면 같은 세 속성에 걸리는 리터럴이 더
+ * 나온다 — 이번 계획의 대상 파일(ActionSheet/SegmentedControl/Select)
+ * 밖에 있는 것들이다. 훑어서 나온 두 부류를 파일+선택자 단위로 여기
+ * 남긴다: (1) 다른 리터럴과 1:1로 묶인 기하 계산(썸 중앙 정렬, 인디케이터
+ * 홈 두께)이라 애초에 "여백"이 아닌 것, (2) 진짜 밀도 부채이지만 이번
+ * 계획의 파일 목록 밖이라 손대지 않은 것 — 둘 다 이유를 남기고, 후자는
+ * 향후 정리 대상임을 명시한다. 이유 없는 예외, 파일 전체를 통째로 빼는
+ * 예외는 두지 않는다 — 그러면 그 파일의 다른 위반까지 조용히 통과한다.
+ */
+const SPACING_PX_EXCEPTIONS: { file: string; selector: string; reason: string }[] = [
+  {
+    file: 'src/components/SegmentedControl/SegmentedControl.module.css',
+    selector: '.track',
+    reason:
+      '슬라이딩 인디케이터 홈 두께 — .indicator 의 top/bottom/width 계산 리터럴과 1:1로 동기화되어야 하는 기하값이지 여백이 아니다.',
+  },
+  {
+    file: 'src/components/Switch/Switch.module.css',
+    selector: '.switch',
+    reason: '트랙 안쪽 썸 인셋 — .thumb 크기와 짝을 이루는 기하값. SegmentedControl 의 .track 과 같은 사정.',
+  },
+  {
+    file: 'src/components/Slider/Slider.module.css',
+    selector: '.sm .slider::-webkit-slider-thumb',
+    reason:
+      '썸 높이와 트랙 높이 차이의 절반 — 크기 리터럴과 1:1로 묶인 중앙 정렬 계산, 여백이 아니다. Slider 는 이번 Task 7 파일 목록 밖.',
+  },
+  {
+    file: 'src/components/Slider/Slider.module.css',
+    selector: '.md .slider::-webkit-slider-thumb',
+    reason: '위와 같음 — md 크기의 썸 중앙 정렬 계산.',
+  },
+  {
+    file: 'src/components/Slider/Slider.module.css',
+    selector: '.lg .slider::-webkit-slider-thumb',
+    reason: '위와 같음 — lg 크기의 썸 중앙 정렬 계산.',
+  },
+  {
+    file: 'src/components/BottomSheet/BottomSheet.module.css',
+    selector: '.handle',
+    reason:
+      '드래그 핸들 장식 여백 — Select 의 같은 패턴(mobileSheetHandle)은 이번에 토큰화했지만, 이 파일은 Task 7 파일 목록 밖이라 손대지 않았다. 향후 정리 대상.',
+  },
+  {
+    file: 'src/components/Chip/Chip.module.css',
+    selector: '.deleteButton',
+    reason: '아이콘 광학 보정 넛지 — 내용이 늘어난다고 커지지 않는 고정 정렬값. Chip 은 Task 7 파일 목록 밖.',
+  },
+  {
+    file: 'src/components/FileUpload/FileUpload.module.css',
+    selector: '.removeButton',
+    reason: '아이콘 버튼 히트 패딩 — FileUpload 는 Task 7 파일 목록 밖. 향후 정리 대상.',
+  },
+  {
+    file: 'src/components/Tooltip/Tooltip.module.css',
+    selector: '.inlineContainer',
+    reason: '인라인 힌트의 아이콘·텍스트 사이 여백 — Tooltip 은 Task 7 파일 목록 밖. 향후 정리 대상.',
+  },
+];
+
+const isSpacingException = (file: string, selector: string) =>
+  SPACING_PX_EXCEPTIONS.some((e) => e.file === file && e.selector === selector);
+
+/** 선언 하나(속성 이름 + 콜론 뒤 값)를 잡는다. 롱핸드 방향 접미사까지 포함한다. */
+const SPACING_DECLARATION =
+  /(?:^|;)\s*(padding|margin|gap)(-(?:top|right|bottom|left|inline(?:-start|-end)?|block(?:-start|-end)?))?\s*:\s*([^;]+)/gi;
+const PX_NUMBER = /-?\d*\.?\d+px/g;
+
 describe('토큰 계약', () => {
   it('마이그레이션한 파일은 v2가 정의하지 않은 토큰을 참조하지 않는다', () => {
     const bad: string[] = [];
@@ -127,6 +277,140 @@ describe('토큰 계약', () => {
       const hoverBlocks = css.match(/[^{}]*:hover[^{}]*\{[^{}]*\}/g) ?? [];
       for (const block of hoverBlocks) {
         if (/transform\s*:/.test(block)) bad.push(`${f} → 호버 시 이동·변형`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it('호버 규칙이 포커스 규칙을 덮지 않는다', () => {
+    // 이 부류의 결함이 일곱 번 재발했다 — 다섯 번은 사람이 훑어서 놓쳤고, 두 번은
+    // (Menu 의 item/danger) 최초 버전의 자동 추론(sharesTarget)이 "다른 요소"로
+    // 잘못 판단해 놓쳤다. CSS Modules 에서는 한 요소가 여러 클래스를 동시에 가지므로
+    // 클래스명이 다르다고 다른 요소인 것은 아니다 — 그래서 지금은 무관 판단을
+    // 사람이 확인한 UNRELATED_PAIRS 로만 하고, 나머지는 전부 비교한다.
+    // 클릭 직후 포인터가 컨트롤 위에 있는 가장 흔한 상황에서 포커스 표시가 지워진다.
+    const bad: string[] = [];
+    for (const f of componentCss) {
+      const parsed = rules(read(f));
+      const hovers = parsed.filter((r) => /:hover/.test(r.selector));
+      const focuses = parsed.filter((r) => /:focus-visible|:focus-within/.test(r.selector));
+      for (const h of hovers) {
+        const hp = propsOf(h.body);
+        for (const fo of focuses) {
+          const shared = [...propsOf(fo.body)].filter((p) => hp.has(p));
+          if (shared.length === 0) continue;
+          if (isGatedFor(h.selector, fo.selector)) continue; // 이 포커스 규칙에 대해 이미 게이팅됨
+          if (isUnrelatedPair(f, h.selector, fo.selector)) continue; // 사람이 확인한 무관한 쌍
+          const hs = specificity(h.selector);
+          const fs = specificity(fo.selector);
+          if (ge(hs, fs)) {
+            bad.push(`${f}: "${h.selector}" 가 "${fo.selector}" 의 ${shared.join(', ')} 를 덮는다`);
+          }
+        }
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it('tsx 안의 토큰 참조도 정의된 것이어야 한다', () => {
+    // Slider.tsx 가 죽은 v1 토큰을 참조한 채 배포될 뻔했고 사람이 눈으로 찾았다.
+    // CSS 만 훑는 검사로는 원리적으로 볼 수 없는 자리다.
+    // .stories.tsx 는 제외하지 않는다. Toast.stories.tsx 등 10개 스토리 파일이
+    // v1 토큰(--tui-text-secondary, --tui-primary, --tui-border 등)을 참조한 채
+    // 남아 있었다 — 개발 전용이라 해도 Storybook에서 렌더링이 깨지고,
+    // 그 Storybook이 바로 시각 베이스라인의 출처다.
+    //
+    // 템플릿 리터럴로 이름을 조립하는 곳(Tokens.stories.tsx의 `var(--tui-p-neutral-${step})`
+    // 같은 팔레트 스와치 렌더링)은 정적으로 검증할 수 없다. 파일 전체를 빼면
+    // 같은 파일의 나머지 73개 정적 참조까지 검사에서 사라진다 — 토큰 문서 페이지야말로
+    // 낡은 참조가 가장 쌓이기 쉬운 곳인데 그곳만 무방비가 된다. 대신 동적으로 조립된
+    // var(...) 호출 자체만 지워, 같은 파일의 정적 참조는 계속 검사한다.
+    //
+    // ${...} 부분만 지우는 방식은 시도해봤지만 안 통했다: collectReferencedTokens 의
+    // 이름 문자 클래스([a-zA-Z0-9-]+)는 `$` 앞에서 이미 멈추므로, `var(--tui-p-neutral-${step})`
+    // 는 마스킹 전에도 후에도 똑같이 `--tui-p-neutral-` 라는 (하이픈으로 끝나는) 불완전한
+    // 이름을 그대로 남긴다 — 오탐이 사라지지 않는다(before=after=74, 직접 확인함).
+    // 그래서 `${...}` 조각이 아니라 그 조각을 포함한 var(...) 호출 전체를 지운다 —
+    // 동적으로 조립되는 참조 하나만 없어지고 정적 참조 73개는 그대로 남는다
+    // (before=74 → after=73, 사라진 건 정확히 그 하나뿐임을 확인했다).
+    const maskDynamicVarCalls = (src: string) => src.replace(/var\([^()]*\$\{[^}]*\}[^()]*\)/g, '');
+
+    const tsx = globSync('src/**/*.tsx', { cwd: root }).sort();
+    const bad: string[] = [];
+    for (const f of tsx) {
+      const src = maskDynamicVarCalls(read(f));
+      const declared = collectDeclaredTokens(src);
+      for (const name of collectReferencedTokens(src)) {
+        if (!DEFINED_TOKENS.has(name) && !declared.has(name)) bad.push(`${f} → ${name}`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it('비활성 상태에 리터럴 opacity 를 쓰지 않는다', () => {
+    // 브리프가 준 정규식(:disabled|\.disabled|\[disabled\]|aria-disabled)은
+    // CSS 의사 클래스/속성 선택자 형태만 잡는다. 그런데 실측해보니 DatePicker·
+    // TextField·Select·Expander·FileUpload 등은 disabled prop 을 className 조건부
+    // 토글로 표현한다(예: `.labelDisabled`, `.dropzoneDisabled`, `.dayDisabled`) —
+    // ".disabled" 라는 부분 문자열이 아니라 카멜케이스 클래스명 안에 섞여 있어
+    // 원래 정규식으로는 못 잡는다. 실제 disabled 시맨틱은 대소문자만 다를 뿐
+    // 전부 "disabled" 라는 단어를 포함하므로, 대소문자 무시 매치로 넓혀서
+    // 이 컴포넌트들도 함께 보증한다 — 브리프 정규식이 잡는 4가지 형태를 모두
+    // 포함하는 상위집합이다.
+    const DISABLED_SELECTOR = /disabled/i;
+    const bad: string[] = [];
+    for (const f of componentCss) {
+      for (const r of rules(read(f))) {
+        if (!DISABLED_SELECTOR.test(r.selector)) continue;
+        const m = r.body.match(/opacity\s*:\s*(0?\.\d+|\d)/);
+        if (m) bad.push(`${f}: "${r.selector}" 가 리터럴 ${m[1]} 을 쓴다`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it('coarse 포인터 히트 영역 확장에 고정 음수 inset 을 쓰지 않는다', () => {
+    // 고정 -12px 같은 인셋은 요소 크기와 무관하게 상수만 더한다 — 작은 요소는
+    // 44px 에 못 미치고 큰 요소는 필요 이상으로 넓어진다. max(100%, 44px) 는
+    // 크기와 무관하게 44px 하한을 직접 보장하므로 이쪽으로 통일했다(Task 5).
+    //
+    // Checkbox/Radio/Switch 가 실제로 썼던 옛 패턴은 inset 선언 자체는
+    // pointer:coarse 블록 "밖"(항상 존재하는 ::before)에 두고, 블록 "안"에서는
+    // pointer-events 만 토글했다 — 그래서 블록 본문 텍스트만 정규식으로 훑으면
+    // 이 옛 패턴이 되돌아와도 못 잡는다. pointer:coarse 블록에서 "언급되는"
+    // 선택자(생성이든 토글이든)를 먼저 모으고, 그 선택자의 파일 전체 선언을
+    // 다시 검사해 두 패턴 모두를 잡는다.
+    const bad: string[] = [];
+    for (const f of componentCss) {
+      const css = read(f);
+      const coarseSelectors = new Set<string>();
+      for (const block of coarsePointerBlocks(css)) {
+        for (const r of rules(block)) coarseSelectors.add(r.selector);
+      }
+      for (const r of rules(css)) {
+        if (!coarseSelectors.has(r.selector)) continue;
+        const m = r.body.match(/inset\s*:\s*(-[\d.]+px[^;]*)/);
+        if (m) bad.push(`${f}: "${r.selector}" (pointer:coarse 확장 대상) 가 고정 음수 inset "${m[1]}" 을 쓴다`);
+      }
+    }
+    expect(bad).toEqual([]);
+  });
+
+  it('padding/margin/gap 에 밀도와 무관한 리터럴 px 를 쓰지 않는다', () => {
+    // 이 결함이 마이그레이션 이후에도 ActionSheet/SegmentedControl/Select 에
+    // 남아 있었다 — 밀도를 바꿔도 안쪽 여백·사이 간격·컨트롤 높이가 그대로였다.
+    const bad: string[] = [];
+    for (const f of componentCss) {
+      for (const r of rules(read(f))) {
+        for (const m of r.body.matchAll(SPACING_DECLARATION)) {
+          const prop = m[1] + (m[2] ?? '');
+          const value = m[3];
+          const pxValues = [...value.matchAll(PX_NUMBER)].map((pm) => Math.abs(parseFloat(pm[0])));
+          if (pxValues.length === 0) continue; // var()/calc() 만 쓴 값
+          if (Math.max(...pxValues) <= 1) continue; // 헤어라인·정렬 보정 허용
+          if (isSpacingException(f, r.selector)) continue;
+          bad.push(`${f}: "${r.selector}" 의 ${prop} 이 리터럴 "${value.trim()}" 를 쓴다`);
+        }
       }
     }
     expect(bad).toEqual([]);

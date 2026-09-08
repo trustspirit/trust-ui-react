@@ -178,7 +178,7 @@ export const RowClick: Story = {
       const [selected, setSelected] = useState<string | null>(null);
       return (
         <div>
-          <p style={{ marginBottom: 12, color: 'var(--tui-text-secondary)' }}>
+          <p style={{ marginBottom: 12, color: 'var(--tui-ink-2)' }}>
             Clicked: {selected ?? 'none'}
           </p>
           <Table<User>

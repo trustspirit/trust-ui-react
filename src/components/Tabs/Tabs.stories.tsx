@@ -75,7 +75,7 @@ export const Controlled: Story = {
       const [activeTab, setActiveTab] = useState('tab1');
       return (
         <div>
-          <p style={{ marginBottom: 12, color: 'var(--tui-text-secondary)' }}>
+          <p style={{ marginBottom: 12, color: 'var(--tui-ink-2)' }}>
             Active tab: <strong>{activeTab}</strong>
           </p>
           <Tabs value={activeTab} onChange={setActiveTab}>

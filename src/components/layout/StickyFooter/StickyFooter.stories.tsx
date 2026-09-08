@@ -12,7 +12,7 @@ type Story = StoryObj<typeof StickyFooter>;
 
 export const Default: Story = {
   render: () => (
-    <div style={{ height: 600, overflow: 'auto', border: '1px solid var(--tui-border)' }}>
+    <div style={{ height: 600, overflow: 'auto', border: '1px solid var(--tui-rule)' }}>
       <div style={{ height: 800, padding: 24 }}>
         Scroll down — the footer below stays anchored.
       </div>
@@ -25,7 +25,7 @@ export const Default: Story = {
 
 export const Elevated: Story = {
   render: () => (
-    <div style={{ height: 600, overflow: 'auto', border: '1px solid var(--tui-border)' }}>
+    <div style={{ height: 600, overflow: 'auto', border: '1px solid var(--tui-rule)' }}>
       <div style={{ height: 800, padding: 24 }}>Scrollable content</div>
       <StickyFooter elevated>
         <Button variant="primary" fullWidth size="lg">Confirm</Button>

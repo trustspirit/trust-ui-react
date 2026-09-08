@@ -65,7 +65,7 @@
 }
 
 .trigger:disabled {
-  opacity: 0.4;
+  opacity: var(--tui-opacity-disabled);
   cursor: not-allowed;
 }
 

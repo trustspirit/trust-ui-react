@@ -19,7 +19,7 @@ export const Default: Story = {
         <Button variant="primary" onClick={() => setOpen(true)}>Open sheet</Button>
         <BottomSheet open={open} onClose={() => setOpen(false)}>
           <h3 style={{ marginTop: 0 }}>Bottom sheet</h3>
-          <p style={{ color: 'var(--tui-text-secondary)' }}>
+          <p style={{ color: 'var(--tui-ink-2)' }}>
             Drag the handle up or down. Swipe down past 60% of the smallest snap to dismiss.
           </p>
         </BottomSheet>
@@ -66,7 +66,7 @@ export const TwoSnapPoints: Story = {
           initialSnap={0}
         >
           <h3 style={{ marginTop: 0 }}>Drag to expand</h3>
-          <p style={{ color: 'var(--tui-text-secondary)' }}>
+          <p style={{ color: 'var(--tui-ink-2)' }}>
             Snap points: 40% and 90% of viewport height. Drag handle up to expand,
             down to compact or dismiss.
           </p>
@@ -93,7 +93,7 @@ export const WithoutHandle: Story = {
           showHandle={false}
         >
           <h3 style={{ marginTop: 0 }}>No drag handle</h3>
-          <p style={{ color: 'var(--tui-text-secondary)' }}>
+          <p style={{ color: 'var(--tui-ink-2)' }}>
             Only backdrop tap or ESC dismisses (no swipe gesture).
           </p>
           <Button variant="outline" onClick={() => setOpen(false)} fullWidth>Close</Button>

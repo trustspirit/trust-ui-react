@@ -8,7 +8,7 @@
 }
 
 .disabled {
-  opacity: 0.5;
+  opacity: var(--tui-opacity-disabled);
 }
 
 /* ── Slider wrapper (for value label positioning) ── */
@@ -195,6 +195,21 @@
 .slider:focus-visible::-moz-range-thumb {
   border-color: var(--tui-ink);
   box-shadow: inset 0 0 0 1px var(--tui-ink);
+}
+
+/*
+ * Firefox 는 여기 호버 규칙이 아예 없었다 — 마우스로 썸 위에 있어도 아무
+ * 신호가 없었다. WebKit 과 같은 원칙(색만 바뀜, :focus-visible 에서는
+ * 물러남)을 그대로 적용한다. 게이트가 없으면 :hover 의 특이도가
+ * :focus-visible 을 이겨 같은 문제가 재발한다.
+ */
+@media (hover: hover) {
+  .slider.primary:hover:not(:disabled):not(:focus-visible)::-moz-range-thumb {
+    border-color: var(--tui-accent-hover);
+  }
+  .slider.secondary:hover:not(:disabled):not(:focus-visible)::-moz-range-thumb {
+    border-color: var(--tui-ink);
+  }
 }
 
 /* ── Mobile thumb sizes (touch devices) ── */

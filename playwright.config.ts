@@ -29,6 +29,27 @@ export default defineConfig({
   // 300ms 대기가 로드를 항상 기다려주지 못하고 실행마다 빈 화면 · 대체 아이콘
   // · 실제 사진 중 하나로 무작위로 정착했다(0.2 기본값에서도 간헐적으로
   // 재현됨). Avatar.stories.tsx 에서 인라인 data URI 로 교체해 없앴다.
+  //
+  // (Task 8, 되돌림) `toHaveScreenshot` 대상을 페이지 전체에서
+  // `page.locator('#storybook-root')` 로 좁히는 방안을 검토했으나 채택하지
+  // 않았다. 이유 둘.
+  //
+  // 1) 실측한 이득이 0이다. SegmentedControl 인디케이터를 --tui-sheet →
+  // --tui-field 로 되돌리는 위 회귀를 fullPage 기준과 스코프 기준 양쪽으로
+  // 재현했더니 diff 픽셀 수가 1494로 완전히 동일했다(비율만 0.01→0.04로
+  // 바뀜). maxDiffPixels 는 절대 픽셀 수이지 비율이 아니므로, 크롭이
+  // 예산과 무관한 배경 픽셀을 잘라내도 실제 diff 픽셀 수 자체는 조금도
+  // 줄지 않는다 — "작은 컴포넌트가 큰 페이지에 희석된다"는 전제는 예산을
+  // 비율에서 절대값으로 바꾼 위 fix 로 이미 해소되어 있었다.
+  //
+  // 2) 위험은 실재했다. Dialog·BottomSheet·ActionSheet 는 오버레이가
+  // `#storybook-root` 를 높이 0으로 접어 스크린샷 자체가 타임아웃 났고,
+  // Menu·Select·DatePicker·DateRangePicker 는 `document.body` 로
+  // createPortal 되는 실제 표면(드롭다운/캘린더)이 조용히 통째로
+  // 빠졌다 — 이 프로젝트가 오버레이를 불투명하게 만드는 데 계획 전체를
+  // 쓴 바로 그 표면들이다. 31개 컴포넌트 중 8개(26%)를 fullPage 예외
+  // 목록으로 유지해야 하는데, 그 목록이 지키는 이득이 측정상 0이므로
+  // 하네스만 복잡해진다. fullPage 를 그대로 둔다.
   expect: {
     toHaveScreenshot: { threshold: 0.02, maxDiffPixels: 120, animations: 'disabled' },
   },

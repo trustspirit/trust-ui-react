@@ -26,6 +26,21 @@
   gap: 1px;
 }
 
+/* ── 좁은 화면에서 넘치지 않게 — 트랙 최소폭을 0으로 ──
+   `1fr` 은 `minmax(auto, 1fr)` 로 취급되어, 트랙의 자동 최소폭이 칸
+   안 요소의 min-content 폭까지 올라간다. 칸 안의 .day 가 고정
+   44px(coarse 포인터, 아래)이면 이 자동 최소폭도 44px 가 되어, 320px
+   폭 화면(iPhone SE 등)의 전체화면 모바일 달력에서는
+   7×44px + 6×1px = 314px 가 쓸 수 있는 폭(약 290px)보다 넓어져 달력이
+   다이얼로그 오른쪽 밖으로 넘친다. 트랙 최소폭을 0으로 낮추면 화면이
+   좁을 때 .day 가 (플렉스 자식으로서) 44px 미만으로 줄어들 뿐 넘치지
+   않는다 — 대부분의 실제 기기(360px 이상)에서는 44px 그대로 나온다. ── */
+@media (pointer: coarse) {
+  .daysGrid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+}
+
 /* ── Day cell ── */
 .day {
   display: flex;
@@ -44,16 +59,21 @@
   position: relative;
 }
 
-/* ── 터치 타깃 확장 — 셀은 36px 이지만 coarse 포인터에서는 44px 이상의
-   히트 영역을 확보한다 ── */
+/* ── 터치 타깃 — 히트 영역을 부풀리지 않고 셀 자체를 키운다 ──
+   Calendar.tsx 는 한 주(week)마다 별도의 .daysGrid 를 렌더링한다. 즉
+   gap:1px 는 같은 행 안의 좌우 셀 사이에만 적용되고, 위아래로 인접한
+   두 .daysGrid(주) 사이에는 grid gap 이 전혀 끼지 않는다 — 두 행은 그냥
+   맞닿는다. 이 상태에서 ::after 로 히트 영역만 36px→44px 로 부풀리면
+   위아래로 4px씩 삐져나오고, 인접한 주 행 사이에 gap 이 없으므로 그
+   4px는 곧바로 다음 주 행과 겹친다. 나중에 그려지는(DOM 순서상 아래)
+   행의 ::after 가 위에 놓여, 셀 아래쪽 가장자리를 탭하면 다음 주 날짜가
+   선택되는 결함으로 이어진다.
+   셀 밖으로 확장하는 대신 셀 자체를 44px 로 키우면 시각적 셀과 히트
+   영역이 같아져 확장할 이유가 없어진다 — ::after 는 제거한다. ── */
 @media (pointer: coarse) {
-  .day::after {
-    content: '';
-    position: absolute;
-    inset: 50% auto auto 50%;
-    width: max(100%, 44px);
-    height: max(100%, 44px);
-    transform: translate(-50%, -50%);
+  .day {
+    width: 44px;
+    height: 44px;
   }
 }
 
@@ -63,10 +83,16 @@
   }
 }
 
-/* ── Outside current month ── */
+/* ── Outside current month ──
+   dayDisabled 가 공용 토큰 --tui-opacity-disabled(0.45)로 올라오면서, 이
+   고정값 0.4 로 두면 클릭 가능한(interactive) 이 상태가 클릭 불가능한
+   dayDisabled 보다 더 흐리게 보이는 역전이 생겼다 — 비활성 상태가 활성
+   상태보다 더 눈에 띄면 안 된다. dayDisabled 는 공용 토큰을 그대로 두고,
+   여기 opacity 를 그 위(0.55)로 올려 순서를 바로잡는다. 원래 두 값의
+   차이(0.4 − 0.3 = 0.1)를 그대로 옮긴 값이다. ── */
 .dayOutside {
   color: var(--tui-ink-3);
-  opacity: 0.4;
+  opacity: 0.55;
 }
 
 /* ── Today indicator — 면을 채우지 않고 테두리만. 선택된 날짜(면 채움)와
@@ -91,7 +117,7 @@
 
 /* ── Disabled day ── */
 .dayDisabled {
-  opacity: 0.3;
+  opacity: var(--tui-opacity-disabled);
   cursor: not-allowed;
 }
 
