@@ -19,6 +19,7 @@ const config: Config = {
   projectName: 'trust-ui-react',
 
   onBrokenLinks: 'throw',
+  onBrokenAnchors: 'throw',
 
   markdown: {
     hooks: {

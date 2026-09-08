@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, globSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { STALE } from './stale';
+import { STALE, EXEMPT } from './stale';
 import { root, definedTokens } from '../shared/tokens';
 
 const read = (f: string) => readFileSync(resolve(root, f), 'utf8');
@@ -16,8 +16,11 @@ const docsFiles = [
   ...globSync('docs-site/src/**/*.{tsx,ts,css}', { cwd: root }),
 ].sort();
 
-/** 검사 1~3의 대상 — STALE 에 있는 파일은 아직 정리 전이므로 건너뛴다. */
-const clean = docsFiles.filter((f) => !STALE.includes(f));
+/**
+ * 검사 1~3의 대상 — STALE(아직 정리 전) 또는 EXEMPT(원리상 정리 불가능)에
+ * 있는 파일은 건너뛴다.
+ */
+const clean = docsFiles.filter((f) => !STALE.includes(f) && !EXEMPT.includes(f));
 
 /**
  * v2 시맨틱/팔레트 층을 이루는 파일들에서 실제로 "선언"된 커스텀 프로퍼티
@@ -87,6 +90,11 @@ describe('문서 계약', () => {
 
   it('허용목록에 실존하지 않는 파일이 남아 있지 않다', () => {
     const missing = STALE.filter((f) => !existsSync(resolve(root, f)));
+    expect(missing).toEqual([]);
+  });
+
+  it('영구 예외(EXEMPT)에 실존하지 않는 파일이 남아 있지 않다', () => {
+    const missing = EXEMPT.filter((f) => !existsSync(resolve(root, f)));
     expect(missing).toEqual([]);
   });
 

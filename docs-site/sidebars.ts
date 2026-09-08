@@ -85,7 +85,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Guides',
-      items: ['guides/mobile-patterns'],
+      items: ['guides/layers', 'guides/mobile-patterns'],
     },
     {
       type: 'category',
