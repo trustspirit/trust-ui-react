@@ -238,11 +238,9 @@ describe('토큰 계약', () => {
   });
 
   it('허용목록(UNMIGRATED)은 줄어들기만 한다', () => {
-    // 1은 Table.module.css 하나만 남은 현재 값이다 (Table 재설계는 계획 3 대상).
-    // 컴포넌트를 마이그레이션할 때마다 unmigrated.ts 에서 줄을 지우므로 이 숫자는
-    // 앞으로 감소만 해야 한다 — 다시 늘어난다면 마이그레이션이 되돌려졌거나
-    // 허용목록에 항목이 잘못 추가된 것이다.
-    expect(UNMIGRATED.length).toBeLessThanOrEqual(1);
+    // 0 이다 — Table 재설계로 마지막 항목이 사라졌고 마이그레이션이 끝났다.
+    // 이 숫자는 다시 올라갈 수 없다. 새 컴포넌트는 처음부터 v2 토큰으로 쓴다.
+    expect(UNMIGRATED.length).toBeLessThanOrEqual(0);
   });
 
   it('스타일 폴더에도 정의되지 않은 토큰 참조가 없다', () => {

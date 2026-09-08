@@ -3,6 +3,4 @@
  * 컴포넌트를 마이그레이션할 때마다 해당 줄을 지운다.
  * 이 배열이 비면 마이그레이션이 끝난 것이다.
  */
-export const UNMIGRATED: string[] = [
-  "src/components/Table/Table.module.css",
-];
+export const UNMIGRATED: string[] = [];

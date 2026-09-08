@@ -41,6 +41,14 @@ for (const id of allIds) {
 // 무한정 늘지 않는다.
 const taggedVisual = allIds.filter((id) => !id.endsWith('--docs') && (entries[id].tags ?? []).includes('visual'));
 
+// 스냅샷 96장이 전부 데스크톱 폭이라 CSS 의 좁은 화면 분기가 한 번도
+// 촬영된 적이 없다. 'visual-mobile' 을 명시한 스토리만 390px 에서 따로
+// 찍는다 — opt-in 이므로 스냅샷 수가 무한정 늘지 않는다.
+const MOBILE_WIDTH = 390;
+const taggedMobile = allIds.filter(
+  (id) => !id.endsWith('--docs') && (entries[id].tags ?? []).includes('visual-mobile'),
+);
+
 const STORIES = [...new Set([...byComponent.values(), ...taggedVisual])].sort();
 
 const COMBOS = [
@@ -58,6 +66,20 @@ for (const id of STORIES) {
       // 색 전환 140ms 가 끝난 뒤 찍는다.
       await page.waitForTimeout(300);
       await expect(page).toHaveScreenshot(`${id}-${theme}-${density}.png`, { fullPage: true });
+    });
+  }
+}
+
+for (const id of taggedMobile) {
+  for (const { theme, density } of COMBOS) {
+    test(`${id} — ${theme}/${density} @${MOBILE_WIDTH}`, async ({ page }) => {
+      await page.setViewportSize({ width: MOBILE_WIDTH, height: 844 });
+      await page.goto(`/iframe.html?id=${id}&globals=theme:${theme};density:${density}`);
+      await page.evaluate(() => document.fonts.ready);
+      await page.waitForTimeout(300);
+      await expect(page).toHaveScreenshot(`${id}-${theme}-${density}-${MOBILE_WIDTH}.png`, {
+        fullPage: true,
+      });
     });
   }
 }
