@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Table } from './Table';
 import type { Column } from './types';
@@ -34,6 +35,16 @@ const holdingColumns: Column<Holding>[] = [
   { key: 'rate', header: '수익률', numeric: true, tone: 'auto', sortable: true, render: (v: number) => percent(v) },
 ];
 
+// Numeric 용 — 시장색 없이 정렬·등폭 숫자만 보여준다. tone 을 빼서 Market 과 픽셀이 갈리게 한다.
+const plainHoldingColumns: Column<Holding>[] = [
+  { key: 'name', header: '종목', sortable: true },
+  { key: 'qty', header: '보유', numeric: true, sortable: true, render: (v: number) => `${won(v)}주` },
+  { key: 'avg', header: '평단가', numeric: true, sortable: true, render: (v: number) => won(v) },
+  { key: 'price', header: '현재가', numeric: true, sortable: true, render: (v: number) => won(v) },
+  { key: 'pnl', header: '평가손익', numeric: true, sortable: true, render: (v: number) => signed(v) },
+  { key: 'rate', header: '수익률', numeric: true, sortable: true, render: (v: number) => percent(v) },
+];
+
 interface Member {
   name: string;
   dept: string;
@@ -65,6 +76,7 @@ const memberColumns: Column<Member>[] = [
 const meta: Meta<typeof Table> = {
   title: 'Components/Table',
   component: Table,
+  tags: ['autodocs'],
   parameters: { layout: 'padded' },
 };
 
@@ -80,18 +92,30 @@ export const Sortable: Story = {
   render: () => <Table columns={memberColumns} data={members} />,
 };
 
-/** 수치 열은 우측 정렬되고 등폭 숫자로 자릿수가 맞는다. */
+/** 우측 정렬과 등폭 숫자 (자릿수가 세로로 맞는다), 시장색 없이. */
 export const Numeric: Story = {
-  render: () => <Table columns={holdingColumns} data={holdings} />,
+  render: () => <Table columns={plainHoldingColumns} data={holdings} />,
 };
 
 /**
- * 시장색은 market.css 를 임포트한 앱에서만 나타난다.
- * data-market 축은 Storybook 전역 설정으로 바꾼다.
+ * 시장 관례 축. 같은 데이터인데 상승·하락의 색이 뒤집힌다 —
+ * 한국·일본·중국은 적색 상승, 미국·유럽은 녹색 상승이다.
+ * market.css 를 임포트한 앱에서만 색이 나타난다.
  */
 export const Market: Story = {
   tags: ['visual'],
-  render: () => <Table columns={holdingColumns} data={holdings} />,
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+      <div data-market="kr">
+        <p style={{ margin: '0 0 8px', font: 'inherit', opacity: 0.6 }}>data-market="kr"</p>
+        <Table columns={holdingColumns} data={holdings} />
+      </div>
+      <div data-market="us">
+        <p style={{ margin: '0 0 8px', font: 'inherit', opacity: 0.6 }}>data-market="us"</p>
+        <Table columns={holdingColumns} data={holdings} />
+      </div>
+    </div>
+  ),
 };
 
 export const StickyHeader: Story = {
@@ -103,14 +127,20 @@ export const StickyHeader: Story = {
 };
 
 export const RowClick: Story = {
-  render: () => (
-    <Table
-      columns={memberColumns}
-      data={members}
-      rowKey="name"
-      onRowClick={(row) => window.alert(`${(row as Member).name}`)}
-    />
-  ),
+  render: function RowClickStory() {
+    const [selected, setSelected] = useState<string | null>(null);
+    return (
+      <div>
+        <Table
+          columns={memberColumns}
+          data={members}
+          rowKey="name"
+          onRowClick={(row) => setSelected((row as Member).name)}
+        />
+        <p style={{ marginTop: 12 }}>선택: {selected ?? '없음'}</p>
+      </div>
+    );
+  },
 };
 
 export const EmptyState: Story = {
