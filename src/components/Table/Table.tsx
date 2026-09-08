@@ -30,12 +30,6 @@ function alignClass<T>(col: Column<T>): string | undefined {
 
 function cellContent<T>(col: Column<T>, row: T, index: number): ReactNode {
   const value = getNestedValue(row, col.key);
-  // summaryRow 는 Partial<T> 라 일부 열이 아예 없을 수 있다. 그런 열의 값은
-  // undefined 인데, 대부분의 렌더러는 실제 값이 있다고 가정하고 짜여 있으므로
-  // (예: v.toLocaleString()) 그대로 넘기면 총계 행에서 던진다. 렌더러를
-  // 부르지 않고 빈 칸으로 남긴다 — 실제 행 데이터의 값 0 이나 빈 문자열은
-  // undefined 가 아니므로 이 경로를 타지 않는다.
-  if (value === undefined) return null;
   return col.render ? col.render(value, row, index) : (value as ReactNode);
 }
 

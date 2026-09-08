@@ -15,9 +15,6 @@ export interface Column<T> {
    * 셀 렌더러. 지정하지 않으면 값을 그대로 그린다.
    * 요약 행과 데스크톱 칸이 같은 결과를 써야 하므로 render 는 순수해야
    * 한다(부수 효과를 넣지 않는다) — 행마다 한 번만 호출되고 두 곳이 나눠 쓴다.
-   * summaryRow(Partial<T>)에 이 열의 값이 아예 없으면 render 는 호출되지
-   * 않고 칸이 비어 그려진다 — value 가 있다고 가정하는 렌더러가 undefined
-   * 를 받아 던지는 것을 막는다.
    */
   render?: (value: any, row: T, index: number) => ReactNode;
   /** 정렬 가능 여부 */
@@ -61,6 +58,9 @@ export interface TableProps<T> {
   /**
    * 표를 닫는 총계 행. 본문 행과 같은 열 정의·렌더러를 그대로 탄다.
    * 셀 렌더러의 index 인자로는 -1 이 들어온다 — 본문의 어느 행도 아니라는 뜻이다.
+   * Partial<T> 이므로 값이 없는 열도 있을 수 있는데, 그런 열의 render 도
+   * 여느 행과 똑같이 호출된다 — 다만 value 인자가 undefined 다. 그 칸에
+   * 무엇을 그릴지(빈 칸이든 '—' 같은 자리표시자든)는 render 가 정한다.
    */
   summaryRow?: Partial<T>;
   /**

@@ -29,7 +29,9 @@ const holdings: Holding[] = [
 const holdingColumns: Column<Holding>[] = [
   { key: 'name', header: '종목', sortable: true },
   { key: 'qty', header: '보유', numeric: true, sortable: true, render: (v: number) => `${won(v)}주` },
-  { key: 'avg', header: '평단가', numeric: true, sortable: true, render: (v: number) => won(v) },
+  // 총계 행에는 의미 있는 평단가가 없다 — summaryRow 가 이 열을 비우면
+  // render 는 undefined 를 받는다. 그 경우를 '—'로 정직하게 그린다.
+  { key: 'avg', header: '평단가', numeric: true, sortable: true, render: (v: number | undefined) => (v === undefined ? '—' : won(v)) },
   { key: 'price', header: '현재가', numeric: true, sortable: true, render: (v: number) => won(v) },
   { key: 'pnl', header: '평가손익', numeric: true, tone: 'auto', sortable: true, render: (v: number) => signed(v) },
   { key: 'rate', header: '수익률', numeric: true, tone: 'auto', sortable: true, render: (v: number) => percent(v) },
@@ -39,7 +41,9 @@ const holdingColumns: Column<Holding>[] = [
 const plainHoldingColumns: Column<Holding>[] = [
   { key: 'name', header: '종목', sortable: true },
   { key: 'qty', header: '보유', numeric: true, sortable: true, render: (v: number) => `${won(v)}주` },
-  { key: 'avg', header: '평단가', numeric: true, sortable: true, render: (v: number) => won(v) },
+  // 총계 행에는 의미 있는 평단가가 없다 — summaryRow 가 이 열을 비우면
+  // render 는 undefined 를 받는다. 그 경우를 '—'로 정직하게 그린다.
+  { key: 'avg', header: '평단가', numeric: true, sortable: true, render: (v: number | undefined) => (v === undefined ? '—' : won(v)) },
   { key: 'price', header: '현재가', numeric: true, sortable: true, render: (v: number) => won(v) },
   { key: 'pnl', header: '평가손익', numeric: true, sortable: true, render: (v: number) => signed(v) },
   { key: 'rate', header: '수익률', numeric: true, sortable: true, render: (v: number) => percent(v) },
