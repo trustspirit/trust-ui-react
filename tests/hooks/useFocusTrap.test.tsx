@@ -47,6 +47,23 @@ function ToggleHarness() {
   );
 }
 
+// 마이너 수정 검증용: 포커스 가능한 자식이 없어 컨테이너 자신에 tabindex 를
+// 부여했을 때, 닫히면 그 tabindex 를 원래 상태(속성이 아예 없던 상태)로
+// 되돌리는지 확인하기 위한 하네스. 컨테이너는 항상 DOM 에 남아있어야
+// 닫힌 뒤 속성을 검사할 수 있으므로 조건부 렌더가 아니라 active 토글만 한다.
+function EmptyContainerToggleHarness() {
+  const [active, setActive] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useFocusTrap(ref, active);
+  return (
+    <div>
+      <button onClick={() => setActive(true)}>열기</button>
+      <button onClick={() => setActive(false)}>닫기</button>
+      <div ref={ref} data-testid="empty-container" />
+    </div>
+  );
+}
+
 // 계약 3 의 예외 경로: 트리거가 문서에서 사라진 뒤 트랩이 닫히는 경우.
 function DisappearingTriggerHarness() {
   const [showTrigger, setShowTrigger] = useState(true);
@@ -230,5 +247,78 @@ describe('useFocusTrap', () => {
     );
     // 여기까지 왔다면 예외 없이 통과한 것이다.
     expect(screen.queryByRole('button', { name: '열기' })).toBeNull();
+  });
+
+  // getComputedStyle 은 조상의 display:none/visibility:hidden 을 자기 것으로
+  // 접어 넣지 않는다 — 감춰진 블록 안의 버튼도 자기 display 는 그대로다.
+  // 아래 테스트들은 조상을 거슬러 올라가며 판정해야만 통과한다.
+  it('display:none 인 조상 안의 버튼은 순환에 포함되지 않는다', () => {
+    render(
+      <TrapHarness active>
+        <div style={{ display: 'none' }}>
+          <button>숨겨진 조상 안</button>
+        </div>
+        <button>보이는 형제</button>
+      </TrapHarness>,
+    );
+    expect(screen.getByRole('button', { name: '보이는 형제' })).toHaveFocus();
+  });
+
+  it('visibility:hidden 인 조상 안의 버튼은 순환에 포함되지 않는다', () => {
+    render(
+      <TrapHarness active>
+        <div style={{ visibility: 'hidden' }}>
+          <button>숨겨진 조상 안 2</button>
+        </div>
+        <button>보이는 형제 2</button>
+      </TrapHarness>,
+    );
+    expect(screen.getByRole('button', { name: '보이는 형제 2' })).toHaveFocus();
+  });
+
+  it('inert 인 조상 안의 버튼은 순환에 포함되지 않는다', () => {
+    render(
+      <TrapHarness active>
+        <div inert>
+          <button>비활성 조상 안</button>
+        </div>
+        <button>보이는 형제 3</button>
+      </TrapHarness>,
+    );
+    expect(screen.getByRole('button', { name: '보이는 형제 3' })).toHaveFocus();
+  });
+
+  it('형제 서브트리의 정상적으로 보이는 버튼은 과도하게 배제되지 않는다', () => {
+    render(
+      <TrapHarness active>
+        <div style={{ display: 'none' }}>
+          <button>숨겨진 서브트리</button>
+        </div>
+        <div>
+          <div>
+            <button>깊이 중첩되었지만 보이는 버튼</button>
+          </div>
+        </div>
+      </TrapHarness>,
+    );
+    expect(
+      screen.getByRole('button', { name: '깊이 중첩되었지만 보이는 버튼' }),
+    ).toHaveFocus();
+  });
+
+  it('컨테이너에 준 tabindex 는 닫힐 때 원래 상태로 복구된다', async () => {
+    const user = userEvent.setup();
+    render(<EmptyContainerToggleHarness />);
+    const container = screen.getByTestId('empty-container');
+    const openButton = screen.getByRole('button', { name: '열기' });
+
+    expect(container).not.toHaveAttribute('tabindex');
+
+    await user.click(openButton);
+    expect(container).toHaveAttribute('tabindex', '-1');
+    expect(container).toHaveFocus();
+
+    await user.click(screen.getByRole('button', { name: '닫기' }));
+    expect(container).not.toHaveAttribute('tabindex');
   });
 });

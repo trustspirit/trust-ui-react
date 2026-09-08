@@ -18,6 +18,45 @@ const FOCUSABLE_SELECTOR = [
 ].join(', ');
 
 /**
+ * 보이지 않는(또는 inert 인) 요소는 포커스 대상이 아니다.
+ *
+ * getComputedStyle 은 조상의 display:none 을 자기 것으로 접어 넣지 않는다 —
+ * 감춰진 블록 안의 버튼도 자기 display 는 그대로 inline-block 이다. 그래서
+ * 요소 자신부터 container 까지 조상을 거슬러 올라가며 확인해야 한다.
+ *
+ * checkVisibility() 가 있으면 그것을 우선 쓴다 — 조상 display/visibility,
+ * content-visibility 를 플랫폼이 한 번에 판정해준다. 이 저장소의 테스트
+ * 환경(jsdom v28)에는 아직 구현되어 있지 않아(typeof 가 'undefined') 아래
+ * 수동 순회가 테스트에서 실제로 쓰인다.
+ *
+ * inert 는 Task 2 에서 배경 콘텐츠에 붙일 예정이므로, inert 조상 안의 요소도
+ * 여기서 함께 배제한다 — 그렇지 않으면 트랩이 배경(비활성 영역)으로 포커스를
+ * 넘겨버리는 자체 버그가 된다.
+ */
+function isVisible(el: HTMLElement, container: HTMLElement): boolean {
+  if (typeof el.checkVisibility === 'function') {
+    return el.checkVisibility({
+      checkOpacity: false,
+      checkVisibilityCSS: true,
+    });
+  }
+
+  let node: HTMLElement | null = el;
+  while (node) {
+    const style = getComputedStyle(node);
+    if (style.display === 'none' || style.visibility === 'hidden') {
+      return false;
+    }
+    if (node.hasAttribute('inert')) {
+      return false;
+    }
+    if (node === container) break;
+    node = node.parentElement;
+  }
+  return true;
+}
+
+/**
  * container 안에서 현재 포커스 가능한 요소만 골라 문서 순서대로 반환한다.
  * 열린 뒤에도 내용이 바뀔 수 있으므로(리스트 추가/제거 등) 이 함수는
  * 캐시하지 않고 매번 새로 호출해야 한다.
@@ -26,20 +65,15 @@ function getFocusableElements(container: HTMLElement): HTMLElement[] {
   const candidates = Array.from(
     container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
   );
-  // display:none 요소는 포커스할 수 없다.
-  // 브라우저에서는 흔히 offsetParent !== null 로 감춰짐을 판별하지만,
-  // jsdom 은 레이아웃을 계산하지 않아 모든 요소의 offsetParent 가 항상 null 이라
-  // (display:none 여부와 무관하게) 이 체크로는 테스트 환경에서 아무것도 통과하지
-  // 못한다. 대신 getComputedStyle(...).display 는 인라인 스타일/속성으로 지정한
-  // display:none 을 jsdom 에서도 정확히 반영하므로 이를 기준으로 삼는다.
-  return candidates.filter((el) => getComputedStyle(el).display !== 'none');
+  return candidates.filter((el) => isVisible(el, container));
 }
 
 /**
  * container 안에 포커스를 가두는 훅.
  *
  * - active 가 참이 되는 순간 컨테이너 안 첫 포커스 가능 요소로 포커스를 옮긴다.
- *   후보가 없으면 컨테이너 자신에 tabIndex=-1 을 부여하고 포커스한다.
+ *   후보가 없으면 컨테이너 자신에 tabIndex=-1 을 부여하고 포커스한다(닫힐 때
+ *   원래 tabindex 상태 — 아예 없었는지, 다른 값이 있었는지 — 로 되돌린다).
  * - active 인 동안 Tab/Shift+Tab 이 경계를 넘으면 반대쪽 끝으로 순환시킨다.
  *   포커스 가능 목록은 Tab 을 누를 때마다 다시 계산한다 — 시트 내용이 열린
  *   뒤에 바뀔 수 있기 때문에(항목 추가/삭제) 캐시하면 최신 상태를 놓친다.
@@ -55,8 +89,9 @@ export function useFocusTrap(
   // 트랩이 열리기 직전 포커스를 담아둔다. 컴포넌트 리렌더와 무관해야 하므로 ref.
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
-  // 열릴 때: 이전 포커스를 기억하고 컨테이너 안으로 포커스를 옮긴다.
   useEffect(() => {
+    // active 와 container 존재 여부는 아래 두 동작(초기 포커스 이동, Tab 가로채기)
+    // 모두에 공통으로 필요한 전제라 하나의 effect 로 묶어 가드를 한 번만 둔다.
     const container = containerRef.current;
     if (!active || !container) return;
 
@@ -66,28 +101,24 @@ export function useFocusTrap(
         : null;
 
     const [first] = getFocusableElements(container);
+    // 컨테이너에 tabIndex 를 직접 부여했을 때만 복구 함수를 채운다 — 이미
+    // 포커스 가능한 자식이 있었다면 컨테이너의 tabindex 를 건드리지 않는다.
+    let restoreContainerTabIndex: (() => void) | null = null;
     if (first) {
       first.focus();
     } else {
+      const hadTabIndexAttr = container.hasAttribute('tabindex');
+      const previousTabIndexValue = container.getAttribute('tabindex');
       container.tabIndex = -1;
       container.focus();
+      restoreContainerTabIndex = () => {
+        if (hadTabIndexAttr) {
+          container.setAttribute('tabindex', previousTabIndexValue!);
+        } else {
+          container.removeAttribute('tabindex');
+        }
+      };
     }
-
-    // 닫힐 때(정리 함수): 직전 포커스로 되돌린다. 사라졌으면 아무것도 하지 않는다.
-    return () => {
-      const previous = previouslyFocusedRef.current;
-      if (previous && document.contains(previous)) {
-        previous.focus();
-      }
-      previouslyFocusedRef.current = null;
-    };
-  }, [active, containerRef]);
-
-  // active 인 동안 Tab 을 가로채 경계에서 순환시킨다.
-  useEffect(() => {
-    if (!active) return;
-    const container = containerRef.current;
-    if (!container) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Tab') return;
@@ -100,24 +131,41 @@ export function useFocusTrap(
         return;
       }
 
-      const first = focusable[0];
-      const last = focusable[focusable.length - 1];
-      const activeElement = document.activeElement;
+      const firstFocusable = focusable[0];
+      const lastFocusable = focusable[focusable.length - 1];
+      const activeElement =
+        document.activeElement instanceof HTMLElement
+          ? document.activeElement
+          : null;
+      const isKnownActiveElement =
+        activeElement != null && focusable.includes(activeElement);
 
       if (event.shiftKey) {
-        if (activeElement === first || !focusable.includes(activeElement as HTMLElement)) {
+        if (!isKnownActiveElement || activeElement === firstFocusable) {
           event.preventDefault();
-          last.focus();
+          lastFocusable.focus();
         }
       } else {
-        if (activeElement === last || !focusable.includes(activeElement as HTMLElement)) {
+        if (!isKnownActiveElement || activeElement === lastFocusable) {
           event.preventDefault();
-          first.focus();
+          firstFocusable.focus();
         }
       }
     };
 
     container.addEventListener('keydown', onKeyDown);
-    return () => container.removeEventListener('keydown', onKeyDown);
+
+    // 닫힐 때: 리스너를 떼고, 컨테이너에 준 tabindex 를 복구하고,
+    // 직전 포커스로 되돌린다. 그 요소가 사라졌으면 아무것도 하지 않는다.
+    return () => {
+      container.removeEventListener('keydown', onKeyDown);
+      restoreContainerTabIndex?.();
+
+      const previous = previouslyFocusedRef.current;
+      if (previous && document.contains(previous)) {
+        previous.focus();
+      }
+      previouslyFocusedRef.current = null;
+    };
   }, [active, containerRef]);
 }
