@@ -26,7 +26,9 @@ export interface ToastProps {
 
 /**
  * 상태는 획의 색으로만 알린다 — 배지도 원도 두지 않는다.
- * 획 굵기 1.5 는 표의 정렬 아이콘과 같은 값이라 두 컴포넌트가 같은 손으로 그려진다.
+ * 획 굵기는 1.5, 크기는 16px — 표의 정렬 아이콘(12px, 굵기 1.5~2)과 크기도
+ * 굵기도 다르다. 서로 다른 자리에서 각자 알맞게 읽히면 되는 것이지, 두
+ * 컴포넌트가 같은 값을 공유해야 하는 것은 아니다.
  */
 function VariantIcon({ variant }: { variant: ToastVariant }) {
   const common = {

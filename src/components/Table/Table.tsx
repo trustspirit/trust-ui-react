@@ -81,8 +81,12 @@ function RowCells<T>({
 }) {
   // 요약 셀과 데스크톱 칸이 같은 내용을 그리므로, 행마다 한 번만
   // 렌더하고 두 곳이 나눠 쓴다 — display:none 은 React 호출을 막지 못한다.
-  const cells = new Map<string, ReactNode>(
-    columns.map((col) => [col.key, cellContent(col, row, index)]),
+  // key 는 col.key 가 아니라 열 객체 자신이다 — {key:'price', ...} 두 열이
+  // 같은 데이터 경로를 서로 다르게 보여주는 것(예: 현재가/등락)은 실제로
+  // 쓰이는 모양이라, 문자열 키로 맵을 만들면 뒤 열이 앞 열을 덮어써 두 칸이
+  // 같은 값을 보여주게 된다.
+  const cells = new Map<Column<T>, ReactNode>(
+    columns.map((col) => [col, cellContent(col, row, index)]),
   );
 
   return (
@@ -97,7 +101,7 @@ function RowCells<T>({
             TONE_CLASS[toneOf(col, row)],
           )}
         >
-          {cells.get(col.key)}
+          {cells.get(col)}
         </td>
       ))}
       {mobileLayout && (
@@ -107,7 +111,7 @@ function RowCells<T>({
               <SummaryItem
                 col={mobileLayout.primary}
                 row={row}
-                content={cells.get(mobileLayout.primary.key)}
+                content={cells.get(mobileLayout.primary)}
               />
             </span>
           )}
@@ -116,21 +120,21 @@ function RowCells<T>({
               <SummaryItem
                 col={mobileLayout.value}
                 row={row}
-                content={cells.get(mobileLayout.value.key)}
+                content={cells.get(mobileLayout.value)}
               />
             </span>
           )}
           {mobileLayout.secondary.length > 0 && (
             <span className={styles.slotSecondary}>
               {mobileLayout.secondary.map((col) => (
-                <SummaryItem key={col.key} col={col} row={row} content={cells.get(col.key)} />
+                <SummaryItem key={col.key} col={col} row={row} content={cells.get(col)} />
               ))}
             </span>
           )}
           {mobileLayout.delta.length > 0 && (
             <span className={styles.slotDelta}>
               {mobileLayout.delta.map((col) => (
-                <SummaryItem key={col.key} col={col} row={row} content={cells.get(col.key)} />
+                <SummaryItem key={col.key} col={col} row={row} content={cells.get(col)} />
               ))}
             </span>
           )}
@@ -280,7 +284,7 @@ export function Table<T extends Record<string, any>>({
         </thead>
         <tbody>
           {sorted.length === 0 ? (
-            <tr>
+            <tr className={styles.emptyRow}>
               <td className={styles.emptyCell} colSpan={Math.max(columns.length, 1)}>
                 {emptyText}
               </td>

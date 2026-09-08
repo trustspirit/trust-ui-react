@@ -223,16 +223,21 @@
   align-items: center;
 }
 
+/* 화면 하단에 고정되는 것은 --tui-safe-bottom 을 패딩에 반영한다 (스펙 9장).
+   .container 의 padding: var(--tui-pad-3) 위에 아래쪽만 더 크게 덮어 쓴다 —
+   Dialog 의 mobileFullscreen 과 같은 max() 관용구다. */
 .bottomRight {
   bottom: 0;
   right: 0;
   align-items: flex-end;
+  padding-bottom: max(var(--tui-pad-3), var(--tui-safe-bottom));
 }
 
 .bottomLeft {
   bottom: 0;
   left: 0;
   align-items: flex-start;
+  padding-bottom: max(var(--tui-pad-3), var(--tui-safe-bottom));
 }
 
 .bottomCenter {
@@ -240,4 +245,5 @@
   left: 50%;
   transform: translateX(-50%);
   align-items: center;
+  padding-bottom: max(var(--tui-pad-3), var(--tui-safe-bottom));
 }

@@ -14,8 +14,14 @@ export function getNestedValue(obj: unknown, path: string): unknown {
 function toNumber(value: unknown): number {
   if (typeof value === 'number') return value;
   if (typeof value !== 'string') return Number.NaN;
+  // 괄호식 음수는 회계 표기의 표준이다 — "(3,584,000)" 은 -3,584,000 을 뜻한다.
+  // 괄호를 그냥 걷어내면 부호가 사라져 하락을 상승으로 신호하게 된다.
+  const parenthesised = /^\s*\(.*\)\s*$/.test(value);
   const cleaned = value.replace(/[^0-9.+\-]/g, '');
-  return cleaned === '' ? Number.NaN : Number(cleaned);
+  if (cleaned === '') return Number.NaN;
+  const n = Number(cleaned);
+  if (!Number.isFinite(n)) return Number.NaN;
+  return parenthesised ? -Math.abs(n) : n;
 }
 
 export function toneOf<T>(col: Column<T>, row: T): Tone {

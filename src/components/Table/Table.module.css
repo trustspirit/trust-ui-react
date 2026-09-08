@@ -197,8 +197,13 @@
 }
 
 /* ── 행 ── */
+/* 빈 상태 행은 상호작용 요소가 아니다 — 클릭해도 아무 일도 일어나지
+   않으므로 호버 배경을 받으면 있지도 않은 상호작용을 약속하게 된다.
+   :has() 없이 배제하려면 선택자만으로는 "셀이 emptyCell 뿐인 행"을
+   가려낼 수 없으므로, 그 행에 직접 .emptyRow 가드 클래스를 붙인다 —
+   지원 범위를 넓히면서 의도도 선택자 이름으로 그대로 드러난다. */
 @media (hover: hover) {
-  .hoverable tbody tr:hover:not(:focus-within) {
+  .hoverable tbody tr:hover:not(:focus-within):not(.emptyRow) {
     background-color: var(--tui-field);
   }
 }
@@ -250,11 +255,6 @@
   color: var(--tui-ink);
 }
 
-/* 총계가 있으면 본문의 마지막 행은 표를 닫지 않는다 — 닫는 일은 총계가 한다.
-   두 굵은 선이 한 칸 사이로 붙으면 어느 쪽이 닫는 선인지 읽히지 않는다. */
-.hasSummaryRow tbody tr:last-child .td {
-  border-bottom: 1px solid var(--tui-rule);
-}
 
 /* ── 모바일 정렬 바 ──
    요약 2행 모드는 열 머리를 감추므로 정렬 버튼도 함께 사라진다. 그 자리를
@@ -292,6 +292,19 @@
     font-weight: var(--tui-weight-strong);
   }
 
+  /* 좁은 화면에서도 표는 닫힌다 — .td 는 여기서 display:none 이라
+     데스크톱의 닫는 선이 그려지지 않는다. */
+  .mobileSummary tbody tr:last-child .summaryCell {
+    border-bottom: 1px solid var(--tui-rule-strong);
+  }
+
+  /* 총계가 있으면 닫는 일은 총계가 한다. 본문 마지막 행의 선을 지워
+     총계 위에 두 겹이 겹치지 않게 한다 — 요약 셀은 border-collapse 의
+     대상이 아니므로 두 선이 그대로 더해진다. */
+  .hasSummaryRow.mobileSummary tbody tr:last-child .summaryCell {
+    border-bottom: none;
+  }
+
   .mobileSummary thead {
     display: none;
   }
@@ -306,7 +319,9 @@
     min-height: 44px;
     padding: var(--tui-pad-2) var(--tui-pad-3);
     border: none;
-    border-bottom: 1px solid var(--tui-rule-strong);
+    /* 이 바는 사라진 .th 의 대역이다 — .th 자신의 선(--tui-rule)보다
+       무거워서는 안 된다. 대역이 원본보다 진하면 그 자체가 새 위계다. */
+    border-bottom: 1px solid var(--tui-rule);
     background-color: var(--tui-field);
     font: inherit;
     letter-spacing: inherit;

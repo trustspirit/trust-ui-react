@@ -54,6 +54,15 @@ describe('toneOf', () => {
     expect(toneOf(col({ tone: 'auto' }), { v: null })).toBe('neutral');
   });
 
+  it("'auto' 는 괄호식 음수를 하락으로 읽는다 — 회계 표기의 표준이다", () => {
+    expect(toneOf(col({ tone: 'auto' }), { v: '(3,584,000)' })).toBe('fall');
+    expect(toneOf(col({ tone: 'auto' }), { v: '(15.73%)' })).toBe('fall');
+  });
+
+  it("'auto' 는 괄호가 아닌 단순 문자열의 부호를 그대로 읽는다", () => {
+    expect(toneOf(col({ tone: 'auto' }), { v: '3,584,000' })).toBe('rise');
+  });
+
   it('함수 tone 은 값과 행을 함께 받는다', () => {
     const c = col({ tone: (value: any, row: any) => (row.flag ? 'fall' : 'rise') });
     expect(toneOf(c, { v: 1, flag: true })).toBe('fall');

@@ -15,6 +15,10 @@ export interface Column<T> {
    * 셀 렌더러. 지정하지 않으면 값을 그대로 그린다.
    * 요약 행과 데스크톱 칸이 같은 결과를 써야 하므로 render 는 순수해야
    * 한다(부수 효과를 넣지 않는다) — 행마다 한 번만 호출되고 두 곳이 나눠 쓴다.
+   *
+   * 총계 행에서는 row 가 Partial<T> 다 — summaryRow 에 없는 필드는
+   * undefined 이므로 row 의 필드를 직접 읽을 때도 방어해야 한다
+   * (index === -1 이 총계 행이라는 신호다).
    */
   render?: (value: any, row: T, index: number) => ReactNode;
   /** 정렬 가능 여부 */
@@ -49,6 +53,12 @@ export interface TableProps<T> {
    * 좁은 화면에서의 표현.
    * 'summary'(기본) = 한 행이 두 줄을 차지하는 요약 행.
    * 'scroll' = 모든 열을 유지하고 가로로 스크롤한다.
+   *
+   * ⚠️ v1 의 기본값은 'scroll' 이었다. v1 에서 이 prop 을 지정하지 않고 쓰던
+   * 코드를 v2 로 옮기면 컴파일 오류 없이 좁은 화면 동작만 조용히 바뀐다 —
+   * 모든 열이 가로 스크롤로 보이던 것이, 네 자리(primary/value/secondary/
+   * delta)만 남고 나머지 열은 화면에서 사라지는 요약 2행으로 바뀐다.
+   * 예전과 같은 동작을 유지하려면 mobileVariant="scroll" 을 명시한다.
    */
   mobileVariant?: 'summary' | 'scroll';
   /** 호버 시 행 강조 (기본 true) */
