@@ -154,18 +154,7 @@ export function Table<T extends Record<string, any>>({
               <tr
                 key={getRowKey(row, rowIndex)}
                 className={onRowClick ? styles.clickableRow : undefined}
-                tabIndex={onRowClick ? 0 : undefined}
                 onClick={onRowClick ? () => onRowClick(row, rowIndex) : undefined}
-                onKeyDown={
-                  onRowClick
-                    ? (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          onRowClick(row, rowIndex);
-                        }
-                      }
-                    : undefined
-                }
               >
                 {columns.map((col) => (
                   <td

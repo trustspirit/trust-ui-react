@@ -51,7 +51,12 @@ export interface TableProps<T> {
   hoverable?: boolean;
   /** 데이터가 비었을 때의 글자 */
   emptyText?: string;
-  /** 행 클릭 핸들러. 지정하면 행이 키보드로 포커스 가능해진다 */
+  /**
+   * 행 클릭 핸들러 — 포인터 편의 기능이다.
+   * <tr> 은 role="grid" 밖에서는 상호작용 구성요소가 아니므로 행 자체를
+   * 포커스 가능하게 만들지 않는다. 키보드와 보조기술로 닿아야 하는 동작은
+   * 셀 안에 실제 컨트롤(button/link)을 렌더해서 제공한다.
+   */
   onRowClick?: (row: T, index: number) => void;
   /** 행 식별자 추출기 */
   rowKey?: string | ((row: T) => string);

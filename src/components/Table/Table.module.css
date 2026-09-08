@@ -186,17 +186,19 @@
 
 /* ── 머리 고정 ──
    v1 은 여기에 backdrop-filter 를 걸어 유리질 표면을 만들었다. v2 는
-   glassmorphism 을 쓰지 않으므로 불투명한 지면색이 아래 행을 가린다. */
+   glassmorphism 을 쓰지 않으므로 불투명한 지면색이 아래 행을 가린다.
+   그 지면색은 non-sticky 머리와 똑같은 --tui-field 다 — 스크롤 중인 행을
+   가리는 동시에 머리띠라는 정체성도 함께 지켜야 하기 때문이다. */
 .stickyHeader .th {
   position: sticky;
   top: 0;
   z-index: var(--tui-z-sticky);
-  background-color: var(--tui-paper);
+  background-color: var(--tui-field);
 }
 
 /* ── 행 ── */
 @media (hover: hover) {
-  .hoverable tbody tr:hover:not(:focus-visible) {
+  .hoverable tbody tr:hover:not(:focus-within) {
     background-color: var(--tui-field);
   }
 }
@@ -206,8 +208,11 @@
 }
 
 /* 행은 border-collapse 로 테두리를 이웃과 공유하므로 바깥 링을 그릴 수 없다.
-   안쪽으로 그린 outline 한 겹이 유일한 포커스 신호다. */
-.clickableRow:focus-visible {
+   안쪽으로 그린 outline 한 겹이 유일한 포커스 신호다. <tr> 자체는 포커스
+   가능한 요소가 아니므로(role="grid" 밖에서는 상호작용 구성요소가 아니다),
+   셀 안의 컨트롤(button/link)이 포커스를 받았을 때 그 행을 표시하도록
+   focus-within 을 쓴다. */
+.clickableRow:focus-within {
   outline: 2px solid var(--tui-ink);
   outline-offset: -2px;
 }
