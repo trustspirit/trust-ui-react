@@ -83,10 +83,16 @@
   }
 }
 
-/* ── Outside current month ── */
+/* ── Outside current month ──
+   dayDisabled 가 공용 토큰 --tui-opacity-disabled(0.45)로 올라오면서, 이
+   고정값 0.4 로 두면 클릭 가능한(interactive) 이 상태가 클릭 불가능한
+   dayDisabled 보다 더 흐리게 보이는 역전이 생겼다 — 비활성 상태가 활성
+   상태보다 더 눈에 띄면 안 된다. dayDisabled 는 공용 토큰을 그대로 두고,
+   여기 opacity 를 그 위(0.55)로 올려 순서를 바로잡는다. 원래 두 값의
+   차이(0.4 − 0.3 = 0.1)를 그대로 옮긴 값이다. ── */
 .dayOutside {
   color: var(--tui-ink-3);
-  opacity: 0.4;
+  opacity: 0.55;
 }
 
 /* ── Today indicator — 면을 채우지 않고 테두리만. 선택된 날짜(면 채움)와
