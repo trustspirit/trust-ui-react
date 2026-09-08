@@ -1,75 +1,82 @@
-import { useState, useMemo, useCallback, type CSSProperties, type ReactNode } from 'react';
+import { useCallback, type CSSProperties, type ReactNode } from 'react';
 import styles from './Table.module.css';
+import { getNestedValue, toneOf } from './values';
+import { useSort } from './useSort';
+import type { Column, SortDirection, TableProps } from './types';
 
-/* ── Types ── */
+export type { Column, TableProps, Tone, MobileSlot } from './types';
 
-export interface Column<T> {
-  /** Property key to access in row data */
-  key: string;
-  /** Column header text */
-  header: string;
-  /** Custom cell renderer */
-  render?: (value: any, row: T, index: number) => ReactNode;
-  /** Enable sorting for this column */
-  sortable?: boolean;
-  /** Fixed column width */
-  width?: string | number;
-  /** Text alignment */
-  align?: 'left' | 'center' | 'right';
+function cx(...parts: (string | false | undefined)[]): string {
+  return parts.filter(Boolean).join(' ');
 }
 
-export interface TableProps<T> {
-  /** Column definitions */
-  columns: Column<T>[];
-  /** Data rows */
-  data: T[];
-  /** Visual variant (default: 'default') */
-  variant?: 'default' | 'striped' | 'bordered';
-  /** Size preset (default: 'md') */
-  size?: 'sm' | 'md' | 'lg';
-  /** Sticky header on scroll (default: false) */
-  stickyHeader?: boolean;
-  /** Mobile rendering strategy. 'scroll' (default) = horizontal scroll. 'stacked' = each row renders as a card on narrow viewports. */
-  mobileVariant?: 'scroll' | 'stacked';
-  /** Zebra-stripe rows alternating with --tui-bg-muted. Default false. */
-  zebra?: boolean;
-  /** Highlight rows on hover (default: true) */
-  hoverable?: boolean;
-  /** Text shown when data is empty */
-  emptyText?: string;
-  /** Row click handler */
-  onRowClick?: (row: T, index: number) => void;
-  /** Key extractor for row identity */
-  rowKey?: string | ((row: T) => string);
-  /** Additional CSS class name */
-  className?: string;
-  /** Additional inline styles */
-  style?: CSSProperties;
+const TONE_CLASS = {
+  rise: styles.rise,
+  fall: styles.fall,
+  neutral: '',
+} as const;
+
+/**
+ * 수치 열은 지정하지 않으면 우측으로 정렬한다. 자릿수가 오른쪽에서 맞아야
+ * 위아래 행을 비교할 수 있기 때문이다. align 을 직접 주면 그것이 이긴다.
+ */
+function alignClass<T>(col: Column<T>): string | undefined {
+  const align = col.align ?? (col.numeric ? 'right' : undefined);
+  if (align === 'right') return styles.alignRight;
+  if (align === 'center') return styles.alignCenter;
+  return undefined;
 }
 
-type SortDirection = 'asc' | 'desc' | null;
-
-interface SortState {
-  key: string | null;
-  direction: SortDirection;
+function cellContent<T>(col: Column<T>, row: T, index: number): ReactNode {
+  const value = getNestedValue(row, col.key);
+  return col.render ? col.render(value, row, index) : (value as ReactNode);
 }
 
-/* ── Helper ── */
-
-function getNestedValue(obj: any, path: string): any {
-  return path.split('.').reduce((acc, part) => acc?.[part], obj);
+/** 방향을 갖는 열인지. 굵기(550)는 열 전체에 걸고 행별 방향에는 걸지 않는다. */
+function isToned<T>(col: Column<T>): boolean {
+  return Boolean(col.tone) && col.tone !== 'none';
 }
 
-/* ── Table Component ── */
+/**
+ * 정렬 표시. 정렬 가능함을 알리는 신호는 형태이지 색이 아니므로,
+ * 아직 정렬되지 않은 열에도 옅은 겹화살표를 남겨 둔다.
+ */
+function SortIcon({ direction }: { direction: SortDirection }) {
+  const common = {
+    width: 12,
+    height: 12,
+    viewBox: '0 0 12 12',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeLinecap: 'round' as const,
+    strokeLinejoin: 'round' as const,
+    'aria-hidden': true,
+  };
+  if (direction === 'asc') {
+    return (
+      <svg {...common} strokeWidth={2}>
+        <path d="M6 9V3M3 5l3-3 3 3" />
+      </svg>
+    );
+  }
+  if (direction === 'desc') {
+    return (
+      <svg {...common} strokeWidth={2}>
+        <path d="M6 3v6M3 7l3 3 3-3" />
+      </svg>
+    );
+  }
+  return (
+    <svg {...common} strokeWidth={1.5}>
+      <path d="M4 4.5L6 2.5l2 2M4 7.5L6 9.5l2-2" />
+    </svg>
+  );
+}
 
 export function Table<T extends Record<string, any>>({
   columns,
   data,
-  variant = 'default',
-  size = 'md',
   stickyHeader = false,
-  mobileVariant = 'scroll',
-  zebra = false,
   hoverable = true,
   emptyText = 'No data available',
   onRowClick,
@@ -77,43 +84,7 @@ export function Table<T extends Record<string, any>>({
   className,
   style,
 }: TableProps<T>) {
-  const [sort, setSort] = useState<SortState>({ key: null, direction: null });
-
-  const handleSort = useCallback((columnKey: string) => {
-    setSort((prev) => {
-      if (prev.key !== columnKey) {
-        return { key: columnKey, direction: 'asc' };
-      }
-      if (prev.direction === 'asc') {
-        return { key: columnKey, direction: 'desc' };
-      }
-      return { key: null, direction: null };
-    });
-  }, []);
-
-  const sortedData = useMemo(() => {
-    if (!sort.key || !sort.direction) return data;
-
-    const sorted = [...data].sort((a, b) => {
-      const aVal = getNestedValue(a, sort.key!);
-      const bVal = getNestedValue(b, sort.key!);
-
-      if (aVal == null && bVal == null) return 0;
-      if (aVal == null) return 1;
-      if (bVal == null) return -1;
-
-      if (typeof aVal === 'number' && typeof bVal === 'number') {
-        return sort.direction === 'asc' ? aVal - bVal : bVal - aVal;
-      }
-
-      const aStr = String(aVal);
-      const bStr = String(bVal);
-      const cmp = aStr.localeCompare(bStr);
-      return sort.direction === 'asc' ? cmp : -cmp;
-    });
-
-    return sorted;
-  }, [data, sort.key, sort.direction]);
+  const { sort, toggle, sorted } = useSort(data);
 
   const getRowKey = useCallback(
     (row: T, index: number): string => {
@@ -124,132 +95,93 @@ export function Table<T extends Record<string, any>>({
     [rowKey],
   );
 
-  const classNames = [
-    styles.wrapper,
-    stickyHeader ? styles.stickyWrapper : '',
-    className,
-  ]
-    .filter(Boolean)
-    .join(' ');
-
-  const tableClassNames = [
-    styles.table,
-    styles[variant],
-    styles[size],
-    hoverable ? styles.hoverable : '',
-    zebra ? styles.zebra : '',
-    mobileVariant === 'stacked' ? styles.mobileStacked : '',
-  ]
-    .filter(Boolean)
-    .join(' ');
-
   return (
-    <div className={classNames} style={style}>
-      <table className={tableClassNames}>
+    <div
+      className={cx(styles.wrapper, stickyHeader && styles.stickyWrapper, className)}
+      style={style}
+    >
+      <table className={cx(styles.table, hoverable && styles.hoverable)}>
         <thead className={stickyHeader ? styles.stickyHeader : undefined}>
           <tr>
             {columns.map((col) => {
+              const isSorted = sort.key === col.key;
               const thStyle: CSSProperties = {};
               if (col.width) {
                 thStyle.width = typeof col.width === 'number' ? `${col.width}px` : col.width;
               }
-              if (col.align) {
-                thStyle.textAlign = col.align;
-              }
-
-              const isSorted = sort.key === col.key;
-              const thClassNames = [
-                styles.th,
-                col.sortable ? styles.sortable : '',
-                isSorted ? styles.sorted : '',
-              ]
-                .filter(Boolean)
-                .join(' ');
-
               return (
                 <th
                   key={col.key}
-                  className={thClassNames}
+                  scope="col"
+                  className={cx(styles.th, alignClass(col), isSorted && styles.sorted)}
                   style={thStyle}
-                  tabIndex={col.sortable ? 0 : undefined}
-                  onClick={col.sortable ? () => handleSort(col.key) : undefined}
-                  onKeyDown={col.sortable ? (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      handleSort(col.key);
-                    }
-                  } : undefined}
                   aria-sort={
-                    isSorted && sort.direction === 'asc'
-                      ? 'ascending'
-                      : isSorted && sort.direction === 'desc'
-                        ? 'descending'
-                        : undefined
+                    isSorted
+                      ? sort.direction === 'asc'
+                        ? 'ascending'
+                        : 'descending'
+                      : undefined
                   }
                 >
-                  <span className={styles.headerContent}>
-                    {col.header}
-                    {col.sortable && (
-                      <span className={styles.sortIndicator} aria-hidden="true">
-                        {isSorted && sort.direction === 'asc' && (
-                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M6 9V3M3 5l3-3 3 3" />
-                          </svg>
-                        )}
-                        {isSorted && sort.direction === 'desc' && (
-                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M6 3v6M3 7l3 3 3-3" />
-                          </svg>
-                        )}
-                        {!isSorted && (
-                          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.4">
-                            <path d="M4 4.5L6 2.5l2 2M4 7.5L6 9.5l2-2" />
-                          </svg>
-                        )}
+                  {col.sortable ? (
+                    <button
+                      type="button"
+                      className={styles.sortButton}
+                      onClick={() => toggle(col.key)}
+                    >
+                      <span className={styles.headerText}>{col.header}</span>
+                      <span className={styles.sortIndicator}>
+                        <SortIcon direction={isSorted ? sort.direction : null} />
                       </span>
-                    )}
-                  </span>
+                    </button>
+                  ) : (
+                    <span className={styles.headerLabel}>{col.header}</span>
+                  )}
                 </th>
               );
             })}
           </tr>
         </thead>
         <tbody>
-          {sortedData.length === 0 ? (
+          {sorted.length === 0 ? (
             <tr>
-              <td className={styles.emptyCell} colSpan={columns.length}>
+              <td className={styles.emptyCell} colSpan={Math.max(columns.length, 1)}>
                 {emptyText}
               </td>
             </tr>
           ) : (
-            sortedData.map((row, rowIndex) => {
-              const tdStyle = (col: Column<T>): CSSProperties => {
-                const s: CSSProperties = {};
-                if (col.align) s.textAlign = col.align;
-                return s;
-              };
-
-              return (
-                <tr
-                  key={getRowKey(row, rowIndex)}
-                  className={onRowClick ? styles.clickableRow : undefined}
-                  onClick={onRowClick ? () => onRowClick(row, rowIndex) : undefined}
-                >
-                  {columns.map((col) => (
-                    <td
-                      key={col.key}
-                      className={styles.td}
-                      style={tdStyle(col)}
-                      data-label={mobileVariant === 'stacked' ? col.header : undefined}
-                    >
-                      {col.render
-                        ? col.render(getNestedValue(row, col.key), row, rowIndex)
-                        : getNestedValue(row, col.key)}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })
+            sorted.map((row, rowIndex) => (
+              <tr
+                key={getRowKey(row, rowIndex)}
+                className={onRowClick ? styles.clickableRow : undefined}
+                tabIndex={onRowClick ? 0 : undefined}
+                onClick={onRowClick ? () => onRowClick(row, rowIndex) : undefined}
+                onKeyDown={
+                  onRowClick
+                    ? (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          onRowClick(row, rowIndex);
+                        }
+                      }
+                    : undefined
+                }
+              >
+                {columns.map((col) => (
+                  <td
+                    key={col.key}
+                    className={cx(
+                      styles.td,
+                      alignClass(col),
+                      isToned(col) && styles.toned,
+                      TONE_CLASS[toneOf(col, row)],
+                    )}
+                  >
+                    {cellContent(col, row, rowIndex)}
+                  </td>
+                ))}
+              </tr>
+            ))
           )}
         </tbody>
       </table>

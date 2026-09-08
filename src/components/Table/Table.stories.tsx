@@ -52,28 +52,6 @@ export const Default: Story = {
   ),
 };
 
-export const Striped: Story = {
-  render: () => (
-    <Table<User>
-      columns={columns}
-      data={sampleData}
-      variant="striped"
-      rowKey="id"
-    />
-  ),
-};
-
-export const Bordered: Story = {
-  render: () => (
-    <Table<User>
-      columns={columns}
-      data={sampleData}
-      variant="bordered"
-      rowKey="id"
-    />
-  ),
-};
-
 export const Sortable: Story = {
   render: () => (
     <Table<User>
@@ -113,29 +91,6 @@ export const StickyHeader: Story = {
         rowKey="id"
       />
     </div>
-  ),
-};
-
-export const Zebra: Story = {
-  render: () => (
-    <Table<User>
-      columns={columns}
-      data={sampleData}
-      zebra
-      rowKey="id"
-    />
-  ),
-};
-
-export const MobileStacked: Story = {
-  parameters: { viewport: { defaultViewport: 'mobile1' } },
-  render: () => (
-    <Table<User>
-      columns={columns}
-      data={sampleData}
-      mobileVariant="stacked"
-      rowKey="id"
-    />
   ),
 };
 
@@ -192,23 +147,4 @@ export const RowClick: Story = {
     }
     return <RowClickExample />;
   },
-};
-
-export const Sizes: Story = {
-  render: () => (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-      <div>
-        <h4 style={{ margin: '0 0 8px' }}>Small</h4>
-        <Table<User> columns={columns} data={sampleData.slice(0, 3)} size="sm" rowKey="id" />
-      </div>
-      <div>
-        <h4 style={{ margin: '0 0 8px' }}>Medium (default)</h4>
-        <Table<User> columns={columns} data={sampleData.slice(0, 3)} size="md" rowKey="id" />
-      </div>
-      <div>
-        <h4 style={{ margin: '0 0 8px' }}>Large</h4>
-        <Table<User> columns={columns} data={sampleData.slice(0, 3)} size="lg" rowKey="id" />
-      </div>
-    </div>
-  ),
 };

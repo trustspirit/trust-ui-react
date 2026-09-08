@@ -1,182 +1,213 @@
-/* ── Wrapper ── */
+/* ── 감싸개 ── */
 .wrapper {
   width: 100%;
   overflow-x: auto;
-  font-family: var(--tui-font-family);
+  /* 가로 스크롤 격리 — 끝에 닿았을 때 페이지 전체나 뒤로가기 제스처가
+     발동하지 않게 한다 (스펙 9장) */
+  overscroll-behavior-x: contain;
+  font-family: var(--tui-font-sans);
 }
 
 .stickyWrapper {
   overflow-y: auto;
 }
 
-/* ── Table ── */
+/* ── 표 — 가로 괘선만 쓴다. 세로 구분선은 두지 않는다 (원칙 4) ── */
 .table {
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0;
-  color: var(--tui-text);
+  color: var(--tui-ink);
+  font-size: var(--tui-font-size-base);
+  line-height: var(--tui-line-height-body);
+  /* 수치를 표시하는 모든 컴포넌트에 등폭 숫자를 기본 적용한다 (스펙 6장).
+     비례 숫자로는 자릿수에 따라 폭이 달라져 소수점이 어긋난다. */
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tui-letter-num);
 }
 
-/* ── Header ── */
+/* ── 머리 ──
+   안쪽 여백은 .headerLabel 과 .sortButton 이 갖는다. 정렬 버튼이 칸을
+   가득 채워야 터치 타깃이 칸 크기와 같아지기 때문이다. */
 .th {
+  padding: 0;
   text-align: left;
-  font-weight: var(--tui-font-weight-semibold);
-  color: var(--tui-text);
-  background-color: var(--tui-bg-subtle);
-  border-bottom: 2px solid var(--tui-border);
+  font-size: var(--tui-font-size-caption);
+  font-weight: var(--tui-weight-medium);
+  letter-spacing: var(--tui-letter-body);
+  /* 열 이름은 데이터가 아니라 데이터를 가리키는 말이므로 한 단계 물러난다 */
+  color: var(--tui-ink-3);
+  /*
+   * 머리는 지면 위에 얹힌 띠다. 이것이 표에 "시작"을 만든다.
+   *
+   * 위계는 이 바탕 한 겹으로만 만든다(원칙 5) — 바탕을 깔면서 괘선까지
+   * 굵히지 않는다. 가장 진한 선(--tui-rule-strong)은 총계 행 위와 표를
+   * 닫는 자리, 두 곳에만 쓴다. 재무제표가 합계 앞뒤를 굵은 선으로
+   * 닫는 조판 그대로다.
+   */
+  background-color: var(--tui-field);
+  border-bottom: 1px solid var(--tui-rule);
   white-space: nowrap;
-  user-select: none;
 }
 
-.headerContent {
-  display: inline-flex;
+.headerLabel {
+  display: block;
+  padding: var(--tui-pad-2) var(--tui-pad-3);
+}
+
+/* ── 정렬 버튼 ──
+   테두리 없는 컨트롤이므로 신호는 링 한 겹뿐이다. 표 안쪽이라 바깥 링은
+   이웃 칸에 잘리므로 inset 으로 그린다 — 칸 크기가 흔들리지 않는다. */
+.sortButton {
+  display: flex;
   align-items: center;
-  gap: var(--tui-spacing-xs);
-}
-
-/* ── Sortable ── */
-.sortable {
+  gap: var(--tui-gap-1);
+  width: 100%;
+  padding: var(--tui-pad-2) var(--tui-pad-3);
+  border: none;
+  background: none;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
   cursor: pointer;
-  transition: color var(--tui-transition);
+  transition: var(--tui-transition-color);
 }
 
-.sortable:hover {
-  color: var(--tui-primary);
+.sortButton:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--tui-ink);
 }
 
-.sorted {
-  color: var(--tui-primary);
+/* 포커스 중에는 호버가 물러난다 — 그러지 않으면 클릭 직후 마우스가 그 위에
+   있는 가장 흔한 상황에서 포커스 표시가 흐려진다 (스펙 8장) */
+@media (hover: hover) {
+  .sortButton:hover:not(:focus-visible) {
+    color: var(--tui-ink);
+  }
+}
+
+/* 터치 환경의 최소 타깃. 형제 칸끼리는 표 격자가 나누므로 겹칠 수 없다 —
+   음수 inset 으로 넓히지 않는다. */
+@media (pointer: coarse) {
+  .sortButton {
+    min-height: 44px;
+  }
+}
+
+.headerText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sortIndicator {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
+  color: var(--tui-ink-3);
 }
 
-/* ── Sticky Header ── */
-.stickyHeader th {
+/* 정렬된 열만 잉크가 ink-3 에서 ink 로 올라온다. 액센트색을 쓰지 않는다 —
+   크롬은 무채색이고, 지금 무엇으로 정렬돼 있는지는 의미이므로 잉크의
+   농도가 그것을 진다. */
+.sorted {
+  color: var(--tui-ink);
+}
+
+.sorted .sortIndicator {
+  color: var(--tui-ink);
+}
+
+/* ── 정렬 ── */
+.alignRight {
+  text-align: right;
+}
+
+.alignRight .sortButton {
+  justify-content: flex-end;
+}
+
+.alignCenter {
+  text-align: center;
+}
+
+.alignCenter .sortButton {
+  justify-content: center;
+}
+
+/* ── 칸 ── */
+.td {
+  padding: var(--tui-pad-2) var(--tui-pad-3);
+  /* table-cell 에서 height 는 최소 높이로 동작한다. 밀도 축이 이 값을
+     46 / 56 / 64(coarse) px 로 바꾼다. */
+  height: var(--tui-row-height);
+  vertical-align: middle;
+  color: var(--tui-ink);
+  border-bottom: 1px solid var(--tui-rule);
+}
+
+/*
+ * 표를 닫는 선. 마지막 행의 괘선이 그냥 흐려지며 끝나면 표에 끝이 없다.
+ * 총계 행이 있으면 그쪽이 닫으므로 여기서는 물러난다 (Task 7).
+ */
+.table tbody tr:last-child .td {
+  border-bottom: 1px solid var(--tui-rule-strong);
+}
+
+/*
+ * 손익처럼 방향을 갖는 수치는 본문보다 무겁되 제목은 아니다 — 스펙 6장이
+ * 이 자리를 위해 550(--tui-weight-strong)을 따로 뒀다.
+ *
+ * 굵기는 tone 이 선언된 열 전체에 걸고 해석된 방향에는 걸지 않는다.
+ * 방향에 걸면 값이 0인 행만 가벼워져 열의 굵기가 행마다 튄다.
+ */
+.toned {
+  font-weight: var(--tui-weight-strong);
+}
+
+/* 수치의 색은 글자에만 쓴다 — 배경·배지·테두리에 쓰지 않는다 (원칙 3).
+   market.css 를 임포트하지 않은 앱에서는 조용히 기본 잉크색으로 남는다. */
+.rise {
+  color: var(--tui-rise, var(--tui-ink));
+}
+
+.fall {
+  color: var(--tui-fall, var(--tui-ink));
+}
+
+/* ── 빈 상태 ── */
+.emptyCell {
+  padding: var(--tui-pad-4) var(--tui-pad-3);
+  text-align: center;
+  color: var(--tui-ink-3);
+  border-bottom: 1px solid var(--tui-rule);
+}
+
+/* ── 머리 고정 ──
+   v1 은 여기에 backdrop-filter 를 걸어 유리질 표면을 만들었다. v2 는
+   glassmorphism 을 쓰지 않으므로 불투명한 지면색이 아래 행을 가린다. */
+.stickyHeader .th {
   position: sticky;
   top: 0;
   z-index: var(--tui-z-sticky);
-  background-color: var(--tui-bg-subtle);
+  background-color: var(--tui-paper);
 }
 
-@supports ((backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px))) {
-  .stickyHeader th {
-    background-color: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(8px) saturate(140%);
-    -webkit-backdrop-filter: blur(8px) saturate(140%);
+/* ── 행 ── */
+@media (hover: hover) {
+  .hoverable tbody tr:hover:not(:focus-visible) {
+    background-color: var(--tui-field);
   }
 }
 
-/* ── Cell ── */
-.td {
-  color: var(--tui-text-secondary);
-  border-bottom: 1px solid var(--tui-border);
-}
-
-/* ── Empty state ── */
-.emptyCell {
-  text-align: center;
-  color: var(--tui-text-muted);
-  font-style: italic;
-  border-bottom: 1px solid var(--tui-border);
-}
-
-/* ── Clickable row ── */
 .clickableRow {
   cursor: pointer;
 }
 
-/* ── Hoverable ── */
-@media (hover: hover) {
-  .hoverable tbody tr:hover {
-    background-color: var(--tui-bg-hover);
-  }
+/* 행은 border-collapse 로 테두리를 이웃과 공유하므로 바깥 링을 그릴 수 없다.
+   안쪽으로 그린 outline 한 겹이 유일한 포커스 신호다. */
+.clickableRow:focus-visible {
+  outline: 2px solid var(--tui-ink);
+  outline-offset: -2px;
 }
-
-/* ── Sizes ── */
-.sm .th,
-.sm .td,
-.sm .emptyCell {
-  padding: var(--tui-spacing-xs) var(--tui-spacing-sm);
-  font-size: var(--tui-font-size-sm);
-}
-
-.md .th,
-.md .td,
-.md .emptyCell {
-  padding: var(--tui-spacing-sm) var(--tui-spacing-md);
-  font-size: var(--tui-font-size-md);
-}
-
-.lg .th,
-.lg .td,
-.lg .emptyCell {
-  padding: var(--tui-spacing-md) var(--tui-spacing-lg);
-  font-size: var(--tui-font-size-lg);
-}
-
-/* ── Variant: striped ── */
-.striped tbody tr:nth-child(even) {
-  background-color: var(--tui-bg-subtle);
-}
-
-@media (hover: hover) {
-  .striped.hoverable tbody tr:hover {
-    background-color: var(--tui-bg-hover);
-  }
-}
-
-/* ── Zebra ── */
-.zebra tbody tr:nth-child(odd) {
-  background-color: var(--tui-bg-muted);
-}
-
-@media (hover: hover) {
-  .zebra tbody tr:nth-child(odd):hover {
-    background-color: var(--tui-bg-hover);
-  }
-}
-
-/* ── Mobile Stacked ── */
-@media (max-width: 640px) {
-  .mobileStacked thead {
-    display: none;
-  }
-  .mobileStacked tbody tr {
-    display: block;
-    margin-bottom: var(--tui-spacing-md);
-    border: 1px solid var(--tui-border);
-    border-radius: var(--tui-radius-lg);
-    padding: var(--tui-spacing-md);
-    background-color: var(--tui-bg-subtle);
-  }
-  .mobileStacked tbody td {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: none;
-    padding: var(--tui-spacing-xs) 0;
-  }
-  .mobileStacked tbody td::before {
-    content: attr(data-label);
-    font-weight: var(--tui-font-weight-medium);
-    color: var(--tui-text-secondary);
-    margin-right: var(--tui-spacing-sm);
-  }
-}
-
-/* ── Variant: bordered ── */
-.bordered {
-  border: 1px solid var(--tui-border);
-}
-
-.bordered .th,
-.bordered .td {
-  border: 1px solid var(--tui-border);
-}
-
-/* ── Variant: default ── */
-/* default styling uses only bottom borders, already set above */
