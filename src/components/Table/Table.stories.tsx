@@ -1,150 +1,131 @@
-import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Table } from './Table';
-import { Badge } from '../Badge';
+import type { Column } from './types';
 
-interface User {
-  id: number;
+interface Holding {
   name: string;
-  email: string;
-  role: string;
-  status: 'active' | 'inactive';
-  age: number;
+  code: string;
+  qty: number;
+  avg: number;
+  price: number;
+  pnl: number;
+  rate: number;
 }
 
-const sampleData: User[] = [
-  { id: 1, name: 'Alice Johnson', email: 'alice@example.com', role: 'Admin', status: 'active', age: 32 },
-  { id: 2, name: 'Bob Smith', email: 'bob@example.com', role: 'Editor', status: 'active', age: 28 },
-  { id: 3, name: 'Carol White', email: 'carol@example.com', role: 'Viewer', status: 'inactive', age: 45 },
-  { id: 4, name: 'David Brown', email: 'david@example.com', role: 'Editor', status: 'active', age: 36 },
-  { id: 5, name: 'Eve Davis', email: 'eve@example.com', role: 'Admin', status: 'inactive', age: 29 },
+const won = (n: number) => n.toLocaleString('ko-KR');
+const signed = (n: number) => `${n > 0 ? '+' : n < 0 ? '-' : ''}${won(Math.abs(n))}`;
+const percent = (n: number) =>
+  `${n > 0 ? '+' : n < 0 ? '-' : ''}${Math.abs(n).toFixed(2)}%`;
+
+const holdings: Holding[] = [
+  { name: '삼성전자', code: '005930', qty: 320, avg: 71200, price: 82400, pnl: 3584000, rate: 15.73 },
+  { name: 'SK하이닉스', code: '000660', qty: 45, avg: 178500, price: 164000, pnl: -652500, rate: -8.12 },
+  { name: 'NAVER', code: '035420', qty: 60, avg: 205000, price: 205000, pnl: 0, rate: 0 },
+  { name: '카카오', code: '035720', qty: 210, avg: 48300, price: 51900, pnl: 756000, rate: 7.45 },
+  { name: '현대차', code: '005380', qty: 80, avg: 192000, price: 238500, pnl: 3720000, rate: 24.22 },
 ];
 
-const columns = [
-  { key: 'name', header: 'Name' },
-  { key: 'email', header: 'Email' },
-  { key: 'role', header: 'Role' },
-  { key: 'status', header: 'Status' },
+const holdingColumns: Column<Holding>[] = [
+  { key: 'name', header: '종목', sortable: true },
+  { key: 'qty', header: '보유', numeric: true, sortable: true, render: (v: number) => `${won(v)}주` },
+  { key: 'avg', header: '평단가', numeric: true, sortable: true, render: (v: number) => won(v) },
+  { key: 'price', header: '현재가', numeric: true, sortable: true, render: (v: number) => won(v) },
+  { key: 'pnl', header: '평가손익', numeric: true, tone: 'auto', sortable: true, render: (v: number) => signed(v) },
+  { key: 'rate', header: '수익률', numeric: true, tone: 'auto', sortable: true, render: (v: number) => percent(v) },
 ];
 
-const meta: Meta = {
-  title: 'Data/Table',
-  tags: ['autodocs'],
-  decorators: [
-    (Story) => (
-      <div style={{ padding: 24 }}>
-        <Story />
-      </div>
-    ),
-  ],
+interface Member {
+  name: string;
+  dept: string;
+  title: string;
+  joined: string;
+}
+
+const members: Member[] = [
+  { name: '김서연', dept: '재무', title: '팀장', joined: '2019-03-04' },
+  { name: '이도현', dept: '개발', title: '선임', joined: '2021-08-16' },
+  { name: '박지우', dept: '디자인', title: '책임', joined: '2020-01-06' },
+];
+
+// Default 용 — 정렬 불가. Sortable 스토리와 픽셀이 달라야 하므로 sortable 플래그를 전부 뺐다.
+const plainMemberColumns: Column<Member>[] = [
+  { key: 'name', header: '이름' },
+  { key: 'dept', header: '부서' },
+  { key: 'title', header: '직위' },
+  { key: 'joined', header: '입사일', align: 'right' },
+];
+
+const memberColumns: Column<Member>[] = [
+  { key: 'name', header: '이름', sortable: true },
+  { key: 'dept', header: '부서' },
+  { key: 'title', header: '직위' },
+  { key: 'joined', header: '입사일', align: 'right', sortable: true },
+];
+
+const meta: Meta<typeof Table> = {
+  title: 'Components/Table',
+  component: Table,
+  parameters: { layout: 'padded' },
 };
 
 export default meta;
-type Story = StoryObj;
+type Story = StoryObj<typeof Table>;
 
+/** 금융이 아닌 일반 표. 수치 열이 없어도 그대로 성립한다. */
 export const Default: Story = {
-  render: () => (
-    <Table<User>
-      columns={columns}
-      data={sampleData}
-      rowKey="id"
-    />
-  ),
+  render: () => <Table columns={plainMemberColumns} data={members} />,
 };
 
 export const Sortable: Story = {
-  render: () => (
-    <Table<User>
-      columns={[
-        { key: 'name', header: 'Name', sortable: true },
-        { key: 'email', header: 'Email', sortable: true },
-        { key: 'role', header: 'Role', sortable: true },
-        { key: 'age', header: 'Age', sortable: true, align: 'right' },
-      ]}
-      data={sampleData}
-      rowKey="id"
-    />
-  ),
+  render: () => <Table columns={memberColumns} data={members} />,
 };
 
-const manyRows: User[] = Array.from({ length: 50 }, (_, i) => ({
-  id: i + 1,
-  name: `User ${i + 1}`,
-  email: `user${i + 1}@example.com`,
-  role: ['Admin', 'Editor', 'Viewer'][i % 3],
-  status: i % 3 === 0 ? 'inactive' : 'active',
-  age: 20 + (i % 40),
-}));
+/** 수치 열은 우측 정렬되고 등폭 숫자로 자릿수가 맞는다. */
+export const Numeric: Story = {
+  render: () => <Table columns={holdingColumns} data={holdings} />,
+};
+
+/**
+ * 시장색은 market.css 를 임포트한 앱에서만 나타난다.
+ * data-market 축은 Storybook 전역 설정으로 바꾼다.
+ */
+export const Market: Story = {
+  tags: ['visual'],
+  render: () => <Table columns={holdingColumns} data={holdings} />,
+};
 
 export const StickyHeader: Story = {
   render: () => (
-    <div style={{ height: 300, overflow: 'auto' }}>
-      <Table<User>
-        columns={[
-          { key: 'name', header: 'Name', sortable: true },
-          { key: 'email', header: 'Email' },
-          { key: 'role', header: 'Role' },
-          { key: 'age', header: 'Age', align: 'right' },
-        ]}
-        data={manyRows}
-        stickyHeader
-        rowKey="id"
-      />
+    <div style={{ maxHeight: 220 }}>
+      <Table columns={holdingColumns} data={holdings} stickyHeader />
     </div>
   ),
 };
 
-export const EmptyState: Story = {
-  render: () => (
-    <Table<User>
-      columns={columns}
-      data={[]}
-      emptyText="No users found. Try adjusting your filters."
-    />
-  ),
-};
-
-export const CustomRender: Story = {
-  render: () => (
-    <Table<User>
-      columns={[
-        { key: 'name', header: 'Name' },
-        { key: 'email', header: 'Email' },
-        { key: 'role', header: 'Role' },
-        {
-          key: 'status',
-          header: 'Status',
-          render: (value: string) => (
-            <Badge variant={value === 'active' ? 'success' : 'secondary'}>
-              {value}
-            </Badge>
-          ),
-        },
-      ]}
-      data={sampleData}
-      rowKey="id"
-    />
-  ),
-};
-
 export const RowClick: Story = {
-  render: () => {
-    function RowClickExample() {
-      const [selected, setSelected] = useState<string | null>(null);
-      return (
-        <div>
-          <p style={{ marginBottom: 12, color: 'var(--tui-ink-2)' }}>
-            Clicked: {selected ?? 'none'}
-          </p>
-          <Table<User>
-            columns={columns}
-            data={sampleData}
-            onRowClick={(row) => setSelected(row.name)}
-            rowKey="id"
-          />
-        </div>
-      );
-    }
-    return <RowClickExample />;
-  },
+  render: () => (
+    <Table
+      columns={memberColumns}
+      data={members}
+      rowKey="name"
+      onRowClick={(row) => window.alert(`${(row as Member).name}`)}
+    />
+  ),
+};
+
+export const EmptyState: Story = {
+  tags: ['visual'],
+  render: () => <Table columns={memberColumns} data={[]} />,
+};
+
+/** 좁은 화면의 기본값. 한 행이 두 줄을 차지한다. */
+export const MobileSummary: Story = {
+  tags: ['visual-mobile'],
+  render: () => <Table columns={holdingColumns} data={holdings} />,
+};
+
+/** 모든 열을 비교해야 하는 화면은 가로 스크롤을 명시적으로 고른다. */
+export const MobileScroll: Story = {
+  tags: ['visual-mobile'],
+  render: () => <Table columns={holdingColumns} data={holdings} mobileVariant="scroll" />,
 };
