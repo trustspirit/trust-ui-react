@@ -1,42 +1,19 @@
 import { describe, it, expect } from 'vitest';
-import { readFileSync, globSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-
-const root = resolve(__dirname, '../..');
-const read = (f: string) => readFileSync(resolve(root, f), 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+import { root, read, collectDeclaredTokens, collectReferencedTokens, definedTokens } from '../shared/tokens';
+import { V1_ONLY_TOKENS } from './v1-tokens';
 
 const COMPAT_FILE = 'src/styles/compat.css';
 const compatCss = read(COMPAT_FILE);
 const pkg = JSON.parse(readFileSync(resolve(root, 'package.json'), 'utf8'));
 
-/** compat.css 를 제외한 v2 시맨틱 층 전체 — 별칭의 우변이 실존해야 하는 대상. */
-const V2_LAYER_FILES = globSync('src/styles/**/*.css', { cwd: root })
-  .sort()
-  .filter((f) => f !== COMPAT_FILE);
-
-const DECLARATION = /(--[a-zA-Z0-9-]+)\s*:/g;
-
-/** CSS 텍스트에서 실제로 "정의"된 커스텀 프로퍼티 이름만 골라낸다 (var(--foo) 참조는 제외). */
-function collectDeclaredTokens(css: string): Set<string> {
-  const declared = new Set<string>();
-  for (const m of css.matchAll(DECLARATION)) {
-    const before = css.slice(Math.max(0, m.index - 4), m.index);
-    if (before.endsWith('var(')) continue;
-    declared.add(m[1]);
-  }
-  return declared;
-}
-
-/** CSS 텍스트에서 var(--foo) 형태로 참조되는 커스텀 프로퍼티 이름 전체. */
-function collectReferencedTokens(css: string): string[] {
-  return [...css.matchAll(/var\(\s*(--[a-zA-Z0-9-]+)/g)].map((m) => m[1]);
-}
-
-/** compat.css 를 제외한 src/styles/** 전체가 정의하는 토큰 이름 — v2 의 실제 정의 목록. */
-const V2_DEFINED_TOKENS = new Set<string>();
-for (const f of V2_LAYER_FILES) {
-  for (const name of collectDeclaredTokens(read(f))) V2_DEFINED_TOKENS.add(name);
-}
+/**
+ * v2 의 실제 정의 목록 — tests/shared/tokens.ts 의 LAYER_FILES 를 근거로
+ * 한다(compat.css 는 그 목록에 없다). 별칭의 우변이 실존해야 하는 대상이자,
+ * 좌변(v1 이름)이 겹치면 안 되는 재정의 금지 대상이기도 하다.
+ */
+const V2_DEFINED_TOKENS = definedTokens();
 
 const compatDeclared = collectDeclaredTokens(compatCss);
 const compatReferenced = collectReferencedTokens(compatCss);
@@ -65,19 +42,8 @@ describe('호환 층(compat.css)', () => {
   });
 
   it('측정된 86개 v1 전용 토큰을 모두 별칭으로 남긴다', () => {
-    const v1Only = readFileSync(
-      resolve(
-        root,
-        '.superpowers/sdd/2026-09-09-trust-ui-v2-docs-release/v1-only-tokens.txt',
-      ),
-      'utf8',
-    )
-      .split('\n')
-      .map((l) => l.trim())
-      .filter(Boolean);
-
-    expect(v1Only.length).toBe(86);
-    const missing = v1Only.filter((name) => !compatDeclared.has(name));
+    expect(V1_ONLY_TOKENS.length).toBe(86);
+    const missing = V1_ONLY_TOKENS.filter((name) => !compatDeclared.has(name));
     expect(missing).toEqual([]);
   });
 

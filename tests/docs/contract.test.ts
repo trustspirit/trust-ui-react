@@ -2,8 +2,8 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync, globSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { STALE } from './stale';
+import { root, definedTokens } from '../shared/tokens';
 
-const root = resolve(__dirname, '../..');
 const read = (f: string) => readFileSync(resolve(root, f), 'utf8');
 
 /**
@@ -21,27 +21,12 @@ const clean = docsFiles.filter((f) => !STALE.includes(f));
 
 /**
  * v2 시맨틱/팔레트 층을 이루는 파일들에서 실제로 "선언"된 커스텀 프로퍼티
- * 이름만 화이트리스트로 삼는다. 하드코딩한 이름 목록이 아니라 src/styles 를
- * 직접 읽어 만든다 — 토큰이 바뀌면 이 검사도 함께 움직여야 한다.
- * (tests/tokens/contract.test.ts 와 같은 관용구)
+ * 이름만 화이트리스트로 삼는다. tests/shared/tokens.ts 의 LAYER_FILES
+ * (사람이 고른 화이트리스트)를 근거로 한다 — 예전에는 이 파일이
+ * src/styles/** 를 무필터로 globSync 해서 compat.css 가 선언한 v1
+ * 이름(--tui-primary 등)까지 "정의된 토큰"으로 잡혔다.
  */
-const DECLARATION = /(--[a-zA-Z0-9-]+)\s*:/g;
-function collectDeclaredTokens(css: string): Set<string> {
-  const declared = new Set<string>();
-  for (const m of css.matchAll(DECLARATION)) {
-    const before = css.slice(Math.max(0, m.index - 4), m.index);
-    if (before.endsWith('var(')) continue; // var(--foo) 참조는 선언이 아니다
-    declared.add(m[1]);
-  }
-  return declared;
-}
-
-const styleFiles = globSync('src/styles/**/*.css', { cwd: root }).sort();
-const DEFINED_TOKENS = new Set<string>();
-for (const f of styleFiles) {
-  const css = read(f).replace(/\/\*[\s\S]*?\*\//g, '');
-  for (const name of collectDeclaredTokens(css)) DEFINED_TOKENS.add(name);
-}
+const DEFINED_TOKENS = definedTokens();
 
 /** 문서 텍스트 어디서든 등장하는 --tui-* 이름 전부(선언형이든 var() 참조든). */
 const TOKEN_MENTION = /--tui-[a-zA-Z0-9-]+/g;
