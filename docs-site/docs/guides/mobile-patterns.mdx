@@ -22,7 +22,7 @@ Pointer type is detected, not set, and it overrides density rather than combinin
 
 In other words, `compact` only actually shrinks controls on a mouse-driven surface. A touch device never sees a control smaller than its `comfortable` size, because 44px is the accepted minimum touch target — full table: [Spacing & Radius → Control heights](../design-tokens/spacing.mdx#control-heights).
 
-Some interactive elements enforce that 44px floor directly rather than relying on the density variable alone. `Table`'s column-sort button and its mobile sort bar (below) both set an explicit `min-height: 44px` under `pointer: coarse`, so the touch target holds even where the surrounding row is shorter.
+Some interactive elements enforce a 44px floor directly rather than relying on the density variable alone, but not by the same mechanism. `Table`'s column-sort button sets an explicit `min-height: 44px` inside its own `@media (pointer: coarse)` rule — a second, belt-and-suspenders floor on top of the density table above, so the touch target holds even where the surrounding row is shorter. The mobile sort bar (below), by contrast, sets its `min-height: 44px` inside `@media (max-width: 640px)` only, with no `pointer: coarse` condition — it's 44px at that breakpoint regardless of pointer type, because the bar exists to be tapped and is sized for that unconditionally once the layout switches to summary cards.
 
 ## Table on mobile
 
