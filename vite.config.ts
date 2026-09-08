@@ -12,14 +12,18 @@ export default defineConfig({
       include: ['src'],
       exclude: ['**/*.stories.tsx'],
     }),
-    // 시장색 레이어는 선택 사항이라 index.ts가 임포트하지 않는다.
-    // cssCodeSplit이 꺼져 있어 빌드가 이 파일을 자동으로 못 만들므로 직접 복사한다.
+    // 시장색·호환 레이어는 선택 사항이라 index.ts가 임포트하지 않는다.
+    // cssCodeSplit이 꺼져 있어 빌드가 이 파일들을 자동으로 못 만들므로 직접 복사한다.
     {
       name: 'copy-optional-layers',
       closeBundle() {
         copyFileSync(
           resolve(__dirname, 'src/styles/market.css'),
           resolve(__dirname, 'dist/market.css'),
+        );
+        copyFileSync(
+          resolve(__dirname, 'src/styles/compat.css'),
+          resolve(__dirname, 'dist/compat.css'),
         );
       },
     },

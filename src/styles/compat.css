@@ -1,0 +1,129 @@
+/*
+ * 호환 층 — 선택 사항. v1 토큰 이름을 v2 값으로 잇기만 한다.
+ * v1 에서 올라오는 앱만 임포트한다:  import 'trust-ui-react/compat.css';
+ *
+ * 단방향 별칭이다 — v1 이름 → v2 값으로만 흐르고, v2 토큰을 재정의하지
+ * 않는다. 그래서 이 파일을 임포트해도 v2 의 시각적 결과는 달라지지
+ * 않는다. 2.1 에서 폐기 경고를 붙이고, 3.0 에서 제거한다.
+ */
+:root {
+  /* ── 배경 ── */
+  --tui-bg: var(--tui-paper);
+  --tui-bg-subtle: var(--tui-field);
+  --tui-bg-muted: var(--tui-field);
+  --tui-bg-hover: var(--tui-field);
+  --tui-overlay: var(--tui-scrim);
+
+  /* ── 글자 ── */
+  --tui-text: var(--tui-ink);
+  --tui-text-secondary: var(--tui-ink-2);
+  --tui-text-muted: var(--tui-ink-3);
+  --tui-text-inverse: var(--tui-on-ink);
+
+  /* ── 테두리·포커스 ── */
+  --tui-border: var(--tui-rule);
+  --tui-border-hover: var(--tui-rule-strong);
+  --tui-border-focus: var(--tui-rule-strong);
+  --tui-focus-ring: var(--tui-ink); /* v2 의 포커스는 잉크색 한 겹이다 */
+
+  /* ── 액센트(primary) ── */
+  --tui-primary: var(--tui-accent);
+  --tui-primary-hover: var(--tui-accent-hover);
+  --tui-primary-active: var(--tui-accent-hover);
+  --tui-primary-text: var(--tui-on-accent);
+  --tui-primary-subtle: var(--tui-field);
+
+  /* ── secondary·info — v2 는 이 둘을 잉크 계열로 흡수했다 ── */
+  --tui-secondary: var(--tui-ink-2);
+  --tui-info: var(--tui-ink-2);
+  --tui-secondary-hover: var(--tui-ink);
+  --tui-secondary-active: var(--tui-ink);
+  --tui-info-hover: var(--tui-ink);
+  --tui-secondary-subtle: var(--tui-field);
+  --tui-info-subtle: var(--tui-field);
+  --tui-secondary-text: var(--tui-on-ink);
+  --tui-info-text: var(--tui-on-ink);
+
+  /* ── 상태색 — v2 는 상태색을 한 단계만 둔다 ── */
+  --tui-success-hover: var(--tui-success);
+  --tui-success-text: var(--tui-success);
+  --tui-warning-hover: var(--tui-warning);
+  --tui-warning-text: var(--tui-warning);
+  --tui-danger-text: var(--tui-danger);
+  /* 상태색으로 면을 채우지 않는다 */
+  --tui-success-subtle: var(--tui-field);
+  --tui-warning-subtle: var(--tui-field);
+  --tui-danger-subtle: var(--tui-field);
+
+  /* ── 글래스 ── */
+  --tui-glass-bg: var(--tui-sheet);
+  --tui-glass-border: var(--tui-rule);
+  --tui-glass-shadow: var(--tui-shadow-overlay);
+  --tui-glass-blur: 0; /* v2 에 개념이 없다 */
+
+  /* ── 그림자 — 다섯이 하나로 ── */
+  --tui-shadow-xs: var(--tui-shadow-overlay);
+  --tui-shadow-sm: var(--tui-shadow-overlay);
+  --tui-shadow-md: var(--tui-shadow-overlay);
+  --tui-shadow-lg: var(--tui-shadow-overlay);
+  --tui-shadow-xl: var(--tui-shadow-overlay);
+  --tui-inset-highlight: none;
+
+  /* ── 라운드 ── */
+  --tui-radius-xs: var(--tui-radius-tight);
+  --tui-radius-sm: var(--tui-radius-control);
+  --tui-radius-md: var(--tui-radius-control);
+  --tui-radius-lg: var(--tui-radius-sheet);
+  --tui-radius-xl: var(--tui-radius-sheet);
+  --tui-radius-2xl: var(--tui-radius-sheet);
+
+  /*
+   * ── 여백 — 바깥 간격(gap)으로 눕힌다 ──
+   * v1 은 7 단계(4/8/12/16/24/32/48px), v2 gap 은 6 단계(4/8/12/16/24/32px)다.
+   * xs~2xl 은 값이 정확히 일치해 그대로 대응시킨다. 3xl(48px)만 대응하는
+   * 단계가 없어 가장 가까운 gap-6(32px)에 눕힌다 — v2 의 최댓값이라
+   * 이보다 가까운 선택지가 없다. 안쪽 여백(pad-*)은 밀도에 연동되는
+   * 축이라 별칭을 만들지 않는다(원문 대응표의 비고 그대로).
+   */
+  --tui-spacing-xs: var(--tui-gap-1);
+  --tui-spacing-sm: var(--tui-gap-2);
+  --tui-spacing-md: var(--tui-gap-3);
+  --tui-spacing-lg: var(--tui-gap-4);
+  --tui-spacing-xl: var(--tui-gap-5);
+  --tui-spacing-2xl: var(--tui-gap-6);
+  --tui-spacing-3xl: var(--tui-gap-6);
+
+  /* ── 서체 ── */
+  --tui-font-family: var(--tui-font-sans);
+  --tui-font-mono: var(--tui-font-sans); /* v2 에 등폭 서체 축이 없다 */
+  --tui-font-size-xs: var(--tui-font-size-caption);
+  --tui-font-size-sm: var(--tui-font-size-small);
+  --tui-font-size-md: var(--tui-font-size-body);
+  --tui-font-size-lg: var(--tui-font-size-lead);
+  --tui-font-size-xl: var(--tui-font-size-h3);
+  --tui-font-size-2xl: var(--tui-font-size-h2);
+  --tui-font-weight-normal: var(--tui-weight-regular);
+  --tui-font-weight-medium: var(--tui-weight-medium);
+  --tui-font-weight-semibold: var(--tui-weight-semibold);
+  --tui-font-weight-bold: var(--tui-weight-semibold);
+  --tui-line-height: var(--tui-line-height-body);
+  --tui-letter-tight: var(--tui-letter-body);
+  --tui-letter-tighter: var(--tui-letter-heading);
+
+  /* ── 모션 ── */
+  --tui-duration-medium: var(--tui-duration-base);
+  --tui-duration-slow: var(--tui-duration-base);
+  --tui-ease-in-out: var(--tui-ease-out); /* v2 는 이징이 하나다 */
+  --tui-ease-linear: var(--tui-ease-out);
+  --tui-ease-spring: var(--tui-ease-out);
+  --tui-transition: var(--tui-transition-color);
+  --tui-transition-fast: var(--tui-transition-color);
+  --tui-transition-slow: var(--tui-transition-color);
+  --tui-transition-shadow: var(--tui-transition-color);
+  --tui-transition-transform: var(--tui-transition-color);
+
+  /* ── 터치 타깃 ── */
+  --tui-touch-target-min: 44px;
+  --tui-touch-target-comfortable: var(--tui-control-lg);
+  --tui-thumb-zone-height: var(--tui-thumb-safe-bottom);
+}

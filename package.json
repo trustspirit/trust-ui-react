@@ -13,7 +13,8 @@
       "require": "./dist/index.cjs.js"
     },
     "./styles.css": "./dist/styles.css",
-    "./market.css": "./dist/market.css"
+    "./market.css": "./dist/market.css",
+    "./compat.css": "./dist/compat.css"
   },
   "sideEffects": [
     "**/*.css"
