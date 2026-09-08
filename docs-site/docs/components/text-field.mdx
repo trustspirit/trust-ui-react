@@ -133,7 +133,7 @@ Also accepts all standard `<input>` HTML attributes.
 
 ## Mobile considerations
 
-- iOS Safari **auto-zooms** any input with `font-size < 16px` on focus. trust-ui's mobile font scale automatically bumps `--tui-font-size-md` up to 16px on `pointer:coarse` devices to prevent this — no extra config needed.
+- iOS Safari **auto-zooms** any input with `font-size < 16px` on focus. trust-ui prevents this automatically: `size="lg"` already renders at a fixed 16px (`--tui-font-size-lead`); `size="md"` uses `--tui-font-size-base`, which is itself redefined to 16px under `pointer:coarse` at the density-token layer; and `size="sm"` gets its own explicit 16px floor in `TextField.module.css` — no extra config needed.
 - For `type="tel"` / `type="email"` / `type="url"` / `type="number"`, iOS shows the right software keyboard automatically.
 - When the keyboard appears, wrap the form in [`<KeyboardAvoidingView>`](../design-tokens/spacing.mdx#touch-targets--safe-area) so the focused field stays visible above the keyboard.
 - `multiline` textarea respects the same auto-zoom prevention.

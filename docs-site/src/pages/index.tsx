@@ -12,16 +12,16 @@ const FEATURES = [
     body: 'All theming flows through CSS custom properties. Zero JS at runtime, multi-brand-ready, and overridable per scope without a context provider.',
   },
   {
-    title: 'Indigo Premium palette + Geist',
-    body: 'A coherent visual system ships out of the box — warm ivory neutrals, sophisticated gradient primary, Geist Variable sans + mono bundled.',
+    title: 'An achromatic core',
+    body: "v2's default palette is neutrals only — every accent, button, and focus ring is ink by default. Colour appears only where it carries meaning: danger, success, warning, or a brand accent you opt into.",
   },
   {
-    title: '3-tier surface model',
-    body: 'Base, Raised, and Elevated Glass surfaces stack predictably. Glass uses backdrop-filter with a graceful opaque fallback for older Android WebView.',
+    title: 'Two surfaces, not three',
+    body: '`--tui-paper` for the page and `--tui-field` for recessed areas. Overlays (sheets, menus, popovers) use `--tui-sheet`, an opaque surface — v2 has no glass or backdrop-filter.',
   },
   {
-    title: 'Cinematic motion, reduced-motion aware',
-    body: 'Five named motion patterns (state, micro-lift, surface, layout, continuous). All transitions respect prefers-reduced-motion automatically.',
+    title: 'Three durations, one easing',
+    body: 'Motion answers user actions — it never decorates. No hover lift, no transform on hover; every transition respects prefers-reduced-motion automatically.',
   },
   {
     title: 'Accessible by default',
@@ -40,12 +40,12 @@ export default function Home(): JSX.Element {
     >
       <main>
         <section className="tui-hero">
-          <span className="tui-hero__eyebrow">v2 · Indigo Premium</span>
+          <span className="tui-hero__eyebrow">v2</span>
           <h1 className="tui-hero__title">
             A mobile-optimized React UI library.
           </h1>
           <p className="tui-hero__subtitle">
-            22 themeable components with native-feeling touch behavior, glass surfaces, and CSS-variable theming — no runtime, no lock-in.
+            30 themeable components with native-feeling touch behavior, an achromatic core, and CSS-variable theming — no runtime, no lock-in.
           </p>
           <div className="tui-hero__cta-row">
             <Link className="tui-hero__cta tui-hero__cta--primary" to={docsUrl}>

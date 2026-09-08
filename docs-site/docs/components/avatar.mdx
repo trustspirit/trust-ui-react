@@ -45,7 +45,7 @@ Pass `status` to render a colored dot in the bottom-right corner — useful for 
 
 ## Outlined (stacked)
 
-For overlapping avatar stacks, set `outlined` to add a ring matching the page background — separates each avatar from its neighbor without needing manual gaps.
+For overlapping avatar stacks, set `outlined` to add a `--tui-rule` ring — separates each avatar from its neighbor without needing manual gaps.
 
 <ComponentPreview code={`<Avatar name="A" outlined />
 <Avatar name="B" outlined style={{ marginLeft: -10 }} />
@@ -76,7 +76,7 @@ When no `src` or `name` is provided, a generic user icon is shown.
   { name: 'shape', type: "'circle' | 'square'", default: "'circle'", description: 'Shape of the avatar' },
   { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size of the avatar' },
   { name: 'status', type: "'online' | 'away' | 'busy' | 'offline'", description: 'Presence indicator dot in the bottom-right corner' },
-  { name: 'outlined', type: 'boolean', default: 'false', description: 'Add a ring matching --tui-bg (good for stacked avatars)' },
+  { name: 'outlined', type: 'boolean', default: 'false', description: 'Add a --tui-rule ring (good for stacked avatars)' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },
   { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
 ]} />

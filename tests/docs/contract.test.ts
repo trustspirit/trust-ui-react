@@ -40,13 +40,17 @@ function collectMentionedTokens(text: string): Set<string> {
 /** 정의된 토큰이거나 --tui-p-* 팔레트 이름이면 허용한다. */
 const isAllowedToken = (name: string) => DEFINED_TOKENS.has(name) || /^--tui-p-/.test(name);
 
-/** v1 에서 삭제된 prop 들. 문자열 형태로 등장 여부만 확인한다. */
+/**
+ * v1 에서 삭제된 prop 들. 문자열 형태로 등장 여부만 확인한다.
+ * `variant="bordered"` 는 여기 없다 — Table 에서는 삭제됐지만 Expander 는
+ * 지금도 실제 variant 로 쓴다(Expander.module.css 의 .variantBordered).
+ * size= 와 같은 이유로 Table 문서에서만 따로 검사한다(아래).
+ */
 const REMOVED_PROP_PATTERNS: RegExp[] = [
   /elevation=/,
   /gradient/,
   /zebra/,
   /variant="striped"/,
-  /variant="bordered"/,
   /mobileVariant="stacked"/,
 ];
 
@@ -73,6 +77,8 @@ describe('문서 계약', () => {
       }
       // size= 는 Table 문서에서만 삭제되었다 — 다른 컴포넌트는 지금도 size prop 을 쓴다.
       if (f.endsWith('table.mdx') && /size=/.test(text)) bad.push(`${f} → size= (Table)`);
+      // variant="bordered" 도 마찬가지로 Table 에서만 삭제됐다 — Expander 는 지금도 쓴다.
+      if (f.endsWith('table.mdx') && /variant="bordered"/.test(text)) bad.push(`${f} → variant="bordered" (Table)`);
     }
     expect(bad).toEqual([]);
   });
@@ -99,8 +105,8 @@ describe('문서 계약', () => {
   });
 
   it('허용목록(STALE)은 줄어들기만 한다', () => {
-    // 2026-09-09 실측값 29 — 문서 작업(Task 3~7)이 파일을 정리할 때마다
-    // STALE 에서 그 줄을 지운다. 이 숫자는 다시 올라갈 수 없다.
-    expect(STALE.length).toBeLessThanOrEqual(29);
+    // Task 7 완료로 문서 마이그레이션이 끝났다 — STALE 은 이제 항상 빈
+    // 배열이어야 한다. 이 상한은 0에서 다시 올라갈 수 없다.
+    expect(STALE.length).toBeLessThanOrEqual(0);
   });
 });
