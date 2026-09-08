@@ -57,3 +57,13 @@ export function nextSortState(prev: SortState, key: string): SortState {
   if (prev.direction === 'asc') return { key, direction: 'desc' };
   return { key: null, direction: null };
 }
+
+/**
+ * 목록에서 열을 골라 정렬할 때의 규칙. 머리의 3단 순환(nextSortState)과 달리
+ * 해제 단계가 없다 — 고른 항목을 다시 눌렀을 때 정렬이 사라지면 시트에서는
+ * 무엇이 일어났는지 읽히지 않는다. 해제는 별도 항목이 맡는다.
+ */
+export function nextSortSelection(prev: SortState, key: string): SortState {
+  if (prev.key !== key) return { key, direction: 'asc' };
+  return { key, direction: prev.direction === 'asc' ? 'desc' : 'asc' };
+}

@@ -256,6 +256,34 @@
   border-bottom: 1px solid var(--tui-rule);
 }
 
+/* ── 모바일 정렬 바 ──
+   요약 2행 모드는 열 머리를 감추므로 정렬 버튼도 함께 사라진다. 그 자리를
+   대신하는 한 줄이다. 바탕을 머리와 같은 --tui-field 로 두는 것은 의도적이다 —
+   이 줄이 사라진 머리의 대역이라는 사실을 형태로 말한다.
+
+   데스크톱에서는 머리에 정렬이 있으므로 나타나지 않는다. */
+.sortBar {
+  display: none;
+}
+
+.sortBarLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tui-gap-2);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--tui-weight-medium);
+}
+
+/* 무엇을 누르는 줄인지 알리는 말. 크롬이므로 무채색이다. */
+.sortBarAction {
+  flex-shrink: 0;
+  font-size: var(--tui-font-size-caption);
+  color: var(--tui-ink-3);
+}
+
 @media (max-width: 640px) {
   /* 좁은 화면에서도 총계는 굵은 선 사이에 남는다 */
   .mobileSummary .tfoot .summaryCell {
@@ -266,6 +294,38 @@
 
   .mobileSummary thead {
     display: none;
+  }
+
+  .sortBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--tui-gap-3);
+    width: 100%;
+    /* 44px 하한을 직접 보장한다 — 이 줄 자체가 터치 타깃이다 */
+    min-height: 44px;
+    padding: var(--tui-pad-2) var(--tui-pad-3);
+    border: none;
+    border-bottom: 1px solid var(--tui-rule-strong);
+    background-color: var(--tui-field);
+    font: inherit;
+    letter-spacing: inherit;
+    color: var(--tui-ink);
+    text-align: left;
+    cursor: pointer;
+    transition: var(--tui-transition-color);
+  }
+
+  /* 표 안쪽이라 바깥 링은 잘린다 — 정렬 머리 버튼과 같은 inset 링을 쓴다 */
+  .sortBar:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--tui-ink);
+  }
+
+  @media (hover: hover) {
+    .sortBar:hover:not(:focus-visible) .sortBarAction {
+      color: var(--tui-ink);
+    }
   }
 
   .mobileSummary .td {

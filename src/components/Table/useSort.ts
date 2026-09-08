@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { nextSortState, sortRows } from './values';
+import { nextSortSelection, nextSortState, sortRows } from './values';
 import type { SortState } from './types';
 
 /**
@@ -9,8 +9,18 @@ import type { SortState } from './types';
 export function useSort<T>(data: T[]) {
   const [sort, setSort] = useState<SortState>({ key: null, direction: null });
 
+  /** 열 머리용 — 오름 → 내림 → 해제 */
   const toggle = useCallback((key: string) => {
     setSort((prev) => nextSortState(prev, key));
+  }, []);
+
+  /** 목록 선택용 — 방향만 뒤집고 해제하지 않는다 */
+  const select = useCallback((key: string) => {
+    setSort((prev) => nextSortSelection(prev, key));
+  }, []);
+
+  const clear = useCallback(() => {
+    setSort({ key: null, direction: null });
   }, []);
 
   const sorted = useMemo(
@@ -18,5 +28,5 @@ export function useSort<T>(data: T[]) {
     [data, sort.key, sort.direction],
   );
 
-  return { sort, toggle, sorted };
+  return { sort, toggle, select, clear, sorted };
 }

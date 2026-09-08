@@ -156,3 +156,29 @@ test('내용이 성긴 요약 행도 64px 로 지탱된다 — 바닥이 실제�
   for (let i = 0; i < count; i += 1) heights.push((await hitRect(cells.nth(i))).height);
   expect(heights.every((h) => h >= 64), `높이: ${heights.join(', ')}`).toBe(true);
 });
+
+test('요약 모드의 정렬 바는 44px 이상이고 첫 행과 겹치지 않는다', async ({ page }) => {
+  await open(page, 'components-table--mobile-summary');
+
+  const bar = page.locator(`${ROOT} button[aria-haspopup="dialog"]`);
+  const barBox = await hitRect(bar);
+  expect(barBox.height, `정렬 바 높이 ${barBox.height}`).toBeGreaterThanOrEqual(MIN_TARGET);
+
+  const firstRow = page.locator(`${ROOT} tbody td[colspan]`).first();
+  const rowBox = await hitRect(firstRow);
+
+  // 바의 아래끝이 첫 행의 위끝을 넘어서면 첫 행 위쪽을 탭했을 때 바가 눌린다.
+  const overlap = barBox.y + barBox.height - rowBox.y;
+  expect(overlap, `겹침 ${overlap.toFixed(2)}px`).toBeLessThanOrEqual(0);
+});
+
+test('scroll 모드에는 정렬 바가 없다 — 머리에 정렬이 남아 있다', async ({ page }) => {
+  await open(page, 'components-table--mobile-scroll');
+
+  const headerButtons = await page.locator(`${ROOT} thead th button`).count();
+  expect(headerButtons).toBeGreaterThan(0);
+
+  // 감싸개의 직계 버튼(정렬 바)은 없어야 한다
+  const barCount = await page.locator(`${ROOT} button[aria-haspopup="dialog"]`).count();
+  expect(barCount).toBe(0);
+});

@@ -1,8 +1,9 @@
-import { useCallback, useMemo, type CSSProperties, type ReactNode } from 'react';
+import { useCallback, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import styles from './Table.module.css';
 import { getNestedValue, toneOf } from './values';
 import { useSort } from './useSort';
 import { resolveMobileSlots, type MobileLayout } from './mobileSlots';
+import { ActionSheet } from '../ActionSheet';
 import type { Column, SortDirection, TableProps } from './types';
 
 export type { Column, TableProps, Tone, MobileSlot } from './types';
@@ -188,11 +189,17 @@ export function Table<T extends Record<string, any>>({
   className,
   style,
 }: TableProps<T>) {
-  const { sort, toggle, sorted } = useSort(data);
+  const { sort, toggle, select, clear, sorted } = useSort(data);
+  const [sortSheetOpen, setSortSheetOpen] = useState(false);
 
   // 열 정의는 거의 바뀌지 않으므로 행마다 다시 풀지 않는다.
   const mobileLayout = useMemo(() => resolveMobileSlots(columns), [columns]);
   const showSummary = mobileVariant === 'summary';
+
+  const sortableColumns = useMemo(() => columns.filter((col) => col.sortable), [columns]);
+  const activeSortColumn = columns.find((col) => col.key === sort.key);
+  /** 요약 모드는 열 머리를 감추므로, 정렬 가능한 열이 있을 때만 바를 세운다. */
+  const showSortBar = showSummary && sortableColumns.length > 0;
 
   const getRowKey = useCallback(
     (row: T, index: number): string => {
@@ -208,6 +215,20 @@ export function Table<T extends Record<string, any>>({
       className={cx(styles.wrapper, stickyHeader && styles.stickyWrapper, className)}
       style={style}
     >
+      {showSortBar && (
+        <button
+          type="button"
+          className={styles.sortBar}
+          onClick={() => setSortSheetOpen(true)}
+          aria-haspopup="dialog"
+        >
+          <span className={styles.sortBarLabel}>
+            {activeSortColumn ? activeSortColumn.header : '정렬 안 함'}
+            {activeSortColumn && <SortIcon direction={sort.direction} />}
+          </span>
+          <span className={styles.sortBarAction}>정렬</span>
+        </button>
+      )}
       <table
         className={cx(
           styles.table,
@@ -294,6 +315,37 @@ export function Table<T extends Record<string, any>>({
           </tfoot>
         )}
       </table>
+      {showSortBar && (
+        <ActionSheet
+          open={sortSheetOpen}
+          onClose={() => setSortSheetOpen(false)}
+          title="정렬 기준"
+          cancelLabel="닫기"
+          actions={[
+            ...sortableColumns.map((col) => ({
+              label:
+                sort.key === col.key
+                  ? `${col.header} · ${sort.direction === 'asc' ? '오름차순' : '내림차순'}`
+                  : col.header,
+              onClick: () => {
+                select(col.key);
+                setSortSheetOpen(false);
+              },
+            })),
+            ...(sort.key
+              ? [
+                  {
+                    label: '정렬 해제',
+                    onClick: () => {
+                      clear();
+                      setSortSheetOpen(false);
+                    },
+                  },
+                ]
+              : []),
+          ]}
+        />
+      )}
     </div>
   );
 }

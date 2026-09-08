@@ -5,6 +5,7 @@ import {
   compareValues,
   sortRows,
   nextSortState,
+  nextSortSelection,
 } from '../../src/components/Table/values';
 import type { Column, SortState } from '../../src/components/Table/types';
 
@@ -130,6 +131,35 @@ describe('nextSortState', () => {
 
   it('다른 열을 누르면 그 열의 오름차순부터 시작한다', () => {
     expect(nextSortState({ key: 'n', direction: 'desc' }, 'm')).toEqual({
+      key: 'm',
+      direction: 'asc',
+    });
+  });
+});
+
+describe('nextSortSelection', () => {
+  const none: SortState = { key: null, direction: null };
+
+  it('고르지 않은 열을 고르면 오름차순부터 시작한다', () => {
+    expect(nextSortSelection(none, 'n')).toEqual({ key: 'n', direction: 'asc' });
+  });
+
+  it('이미 고른 열을 다시 고르면 방향만 뒤집는다', () => {
+    expect(nextSortSelection({ key: 'n', direction: 'asc' }, 'n')).toEqual({
+      key: 'n',
+      direction: 'desc',
+    });
+  });
+
+  it('세 번째로 골라도 정렬이 풀리지 않는다 — 시트에서는 해제가 별도 항목이다', () => {
+    expect(nextSortSelection({ key: 'n', direction: 'desc' }, 'n')).toEqual({
+      key: 'n',
+      direction: 'asc',
+    });
+  });
+
+  it('다른 열을 고르면 그 열의 오름차순으로 간다', () => {
+    expect(nextSortSelection({ key: 'n', direction: 'desc' }, 'm')).toEqual({
       key: 'm',
       direction: 'asc',
     });
