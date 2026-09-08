@@ -51,11 +51,13 @@ function ToastTrigger({
  * duration=0 으로 자동 닫힘 타이머를 비활성화해 스크린샷 타이밍과 무관하게
  * 항상 같은 모습을 유지한다(결정론적 스냅샷).
  *
- * danger 만 채워진 면(아이콘 원)을 갖고, success/warning 은 테두리 + 글자색만,
- * info 는 v2 에 시맨틱 색이 없어 무채색이다 — 이 차이가 실제로 구분되는지
+ * 상태는 획의 색으로만 나타난다 — success/warning 은 아이콘 획만 물들고,
+ * info 는 v2 에 시맨틱 색이 없어 무채색이다. danger 만 면 전체가 위험색이다
+ * (원칙 3: 면을 채우는 것은 위험 하나뿐). 이 차이가 실제로 구분되는지
  * 이 스토리로 확인할 수 있다.
  */
 export const Open: Story = {
+  tags: ['visual'],
   render: () => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
       <Toast id="open-success" variant="success" message="Changes saved successfully!" description="Your changes are now live." duration={0} />
