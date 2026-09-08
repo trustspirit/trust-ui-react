@@ -1,0 +1,88 @@
+---
+sidebar_position: 1
+title: Layers
+---
+
+# Layers
+
+trust-ui v2 ships as one required stylesheet plus a small set of optional layers you turn on only if your product needs them. This page is the entry point: answer the questions below about your own product, and each answer tells you exactly what to import or set — nothing more.
+
+## What do I get if I turn nothing on?
+
+```tsx
+import 'trust-ui-react/styles.css';
+```
+
+One import, no `data-*` attributes, no `ThemeProvider` even required for a static page. What you get is **an achromatic core** — every surface, text, and rule token in both light and dark theme resolves to a pure grayscale value (hue 0, saturation 0). There is no brand hue, because `--tui-accent` defaults to `--tui-ink`. There is no rise/fall coloring, because that comes from a layer you haven't imported yet. Density defaults to `comfortable`.
+
+This is deliberate, not a placeholder state waiting for you to "finish" the theme. A grayscale install is a complete, shippable UI — see [Colors → The achromatic core](../design-tokens/colors.mdx#the-achromatic-core). Everything past this point is opt-in.
+
+## Do I have financial screens?
+
+If any screen colors a price, a percentage change, or any other value by whether it went up or down, import the market layer:
+
+```tsx
+import 'trust-ui-react/market.css';
+```
+
+This defines `--tui-rise` and `--tui-fall`. Without it those two tokens are undefined and stay undefined — `Table`'s `tone="auto"` columns and anything else that reads them quietly falls back to the default ink color rather than guessing at a convention. Rise/fall color is applied to text only, never to a background, badge, or border.
+
+## Korean/Japanese/Chinese convention, or US/European?
+
+Rise/fall color is not universal — Korea, Japan, and China color a rise red; the US and most of Europe color a rise green. `market.css` reads this off `data-market`, an axis you set the same way you set `data-theme`:
+
+```html
+<html data-market="kr"> <!-- default, also covers JP/CN — red rise, blue fall -->
+<html data-market="us"> <!-- green rise, red fall -->
+```
+
+`kr` is both the literal value for the Korean/Japanese/Chinese convention and the fallback when `data-market` is absent — so an app that never sets this attribute but does import `market.css` still gets a coherent (KR-convention) result rather than an undefined one. Full mapping, including dark-theme variants: [Colors → Market colors](../design-tokens/colors.mdx#market-colors--optional-layer).
+
+## Do I have a brand colour?
+
+Override two tokens, not one:
+
+```css
+[data-theme='light'] {
+  --tui-accent: #ff5c2c;
+  --tui-accent-hover: #e8501f;
+}
+```
+
+v2 does **no runtime colour computation** — nothing derives a hover or active shade from a base color for you the way a Sass color function or an HSL-lightness trick would. If you override only `--tui-accent`, every hover/active state on accent-filled elements keeps resolving to the ink-based default (`--tui-ink-2`) and visibly clashes with the hue you just set. Both tokens, every time you override either one. Details and a multi-brand setup: [Theming → Layer: brand accent](../getting-started/theming.mdx#layer-brand-accent).
+
+## Is my screen dense with data?
+
+Set the density axis to `compact` on the screen (or the whole app):
+
+```html
+<html data-density="compact">
+```
+
+This tightens control heights and inner padding only — it never touches a color token, so a dense trading blotter and a comfortable settings page can share every other token unchanged. One exception worth knowing up front: on a touch device (`pointer: coarse`), control heights snap back to `comfortable`-or-larger regardless of which density you set — `compact` only actually shrinks controls on a mouse-driven surface. See [Mobile patterns](./mobile-patterns.mdx#density-and-pointer) and [Spacing & Radius → Control heights](../design-tokens/spacing.mdx#control-heights) for the exact numbers.
+
+## Am I upgrading from v1?
+
+Add the compatibility layer alongside the required stylesheet:
+
+```tsx
+import 'trust-ui-react/styles.css';
+import 'trust-ui-react/compat.css'; // after styles.css
+```
+
+`compat.css` is a one-way bridge: it aliases v1 CSS variable names to their v2 equivalents so code that reads v1 token names directly doesn't go blank. It does not restore any prop v2 removed from a component's types, and it does not change v2's own visual output — it only defines old names, never redefines new ones. Read [Migrating from v1 to v2](../getting-started/migration-v1-to-v2.mdx) before you upgrade; it has the full removed-prop list and the token map this layer is built from.
+
+## Putting it together
+
+None of these layers depend on each other, and every one defaults to off:
+
+| Question | Answer | What to do |
+|---|---|---|
+| Nothing turned on | — | `import 'trust-ui-react/styles.css'` only |
+| Financial screens? | Yes | + `import 'trust-ui-react/market.css'` |
+| KR/JP/CN or US/EU convention? | Either | `data-market="kr"` (default) or `data-market="us"` |
+| Brand colour? | Yes | Override `--tui-accent` **and** `--tui-accent-hover` |
+| Dense data screens? | Yes | `data-density="compact"` on that screen |
+| Upgrading from v1? | Yes | + `import 'trust-ui-react/compat.css'`, read the [migration guide](../getting-started/migration-v1-to-v2.mdx) |
+
+For the mechanics behind `data-theme` and `data-density` — the two axes every install has, on or not — see [Theming](../getting-started/theming.mdx).

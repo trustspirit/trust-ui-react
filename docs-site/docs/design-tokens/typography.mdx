@@ -5,70 +5,76 @@ title: Typography
 
 # Typography
 
-trust-ui v2 ships with **Geist** (Vercel) for sans + mono. The fonts are bundled as variable fonts via `@fontsource-variable/geist`, no additional setup needed — they auto-load when you import `trust-ui-react/styles.css`.
+trust-ui v2 sets one typeface — Pretendard — for everything: UI chrome, body copy, and numeric figures alike. There is no separate mono stack and no second brand face.
 
-## Font families
+## Pretendard is not bundled
 
-| Token | Value |
-|---|---|
-| `--tui-font-sans` | `'Geist Variable', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif` |
-| `--tui-font-mono` | `'Geist Mono Variable', ui-monospace, 'SF Mono', Menlo, Consolas, monospace` |
-| `--tui-font-family` | alias for `--tui-font-sans` (backwards-compat) |
-
-## Font sizes
-
-| Token | Desktop | Mobile (`pointer:coarse`) |
-|---|---|---|
-| `--tui-font-size-xs` | `0.75rem` (12px) | `0.8125rem` (13px) |
-| `--tui-font-size-sm` | `0.8125rem` (13px) | `0.875rem` (14px) |
-| `--tui-font-size-md` | `0.875rem` (14px) | `1rem` (16px) |
-| `--tui-font-size-lg` | `1rem` (16px) | `1.125rem` (18px) |
-| `--tui-font-size-xl` | `1.125rem` (18px) | `1.25rem` (20px) |
-| `--tui-font-size-2xl` | `1.375rem` (22px) | `1.5rem` (24px) |
-
-**Why two scales?** Desktop baseline is 14px (denser, Linear/Vercel-style discipline). Mobile baseline is 16px — iOS Safari auto-zooms `<input>` whose font-size is below 16px on focus; this token automatically prevents that.
-
-## Font weights
-
-Geist is a variable font supporting all weights 100–900. trust-ui exposes the common stops:
-
-| Token | Value |
-|---|---|
-| `--tui-font-weight-normal` | `400` |
-| `--tui-font-weight-medium` | `500` |
-| `--tui-font-weight-semibold` | `600` |
-| `--tui-font-weight-bold` | `700` |
-
-## Letter spacing
-
-For tight headings (A-discipline Linear-style):
-
-| Token | Value |
-|---|---|
-| `--tui-letter-tight` | `-0.011em` |
-| `--tui-letter-tighter` | `-0.022em` |
-
-Apply on headlines:
 ```css
-h1 { letter-spacing: var(--tui-letter-tighter); }
-h2 { letter-spacing: var(--tui-letter-tight); }
+--tui-font-sans: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+  'Apple SD Gothic Neo', system-ui, sans-serif;
 ```
 
-## Line height
+trust-ui only declares this font stack — it does not ship the font files. Your app loads Pretendard itself (CDN `<link>`, self-hosted `@font-face`, or a package like `@fontsource`), and the stack falls back to the platform's system Korean/Latin face until it does.
 
-| Token | Value |
+This is deliberate, not an oversight. An earlier build inlined the full Pretendard family — 92 subset files, base64-encoded — directly into the stylesheet. That pushed `dist/styles.css` to 3.9 MB and, because the font data was inlined rather than linked, it also defeated `unicode-range`: browsers could no longer skip subsets they didn't need and paid for the whole thing regardless of what the page actually rendered. Loading the font at the app level lets `unicode-range` do its job again and keeps the library's own stylesheet small.
+
+## Size scale
+
+Nine steps, each a fixed `rem` value independent of density:
+
+| Token | Size |
 |---|---|
-| `--tui-line-height` | `1.5` |
+| `--tui-font-size-micro` | 11px |
+| `--tui-font-size-caption` | 12px |
+| `--tui-font-size-small` | 13px |
+| `--tui-font-size-body` | 14px |
+| `--tui-font-size-lead` | 16px |
+| `--tui-font-size-h3` | 19px |
+| `--tui-font-size-h2` | 24px |
+| `--tui-font-size-h1` | 32px |
+| `--tui-font-size-figure` | 40px |
 
-## Custom fonts
+Line height and letter spacing come from three roles, not from the size scale directly — pick the role that matches how the text is used:
 
-To override Geist with your own:
+| Role | Line height | Letter spacing | Applies to |
+|---|---|---|---|
+| Body | `--tui-line-height-body` (1.6) | `--tui-letter-body` (-0.01em) | micro, caption, small, body, lead |
+| Heading | `--tui-line-height-heading` (1.3) | `--tui-letter-heading` (-0.022em) | h3, h2, h1 |
+| Figure | `--tui-line-height-figure` (1.05) | `--tui-letter-figure` (-0.035em) | figure |
+
+Korean sets more comfortably with generous line height and slightly tightened letter spacing than Latin defaults — that's why every role above ties negative tracking to roomy leading rather than the reverse.
+
+### A second base-size token
+
+Separately from the nine-step scale above, `--tui-font-size-base` is the density- and pointer-linked body baseline that `themes/density.css` sets alongside control heights:
+
+| Context | Value |
+|---|---|
+| `comfortable` (default) | 15px |
+| `compact` | 14px |
+| any density, `pointer: coarse` | 16px |
+
+The `pointer: coarse` value always wins over density — on a touch device the baseline is 16px regardless of which density is active, which also keeps iOS Safari from auto-zooming on input focus.
+
+## Weight
+
+| Token | Value | Usage |
+|---|---|---|
+| `--tui-weight-regular` | 400 | Body text |
+| `--tui-weight-medium` | 500 | Emphasis, labels |
+| `--tui-weight-strong` | 550 | Figures in a table that must read heavier than body text but are not headings |
+| `--tui-weight-semibold` | 600 | Headings |
+
+`--tui-weight-strong` exists specifically for that in-between case: a profit/loss number sitting in a table row needs more visual weight than the row's label text, but giving it a heading weight would make it compete with actual headings on the page. 550 sits between medium and semibold for exactly that spot.
+
+## Tabular numbers
 
 ```css
-:root {
-  --tui-font-sans: 'Your Font', system-ui, sans-serif;
-  --tui-font-mono: 'Your Mono Font', monospace;
+.tui-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+  letter-spacing: var(--tui-letter-num);
 }
 ```
 
-trust-ui inlines Geist as data URIs in `styles.css` so the bundle is self-contained. If you don't want Geist, override before importing — but the woff2 will still be in the bundle. To exclude it entirely, fork the package and remove the `fonts.css` import from `src/index.ts`.
+Apply `.tui-num` (or the equivalent CSS) to any component that renders numeric values — prices, quantities, deltas. Tabular figures aren't a stylistic flourish here; without fixed-width digits, numbers in adjacent table rows drift out of column alignment as their digits change. `--tui-letter-num` (-0.02em) is tuned for tabular figures specifically and is different from `--tui-letter-body`.

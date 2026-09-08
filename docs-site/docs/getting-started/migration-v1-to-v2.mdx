@@ -1,0 +1,180 @@
+---
+sidebar_position: 3
+title: Migrating from v1
+---
+
+# Migrating from v1 to v2
+
+Almost every breaking change between v1 and v2 fails to compile. `elevation`, `gradient`, `size`, `variant`, `zebra`, and the `mobileVariant="stacked"` value are gone from the component types — TypeScript, or your editor, will stop you at every call site that used them. Fix those and you're done with them.
+
+One change is not like the others.
+
+:::caution The one change TypeScript won't catch
+`Table`'s `mobileVariant` default changed from `"scroll"` to `"summary"`. This is the only change that produces no compile error. On screens ≤640px, a table that used to scroll horizontally with all its columns now shows a two-line summary and hides the rest. Pass `mobileVariant="scroll"` to keep v1 behaviour.
+:::
+
+If you upgrade and nothing turns red in your editor, that is not evidence the upgrade is safe — it's the expected result of the one change above. Grep your codebase for every `<Table` that doesn't already pass `mobileVariant`, and decide for each one whether `"summary"` (the new default) is actually what you want on a narrow screen.
+
+```tsx
+// v1 — mobileVariant omitted, implicitly "scroll"
+<Table columns={columns} data={rows} />
+
+// v2 — same runtime behaviour, now has to be explicit
+<Table columns={columns} data={rows} mobileVariant="scroll" />
+
+// v2 — the new default, if a two-line summary is actually fine here
+<Table columns={columns} data={rows} />
+```
+
+## Removed props
+
+| Component | Removed | Do instead |
+|---|---|---|
+| `Button` | `elevation` | Nothing — v2 has exactly one shadow (`--tui-shadow-overlay`), reserved for components that genuinely float above the page (Dialog, Menu, Select's popover, Toast, ActionSheet, BottomSheet, Tooltip, DatePicker's popover, DateRangePicker's popover). A Button was never one of them. Hierarchy elsewhere comes from `--tui-rule`/`--tui-rule-strong`, not a shadow. See [Elevation](../design-tokens/elevation.mdx). |
+| `Progress` | `gradient` | Nothing — the fill is a solid color only. |
+| `Slider` | `gradient` | Nothing — the fill is a solid color only. |
+| `Table` | `size` | Nothing — Table has one size. Row height now comes from `data-density` (`comfortable`/`compact`), applied app-wide or per-scope, not per-table. See [Spacing & Radius](../design-tokens/spacing.mdx#control-heights). |
+| `Table` | `variant` (`"striped"`, `"bordered"`) | Nothing — Table has one presentation. Rows are separated by `--tui-rule`, the same rule-not-shadow rule as everything else. |
+| `Table` | `zebra` | Nothing — no alternating row striping. See the `variant` row above; it's the same removal for the same reason. |
+| `Table` | `mobileVariant="stacked"` | `mobileVariant="summary"` (now the default) or `"scroll"` — see the callout above. |
+
+None of these have a drop-in replacement prop because none of them survive as a *concept* in v2 — read the row's "do instead" before assuming there's a hidden equivalent to reach for.
+
+## `Column.render` now has a purity requirement
+
+This is new in v2 and easy to miss because it doesn't show up in the type signature — it's a contract, documented on `Column.render` in `types.ts`.
+
+A desktop cell and the two-line mobile summary now render from the **same** `render` call — v2 calls it once per row and shares the result between both layouts, instead of re-invoking it once per rendered surface. That means `render` must be pure: no side effects, and no assumption that it runs once per visible cell.
+
+The other half of the contract concerns `summaryRow`. When Table renders the summary row that closes a table, `row` is `Partial<T>` — any field `summaryRow` doesn't set is `undefined` — and `index` is `-1`. `render` is still called for every column, summary row included, so a column whose field is absent from `summaryRow` gets called with `value === undefined` and has to decide what to draw there itself:
+
+```tsx
+import type { Column } from 'trust-ui-react';
+
+interface Holding {
+  name: string;
+  qty: number;
+  avg: number;
+  pnl: number;
+}
+
+const columns: Column<Holding>[] = [
+  { key: 'name', header: 'Name' },
+  { key: 'qty', header: 'Qty', numeric: true, render: (v: number) => v.toLocaleString() },
+  // The summary row has no meaningful average price — summaryRow leaves
+  // this field out, so render gets value === undefined and has to say so.
+  {
+    key: 'avg',
+    header: 'Avg. price',
+    numeric: true,
+    render: (v: number | undefined) => (v === undefined ? '—' : v.toLocaleString()),
+  },
+  { key: 'pnl', header: 'P&L', numeric: true, tone: 'auto', render: (v: number) => v.toLocaleString() },
+];
+
+<Table
+  columns={columns}
+  data={holdings}
+  summaryRow={{
+    name: 'Total',
+    qty: holdings.reduce((s, h) => s + h.qty, 0),
+    // avg intentionally omitted
+    pnl: holdings.reduce((s, h) => s + h.pnl, 0),
+  }}
+/>;
+```
+
+If your v1 `render` functions had side effects (logging, mutating something outside the closure, reading `index` to assume "this only ever runs for real rows"), audit them — v2 will call them for the summary row too, with `index === -1` as the only signal that it isn't a real row.
+
+## `compat.css`: bridges CSS variable names, nothing else
+
+If your app's own CSS reads trust-ui's custom properties by name — a brand override file, a one-off component style — import the compatibility layer after the main stylesheet:
+
+```tsx
+import 'trust-ui-react/styles.css';
+import 'trust-ui-react/compat.css'; // opt-in, v1 apps only
+```
+
+It's a one-directional alias: every v1 token name resolves to the v2 value that replaced it. It never redefines a v2 token, so importing it changes nothing about how v2 itself looks — it only keeps *your* CSS, which still says `var(--tui-bg)` or similar, from resolving to nothing.
+
+**What it can't do:** fix a removed component prop. Those are TypeScript errors, not CSS lookups — `compat.css` operates entirely below the component layer and never sees a JSX prop.
+
+**Lifetime:** deprecated with a console/build warning starting in 2.1, removed entirely in 3.0. Treat it as a bridge to cross while you update your own CSS to v2 names, not a permanent dependency.
+
+### Token map (v1 name → v2 value)
+
+This is what `compat.css` actually aliases, grouped the way the file groups them.
+
+| v1 | v2 |
+|---|---|
+| `--tui-bg` | `--tui-paper` |
+| `--tui-bg-subtle`, `--tui-bg-muted`, `--tui-bg-hover` | `--tui-field` (all three collapse to one) |
+| `--tui-overlay` | `--tui-scrim` |
+| `--tui-text` | `--tui-ink` |
+| `--tui-text-secondary` | `--tui-ink-2` |
+| `--tui-text-muted` | `--tui-ink-3` |
+| `--tui-text-inverse` | `--tui-on-ink` |
+| `--tui-border` | `--tui-rule` |
+| `--tui-border-hover`, `--tui-border-focus` | `--tui-rule-strong` |
+| `--tui-primary` | `--tui-accent` |
+| `--tui-primary-hover`, `--tui-primary-active` | `--tui-accent-hover` |
+| `--tui-primary-text` | `--tui-on-accent` |
+| `--tui-primary-subtle` | `--tui-field` |
+| `--tui-secondary`, `--tui-info` | `--tui-ink-2` (v2 folds both into the ink scale) |
+| `--tui-secondary-hover`, `--tui-secondary-active`, `--tui-info-hover` | `--tui-ink` |
+| `--tui-secondary-subtle`, `--tui-info-subtle` | `--tui-field` |
+| `--tui-secondary-text`, `--tui-info-text` | `--tui-on-ink` |
+| `--tui-success-hover`, `--tui-success-text` | `--tui-success` (v2 state colors are a single step, not a scale) |
+| `--tui-warning-hover`, `--tui-warning-text` | `--tui-warning` |
+| `--tui-danger-text` | `--tui-danger` |
+| `--tui-success-subtle`, `--tui-warning-subtle`, `--tui-danger-subtle` | `--tui-field` (state colors don't fill a surface in v2) |
+| `--tui-glass-bg` | `--tui-sheet` |
+| `--tui-glass-border` | `--tui-rule` |
+| `--tui-glass-shadow` | `--tui-shadow-overlay` |
+| `--tui-glass-blur` | `0` (the concept doesn't exist in v2) |
+| `--tui-shadow-xs` … `--tui-shadow-xl` | `--tui-shadow-overlay` (five steps collapse to the one shadow) |
+| `--tui-radius-xs` | `--tui-radius-tight` |
+| `--tui-radius-sm`, `--tui-radius-md` | `--tui-radius-control` |
+| `--tui-radius-lg`, `--tui-radius-xl`, `--tui-radius-2xl` | `--tui-radius-sheet` |
+| `--tui-spacing-xs` … `--tui-spacing-2xl` | `--tui-gap-1` … `--tui-gap-6` (six of the seven v1 steps map 1:1 onto v2's outer-gap scale) |
+| `--tui-spacing-3xl` | **stays a literal `48px`** — see note below |
+| `--tui-font-family`, `--tui-font-mono` | `--tui-font-sans` (v2 has no separate mono axis) |
+| `--tui-font-size-xs`/`sm`/`md`/`lg`/`xl`/`2xl` | `--tui-font-size-caption`/`small`/`body`/`lead`/`h3`/`h2` |
+| `--tui-font-weight-normal`/`medium`/`semibold`/`bold` | `--tui-weight-regular`/`medium`/`semibold`/`semibold` (`bold` and `semibold` both land on `semibold`) |
+| `--tui-line-height` | `--tui-line-height-body` |
+| `--tui-letter-tight` | `--tui-letter-body` |
+| `--tui-letter-tighter` | `--tui-letter-heading` |
+| `--tui-duration-medium`, `--tui-duration-slow` | `--tui-duration-base` |
+| `--tui-ease-in-out`, `--tui-ease-linear`, `--tui-ease-spring` | `--tui-ease-out` (v2 has one easing curve) |
+| `--tui-transition`, `--tui-transition-fast`, `--tui-transition-slow`, `--tui-transition-shadow`, `--tui-transition-transform` | `var(--tui-duration-base) var(--tui-ease-out)` (a bare duration+easing fragment — not `--tui-transition-color`, which is a complete three-property shorthand and invalid CSS in the fragment position v1 used these in) |
+| `--tui-touch-target-min` | `44px` (literal, not aliased) |
+| `--tui-touch-target-comfortable` | `--tui-control-lg` |
+
+**One entry above doesn't do what a quick skim of the spacing plan suggests, so it's worth calling out directly: `--tui-spacing-3xl` does *not* alias to `--tui-gap-6`.** v1's spacing scale has seven steps (4/8/12/16/24/32/48px); v2's outer-gap scale has six (4/8/12/16/24/32px). The first six line up exactly, so `xs`…`2xl` alias cleanly onto `gap-1`…`gap-6`. The seventh, `3xl` at 48px, has nothing to land on — the nearest v2 step, `gap-6`, is 32px, a third smaller. Aliasing `3xl` to `gap-6` would shrink your largest spacing value the moment you import `compat.css`, which is exactly the kind of visible change the file exists to avoid. So the shipped `compat.css` leaves `--tui-spacing-3xl` defined as the literal value `48px` instead of a `var()` alias. If your CSS uses `--tui-spacing-3xl`, it keeps rendering at 48px under `compat.css` — it just isn't tied to any token v2 defines, so treat it as one you should replace with an explicit `48px` (or a deliberate `--tui-gap-6`, if 32px is actually fine there) rather than something to keep relying on past 3.0.
+
+**`--tui-spacing-md`, `-lg`, `-xl` only match exactly on desktop.** v1's spacing scale had a `@media (pointer: coarse)` override that bumped three of the seven steps up on touch devices — `md` 12px→16px, `lg` 16px→20px, `xl` 24px→28px (the other four steps were unaffected). v2's `--tui-gap-*` scale is fixed; it doesn't have a pointer-coarse override. So `--tui-spacing-md`/`-lg`/`-xl` alias to a value that matches v1's *desktop* number exactly, but on a touch device where v1 would have silently bumped up, `compat.css` no longer does — those three steps get a few pixels tighter than v1 gave you there. The other spacing aliases (`xs`, `sm`, `2xl`, `3xl`) don't have this gap; they matched on every pointer type in v1.
+
+**Below is the full list of aliases whose *value* changes shape under `compat.css` — not just renamed, but visibly different** — so you can decide per-project whether the difference matters before you rely on the bridge:
+
+| v1 token | v1 value | value under `compat.css` |
+|---|---|---|
+| `--tui-glass-blur` | `20px` | `0` |
+| `--tui-radius-xl` / `--tui-radius-2xl` | `14px` / `20px` | `10px` |
+| `--tui-shadow-xs` … `--tui-shadow-xl` | five distinct shadows | one shadow (`--tui-shadow-overlay`) |
+| `--tui-duration-medium` / `--tui-duration-slow` | `320ms` / `480ms` | `200ms` |
+
+## Tokens with no CSS bridge — rewrite these by hand
+
+Three v1 tokens are **not** aliased at all, on purpose — aliasing them would either produce invalid CSS or silently swap in a different concept, and both are worse than a token that simply resolves to nothing so you notice it during upgrade:
+
+| v1 token | what it did in v1 | why there's no bridge | replace with |
+|---|---|---|---|
+| `--tui-focus-ring` | A complete two-layer `box-shadow` value (`0 0 0 2px var(--tui-bg), 0 0 0 4px rgba(99, 91, 255, 0.5)`), used as `box-shadow: var(--tui-focus-ring)`. | v2's focus ring is one ink-colored ring, not a box-shadow value — aliasing it to a color would produce `box-shadow: #14151a`, which is invalid, and the whole declaration would be dropped. | Write your own `box-shadow` (or `outline`) using `--tui-ink` and whatever background color the ring sits on. |
+| `--tui-inset-highlight` | A single `box-shadow` layer (`inset 0 1px 0 rgba(255, 255, 255, 0.18)`) composed with another shadow: `box-shadow: var(--tui-inset-highlight), var(--tui-shadow-md)`. | v2 has no inset-highlight concept. Aliasing it to `none` would produce `box-shadow: none, <shadow>`, which is invalid CSS — `none` can't appear inside a shadow list — so the entire composed shadow would be dropped, not just the highlight. | Drop it, or write your own inset shadow layer directly if you still want the effect. |
+| `--tui-thumb-zone-height` | `65vh` — a viewport-relative height for a "thumb reachable zone" layout region. | v2's closest-named concept, `--tui-thumb-safe-bottom`, is a ~16px bottom inset, not a viewport-fraction height. They solve different problems; aliasing one to the other would be valid CSS that quietly collapses your layout region from ~65% of the screen to 16px. | Use an explicit `65vh` (or your own value) if you still need a thumb-reachable region sized as a fraction of the viewport. |
+
+If your CSS reads any of these three names, `compat.css` leaves them unresolved on purpose — that's what surfaces them as something to fix rather than a silent visual regression.
+
+## Load Pretendard yourself
+
+v1 bundled its font. v2 does not — it only declares the `--tui-font-sans` stack. Your app has to load Pretendard, the same as any other app-level font choice; see [Installation → Load Pretendard yourself](./installation.mdx#required-load-pretendard-yourself) for how, and [Typography](../design-tokens/typography.mdx#pretendard-is-not-bundled) for why v2 stopped bundling it.

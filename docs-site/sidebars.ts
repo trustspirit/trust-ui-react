@@ -5,7 +5,11 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Getting Started',
-      items: ['getting-started/installation', 'getting-started/theming'],
+      items: [
+        'getting-started/installation',
+        'getting-started/theming',
+        'getting-started/migration-v1-to-v2',
+      ],
     },
     {
       type: 'category',
@@ -81,7 +85,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Guides',
-      items: ['guides/mobile-patterns'],
+      items: ['guides/layers', 'guides/mobile-patterns'],
     },
     {
       type: 'category',

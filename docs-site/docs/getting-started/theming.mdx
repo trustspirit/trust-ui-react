@@ -5,112 +5,121 @@ title: Theming
 
 # Theming
 
-trust-ui v2 uses CSS Custom Properties for theming. Built-in **Light** and **Dark** themes ship with the **Indigo Premium** palette, but every token can be overridden to match your brand.
+trust-ui v2 theming is plain CSS custom properties keyed off a handful of `data-*` attributes on `<html>`. There is no runtime color computation — nothing derives a hover shade or a tint from a base color for you. Every state a component can render has to resolve to a token that's actually defined somewhere in the cascade.
 
-## Theme switching
+Two independent **axes** control which token values are active, and two optional **layers** sit on top of them.
 
-Wrap your app in `ThemeProvider`, then use `useTheme()` to toggle:
+## Axis: `data-theme`
+
+`light` or `dark`. Selects which mapping of the neutral palette onto `--tui-paper`, `--tui-ink`, `--tui-rule`, and the rest is active — see [Colors](../design-tokens/colors.mdx) for the full token list per theme.
+
+## Axis: `data-density`
+
+`comfortable` (default) or `compact`. Controls control heights and inner padding only — never color. Switching density does not touch a single color token. See [Spacing & Radius](../design-tokens/spacing.mdx#inner-padding--density-linked).
+
+## Setting the axes
+
+`ThemeProvider` writes both attributes onto `<html>` and exposes them through `useTheme()`:
 
 ```tsx
 import { ThemeProvider, useTheme, Button } from 'trust-ui-react';
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="light">
+    <ThemeProvider defaultTheme="light" defaultDensity="comfortable">
       <YourUI />
     </ThemeProvider>
   );
 }
 
 function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { theme, toggleTheme, density, setDensity } = useTheme();
   return (
-    <Button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}>
-      Switch to {theme === 'light' ? 'dark' : 'light'}
-    </Button>
+    <>
+      <Button onClick={toggleTheme}>Switch to {theme === 'light' ? 'dark' : 'light'}</Button>
+      <Button onClick={() => setDensity(density === 'compact' ? 'comfortable' : 'compact')}>
+        Switch to {density === 'compact' ? 'comfortable' : 'compact'}
+      </Button>
+    </>
   );
 }
 ```
 
-`ThemeProvider` sets `data-theme="light"` or `data-theme="dark"` on `<html>`. All CSS variables resolve based on that attribute.
+If `defaultTheme` is omitted, the initial value is read once from `prefers-color-scheme` at first render. That read happens only once — `ThemeProvider` does not keep listening for OS-level changes afterward, and it does not persist a user's choice anywhere. If your app wants either of those, do it yourself: call `setTheme` from your own `matchMedia` listener, or write/read the value from `localStorage` around the provider.
 
-## System preference
+## Layer: `market.css` (optional)
 
-Want to follow the OS setting until the user explicitly chooses? Pass `defaultTheme="system"` and the provider listens to `prefers-color-scheme`:
+Financial screens that color price deltas by rise/fall need one more axis, `data-market` (`kr` default, `us`), and the stylesheet that reads it:
 
 ```tsx
-<ThemeProvider defaultTheme="system">
-  <YourUI />
-</ThemeProvider>
+import 'trust-ui-react/market.css';
 ```
 
-Once the user calls `setTheme('light' | 'dark')` once, their choice is persisted (via localStorage) and takes precedence over the OS.
+`ThemeProvider` accepts `defaultMarket` and `useTheme()` exposes `market`/`setMarket` the same way it does theme and density. Full color mapping and both themes' variants: [Colors → Market colors](../design-tokens/colors.mdx#market-colors--optional-layer).
 
-## Custom palette
+## Layer: brand accent
 
-Override any token to remap the look. Tokens cascade through every component automatically — change `--tui-primary` once and every Button, Switch, Toast, etc. picks it up.
+Out of the box there's no brand hue — `--tui-accent` resolves to `--tui-ink`, so a fresh install renders as pure grayscale:
+
+```css
+--tui-accent: var(--tui-ink);
+--tui-on-accent: var(--tui-on-ink);
+--tui-accent-hover: var(--tui-ink-2);
+```
+
+An app that wants a brand color overrides these three. **Override `--tui-accent-hover` alongside `--tui-accent` — v2 does not compute a hover shade from the base color.** Overriding only `--tui-accent` leaves every hover/active state resolving to the ink-based default, which will visibly clash with whatever hue you just set:
 
 ```css
 /* my-brand-overrides.css — load AFTER trust-ui's styles.css */
 
 [data-theme='light'] {
-  /* Replace Indigo with your brand color */
-  --tui-primary: #ff5c2c;
-  --tui-primary-hover: #e8501f;
-  --tui-primary-active: #c54214;
-  --tui-primary-subtle: #fff0eb;
-  --tui-primary-subtle-hover: #ffe2d8;
-  --tui-primary-gradient: linear-gradient(180deg, #ff5c2c 0%, #e8501f 100%);
-
-  /* Adjust focus ring to match */
-  --tui-focus-ring: 0 0 0 2px var(--tui-bg), 0 0 0 4px rgba(255, 92, 44, 0.5);
+  --tui-accent: #ff5c2c;
+  --tui-accent-hover: #e8501f;
 }
 
 [data-theme='dark'] {
-  --tui-primary: #ff7a52;
-  --tui-primary-hover: #ff9272;
-  --tui-primary-active: #f06840;
-  --tui-primary-subtle: rgba(255, 122, 82, 0.14);
-  --tui-primary-gradient: linear-gradient(180deg, #ff7a52 0%, #e85f30 100%);
-  --tui-focus-ring: 0 0 0 2px var(--tui-bg), 0 0 0 4px rgba(255, 122, 82, 0.5);
+  --tui-accent: #ff7a52;
+  --tui-accent-hover: #ff9272;
 }
 ```
-
-Apply the override:
 
 ```ts
 // Your app entry
 import 'trust-ui-react/styles.css';
-import './my-brand-overrides.css';   // Always after trust-ui
+import './my-brand-overrides.css'; // always after trust-ui
 ```
+
+Nothing else needs to change — every component that renders an accent (Button, Switch, Checkbox, focus rings, …) reads `--tui-accent`/`--tui-on-accent`/`--tui-accent-hover` and picks the override up automatically. Details: [Colors → Accent](../design-tokens/colors.mdx#accent).
 
 ## Token reference
 
-For the complete list of tokens, see:
+For the complete list of tokens in each layer:
 
-- [Colors](../design-tokens/colors.mdx) — palette + glass tokens (light + dark)
-- [Spacing & Radius](../design-tokens/spacing.mdx) — desktop + mobile density, z-index
-- [Typography](../design-tokens/typography.mdx) — Geist font setup, size scale
-- [Motion](../design-tokens/motion.mdx) — duration / easing / 5 patterns
-- [Elevation & Surfaces](../design-tokens/elevation.mdx) — shadow scale, glass mixin
+- [Colors](../design-tokens/colors.mdx) — palette, theme, and semantic layers; accent; market colors
+- [Spacing & Radius](../design-tokens/spacing.mdx) — density-linked padding, fixed gaps, control heights, touch targets & safe area, z-index
+- [Typography](../design-tokens/typography.mdx) — Pretendard setup, size scale, weight, tabular numbers
+- [Motion](../design-tokens/motion.mdx) — durations, the one easing curve, reduced motion
+- [Elevation](../design-tokens/elevation.mdx) — the one shadow, and who's allowed to use it
 
 ## Mobile considerations
 
-- Form `<input>`/`<textarea>`/`<select>` automatically get `font-size: max(16px, ...)` on `pointer:coarse` devices — this prevents iOS Safari's auto-zoom on focus.
-- All hover effects are wrapped in `@media (hover: hover)` so they don't get stuck after a tap on touch devices.
-- `prefers-reduced-motion: reduce` is respected globally — all transitions become instant.
-- iOS notch + home indicator handled via `env(safe-area-inset-*)` tokens. Use [`<SafeAreaView>`](../design-tokens/spacing.mdx#touch-targets--safe-area) for fullscreen layouts.
+- Form `<input>`/`<textarea>`/`<select>` get a minimum 16px font size on `pointer: coarse` devices — this prevents iOS Safari's auto-zoom on focus.
+- Hover effects are wrapped in `@media (hover: hover)` so they don't get stuck after a tap on touch devices.
+- `prefers-reduced-motion: reduce` is respected globally — see [Motion → Reduced motion](../design-tokens/motion.mdx#reduced-motion).
+- iOS notch and home-indicator insets are handled via the safe-area tokens. Use [`<SafeAreaView>`](../design-tokens/spacing.mdx#touch-targets--safe-area) for fullscreen layouts.
 
 ## Multi-brand setup
 
-If you need multiple brands in one app, scope overrides to a custom attribute or class:
+For multiple brands in one app, scope the accent override to a custom attribute or class instead of `[data-theme]`. Remember both tokens per brand, per theme, if the brand hue needs to differ between light and dark:
 
 ```css
 [data-brand='alpha'] {
-  --tui-primary: #635bff;
+  --tui-accent: #635bff;
+  --tui-accent-hover: #4f3fe0;
 }
 [data-brand='beta'] {
-  --tui-primary: #ff5c2c;
+  --tui-accent: #ff5c2c;
+  --tui-accent-hover: #e8501f;
 }
 ```
 

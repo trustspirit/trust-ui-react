@@ -1,7 +1,7 @@
 {
   "name": "trust-ui-react",
-  "version": "1.0.1",
-  "description": "A mobile-optimized, themeable React UI library — 26 components, native touch UX, CSS-variable theming, sophisticated v2 design system.",
+  "version": "2.0.0",
+  "description": "A mobile-optimized, themeable React UI library — 30 components, native touch UX, CSS-variable theming, sophisticated v2 design system.",
   "type": "module",
   "main": "./dist/index.cjs.js",
   "module": "./dist/index.es.js",
@@ -13,7 +13,8 @@
       "require": "./dist/index.cjs.js"
     },
     "./styles.css": "./dist/styles.css",
-    "./market.css": "./dist/market.css"
+    "./market.css": "./dist/market.css",
+    "./compat.css": "./dist/compat.css"
   },
   "sideEffects": [
     "**/*.css"

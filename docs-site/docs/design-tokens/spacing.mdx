@@ -5,67 +5,82 @@ title: Spacing & Radius
 
 # Spacing & Radius
 
-trust-ui v2 has a **dual-density** spacing scale — slightly tighter on desktop, more generous on touch devices. The shift happens automatically via `@media (pointer: coarse)`.
+Spacing splits into two independent scales — one tied to density, one fixed — because they answer two different questions.
 
-## Spacing scale
+## Inner padding — density-linked
 
-### Desktop (default)
+`--tui-pad-1` through `--tui-pad-4` size the space *inside* a control, between its border and its content.
+
+| Token | `compact` | `comfortable` (default) |
+|---|---|---|
+| `--tui-pad-1` | 4px | 6px |
+| `--tui-pad-2` | 8px | 10px |
+| `--tui-pad-3` | 12px | 14px |
+| `--tui-pad-4` | 16px | 20px |
+
+These move with density because the control they pad moves with density too: switching to `compact` shrinks `--tui-control-md` from 44px to 36px. If inner padding stayed fixed while the control shrank around it, the text inside would end up crowding the edge — the padding has to shrink in step with the box it's padding, or the proportions break.
+
+## Outer gaps — fixed
+
+`--tui-gap-1` through `--tui-gap-6` size the space *between* elements — the layout-level spacing a page is built from.
+
+| Token | Value |
+|---|---|
+| `--tui-gap-1` | 4px |
+| `--tui-gap-2` | 8px |
+| `--tui-gap-3` | 12px |
+| `--tui-gap-4` | 16px |
+| `--tui-gap-5` | 24px |
+| `--tui-gap-6` | 32px |
+
+These stay fixed regardless of density, and that's the deliberate half of the split: if gaps moved with density the way padding does, flipping a screen from `comfortable` to `compact` would reflow the entire page layout — every section spacing, every stack gap — all at once. An app author choosing `compact` for a dense data screen wants tighter controls, not a page whose overall composition shifts unpredictably underneath them. Padding is allowed to follow the control it belongs to; layout gaps are not allowed to follow anything but their own fixed scale.
+
+## Radius
+
+Four steps, unrelated to density:
 
 | Token | Value | Usage |
 |---|---|---|
-| `--tui-spacing-xs` | `4px` | Icon ↔ label gap |
-| `--tui-spacing-sm` | `8px` | Tight padding |
-| `--tui-spacing-md` | `12px` | Default control padding |
-| `--tui-spacing-lg` | `16px` | Card padding |
-| `--tui-spacing-xl` | `24px` | Section padding |
-| `--tui-spacing-2xl` | `32px` | Large section |
-| `--tui-spacing-3xl` | `48px` | Hero / page margins |
+| `--tui-radius-tight` | 4px | Small chips, tags |
+| `--tui-radius-control` | 6px | Buttons, inputs |
+| `--tui-radius-sheet` | 10px | Dialogs, panels, cards |
+| `--tui-radius-full` | 9999px | Pills, avatars, dots |
 
-### Mobile (`@media (pointer: coarse)`)
+## Control heights
 
-| Token | Value | Δ |
-|---|---|---|
-| `--tui-spacing-md` | `16px` | +4 |
-| `--tui-spacing-lg` | `20px` | +4 |
-| `--tui-spacing-xl` | `28px` | +4 |
+`--tui-control-sm/md/lg` and `--tui-row-height` live in the density layer, alongside `--tui-font-size-base` (see [Typography](./typography.mdx#a-second-base-size-token)):
 
-`xs`/`sm`/`2xl`/`3xl` stay the same — they're already mobile-appropriate at the edges.
-
-## Border radius
-
-| Token | Desktop | Mobile | Usage |
+| Token | `compact` | `comfortable` (default) | `pointer: coarse` |
 |---|---|---|---|
-| `--tui-radius-xs` | `4px` | `4px` | Tiny pills |
-| `--tui-radius-sm` | `6px` | `6px` | Chips, badges |
-| `--tui-radius-md` | `8px` | `12px` | Buttons, inputs (more pillowy on touch) |
-| `--tui-radius-lg` | `10px` | `14px` | Cards |
-| `--tui-radius-xl` | `14px` | `20px` | Dialogs, popovers |
-| `--tui-radius-2xl` | `20px` | `20px` | Bottom-sheet top corners |
-| `--tui-radius-full` | `9999px` | — | Pills, dots |
+| `--tui-control-sm` | 30px | 36px | 36px |
+| `--tui-control-md` | 36px | 44px | 44px |
+| `--tui-control-lg` | 44px | 52px | 52px |
+| `--tui-row-height` | 46px | 56px | 64px |
+
+On a touch device (`pointer: coarse`), heights snap to the `comfortable` values or larger regardless of which density is set — `compact` only actually shrinks controls on a mouse-driven surface. This guarantees a minimum touch target on touch hardware no matter what an app author configures for density.
 
 ## Touch targets & safe area
 
-| Token | Value | Usage |
-|---|---|---|
-| `--tui-touch-target-min` | `44px` | iOS HIG minimum hit area |
-| `--tui-touch-target-comfortable` | `48px` | Android Material baseline |
-| `--tui-safe-top` | `env(safe-area-inset-top, 0px)` | iOS notch |
-| `--tui-safe-right` | `env(safe-area-inset-right, 0px)` | — |
-| `--tui-safe-bottom` | `env(safe-area-inset-bottom, 0px)` | iOS home indicator |
-| `--tui-safe-left` | `env(safe-area-inset-left, 0px)` | — |
-| `--tui-thumb-zone-height` | `65vh` | Suggested thumb-reach zone |
-| `--tui-thumb-safe-bottom` | `max(env(safe-area-inset-bottom, 0px), 16px)` | Bottom padding for thumb-zone CTAs |
+Carried over unchanged — iOS notch and home-indicator insets:
 
-Use the `<SafeAreaView>` and `<StickyFooter>` layout primitives to apply these without custom CSS.
+| Token | Value |
+|---|---|
+| `--tui-safe-top` | `env(safe-area-inset-top, 0px)` |
+| `--tui-safe-right` | `env(safe-area-inset-right, 0px)` |
+| `--tui-safe-bottom` | `env(safe-area-inset-bottom, 0px)` |
+| `--tui-safe-left` | `env(safe-area-inset-left, 0px)` |
+| `--tui-thumb-safe-bottom` | `max(env(safe-area-inset-bottom, 0px), 16px)` — bottom padding for thumb-reach CTAs |
 
-## Z-index scale
+Use `<SafeAreaView>` and `<StickyFooter>` to apply these without writing custom CSS.
 
-| Token | Value | Usage |
-|---|---|---|
-| `--tui-z-dropdown` | `1000` | Select dropdowns |
-| `--tui-z-sticky` | `1010` | Sticky headers / footers |
-| `--tui-z-popover` | `1020` | Popovers |
-| `--tui-z-modal` | `1050` | Dialogs |
-| `--tui-z-bottom-sheet` | `1055` | BottomSheet, ActionSheet |
-| `--tui-z-tooltip` | `1060` | Tooltips |
-| `--tui-z-toast` | `1070` | Toasts |
+## Z-index
+
+| Token | Value |
+|---|---|
+| `--tui-z-dropdown` | 1000 |
+| `--tui-z-sticky` | 1010 |
+| `--tui-z-popover` | 1020 |
+| `--tui-z-modal` | 1050 |
+| `--tui-z-bottom-sheet` | 1055 |
+| `--tui-z-tooltip` | 1060 |
+| `--tui-z-toast` | 1070 |

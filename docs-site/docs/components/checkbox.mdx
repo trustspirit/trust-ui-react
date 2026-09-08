@@ -50,6 +50,8 @@ A toggle control that allows users to select one or more options.
   { name: 'label', type: 'string', description: 'Text label' },
   { name: 'required', type: 'boolean', default: 'false', description: 'Whether the field is required (shows red asterisk)' },
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the checkbox is disabled' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Whether the field is in error state' },
+  { name: 'errorMessage', type: 'string', description: 'Error message displayed below the checkbox' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },
   { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
 ]} />
@@ -60,4 +62,4 @@ Also accepts all standard `<input>` HTML attributes (except `type` and `size`).
 
 - The clickable area extends to include the label so the 44px tap target is met even with `size="sm"` styles.
 - Check / uncheck animation respects `prefers-reduced-motion: reduce`.
-- Group multiple Checkboxes inside a list with at least `--tui-space-3` vertical gap so finger taps don't miss neighbors.
+- Group multiple Checkboxes inside a list with at least `--tui-gap-3` vertical gap so finger taps don't miss neighbors.

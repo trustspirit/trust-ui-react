@@ -85,13 +85,13 @@ Organizes content into tabbed sections. Supports underline and pill variants wit
   </Tabs>
 </ComponentPreview>
 
-For a standalone segmented control without `Tabs.Content` panels, use the dedicated `<SegmentedControl>` primitive instead (component reference coming in Phase 7-c).
+For a standalone segmented control without `Tabs.Content` panels, use the dedicated [`<SegmentedControl>`](./segmented-control.mdx) primitive instead.
 
 ## Mobile considerations
 
 - Tab triggers meet the 44px tap target on mobile (vertical padding scales automatically on coarse pointer).
 - For long tab lists (5+ items), the list scrolls horizontally with `-webkit-overflow-scrolling: touch` momentum and snap.
-- Active-tab indicator uses `var(--tui-duration-base)` + `var(--tui-ease-in-out)` for symmetric slide animation (Pattern D — layout shift).
+- Active-tab indicator uses `var(--tui-duration-base)` + `var(--tui-ease-out)` for the slide animation — it's a layout-shift transition (the indicator's position and width genuinely change), which is the one case where trust-ui uses `transform` for anything beyond a hover response.
 
 ## With Disabled Tab
 

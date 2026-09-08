@@ -26,6 +26,10 @@ toast({ variant: 'info', message: 'Update available', description: 'Details here
 
 ## Variants
 
+State is carried by the icon's stroke color, not by a badge, a color band, or the toast's surface. `success` reads `--tui-success`, `warning` reads `--tui-warning`. `info` has no semantic color in v2 — its icon absorbs into the neutral ink (`--tui-ink-3`).
+
+`danger` is the only variant that fills its surface: the whole toast becomes `--tui-danger`, and every piece of text and the close button switch to `--tui-on-danger` for contrast. It is deliberately the odd one out — filling the surface is reserved for the one state serious enough to demand it.
+
 <ComponentPreview code={`<Toast id="1" variant="success" message="Changes saved successfully" />
 <Toast id="2" variant="danger" message="Failed to delete item" />
 <Toast id="3" variant="warning" message="Your session will expire soon" />
@@ -51,9 +55,9 @@ toast({ variant: 'info', message: 'Update available', description: 'Details here
   </div>
 </ComponentPreview>
 
-## Progress bar
+## Progress
 
-Set `showProgress` to render a thin bar that drains over the toast's `duration` — gives the user a visual hint of how long the toast will remain.
+Set `showProgress` to draw a 1px rule along the bottom edge that drains from full width to nothing over the toast's `duration`. It is not a colored progress bar — the rule is chrome, drawn in `--tui-rule-strong` (or `--tui-on-danger` inside a `danger` toast), the same restraint the rest of the surface follows: state lives in the icon, not in a filled track.
 
 <ComponentPreview code={`<Toast id="6" variant="success" message="Saved" showProgress duration={4000} />`}>
   <div style={{ width: '100%', maxWidth: 360 }}>
@@ -63,39 +67,39 @@ Set `showProgress` to render a thin bar that drains over the toast's `duration` 
 
 ## Mobile considerations
 
-- Toast surface uses `.tui-glass` (Tier 3) — translucent + backdrop-blur on capable browsers, opaque fallback elsewhere.
-- On `prefers-reduced-motion: reduce`, slide-in animation is replaced with instant fade.
+- Toast surface is an opaque `--tui-sheet` with a `--tui-shadow-overlay` shadow — the toast is genuinely floating above the page, which is why it's one of the few components that uses a shadow at all.
+- On `prefers-reduced-motion: reduce`, there's no component-level fade to replace the slide-in with — the global rule in `src/styles/tokens.css` collapses the animation duration to near-zero, so the toast just appears instead of sliding in.
 - Toast container should be wrapped in [`<SafeAreaView edges={['top']}>`](../design-tokens/spacing.mdx#touch-targets--safe-area) so notifications clear iOS notch / status bar.
 
 ## Usage
 
+`ToastProvider` owns the toast queue and renders the container into a portal; `useToast` gives you the `toast`/`dismiss`/`dismissAll` handles from anywhere inside it.
+
 ```jsx
-import { Toast } from 'trust-ui';
+import { ToastProvider, useToast, Button } from 'trust-ui-react';
 
-function Example() {
-  const [toasts, setToasts] = useState([]);
-
-  const addToast = () => {
-    const id = Date.now().toString();
-    setToasts((prev) => [...prev, { id, variant: 'success', message: 'Saved!' }]);
-  };
-
-  const removeToast = (id) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
+function SaveButton() {
+  const { toast } = useToast();
 
   return (
-    <>
-      <Button onClick={addToast}>Show Toast</Button>
-      {toasts.map((toast) => (
-        <Toast key={toast.id} {...toast} onClose={() => removeToast(toast.id)} />
-      ))}
-    </>
+    <Button onClick={() => toast({ variant: 'success', message: 'Saved!' })}>
+      Save
+    </Button>
+  );
+}
+
+function App() {
+  return (
+    <ToastProvider position="top-right">
+      <SaveButton />
+    </ToastProvider>
   );
 }
 ```
 
 ## Props
+
+### Toast
 
 <PropsTable props={[
   { name: 'id', type: 'string', description: 'Unique identifier for the toast' },
@@ -103,8 +107,23 @@ function Example() {
   { name: 'message', type: 'string', description: 'Main message text' },
   { name: 'description', type: 'string', description: 'Optional description below the message' },
   { name: 'duration', type: 'number', default: '4000', description: 'Auto-dismiss duration in milliseconds' },
-  { name: 'showProgress', type: 'boolean', default: 'false', description: 'Show a thin bar that drains over duration' },
+  { name: 'showProgress', type: 'boolean', default: 'false', description: 'Draw a draining 1px rule under the toast, timed to duration' },
   { name: 'onClose', type: '() => void', description: 'Callback when toast is closed' },
   { name: 'className', type: 'string', description: 'Additional CSS class name' },
   { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },
 ]} />
+
+### ToastProvider
+
+<PropsTable props={[
+  { name: 'position', type: "'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center'", default: "'top-right'", description: 'Where the toast container is anchored' },
+  { name: 'children', type: 'ReactNode', description: 'Subtree that can call useToast()' },
+]} />
+
+### useToast()
+
+Returns `{ toast, dismiss, dismissAll }`.
+
+- `toast(data: Omit<ToastData, 'id'>): string` — queues a toast, returns its generated id.
+- `dismiss(id: string): void` — removes one toast.
+- `dismissAll(): void` — clears the queue.

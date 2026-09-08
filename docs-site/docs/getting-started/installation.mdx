@@ -13,25 +13,66 @@ npm install trust-ui-react
 
 ## Setup
 
+### Required: the stylesheet
+
 Import the styles in your app's entry point:
 
 ```tsx
 import 'trust-ui-react/styles.css';
 ```
 
-Wrap your app with `ThemeProvider`:
+This is the only required import. It defines every semantic token, resets, and every component's CSS.
+
+### Required: load Pretendard yourself
+
+trust-ui v2 declares Pretendard as its typeface but does **not** bundle the font files — an earlier build inlined the whole family and pushed `dist/styles.css` to 3.9 MB. Your app has to load Pretendard itself, or every component falls back to the platform's system font.
+
+```html
+<!-- e.g. via CDN, in your document head -->
+<link
+  rel="stylesheet"
+  as="style"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+/>
+```
+
+A self-hosted `@font-face` or a package like `@fontsource/pretendard` works too — see [Typography → Pretendard is not bundled](../design-tokens/typography.mdx#pretendard-is-not-bundled) for why this is deliberate.
+
+### Optional: `market.css`
+
+Only needed by apps with financial screens — it defines `--tui-rise`/`--tui-fall` for price deltas. Without it those two tokens are undefined; nothing silently defaults to a market convention.
+
+```tsx
+import 'trust-ui-react/market.css';
+```
+
+See [Colors → Market colors](../design-tokens/colors.mdx#market-colors--optional-layer).
+
+### Optional: `compat.css` (upgrading from v1)
+
+If your app is coming from v1, also import the compatibility layer:
+
+```tsx
+import 'trust-ui-react/compat.css'; // after styles.css
+```
+
+It aliases v1 CSS custom property names to their v2 values so an app that reads v1 tokens directly doesn't go blank. It cannot fix a prop that v2 removed from a component's types — see the [v1 → v2 migration guide](./migration-v1-to-v2.mdx) before you upgrade.
+
+### Wrap your app with `ThemeProvider`
 
 ```tsx
 import { ThemeProvider } from 'trust-ui-react';
 
 function App() {
   return (
-    <ThemeProvider>
+    <ThemeProvider defaultTheme="light" defaultDensity="comfortable" defaultMarket="kr">
       <YourApp />
     </ThemeProvider>
   );
 }
 ```
+
+`ThemeProvider` reflects its state onto three attributes on `<html>` — `data-theme`, `data-density`, and `data-market` — which is what every CSS token in the library actually keys off of. All three props are optional; see [Theming](./theming.mdx) for how the axes and layers behind them work, and for switching them at runtime with `useTheme()`.
 
 ## Usage
 

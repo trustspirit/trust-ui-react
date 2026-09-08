@@ -21,7 +21,7 @@ import { SafeAreaView } from 'trust-ui-react';
 
 function FullscreenScreen() {
   return (
-    <SafeAreaView style={{ height: '100vh', background: 'var(--tui-bg)' }}>
+    <SafeAreaView style={{ height: '100vh', background: 'var(--tui-paper)' }}>
       <Header />
       <Content />
     </SafeAreaView>
@@ -77,16 +77,16 @@ Without `viewport-fit=cover`, iOS reserves the safe area as padding **outside** 
 
 ```tsx
 <Dialog open={open} onClose={close} mobileVariant="fullscreen">
-  {/* SafeAreaView is built in for mobileVariant="fullscreen" — you don't need to add it */}
+  {/* mobileVariant="fullscreen" already applies safe-area padding via CSS — you don't need to add SafeAreaView yourself */}
 </Dialog>
 ```
 
 ### Custom header that extends behind the notch
 
 ```tsx
-<header style={{ background: 'var(--tui-primary)', paddingTop: 0 }}>
+<header style={{ background: 'var(--tui-accent)', paddingTop: 0 }}>
   <SafeAreaView edges={['top']}>
-    <div style={{ padding: 'var(--tui-space-4)' }}>
+    <div style={{ padding: 'var(--tui-gap-4)' }}>
       <h1>Settings</h1>
     </div>
   </SafeAreaView>

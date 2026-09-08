@@ -5,127 +5,60 @@ title: Motion
 
 # Motion
 
-trust-ui v2 motion is **sophisticated cinematic** — short ease-out spring transitions that feel quick but never abrupt. All transitions are token-based so consumers can tune the whole system from one place.
+trust-ui v2 motion answers user actions. It does not decorate.
 
-## Duration tokens
+## Durations
+
+Three steps — no more:
 
 | Token | Value | Usage |
 |---|---|---|
-| `--tui-duration-instant` | `80ms` | Active/press feedback (must feel immediate) |
-| `--tui-duration-fast` | `150ms` | Color / border / box-shadow transitions |
-| `--tui-duration-base` | `220ms` | Hover transforms, layout shifts |
-| `--tui-duration-medium` | `320ms` | Dialog / popover enter |
-| `--tui-duration-slow` | `480ms` | Major page transitions |
+| `--tui-duration-instant` | 80ms | Press/active feedback |
+| `--tui-duration-fast` | 140ms | Color, border, background transitions |
+| `--tui-duration-base` | 200ms | Everything else that transitions |
 
-## Easing tokens
+## Easing
 
-| Token | Value | Feel |
-|---|---|---|
-| `--tui-ease-out` | `cubic-bezier(0.16, 1, 0.3, 1)` | Default — sharp out, soft stop |
-| `--tui-ease-in-out` | `cubic-bezier(0.65, 0, 0.35, 1)` | Symmetric (layout shifts) |
-| `--tui-ease-spring` | `cubic-bezier(0.34, 1.56, 0.64, 1)` | Subtle overshoot (hover lifts) |
-| `--tui-ease-linear` | `linear` | Loops (spinners, progress) |
-
-## Composite transition tokens
-
-For common patterns, use composite tokens instead of writing the full `transition` shorthand:
+One curve:
 
 ```css
-.button {
-  transition: var(--tui-transition-color), var(--tui-transition-shadow);
-}
+--tui-ease-out: cubic-bezier(0.2, 0, 0, 1);
 ```
 
-| Token | Expands to |
-|---|---|
-| `--tui-transition-color` | `color`, `background-color`, `border-color` × `fast` × `ease-out` |
-| `--tui-transition-transform` | `transform` × `base` × `ease-spring` |
-| `--tui-transition-shadow` | `box-shadow` × `base` × `ease-out` |
+Every transition and animation in the library uses this easing. An earlier version of the library also had a bouncier, overshooting easing curve for hover "lift" effects; that curve is gone in v2 — `--tui-ease-out` is now the only easing token that exists.
 
-## The 5 motion patterns
-
-Components in trust-ui use exactly **5 motion patterns** — picking the right pattern for each interaction creates a coherent feel across the whole library.
-
-### Pattern A — State color transition
-
-Color/border changes on hover / focus / active.
+## Composite transition token
 
 ```css
-transition: var(--tui-transition-color);
+--tui-transition-color:
+  color var(--tui-duration-fast) var(--tui-ease-out),
+  background-color var(--tui-duration-fast) var(--tui-ease-out),
+  border-color var(--tui-duration-fast) var(--tui-ease-out);
 ```
 
-**Used by:** Button color, Input border, Chip bg, Toast icon, every text/border state change.
+Use it instead of writing out the three-property shorthand by hand wherever a component transitions its color, background, and border together on hover/focus/active.
 
-### Pattern B — Micro-lift transform
+## What moves, and what doesn't
 
-Tiny `translateY(-1px)` on hover with `ease-spring` for a subtle "button rises" feel.
+Motion in v2 is a response to something the user did — a hover, a press, a focus change, an item opening or closing. It is never used to introduce content that's simply appearing on screen; there's no library-provided fade-in or slide-in for content that mounts on its own. If nothing happened that a person can point to, nothing should animate.
 
-```css
-@media (hover: hover) {
-  .btn:hover:not(:disabled) {
-    transform: translateY(-1px);
-    box-shadow: var(--tui-shadow-md);
-  }
-}
-.btn:active:not(:disabled) {
-  transform: translateY(0);
-  transition-duration: var(--tui-duration-instant);
-}
-```
-
-**Used by:** Button primary/danger, Chip clickable, FileUpload dropzone. Mobile-safe via `@media (hover: hover)`.
-
-### Pattern C — Surface enter/exit
-
-Modal / popover open animations. Combines opacity + small transform.
-
-```css
-@keyframes dialogEnter {
-  from { opacity: 0; transform: scale(0.96) translateY(8px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
-}
-.dialog { animation: dialogEnter var(--tui-duration-medium) var(--tui-ease-out); }
-```
-
-**Used by:** Dialog, Popover, Toast, Tooltip (fade-in only — no transform), Select dropdown.
-
-### Pattern D — Layout shift
-
-Smooth resize / position changes. Symmetric `ease-in-out` so the start and end feel balanced.
-
-```css
-.tabIndicator {
-  transition:
-    transform var(--tui-duration-base) var(--tui-ease-in-out),
-    width var(--tui-duration-base) var(--tui-ease-in-out);
-}
-```
-
-**Used by:** Tabs sliding indicator, Switch knob, Expander height (`grid-template-rows`), SegmentedControl indicator.
-
-### Pattern E — Continuous (looping)
-
-Spinner / indeterminate progress — `linear` so the loop doesn't pulse.
-
-```css
-@keyframes spin { to { transform: rotate(360deg); } }
-.spinner { animation: spin 0.6s linear infinite; }
-```
-
-**Used by:** Button loading spinner, Progress indeterminate stripe.
+Hover states also don't use `transform`. A hover effect changes color or border via `--tui-transition-color`, not position or scale — no lift, no shift. This keeps hover cheap (no layout/composite cost beyond a paint) and keeps the interaction model consistent: transform is reserved for cases where an element's position or size is genuinely changing (e.g. an Expander's height), not for signaling hover.
 
 ## Reduced motion
 
-All motion respects `prefers-reduced-motion: reduce`:
+Defined once, globally, in `tokens.css` — no per-component opt-in required:
 
 ```css
-/* Defined globally in tokens.css */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 ```
 
-No per-component code needed — every transition/animation in the library is auto-disabled when the user opts out.
+Every transition and animation in the library collapses to effectively-instant when the user has this preference set. Components never need their own reduced-motion handling.

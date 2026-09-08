@@ -83,7 +83,7 @@ Pick `native` for system-critical fields (DOB, deadlines) where OS familiarity w
 ## Mobile considerations
 
 - Day cells meet the 44×44px tap target on mobile (cell size scales up automatically on coarse pointer).
-- Calendar dialog uses `.tui-glass` surface — translucent on capable browsers, opaque fallback elsewhere.
+- The calendar popup is an opaque `--tui-sheet` surface with a `--tui-shadow-overlay` shadow — there is no translucency.
 - The dialog respects iOS safe areas (notch + home indicator) automatically.
 
 ## Props

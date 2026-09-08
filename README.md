@@ -2,7 +2,7 @@
 
 A lightweight, themeable React UI component library built with TypeScript and CSS Modules.
 
-`trust-ui-react` provides 22 production-ready components with built-in dark/light mode support, CSS Custom Properties for easy theming, and full TypeScript type definitions. Every component is designed with accessibility in mind and follows consistent API patterns.
+`trust-ui-react` provides 30 production-ready components with built-in dark/light mode support, CSS Custom Properties for easy theming, and full TypeScript type definitions. Every component is designed with accessibility in mind and follows consistent API patterns.
 
 **[Documentation & Live Examples](https://trustspirit.github.io/trust-ui-react/)**
 
@@ -10,7 +10,7 @@ A lightweight, themeable React UI component library built with TypeScript and CS
 
 ## Features
 
-- **22 ready-to-use components** -- buttons, forms, file upload, data display, dialogs, date pickers, and more
+- **30 ready-to-use components** -- buttons, forms, file upload, data display, dialogs, date pickers, mobile primitives, and more
 - **Dark / Light mode** -- toggle themes via `data-theme` attribute with `ThemeProvider`
 - **CSS Custom Properties** -- all visual tokens (`--tui-*`) are overridable for full brand customization
 - **TypeScript first** -- every component exports its prop types for a great DX
@@ -39,6 +39,31 @@ React 18 or later is required:
 
 ```bash
 npm install react react-dom
+```
+
+### Required: load Pretendard yourself
+
+v2's single typeface is Pretendard, declared via the `--tui-font-sans` stack -- but the library does **not** bundle the font files (an earlier build inlined the whole family and pushed the stylesheet to 3.9 MB). Load it yourself, or every component falls back to the platform's system font:
+
+```html
+<!-- e.g. via CDN, in your document head -->
+<link
+  rel="stylesheet"
+  as="style"
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+/>
+```
+
+A self-hosted `@font-face` or a package like `@fontsource/pretendard` works too.
+
+### Optional imports
+
+- **`trust-ui-react/market.css`** -- only needed by apps with financial screens. Defines `--tui-rise`/`--tui-fall` for price deltas; without it those tokens are undefined rather than silently defaulting to a market convention.
+- **`trust-ui-react/compat.css`** -- only needed when upgrading from v1. Aliases v1 `--tui-*` custom property names to their v2 values so an app that still reads v1 tokens directly doesn't go blank. Import it after `styles.css`.
+
+```tsx
+import 'trust-ui-react/market.css';   // optional, financial screens
+import 'trust-ui-react/compat.css';   // optional, v1 upgrade path
 ```
 
 ---
@@ -95,6 +120,7 @@ export default App;
 | `Switch`     | Toggle switch with label and size options                          |
 | `Select`     | Dropdown select with searchable and multi-select modes             |
 | `Slider`     | Range input with value label, min/max/step support                 |
+| `SegmentedControl` | iOS-style pill control for 2-4 mutually exclusive options      |
 | `FileUpload` | Drag-and-drop file upload with list/grid display, image preview, and validation |
 
 ### Feedback
@@ -104,6 +130,8 @@ export default App;
 | `Toast`      | Notification alert with variants (success, danger, warning, info)  |
 | `Dialog`     | Modal dialog with compound sub-components (Title, Content, Actions)|
 | `Menu`       | Dropdown menu with compound Trigger, Content, Item, and Divider    |
+| `BottomSheet`| Swipeable panel that slides up from the bottom, with snap points and drag-to-dismiss |
+| `ActionSheet`| BottomSheet preset for a list of actions, with an optional destructive style and Cancel button |
 
 ### Data
 
@@ -126,6 +154,9 @@ export default App;
 | ------------ | ------------------------------------------------------------------ |
 | `Tabs`       | Tabbed interface with compound List, Trigger, and Content          |
 | `Expander`   | Accordion / collapsible sections with single or multiple open mode |
+| `SafeAreaView` | Applies `env(safe-area-inset-*)` padding to its edges, for content near the iOS notch or home indicator |
+| `StickyFooter` | Bottom-pinned footer that clears the home indicator and thumb zone |
+| `KeyboardAvoidingView` | Adds bottom padding equal to the on-screen keyboard height via the Visual Viewport API |
 
 ---
 
@@ -163,48 +194,48 @@ function ThemeToggle() {
 
 ### How dark/light mode works
 
-The library ships two CSS files -- `theme-light.css` and `theme-dark.css` -- that define color tokens under `[data-theme='light']` and `[data-theme='dark']` selectors respectively. `ThemeProvider` sets `data-theme` on `document.documentElement`, and all component styles reference `--tui-*` variables so they automatically adapt.
+The library ships a single bundled stylesheet, `dist/styles.css` (imported as `trust-ui-react/styles.css`), that defines color tokens under both `[data-theme='light']` and `[data-theme='dark']` selectors. `ThemeProvider` sets `data-theme` on `document.documentElement`, and all component styles reference `--tui-*` variables so they automatically adapt.
 
 ### Customizing CSS variables
 
 Override any `--tui-*` token at the root or on a specific selector to match your brand:
 
+v2's default palette is achromatic -- `--tui-accent` falls back to `--tui-ink` (near-black in light mode, near-white in dark mode) until an app opts into a brand color:
+
 ```css
 /* Override globally */
 :root {
-  --tui-primary: #7c3aed;
-  --tui-primary-hover: #6d28d9;
-  --tui-primary-active: #5b21b6;
-  --tui-radius-md: 8px;
-  --tui-font-family: 'Pretendard', sans-serif;
+  --tui-accent: #7c3aed;
+  --tui-accent-hover: #6d28d9;
+  --tui-on-accent: #ffffff;
+  --tui-radius-control: 8px;
 }
 
 /* Override only for dark mode */
 [data-theme='dark'] {
-  --tui-primary: #a78bfa;
-  --tui-primary-hover: #c4b5fd;
+  --tui-accent: #a78bfa;
+  --tui-accent-hover: #c4b5fd;
 }
 ```
 
 Available token categories include:
 
-| Prefix               | Purpose                          |
-| -------------------- | -------------------------------- |
-| `--tui-bg-*`         | Background colors                |
-| `--tui-text-*`       | Text colors                      |
-| `--tui-border-*`     | Border colors                    |
-| `--tui-primary-*`    | Primary brand colors             |
-| `--tui-secondary-*`  | Secondary colors                 |
-| `--tui-success-*`    | Success state colors             |
-| `--tui-danger-*`     | Danger / error state colors      |
-| `--tui-warning-*`    | Warning state colors             |
-| `--tui-info-*`       | Info state colors                |
-| `--tui-font-*`       | Font family, sizes, weights      |
-| `--tui-spacing-*`    | Spacing scale (xs through 2xl)   |
-| `--tui-radius-*`     | Border radius scale              |
-| `--tui-shadow-*`     | Box shadow presets               |
-| `--tui-transition-*` | Transition durations             |
-| `--tui-z-*`          | Z-index layers                   |
+| Prefix               | Purpose                                          |
+| -------------------- | ------------------------------------------------- |
+| `--tui-paper` / `--tui-field` / `--tui-sheet` | Page, recessed, and overlay surfaces |
+| `--tui-ink` / `--tui-ink-2` / `--tui-ink-3`   | Text hierarchy, darkest to lightest  |
+| `--tui-on-ink` / `--tui-on-accent`            | Text color on an ink or accent fill  |
+| `--tui-rule` / `--tui-rule-strong`            | Border colors                        |
+| `--tui-accent` / `--tui-accent-hover`         | Brand accent (defaults to ink)       |
+| `--tui-success` / `--tui-danger` / `--tui-warning` | State colors                    |
+| `--tui-rise` / `--tui-fall`          | Market colors (only after importing `market.css`) |
+| `--tui-font-*`       | Font family, sizes, weights, line-height, letter-spacing |
+| `--tui-gap-*`        | Outer spacing scale (fixed, 1 through 6)         |
+| `--tui-pad-*`        | Inner padding (density-linked)                   |
+| `--tui-radius-*`     | Border radius scale (`tight`, `control`, `sheet`, `full`) |
+| `--tui-shadow-overlay` | The one box-shadow token, used for overlay surfaces |
+| `--tui-duration-*` / `--tui-ease-out` | Motion durations and the single easing curve |
+| `--tui-z-*`          | Z-index layers                                   |
 
 ---
 
@@ -454,13 +485,12 @@ const data: User[] = [
   columns={columns}
   data={data}
   rowKey="id"
-  variant="striped"
   stickyHeader
   onRowClick={(row) => console.log('Clicked:', row.name)}
 />
 ```
 
-Table variants: `'default'`, `'striped'`, `'bordered'`. Sorting is built-in -- just set `sortable: true` on any column.
+Sorting is built-in -- just set `sortable: true` on any column. Below `mobileVariant="summary"` (the default), narrow viewports collapse each row into a two-line summary; `mobileSlot` on a `Column` controls which slot (`'primary'`, `'secondary'`, `'value'`, `'delta'`, or `'hidden'`) it fills there, and is inferred when omitted. See the [Table docs](https://trustspirit.github.io/trust-ui-react/docs/components/table) for the full inference rules. There is no `variant` prop -- v2 has no striped or bordered row styling.
 
 ### DatePicker / DateRangePicker
 
@@ -636,10 +666,10 @@ Scope token overrides to a container to theme a specific section without affecti
 
 ```css
 .promo-section {
-  --tui-primary: #7c3aed;
-  --tui-primary-hover: #6d28d9;
-  --tui-primary-active: #5b21b6;
-  --tui-radius-md: 12px;
+  --tui-accent: #7c3aed;
+  --tui-accent-hover: #6d28d9;
+  --tui-on-accent: #ffffff;
+  --tui-radius-control: 12px;
 }
 ```
 
@@ -648,7 +678,7 @@ Scope token overrides to a container to theme a specific section without affecti
 All components accept an inline `style` prop for one-off adjustments:
 
 ```tsx
-<Badge variant="success" style={{ fontSize: '0.7rem', letterSpacing: '0.05em' }}>
+<Badge color="success" style={{ fontSize: '0.7rem', letterSpacing: '0.05em' }}>
   NEW
 </Badge>
 ```
@@ -659,7 +689,7 @@ All components accept an inline `style` prop for one-off adjustments:
 
 All components follow a consistent API pattern:
 
-- **`variant`** -- visual style variant (e.g., `'primary'`, `'outlined'`, `'ghost'`)
+- **`variant`** -- visual style variant (e.g., `'primary'`, `'outline'`, `'ghost'`)
 - **`size`** -- component size (`'sm'`, `'md'`, `'lg'`)
 - **`shape`** -- border radius shape (`'square'`, `'rounded'`, `'pill'`) on Button and TextField
 - **`disabled`** -- disables the component

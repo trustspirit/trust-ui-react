@@ -106,7 +106,7 @@ actions={[
 ## Mobile considerations
 
 - Each action row meets the 44×56px tap target (taller than minimum for thumb comfort).
-- Inherits all BottomSheet behavior: `.tui-glass` surface, safe-area awareness, body-scroll lock.
+- Inherits all BottomSheet behavior: opaque `--tui-sheet` surface with `--tui-shadow-overlay`, safe-area awareness, body-scroll lock.
 - `showHandle` is forced off and `dismissible` is forced false for ActionSheet — users dismiss via Cancel or backdrop tap, not by dragging.
 - For 6+ options or actions with rich content (icons, descriptions), use a plain BottomSheet with your own list instead.
 
