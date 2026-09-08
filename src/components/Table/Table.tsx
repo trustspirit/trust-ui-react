@@ -1,7 +1,8 @@
-import { useCallback, type CSSProperties, type ReactNode } from 'react';
+import { useCallback, useMemo, type CSSProperties, type ReactNode } from 'react';
 import styles from './Table.module.css';
 import { getNestedValue, toneOf } from './values';
 import { useSort } from './useSort';
+import { resolveMobileSlots } from './mobileSlots';
 import type { Column, SortDirection, TableProps } from './types';
 
 export type { Column, TableProps, Tone, MobileSlot } from './types';
@@ -30,6 +31,19 @@ function alignClass<T>(col: Column<T>): string | undefined {
 function cellContent<T>(col: Column<T>, row: T, index: number): ReactNode {
   const value = getNestedValue(row, col.key);
   return col.render ? col.render(value, row, index) : (value as ReactNode);
+}
+
+/**
+ * 요약 행의 값 하나. 좁은 화면에서는 열 머리가 사라지므로, 화면에 보이지
+ * 않는 라벨을 붙여 스크린 리더가 데스크톱과 같은 정보를 읽게 한다.
+ */
+function SummaryItem<T>({ col, row, index }: { col: Column<T>; row: T; index: number }) {
+  return (
+    <span className={cx(styles.slotItem, TONE_CLASS[toneOf(col, row)])}>
+      <span className={styles.srOnly}>{col.header}</span>
+      {cellContent(col, row, index)}
+    </span>
+  );
 }
 
 /** 방향을 갖는 열인지. 굵기(550)는 열 전체에 걸고 행별 방향에는 걸지 않는다. */
@@ -77,6 +91,7 @@ export function Table<T extends Record<string, any>>({
   columns,
   data,
   stickyHeader = false,
+  mobileVariant = 'summary',
   hoverable = true,
   emptyText = 'No data available',
   onRowClick,
@@ -85,6 +100,10 @@ export function Table<T extends Record<string, any>>({
   style,
 }: TableProps<T>) {
   const { sort, toggle, sorted } = useSort(data);
+
+  // 열 정의는 거의 바뀌지 않으므로 행마다 다시 풀지 않는다.
+  const summary = useMemo(() => resolveMobileSlots(columns), [columns]);
+  const showSummary = mobileVariant === 'summary';
 
   const getRowKey = useCallback(
     (row: T, index: number): string => {
@@ -100,7 +119,13 @@ export function Table<T extends Record<string, any>>({
       className={cx(styles.wrapper, stickyHeader && styles.stickyWrapper, className)}
       style={style}
     >
-      <table className={cx(styles.table, hoverable && styles.hoverable)}>
+      <table
+        className={cx(
+          styles.table,
+          hoverable && styles.hoverable,
+          showSummary ? styles.mobileSummary : styles.mobileScroll,
+        )}
+      >
         <thead className={stickyHeader ? styles.stickyHeader : undefined}>
           <tr>
             {columns.map((col) => {
@@ -169,6 +194,34 @@ export function Table<T extends Record<string, any>>({
                     {cellContent(col, row, rowIndex)}
                   </td>
                 ))}
+                {showSummary && (
+                  <td className={styles.summaryCell} colSpan={Math.max(columns.length, 1)}>
+                    {summary.primary && (
+                      <span className={styles.slotPrimary}>
+                        <SummaryItem col={summary.primary} row={row} index={rowIndex} />
+                      </span>
+                    )}
+                    {summary.value && (
+                      <span className={styles.slotValue}>
+                        <SummaryItem col={summary.value} row={row} index={rowIndex} />
+                      </span>
+                    )}
+                    {summary.secondary.length > 0 && (
+                      <span className={styles.slotSecondary}>
+                        {summary.secondary.map((col) => (
+                          <SummaryItem key={col.key} col={col} row={row} index={rowIndex} />
+                        ))}
+                      </span>
+                    )}
+                    {summary.delta.length > 0 && (
+                      <span className={styles.slotDelta}>
+                        {summary.delta.map((col) => (
+                          <SummaryItem key={col.key} col={col} row={row} index={rowIndex} />
+                        ))}
+                      </span>
+                    )}
+                  </td>
+                )}
               </tr>
             ))
           )}
