@@ -28,7 +28,7 @@ function CheckoutScreen() {
 }
 ```
 
-The footer pins to the bottom of the viewport (not the scroll container) with `position: sticky` + `bottom: 0`. Its background uses `--tui-bg` so it doesn't bleed scrolled content through it.
+The footer pins to the bottom of the viewport (not the scroll container) with `position: sticky` + `bottom: 0`. Its background uses the opaque `--tui-paper` so it doesn't bleed scrolled content through it.
 
 ## Why this exists
 
@@ -42,7 +42,7 @@ Three things mobile-CTA-at-the-bottom needs to get right:
 
 ## Elevated variant
 
-By default, the footer uses a subtle 1px top border to separate from content. Set `elevated` for a heavier shadow + glass surface — useful when the content above scrolls **through** the footer (e.g., long forms).
+By default, the footer uses a subtle 1px top border (`--tui-rule`) to separate from content. Set `elevated` to add `--tui-shadow-overlay` on top of that — the background stays the same opaque `--tui-paper`, only the shadow is added — useful when the content above scrolls **through** the footer (e.g., long forms).
 
 ```tsx
 <StickyFooter elevated>
@@ -52,8 +52,8 @@ By default, the footer uses a subtle 1px top border to separate from content. Se
 
 | Variant | Style |
 |---|---|
-| Default | `--tui-border` 1px top + `--tui-bg` opaque background |
-| `elevated` | `--tui-shadow-lg` + `.tui-glass`-style translucency |
+| Default | `--tui-rule` 1px top border + opaque `--tui-paper` background |
+| `elevated` | Same background and border, plus `--tui-shadow-overlay` |
 
 ## Mobile considerations
 
@@ -80,7 +80,7 @@ KeyboardAvoidingView reserves space equal to the keyboard height, and the Sticky
 ## Props
 
 <PropsTable props={[
-  { name: 'elevated', type: 'boolean', default: 'false', description: 'Apply heavier shadow + glass background for visual lift' },
+  { name: 'elevated', type: 'boolean', default: 'false', description: 'Add --tui-shadow-overlay on top of the default border, for visual lift' },
   { name: 'children', type: 'ReactNode', description: 'Footer content (typically one or two action Buttons)' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },
   { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },

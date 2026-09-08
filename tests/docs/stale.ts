@@ -9,26 +9,15 @@
  * migration-v1-to-v2.mdx 는 여기 없다 — 아래 EXEMPT 를 본다.
  */
 export const STALE: string[] = [
-  'docs-site/docs/components/action-sheet.mdx',
   'docs-site/docs/components/avatar.mdx',
-  'docs-site/docs/components/bottom-sheet.mdx',
-  'docs-site/docs/components/button.mdx',
   'docs-site/docs/components/checkbox.mdx',
-  'docs-site/docs/components/date-picker.mdx',
-  'docs-site/docs/components/dialog.mdx',
   'docs-site/docs/components/expander.mdx',
   'docs-site/docs/components/keyboard-avoiding-view.mdx',
-  'docs-site/docs/components/progress.mdx',
   'docs-site/docs/components/safe-area-view.mdx',
   'docs-site/docs/components/segmented-control.mdx',
-  'docs-site/docs/components/select.mdx',
-  'docs-site/docs/components/slider.mdx',
-  'docs-site/docs/components/sticky-footer.mdx',
   'docs-site/docs/components/switch.mdx',
-  'docs-site/docs/components/table.mdx',
   'docs-site/docs/components/tabs.mdx',
   'docs-site/docs/components/text-field.mdx',
-  'docs-site/docs/components/toast.mdx',
   'docs-site/src/css/custom.css',
   'docs-site/src/pages/index.tsx',
 ];

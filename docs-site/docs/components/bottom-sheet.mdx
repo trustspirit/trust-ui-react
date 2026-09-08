@@ -69,7 +69,7 @@ This gives a 3-position sheet — peek (25%), default (50%), and fullscreen (90%
 
 ## Drag handle
 
-By default a small handle is shown at the top of the sheet (`--tui-bg-muted` rounded bar). Set `showHandle={false}` to hide it — useful when you want a strict modal feel with no drag affordance.
+By default a small handle is shown at the top of the sheet (a rounded bar in `--tui-rule-strong` at 50% opacity). Set `showHandle={false}` to hide it — useful when you want a strict modal feel with no drag affordance.
 
 ```tsx
 <BottomSheet open={open} onClose={close} showHandle={false} dismissible={false}>
@@ -88,7 +88,7 @@ Set `dismissible={false}` to prevent swipe-down dismiss (e.g., for confirmation 
 
 ## Mobile considerations
 
-- The sheet uses `.tui-glass` surface (translucent + backdrop-blur on capable browsers, opaque `--tui-bg-subtle` fallback on older Android WebView).
+- The sheet is an opaque `--tui-sheet` surface with a `--tui-shadow-overlay` shadow — there is no translucency or backdrop blur.
 - Drag is GPU-accelerated (`transform: translateY`) — stays smooth even with heavy children.
 - Body scroll is locked while the sheet is open and restored on close.
 - Respects iOS safe-area-inset-bottom automatically (so content doesn't sit under the home indicator).

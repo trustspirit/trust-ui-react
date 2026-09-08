@@ -9,7 +9,7 @@ import { PropsTable } from '@site/src/components/PropsTable';
 
 # Table
 
-A data table with sorting, custom cell rendering, and multiple visual variants.
+A data table with sorting, custom cell rendering, a total row, and a narrow-viewport summary layout.
 
 ## Basic Usage
 
@@ -41,10 +41,12 @@ A data table with sorting, custom cell rendering, and multiple visual variants.
 
 ## Sortable Columns
 
+Set `sortable` on a column to make its header a button. Clicking cycles ascending → descending → unsorted. Empty values always sort to the end, regardless of direction.
+
 <ComponentPreview code={`<Table
   columns={[
     { key: 'name', header: 'Name', sortable: true },
-    { key: 'age', header: 'Age', sortable: true },
+    { key: 'age', header: 'Age', sortable: true, numeric: true },
     { key: 'city', header: 'City' },
   ]}
   data={[
@@ -56,7 +58,7 @@ A data table with sorting, custom cell rendering, and multiple visual variants.
   <Table
     columns={[
       { key: 'name', header: 'Name', sortable: true },
-      { key: 'age', header: 'Age', sortable: true },
+      { key: 'age', header: 'Age', sortable: true, numeric: true },
       { key: 'city', header: 'City' },
     ]}
     data={[
@@ -67,77 +69,88 @@ A data table with sorting, custom cell rendering, and multiple visual variants.
   />
 </ComponentPreview>
 
-## Variants
+## Numeric columns and tone
+
+Set `numeric: true` to right-align a column (its header follows). All values in the table already render with tabular figures, whether or not a column is numeric — `numeric` only controls alignment, and `align` overrides it if you set both.
+
+`tone` colors the cell's text to signal direction. `'auto'` reads the sign of the value — a leading `-` or a parenthesized value like `(3,584,000)` reads as negative, everything else positive, and `0` reads as neutral. You can also pass a function `(value, row) => 'rise' | 'fall' | 'neutral'` for custom logic (e.g. comparing against a threshold instead of zero).
+
+The rise/fall colors themselves only exist if the app imports `trust-ui-react/market.css`. Without it, `--tui-rise` and `--tui-fall` are undefined and the cell falls back to the ordinary ink color — nothing breaks, the color simply doesn't appear. And the color only ever lands on the cell's text, never on a background, badge, or border.
 
 <ComponentPreview code={`<Table
-  variant="striped"
   columns={[
-    { key: 'name', header: 'Name' },
-    { key: 'value', header: 'Value' },
+    { key: 'symbol', header: 'Symbol' },
+    { key: 'price', header: 'Price', numeric: true },
+    { key: 'change', header: 'Change', numeric: true, tone: 'auto' },
   ]}
   data={[
-    { name: 'Item A', value: '100' },
-    { name: 'Item B', value: '200' },
-    { name: 'Item C', value: '300' },
-    { name: 'Item D', value: '400' },
+    { symbol: 'AAPL', price: '182.40', change: '+1.85%' },
+    { symbol: 'MSFT', price: '412.10', change: '-0.42%' },
+    { symbol: 'GOOG', price: '164.75', change: '0.00%' },
   ]}
 />`}>
   <Table
-    variant="striped"
     columns={[
-      { key: 'name', header: 'Name' },
-      { key: 'value', header: 'Value' },
+      { key: 'symbol', header: 'Symbol' },
+      { key: 'price', header: 'Price', numeric: true },
+      { key: 'change', header: 'Change', numeric: true, tone: 'auto' },
     ]}
     data={[
-      { name: 'Item A', value: '100' },
-      { name: 'Item B', value: '200' },
-      { name: 'Item C', value: '300' },
-      { name: 'Item D', value: '400' },
+      { symbol: 'AAPL', price: '182.40', change: '+1.85%' },
+      { symbol: 'MSFT', price: '412.10', change: '-0.42%' },
+      { symbol: 'GOOG', price: '164.75', change: '0.00%' },
     ]}
   />
 </ComponentPreview>
 
-## Zebra & sticky header
+## Custom rendering
 
-`zebra` alternates row backgrounds (similar to `variant="striped"` but composable with other variants), and `stickyHeader` keeps the header row visible while scrolling long datasets.
+`render(value, row, index)` replaces the default (which just prints the value). It runs **once per column per row** — the result is reused for both the desktop cell and, when that column lands in the mobile summary layout, the summary card. Because of that sharing, `render` must be a pure function: no side effects, and no reliance on anything other than its arguments. If it read from outside state or triggered a side effect, calling it once instead of twice (as the desktop-only rendering used to) would silently change behavior between the wide and narrow layouts.
+
+In a `summaryRow` (see below), `index` is `-1` — that's the signal that this call is the total row, not a data row.
 
 <ComponentPreview code={`<Table
-  zebra
-  stickyHeader
   columns={[
     { key: 'name', header: 'Name' },
-    { key: 'value', header: 'Value' },
+    { key: 'done', header: 'Status', render: (value) => (value ? '✓ Done' : '— Pending') },
   ]}
-  data={[ /* large dataset */ ]}
+  data={[
+    { name: 'Ship docs', done: true },
+    { name: 'Write tests', done: false },
+  ]}
 />`}>
   <Table
-    zebra
     columns={[
       { key: 'name', header: 'Name' },
-      { key: 'value', header: 'Value' },
+      { key: 'done', header: 'Status', render: (value) => (value ? '✓ Done' : '— Pending') },
     ]}
     data={[
-      { name: 'Item A', value: '100' },
-      { name: 'Item B', value: '200' },
-      { name: 'Item C', value: '300' },
+      { name: 'Ship docs', done: true },
+      { name: 'Write tests', done: false },
     ]}
   />
 </ComponentPreview>
 
-## Mobile layout
+## Row click is pointer-only
 
-Tables don't fit small viewports gracefully. `mobileVariant` lets you pick the strategy:
+`onRowClick` is a pointer convenience, not a way to make the row an interactive control. `<tr>` outside a `role="grid"` table is not an interactive element, so the Table deliberately does **not** make the row focusable, and there is no `onKeyDown` handling on it. A sighted mouse user can click anywhere in the row; a keyboard or assistive-technology user cannot activate it at all through the row itself.
 
-| Value | Behavior |
-|---|---|
-| `scroll` (default) | Horizontal scroll inside a `--tui-glass`-shadowed container. Header stays aligned. |
-| `stacked` | Each row collapses into a vertical card with `column.header` as the label and the cell content as the value. Loses tabular comparison but reads naturally. |
+If a row needs to be reachable without a pointer, put a real control — a `<button>` or a link — inside one of its cells via `render`. That control is focusable and operable on its own, and `onRowClick` can stay as an additional convenience for pointer users on top of it.
 
 ```tsx
-<Table mobileVariant="stacked" columns={cols} data={rows} />
+<Table
+  columns={[
+    { key: 'name', header: 'Name' },
+    {
+      key: 'id',
+      header: '',
+      render: (_value, row) => <a href={`/users/${row.id}`}>Open</a>,
+    },
+  ]}
+  data={users}
+  onRowClick={(row) => navigate(`/users/${row.id}`)}
+/>
 ```
-
-Pick `stacked` when each row represents an independent entity (a user, an order). Stick with `scroll` when users need to compare values across rows.
 
 ## Empty State
 
@@ -153,20 +166,133 @@ Pick `stacked` when each row represents an independent entity (a user, an order)
   />
 </ComponentPreview>
 
+## Summary row
+
+`summaryRow` closes the table with a total row, styled with the table's heaviest rule above and below it (the same convention a financial statement uses to bracket a total). It reuses the same `columns` and the same `render` functions as the body rows — there's no separate summary renderer.
+
+Because `summaryRow` is typed as `Partial<T>`, any field you don't include is `undefined`. Its column's `render` still gets called — the total row calls every column's cell exactly like a body row would — so a `render` that reads a field directly (rather than through its `value` argument) needs to handle that field being missing. What appears in that cell (blank, `'—'`, or something else) is `render`'s decision. The `index` argument is `-1` for every cell in this row, which is how `render` can tell "this is the total, not row 0."
+
+<ComponentPreview code={`<Table
+  columns={[
+    { key: 'name', header: 'Item' },
+    { key: 'qty', header: 'Qty', numeric: true },
+    { key: 'total', header: 'Total', numeric: true, render: (value) => value == null ? '—' : \`$\${value}\` },
+  ]}
+  data={[
+    { name: 'Widget', qty: 3, total: 30 },
+    { name: 'Gadget', qty: 1, total: 45 },
+  ]}
+  summaryRow={{ name: 'Total', total: 75 }}
+/>`}>
+  <Table
+    columns={[
+      { key: 'name', header: 'Item' },
+      { key: 'qty', header: 'Qty', numeric: true },
+      { key: 'total', header: 'Total', numeric: true, render: (value) => value == null ? '—' : `$${value}` },
+    ]}
+    data={[
+      { name: 'Widget', qty: 3, total: 30 },
+      { name: 'Gadget', qty: 1, total: 45 },
+    ]}
+    summaryRow={{ name: 'Total', total: 75 }}
+  />
+</ComponentPreview>
+
+Note that `qty` has no `render` and is missing from `summaryRow` — its cell in the total row renders `undefined`, i.e. blank. Only `total`'s `render` guards against the missing value.
+
+## Sticky header
+
+`stickyHeader` pins the header row while the table's own content scrolls (the table needs a bounded, scrollable ancestor for this to have an effect — for example a wrapper with a fixed `height` and `overflow: auto`).
+
+```tsx
+<Table stickyHeader columns={columns} data={longDataset} />
+```
+
+## Mobile layout
+
+`mobileVariant` controls what narrow viewports get:
+
+| Value | Behavior |
+|---|---|
+| `'summary'` (default) | Each row collapses into a two-line summary card. Column headers disappear; sorting moves into a tap-to-open sheet. |
+| `'scroll'` | All columns are kept and the table scrolls horizontally. The first column stays pinned (`position: sticky`) so you always know which row you're looking at. |
+
+:::caution v1 default changed
+v1 defaulted to `'scroll'`. Code migrated from v1 without setting `mobileVariant` compiles cleanly in v2 but silently changes behavior on narrow screens — instead of every column staying visible via horizontal scroll, only four slots (primary/value/secondary/delta) remain and the rest of the columns disappear from view. Set `mobileVariant="scroll"` explicitly to keep the old behavior.
+:::
+
+### mobileSlot inference
+
+In `'summary'` mode, each row becomes a two-line card with four regions: a **primary** label, a **value**, up to two **secondary** items, and up to two **delta** items. Every column lands in one of those four regions, or is hidden, per its `mobileSlot`.
+
+You can set `mobileSlot` (`'primary' | 'secondary' | 'value' | 'delta' | 'hidden'`) on any subset of columns — partial assignment is the common case: promote the one column you care about, and let the rest fall out by inference rather than annotating all of them. Unassigned columns are resolved in this order:
+
+1. **Explicit assignment wins first.** Any column with a `mobileSlot` set is placed by that value before inference runs. `'hidden'` is a placement too — it removes the column from the pool inference draws from, the same as any other explicit slot. `'secondary'` and `'delta'` each hold at most two columns; an explicit assignment past that limit is simply dropped (the column ends up unplaced, i.e. invisible in the summary), so a third explicit `mobileSlot="delta"` column will not appear.
+2. **`primary`** — if still unset, the first remaining non-numeric column is picked (falling back to the first remaining column of any kind if every remaining column is numeric). This is meant for a name, a title, whatever identifies the row.
+3. **`delta`** (up to 2) — remaining numeric columns that also have a `tone` other than `'none'` are picked, in declaration order, up to two. This is meant for columns that carry a direction, like a change value.
+4. **`value`** — if still unset, the *last* remaining numeric column is picked (falling back to the last remaining column of any kind if none are numeric). This is meant for the number closest to "the result" — typically the rightmost numeric column in the declaration.
+5. **`secondary`** (up to 2) — whatever is still left is filled in, in declaration order, until the two-item cap is reached. Anything beyond that cap is not shown on narrow viewports at all.
+
+Because step 2 and step 4 both fall back to "whatever's left" when there's no numeric column to prefer, a table with only text columns still gets a sensible `primary`/`value` split rather than leaving both empty.
+
+<ComponentPreview code={`<Table
+  columns={[
+    { key: 'symbol', header: 'Symbol' },
+    { key: 'name', header: 'Company' },
+    { key: 'price', header: 'Price', numeric: true },
+    { key: 'change', header: 'Change', numeric: true, tone: 'auto' },
+  ]}
+  data={[
+    { symbol: 'AAPL', name: 'Apple', price: '182.40', change: '+1.85%' },
+    { symbol: 'MSFT', name: 'Microsoft', price: '412.10', change: '-0.42%' },
+  ]}
+/>`}>
+  <div style={{ maxWidth: 360 }}>
+    <Table
+      columns={[
+        { key: 'symbol', header: 'Symbol' },
+        { key: 'name', header: 'Company' },
+        { key: 'price', header: 'Price', numeric: true },
+        { key: 'change', header: 'Change', numeric: true, tone: 'auto' },
+      ]}
+      data={[
+        { symbol: 'AAPL', name: 'Apple', price: '182.40', change: '+1.85%' },
+        { symbol: 'MSFT', name: 'Microsoft', price: '412.10', change: '-0.42%' },
+      ]}
+    />
+  </div>
+</ComponentPreview>
+
+In this example, no column sets `mobileSlot`. Inference resolves it as: `symbol` becomes `primary` (first non-numeric column), `change` becomes `delta` (numeric with a `tone`), `price` becomes `value` (last remaining numeric column), and `name` becomes `secondary` (whatever's left). Resize the preview or open it on a narrow viewport to see the two-line card layout.
+
+For a shorter, task-oriented walkthrough of when to reach for `'summary'` vs `'scroll'`, see [Mobile Patterns](../guides/mobile-patterns.mdx) — this section is the full specification the guide summarizes.
+
 ## Table Props
 
 <PropsTable props={[
-  { name: 'columns', type: 'Column<T>[]', description: 'Column definitions ({ key, header, render?, sortable?, width?, align? })' },
+  { name: 'columns', type: 'Column<T>[]', description: 'Column definitions' },
   { name: 'data', type: 'T[]', description: 'Data rows' },
-  { name: 'variant', type: "'default' | 'striped' | 'bordered'", default: "'default'", description: 'Visual variant' },
-  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size preset' },
-  { name: 'stickyHeader', type: 'boolean', default: 'false', description: 'Sticky header on scroll' },
-  { name: 'zebra', type: 'boolean', default: 'false', description: 'Alternate row backgrounds with --tui-bg-muted' },
-  { name: 'mobileVariant', type: "'scroll' | 'stacked'", default: "'scroll'", description: 'On narrow viewports: horizontal scroll or stacked-card per row' },
+  { name: 'stickyHeader', type: 'boolean', default: 'false', description: 'Pin the header row while the table scrolls' },
+  { name: 'mobileVariant', type: "'summary' | 'scroll'", default: "'summary'", description: 'Narrow-viewport strategy — two-line summary cards, or full-width horizontal scroll' },
   { name: 'hoverable', type: 'boolean', default: 'true', description: 'Highlight rows on hover' },
   { name: 'emptyText', type: 'string', default: "'No data available'", description: 'Text shown when data is empty' },
-  { name: 'onRowClick', type: '(row: T, index: number) => void', description: 'Row click handler' },
+  { name: 'summaryRow', type: 'Partial<T>', description: 'A total row closing the table, rendered with the same columns and render functions as body rows' },
+  { name: 'onRowClick', type: '(row: T, index: number) => void', description: 'Pointer-only row click handler — does not make the row keyboard-focusable' },
   { name: 'rowKey', type: 'string | ((row: T) => string)', description: 'Key extractor for row identity' },
   { name: 'className', type: 'string', description: 'Additional CSS class name' },
   { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },
+]} />
+
+## Column&lt;T&gt; Props
+
+<PropsTable props={[
+  { name: 'key', type: 'string', description: "Path to read the value from the row. Supports dot notation for nested access (e.g. 'price.close')" },
+  { name: 'header', type: 'string', description: 'Column header text' },
+  { name: 'render', type: '(value: any, row: T, index: number) => ReactNode', description: 'Cell renderer. Must be pure — it runs once per column per row and both the desktop cell and the mobile summary reuse the result. In a summaryRow, row is Partial<T> and index is -1.' },
+  { name: 'sortable', type: 'boolean', description: 'Whether the column header can sort the table' },
+  { name: 'width', type: 'string | number', description: 'Fixed column width' },
+  { name: 'numeric', type: 'boolean', description: 'Right-aligns the column (and its header). Does not affect the tabular-figures font feature, which applies to the whole table regardless' },
+  { name: 'tone', type: "'auto' | 'none' | ((value: any, row: T) => 'rise' | 'fall' | 'neutral')", description: "Text color for direction. 'auto' reads the sign of the value. The rise/fall colors only appear if the app imports trust-ui-react/market.css; otherwise the cell quietly stays the default ink color. The color is applied to text only, never to a background or border" },
+  { name: 'align', type: "'left' | 'center' | 'right'", description: 'Text alignment. Overrides the alignment numeric would otherwise set' },
+  { name: 'mobileSlot', type: "'primary' | 'secondary' | 'value' | 'delta' | 'hidden'", description: "This column's place in the narrow-viewport summary card. If unset, it is inferred — see mobileSlot inference above" },
 ]} />

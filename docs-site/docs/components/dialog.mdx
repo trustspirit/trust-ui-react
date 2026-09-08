@@ -70,7 +70,7 @@ The `size` prop controls the width of the dialog panel on desktop.
 
 ## Mobile considerations
 
-- Dialog panel uses `.tui-glass` (Tier 3 surface) — translucent + backdrop-blur on capable browsers, falling back to opaque `--tui-bg-subtle` on older Android WebView.
+- Dialog panel is an opaque `--tui-sheet` surface with a `--tui-shadow-overlay` shadow — there is no translucency or backdrop blur.
 - `mobileVariant="fullscreen"` automatically respects iOS safe areas (notch + home indicator) via `env(safe-area-inset-*)`.
 - Backdrop tap dismiss can be disabled with `closeOnBackdrop={false}` — recommended for destructive confirmations to prevent accidental dismissal.
 
