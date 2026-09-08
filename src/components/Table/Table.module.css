@@ -240,7 +240,30 @@
   border: 0;
 }
 
+/* ── 총계 행 ──
+   재무제표는 합계를 굵은 선으로 앞뒤에서 닫는다. 이 표에서 가장 진한 선이
+   오는 자리는 여기와 표 끝, 둘뿐이다 — 그래서 그 선이 뜻을 갖는다. */
+.tfoot .td {
+  border-top: 1px solid var(--tui-rule-strong);
+  border-bottom: 1px solid var(--tui-rule-strong);
+  font-weight: var(--tui-weight-strong);
+  color: var(--tui-ink);
+}
+
+/* 총계가 있으면 본문의 마지막 행은 표를 닫지 않는다 — 닫는 일은 총계가 한다.
+   두 굵은 선이 한 칸 사이로 붙으면 어느 쪽이 닫는 선인지 읽히지 않는다. */
+.hasSummaryRow tbody tr:last-child .td {
+  border-bottom: 1px solid var(--tui-rule);
+}
+
 @media (max-width: 640px) {
+  /* 좁은 화면에서도 총계는 굵은 선 사이에 남는다 */
+  .mobileSummary .tfoot .summaryCell {
+    border-top: 1px solid var(--tui-rule-strong);
+    border-bottom: 1px solid var(--tui-rule-strong);
+    font-weight: var(--tui-weight-strong);
+  }
+
   .mobileSummary thead {
     display: none;
   }

@@ -2,7 +2,7 @@ import { useCallback, useMemo, type CSSProperties, type ReactNode } from 'react'
 import styles from './Table.module.css';
 import { getNestedValue, toneOf } from './values';
 import { useSort } from './useSort';
-import { resolveMobileSlots } from './mobileSlots';
+import { resolveMobileSlots, type MobileLayout } from './mobileSlots';
 import type { Column, SortDirection, TableProps } from './types';
 
 export type { Column, TableProps, Tone, MobileSlot } from './types';
@@ -30,6 +30,12 @@ function alignClass<T>(col: Column<T>): string | undefined {
 
 function cellContent<T>(col: Column<T>, row: T, index: number): ReactNode {
   const value = getNestedValue(row, col.key);
+  // summaryRow 는 Partial<T> 라 일부 열이 아예 없을 수 있다. 그런 열의 값은
+  // undefined 인데, 대부분의 렌더러는 실제 값이 있다고 가정하고 짜여 있으므로
+  // (예: v.toLocaleString()) 그대로 넘기면 총계 행에서 던진다. 렌더러를
+  // 부르지 않고 빈 칸으로 남긴다 — 실제 행 데이터의 값 0 이나 빈 문자열은
+  // undefined 가 아니므로 이 경로를 타지 않는다.
+  if (value === undefined) return null;
   return col.render ? col.render(value, row, index) : (value as ReactNode);
 }
 
@@ -60,6 +66,83 @@ function SummaryItem<T>({
 /** 방향을 갖는 열인지. 굵기(550)는 열 전체에 걸고 행별 방향에는 걸지 않는다. */
 function isToned<T>(col: Column<T>): boolean {
   return Boolean(col.tone) && col.tone !== 'none';
+}
+
+/**
+ * 한 행이 그리는 칸 전부 — 데스크톱 칸들과, 좁은 화면용 요약 칸.
+ * 본문 행과 총계 행이 같은 것을 그려야 하므로 한 곳에 둔다.
+ */
+function RowCells<T>({
+  columns,
+  row,
+  index,
+  mobileLayout,
+}: {
+  columns: Column<T>[];
+  row: T;
+  index: number;
+  /** null 이면 요약 칸을 그리지 않는다 (mobileVariant="scroll") */
+  mobileLayout: MobileLayout<T> | null;
+}) {
+  // 요약 셀과 데스크톱 칸이 같은 내용을 그리므로, 행마다 한 번만
+  // 렌더하고 두 곳이 나눠 쓴다 — display:none 은 React 호출을 막지 못한다.
+  const cells = new Map<string, ReactNode>(
+    columns.map((col) => [col.key, cellContent(col, row, index)]),
+  );
+
+  return (
+    <>
+      {columns.map((col) => (
+        <td
+          key={col.key}
+          className={cx(
+            styles.td,
+            alignClass(col),
+            isToned(col) && styles.toned,
+            TONE_CLASS[toneOf(col, row)],
+          )}
+        >
+          {cells.get(col.key)}
+        </td>
+      ))}
+      {mobileLayout && (
+        <td className={styles.summaryCell} colSpan={Math.max(columns.length, 1)}>
+          {mobileLayout.primary && (
+            <span className={styles.slotPrimary}>
+              <SummaryItem
+                col={mobileLayout.primary}
+                row={row}
+                content={cells.get(mobileLayout.primary.key)}
+              />
+            </span>
+          )}
+          {mobileLayout.value && (
+            <span className={styles.slotValue}>
+              <SummaryItem
+                col={mobileLayout.value}
+                row={row}
+                content={cells.get(mobileLayout.value.key)}
+              />
+            </span>
+          )}
+          {mobileLayout.secondary.length > 0 && (
+            <span className={styles.slotSecondary}>
+              {mobileLayout.secondary.map((col) => (
+                <SummaryItem key={col.key} col={col} row={row} content={cells.get(col.key)} />
+              ))}
+            </span>
+          )}
+          {mobileLayout.delta.length > 0 && (
+            <span className={styles.slotDelta}>
+              {mobileLayout.delta.map((col) => (
+                <SummaryItem key={col.key} col={col} row={row} content={cells.get(col.key)} />
+              ))}
+            </span>
+          )}
+        </td>
+      )}
+    </>
+  );
 }
 
 /**
@@ -105,6 +188,7 @@ export function Table<T extends Record<string, any>>({
   mobileVariant = 'summary',
   hoverable = true,
   emptyText = 'No data available',
+  summaryRow,
   onRowClick,
   rowKey,
   className,
@@ -113,7 +197,7 @@ export function Table<T extends Record<string, any>>({
   const { sort, toggle, sorted } = useSort(data);
 
   // 열 정의는 거의 바뀌지 않으므로 행마다 다시 풀지 않는다.
-  const summary = useMemo(() => resolveMobileSlots(columns), [columns]);
+  const mobileLayout = useMemo(() => resolveMobileSlots(columns), [columns]);
   const showSummary = mobileVariant === 'summary';
 
   const getRowKey = useCallback(
@@ -134,6 +218,7 @@ export function Table<T extends Record<string, any>>({
         className={cx(
           styles.table,
           hoverable && styles.hoverable,
+          summaryRow && styles.hasSummaryRow,
           showSummary ? styles.mobileSummary : styles.mobileScroll,
         )}
       >
@@ -186,82 +271,34 @@ export function Table<T extends Record<string, any>>({
               </td>
             </tr>
           ) : (
-            sorted.map((row, rowIndex) => {
-              // 요약 셀과 데스크톱 칸이 같은 내용을 그리므로, 행마다 한 번만
-              // 렌더하고 두 곳이 나눠 쓴다 — display:none 은 React 호출을 막지 못한다.
-              const cells = new Map<string, ReactNode>(
-                columns.map((col) => [col.key, cellContent(col, row, rowIndex)]),
-              );
-              return (
-                <tr
-                  key={getRowKey(row, rowIndex)}
-                  className={onRowClick ? styles.clickableRow : undefined}
-                  onClick={onRowClick ? () => onRowClick(row, rowIndex) : undefined}
-                >
-                  {columns.map((col) => (
-                    <td
-                      key={col.key}
-                      className={cx(
-                        styles.td,
-                        alignClass(col),
-                        isToned(col) && styles.toned,
-                        TONE_CLASS[toneOf(col, row)],
-                      )}
-                    >
-                      {cells.get(col.key)}
-                    </td>
-                  ))}
-                  {showSummary && (
-                    <td className={styles.summaryCell} colSpan={Math.max(columns.length, 1)}>
-                      {summary.primary && (
-                        <span className={styles.slotPrimary}>
-                          <SummaryItem
-                            col={summary.primary}
-                            row={row}
-                            content={cells.get(summary.primary.key)}
-                          />
-                        </span>
-                      )}
-                      {summary.value && (
-                        <span className={styles.slotValue}>
-                          <SummaryItem
-                            col={summary.value}
-                            row={row}
-                            content={cells.get(summary.value.key)}
-                          />
-                        </span>
-                      )}
-                      {summary.secondary.length > 0 && (
-                        <span className={styles.slotSecondary}>
-                          {summary.secondary.map((col) => (
-                            <SummaryItem
-                              key={col.key}
-                              col={col}
-                              row={row}
-                              content={cells.get(col.key)}
-                            />
-                          ))}
-                        </span>
-                      )}
-                      {summary.delta.length > 0 && (
-                        <span className={styles.slotDelta}>
-                          {summary.delta.map((col) => (
-                            <SummaryItem
-                              key={col.key}
-                              col={col}
-                              row={row}
-                              content={cells.get(col.key)}
-                            />
-                          ))}
-                        </span>
-                      )}
-                    </td>
-                  )}
-                </tr>
-              );
-            })
+            sorted.map((row, rowIndex) => (
+              <tr
+                key={getRowKey(row, rowIndex)}
+                className={onRowClick ? styles.clickableRow : undefined}
+                onClick={onRowClick ? () => onRowClick(row, rowIndex) : undefined}
+              >
+                <RowCells
+                  columns={columns}
+                  row={row}
+                  index={rowIndex}
+                  mobileLayout={showSummary ? mobileLayout : null}
+                />
+              </tr>
+            ))
           )}
         </tbody>
+        {summaryRow && (
+          <tfoot className={styles.tfoot}>
+            <tr>
+              <RowCells
+                columns={columns}
+                row={summaryRow as T}
+                index={-1}
+                mobileLayout={showSummary ? mobileLayout : null}
+              />
+            </tr>
+          </tfoot>
+        )}
       </table>
     </div>
   );

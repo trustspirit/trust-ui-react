@@ -97,6 +97,24 @@ export const Numeric: Story = {
   render: () => <Table columns={plainHoldingColumns} data={holdings} />,
 };
 
+/** 원장은 합계로 닫힌다. 총계 행 위아래로 가장 진한 괘선이 온다. */
+export const WithSummaryRow: Story = {
+  tags: ['visual', 'visual-mobile'],
+  render: () => (
+    <Table
+      columns={holdingColumns}
+      data={holdings}
+      summaryRow={{
+        name: '합계',
+        qty: holdings.reduce((s, h) => s + h.qty, 0),
+        price: holdings.reduce((s, h) => s + h.price * h.qty, 0),
+        pnl: holdings.reduce((s, h) => s + h.pnl, 0),
+        rate: 12.04,
+      }}
+    />
+  ),
+};
+
 /**
  * 시장 관례 축. 같은 데이터인데 상승·하락의 색이 뒤집힌다 —
  * 한국·일본·중국은 적색 상승, 미국·유럽은 녹색 상승이다.
