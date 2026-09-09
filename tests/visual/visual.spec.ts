@@ -70,16 +70,33 @@ for (const id of STORIES) {
   }
 }
 
-for (const id of taggedMobile) {
-  for (const { theme, density } of COMBOS) {
-    test(`${id} — ${theme}/${density} @${MOBILE_WIDTH}`, async ({ page }) => {
-      await page.setViewportSize({ width: MOBILE_WIDTH, height: 844 });
-      await page.goto(`/iframe.html?id=${id}&globals=theme:${theme};density:${density}`);
-      await page.evaluate(() => document.fonts.ready);
-      await page.waitForTimeout(300);
-      await expect(page).toHaveScreenshot(`${id}-${theme}-${density}-${MOBILE_WIDTH}.png`, {
-        fullPage: true,
+test.describe('mobile — coarse pointer', () => {
+  // setViewportSize 만으로는 폭만 좁아질 뿐 (pointer: coarse) 는 성립하지
+  // 않는다. hasTouch: true 를 걸어야 브라우저가 실제로 터치 환경으로
+  // 흉내를 내고, density.css 의 coarse 오버라이드(행 높이 64px, 글자
+  // 16px)가 켜진다 — table-geometry.spec.ts 와 같은 접근이다.
+  test.use({ hasTouch: true, viewport: { width: MOBILE_WIDTH, height: 844 } });
+
+  for (const id of taggedMobile) {
+    for (const { theme, density } of COMBOS) {
+      test(`${id} — ${theme}/${density} @${MOBILE_WIDTH}`, async ({ page }) => {
+        await page.goto(`/iframe.html?id=${id}&globals=theme:${theme};density:${density}`);
+        await page.evaluate(() => document.fonts.ready);
+        await page.waitForTimeout(300);
+
+        // 가드 — coarse 흉내가 실제로 먹혔는지 값으로 확인한다. 먹히지
+        // 않으면 density.css 의 오버라이드가 적용되지 않아 이 스냅샷은
+        // 조용히 데스크톱 분기를 담게 된다(table-geometry.spec.ts 의
+        // 가드와 동일한 목적).
+        const rowHeight = await page.evaluate(() =>
+          getComputedStyle(document.documentElement).getPropertyValue('--tui-row-height').trim(),
+        );
+        expect(rowHeight, 'pointer: coarse 흉내가 먹히지 않았다').toBe('64px');
+
+        await expect(page).toHaveScreenshot(`${id}-${theme}-${density}-${MOBILE_WIDTH}.png`, {
+          fullPage: true,
+        });
       });
-    });
+    }
   }
-}
+});
