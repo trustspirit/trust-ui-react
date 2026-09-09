@@ -16,8 +16,11 @@ import styles from './BottomSheet.module.css';
 
 // inert 는 대부분의 최신 브라우저(크롬 102+, 사파리 15.5+, 파이어폭스 112+)에
 // 있지만, 이 값은 모듈 로드 시 한 번만 확인해 매 마운트마다 다시 묻지 않는다.
-// 없으면 aria-hidden 으로 물러난다 — 이땐 스크린리더에게만 배경을 숨길 뿐
-// 키보드 포커스는 막지 못하므로, 키보드 격리는 전적으로 useFocusTrap 이 진다.
+// 없으면 aria-hidden 으로 물러난다 — 그런데 aria-hidden 은 스크린리더 등
+// 보조 기술의 접근성 트리에서만 배경을 감춘다. 마우스/터치 같은 포인터
+// 상호작용은 막지 못한다(백드롭의 스택 컨텍스트 밖에 있는 배경 요소는
+// 여전히 클릭/터치될 수 있다) — 그러니 이 폴백에서 키보드 격리는 전적으로
+// useFocusTrap 이 지고, 포인터 격리는 아예 보장되지 않는다.
 const SUPPORTS_INERT =
   typeof HTMLElement !== 'undefined' && 'inert' in HTMLElement.prototype;
 
@@ -80,10 +83,18 @@ export interface BottomSheetProps extends Omit<HTMLAttributes<HTMLDivElement>, '
  *
  * `role="dialog" aria-modal="true"` is backed by real behavior: while open, focus is
  * trapped inside the sheet (initial focus, Tab/Shift+Tab wrapping, restore-on-close via
- * `useFocusTrap`) and the rest of `document.body` is made `inert` (or `aria-hidden` as a
- * fallback where `inert` is unsupported — keyboard isolation then relies on the focus
- * trap alone). Elements that were already inert/aria-hidden for an unrelated reason are
+ * `useFocusTrap`). Elements that were already inert/aria-hidden for an unrelated reason are
  * left exactly as they were when the sheet closes.
+ *
+ * 배경 비활성화 범위(정확히 이만큼만 보장한다):
+ * - 시트가 열리는 시점의 `document.body` 직계 자식들을 `inert`(미지원 시
+ *   `aria-hidden`)로 만든다.
+ * - 열린 뒤에 `document.body` 에 새로 붙는 요소는 대상이 아니다. `Select`,
+ *   `Menu`, `DatePicker`, `DateRangePicker` 의 팝오버나 시트 내용이 띄운
+ *   `Toast` 도 전부 `body` 로 포털되므로, 늦게 온 것을 일괄 비활성화하면
+ *   시트가 자기 자신의 팝오버·토스트를 죽이는 더 나쁜 버그가 된다.
+ * - 근본적으로 풀려면 포털 등록부(어떤 노드가 "이 시트 소유"인지 추적하는
+ *   중앙 레지스트리)가 필요하며, 이는 이 컴포넌트 하나의 책임 범위를 넘는다.
  *
  * Mount the sheet element only when `open` is true — entry animation runs on mount.
  * On close, the parent should set `open={false}` and the exit animation plays before
@@ -191,6 +202,12 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
     // 렌더된 다음 렌더에서만 채워지는데, 그 시점에 `open` 값 자체는 이미
     // 바뀌지 않은 채라 훅의 effect 가 다시 실행되지 않는다. `mounted` 는
     // 정확히 그 렌더에서 false→true 로 바뀌므로 이 타이밍 문제가 없다.
+    //
+    // 의도한 트레이드오프: 트랩의 생애주기 전체가 `mounted` 에 묶여 있으므로
+    // 포커스 복구도 `open` 이 false 가 되는 즉시가 아니라 퇴장 애니메이션이
+    // 끝나는 280ms 뒤에야 일어난다. 시트가 (퇴장 중이라도) 화면에 남아있는
+    // 동안엔 포커스도 그 안에 머무는 편이 즉시 배경으로 튀는 것보다 낫다고
+    // 판단했다.
     useFocusTrap(sheetRef, mounted);
 
     // Drag is meaningful only if there's somewhere to drag to:
@@ -296,11 +313,12 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
           }}
           role="dialog"
           aria-modal="true"
-          // 내용에 포커스 가능 요소가 하나도 없을 때도 useFocusTrap 이 이
-          // 컨테이너 자신에 포커스를 줄 수 있도록 항상 포커스 가능하게 만든다.
-          // -1 이라 Tab 순서에는 들어가지 않는다.
-          tabIndex={-1}
           {...rest}
+          // {...rest} 뒤에 둔다 — 내용에 포커스 가능 요소가 하나도 없을 때도
+          // useFocusTrap 이 이 컨테이너 자신에 포커스를 줄 수 있어야 하는
+          // 보장이라, 호출자가 실수로 넘긴 tabIndex 에 조용히 덮이면 안
+          // 된다. -1 이라 Tab 순서에는 들어가지 않는다.
+          tabIndex={-1}
         >
           {dragEnabled && (
             <div ref={handleRef} className={styles.handle}>
