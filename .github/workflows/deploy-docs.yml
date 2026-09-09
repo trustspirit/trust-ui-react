@@ -1,5 +1,9 @@
 name: Deploy Docs & Publish npm
 
+# 문서 배포와 npm 발행은 서로 무관한 일이다. 한 잡 안에 순서대로 두면
+# 발행이 실패할 때 문서까지 올라가지 못한다 — 실제로 2.0.0 푸시에서
+# publish 가 실패해 문서가 배포되지 않았다. 두 잡으로 가른다.
+
 on:
   push:
     branches:
@@ -15,12 +19,54 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
-    name: Build
+  docs:
+    name: Build docs
     runs-on: ubuntu-latest
-    outputs:
-      version_changed: ${{ steps.check_version.outputs.changed }}
-      new_version: ${{ steps.check_version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # docs-site 의 custom.css 가 ../../../dist/styles.css 를 임포트하므로
+      # 문서 빌드 전에 라이브러리를 먼저 빌드해야 한다. dist/ 는 gitignore 대상이다.
+      - name: Build trust-ui library
+        run: pnpm build
+
+      - name: Build docs site
+        run: cd docs-site && pnpm build
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs-site/build
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: docs
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  publish:
+    name: Publish npm
+    # docs 와 독립이다 — 여기서 실패해도 문서는 이미 배포된다.
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,7 +79,6 @@ jobs:
           PREV_VERSION=$(git show HEAD~1:package.json | node -p "JSON.parse(require('fs').readFileSync('/dev/stdin','utf8')).version")
           if [ "$CURRENT_VERSION" != "$PREV_VERSION" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
             echo "Version changed: $PREV_VERSION -> $CURRENT_VERSION"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -41,17 +86,21 @@ jobs:
           fi
 
       - uses: pnpm/action-setup@v4
+        if: steps.check_version.outputs.changed == 'true'
 
       - uses: actions/setup-node@v4
+        if: steps.check_version.outputs.changed == 'true'
         with:
           node-version: 20
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
+        if: steps.check_version.outputs.changed == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Build trust-ui library
+        if: steps.check_version.outputs.changed == 'true'
         run: pnpm build
 
       - name: Publish to npm
@@ -59,26 +108,3 @@ jobs:
         run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Build docs site
-        run: cd docs-site && pnpm build
-
-      - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs-site/build
-
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
