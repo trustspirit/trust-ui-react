@@ -192,3 +192,167 @@ for (const c of CASES) {
     });
   });
 }
+
+/**
+ * Table 정렬 헤더 버튼(.sortButton)과 모바일 정렬 바(.sortBar)는 위 CASES의
+ * 두 관용구(테두리 두껍히기 / 바깥 두 겹 링) 어느 쪽도 아닌 셋째 모양을 쓴다
+ * (Table.module.css) — 표 안쪽 컨트롤이라 바깥 링을 그리면 이웃 칸에 잘리므로
+ * inset 링 한 겹만으로 신호를 낸다. border-color 전환도, 바깥 레이어도 없다.
+ * 호버는 색(color)만 바꾸므로 위 CASES 의 상호작용 검사(box-shadow 비교)를
+ * 그대로 재사용해도 관용구 판정 로직만 새로 쓰면 된다.
+ */
+interface InsetRingCase {
+  story: string;
+  label: string;
+  focusSelector: string;
+  /** 좁은 화면(640px 미만)에서만 렌더되는 요소는 뷰포트를 좁혀야 한다. */
+  viewport?: { width: number; height: number };
+}
+
+const INSET_RING_CASES: InsetRingCase[] = [
+  { story: 'components-table--sortable', label: 'Table 정렬 헤더 버튼', focusSelector: 'thead button' },
+  // 모바일 정렬 바는 요약 2행 모드에서 열 머리가 사라지는 640px 미만에서만
+  // display:flex 로 나타난다(Table.module.css @media (max-width: 640px)) —
+  // 기본 뷰포트(1280px)에서는 display:none 이라 .focus() 가 무시된다.
+  {
+    story: 'components-table--mobile-summary',
+    label: 'Table 모바일 정렬 바',
+    focusSelector: 'button[aria-haspopup="dialog"]',
+    viewport: { width: 390, height: 844 },
+  },
+];
+
+for (const c of INSET_RING_CASES) {
+  test.describe(`${c.label} (${c.story})`, () => {
+    if (c.viewport) {
+      test.use({ viewport: c.viewport });
+    }
+
+    test('포커스 신호가 inset 링 관용구를 지킨다', async ({ page }) => {
+      await page.goto(`/iframe.html?id=${c.story}&viewMode=story`);
+      await page.evaluate(() => document.fonts.ready);
+
+      const focusEl = page.locator(ROOT).locator(c.focusSelector).first();
+      await focusEl.focus();
+      await page.waitForTimeout(SETTLE);
+
+      const visual = await readVisual(page, c.focusSelector, 'self');
+      const inkColor = await resolveTokenColor(page, '--tui-ink');
+
+      const layers = splitShadowLayers(visual.boxShadow);
+      const insetLayers = layers.filter((l) => /\binset\b/.test(l));
+      const outerLayers = layers.filter((l) => !/\binset\b/.test(l));
+
+      expect(
+        outerLayers,
+        `${c.label}: inset 전용 관용구인데 바깥(비-inset) 레이어가 있다 (box-shadow: ${visual.boxShadow})`,
+      ).toEqual([]);
+      expect(insetLayers.length, `${c.label}: 포커스 링이 없다 (box-shadow: ${visual.boxShadow})`).toBeGreaterThan(0);
+      expect(
+        insetLayers.some((l) => l.includes(inkColor)),
+        `${c.label}: inset 레이어에 --tui-ink(${inkColor}) 색이 없다 (box-shadow: ${visual.boxShadow})`,
+      ).toBe(true);
+    });
+
+    test('호버가 포커스 링을 덮지 않는다', async ({ page }) => {
+      await page.goto(`/iframe.html?id=${c.story}&viewMode=story`);
+      await page.evaluate(() => document.fonts.ready);
+
+      const focusEl = page.locator(ROOT).locator(c.focusSelector).first();
+      await focusEl.focus();
+      await page.waitForTimeout(SETTLE);
+      const before = await readVisual(page, c.focusSelector, 'self');
+
+      // sortButton/sortBar 는 곧 시각 요소 자신이다 — Checkbox/Radio 처럼
+      // 숨은 형제를 따로 찾을 필요가 없다.
+      await focusEl.hover();
+      await page.waitForTimeout(SETTLE);
+      const after = await readVisual(page, c.focusSelector, 'self');
+
+      expect(
+        after.boxShadow,
+        `${c.label}: 호버가 포커스 그림자를 바꿨다 (${before.boxShadow} → ${after.boxShadow})`,
+      ).toBe(before.boxShadow);
+    });
+  });
+}
+
+/**
+ * Toast 닫기 버튼(.closeButton)은 테두리 없는 컨트롤의 바깥 두 겹 링을
+ * 쓰지만, 위 CASES 의 ring 관용구(분리층은 항상 --tui-paper)와는 분리색이
+ * 다르다 — Toast 는 페이지(--tui-paper) 위가 아니라 뜬 지면(--tui-sheet)
+ * 위에 있으므로 분리층이 --tui-sheet 다. danger 면 위에서는 두 층이
+ * 뒤집힌다: 기본 링의 밝은 안쪽 층(--tui-sheet)이 붉은 면 위에 흰 테를
+ * 남기기 때문에 분리층을 --tui-danger, 주 층을 --tui-on-danger 로 바꾼다
+ * (Toast.module.css .danger .closeButton:focus-visible). 표면마다 토큰이
+ * 달라 위 CASES 루프에 끼워 넣지 않고 토큰 쌍을 케이스 데이터로 받는다.
+ */
+interface ToastRingCase {
+  label: string;
+  /** overlay-toast--open 스토리는 success·danger·warning·info 순서로
+   *  네 토스트를 한 번에 렌더한다 — nth-of-type(1-based)로 고른다. */
+  nth: number;
+  separatorToken: string;
+  mainToken: string;
+}
+
+const TOAST_RING_CASES: ToastRingCase[] = [
+  { label: 'Toast 닫기 버튼(기본)', nth: 1, separatorToken: '--tui-sheet', mainToken: '--tui-ink' },
+  { label: 'Toast 닫기 버튼(danger 면)', nth: 2, separatorToken: '--tui-danger', mainToken: '--tui-on-danger' },
+];
+
+for (const c of TOAST_RING_CASES) {
+  const focusSelector = `[role="alert"]:nth-of-type(${c.nth}) button`;
+
+  test.describe(`${c.label} (overlay-toast--open)`, () => {
+    test('포커스 신호가 바깥 링 관용구를 지킨다', async ({ page }) => {
+      await page.goto(`/iframe.html?id=overlay-toast--open&viewMode=story`);
+      await page.evaluate(() => document.fonts.ready);
+
+      const focusEl = page.locator(ROOT).locator(focusSelector).first();
+      await focusEl.focus();
+      await page.waitForTimeout(SETTLE);
+
+      const visual = await readVisual(page, focusSelector, 'self');
+      const separatorColor = await resolveTokenColor(page, c.separatorToken);
+      const mainColor = await resolveTokenColor(page, c.mainToken);
+
+      const layers = splitShadowLayers(visual.boxShadow);
+      const insetLayers = layers.filter((l) => /\binset\b/.test(l));
+      const outerLayers = layers.filter((l) => !/\binset\b/.test(l));
+
+      expect(
+        insetLayers,
+        `${c.label}: 테두리 없는 컨트롤인데 inset 레이어가 있다 (box-shadow: ${visual.boxShadow})`,
+      ).toEqual([]);
+      expect(outerLayers.length, `${c.label}: 포커스 링이 없다 (box-shadow: ${visual.boxShadow})`).toBeGreaterThan(0);
+      expect(
+        outerLayers.some((l) => l.includes(separatorColor)),
+        `${c.label}: 분리층(${c.separatorToken} = ${separatorColor})이 없다 (box-shadow: ${visual.boxShadow})`,
+      ).toBe(true);
+      expect(
+        outerLayers.some((l) => l.includes(mainColor)),
+        `${c.label}: 주 링 층(${c.mainToken} = ${mainColor})이 없다 (box-shadow: ${visual.boxShadow})`,
+      ).toBe(true);
+    });
+
+    test('호버가 포커스 링을 덮지 않는다', async ({ page }) => {
+      await page.goto(`/iframe.html?id=overlay-toast--open&viewMode=story`);
+      await page.evaluate(() => document.fonts.ready);
+
+      const focusEl = page.locator(ROOT).locator(focusSelector).first();
+      await focusEl.focus();
+      await page.waitForTimeout(SETTLE);
+      const before = await readVisual(page, focusSelector, 'self');
+
+      await focusEl.hover();
+      await page.waitForTimeout(SETTLE);
+      const after = await readVisual(page, focusSelector, 'self');
+
+      expect(
+        after.boxShadow,
+        `${c.label}: 호버가 포커스 그림자를 바꿨다 (${before.boxShadow} → ${after.boxShadow})`,
+      ).toBe(before.boxShadow);
+    });
+  });
+}
