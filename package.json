@@ -36,6 +36,7 @@
     "test:visual:update": "pnpm build-storybook --quiet && playwright test tests/visual/visual.spec.ts -u",
     "test:interaction": "pnpm build-storybook --quiet && playwright test tests/visual/interaction.spec.ts",
     "test:geometry": "pnpm build-storybook --quiet && playwright test tests/visual/table-geometry.spec.ts tests/visual/table-rules.spec.ts",
+    "test:focus": "pnpm build-storybook --quiet && playwright test tests/visual/overlay-focus.spec.ts",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [
