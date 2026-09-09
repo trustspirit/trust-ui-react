@@ -276,6 +276,19 @@ describe('useFocusTrap', () => {
     expect(screen.getByRole('button', { name: '보이는 형제 2' })).toHaveFocus();
   });
 
+  it('visibility:hidden 인 조상 안에서도 visibility:visible 로 되돌린 버튼은 순환에 포함된다', () => {
+    // visibility 는 상속되는 속성이라 getComputedStyle 이 자손의 재정의까지
+    // 이미 계산해준다 — 조상을 따로 훑으면 이 경우를 잘못 배제하게 된다.
+    render(
+      <TrapHarness active>
+        <div style={{ visibility: 'hidden' }}>
+          <button style={{ visibility: 'visible' }}>되돌려진 버튼</button>
+        </div>
+      </TrapHarness>,
+    );
+    expect(screen.getByRole('button', { name: '되돌려진 버튼' })).toHaveFocus();
+  });
+
   it('inert 인 조상 안의 버튼은 순환에 포함되지 않는다', () => {
     render(
       <TrapHarness active>
@@ -286,6 +299,37 @@ describe('useFocusTrap', () => {
       </TrapHarness>,
     );
     expect(screen.getByRole('button', { name: '보이는 형제 3' })).toHaveFocus();
+  });
+
+  it('checkVisibility 가 있는 환경에서도 inert 조상은 별도로 배제된다', () => {
+    // 스펙상 checkVisibility() 는 inert 를 판정 요소로 보지 않는다 — inert
+    // 요소는 여전히 "보이는" 상태이므로 실제 브라우저(크롬 105+ 등)에서
+    // checkVisibility() 는 inert 조상이 있어도 true 를 돌려준다. 이 테스트는
+    // jsdom 에 없는 checkVisibility 를 프로토타입에 잠깐 얹어 그 분기를 강제로
+    // 태워서, inert 배제가 checkVisibility 결과와 무관하게 항상 동작하는지
+    // 확인한다. 끝나면 반드시 원래 상태(undefined)로 되돌린다.
+    const original = Element.prototype.checkVisibility;
+    Element.prototype.checkVisibility = function stubCheckVisibility() {
+      return true;
+    };
+    try {
+      render(
+        <TrapHarness active>
+          <div inert>
+            <button>checkVisibility 아래 inert 조상</button>
+          </div>
+          <button>보이는 형제 4</button>
+        </TrapHarness>,
+      );
+      expect(screen.getByRole('button', { name: '보이는 형제 4' })).toHaveFocus();
+    } finally {
+      if (original) {
+        Element.prototype.checkVisibility = original;
+      } else {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        delete (Element.prototype as any).checkVisibility;
+      }
+    }
   });
 
   it('형제 서브트리의 정상적으로 보이는 버튼은 과도하게 배제되지 않는다', () => {

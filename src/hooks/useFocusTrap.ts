@@ -20,40 +20,57 @@ const FOCUSABLE_SELECTOR = [
 /**
  * 보이지 않는(또는 inert 인) 요소는 포커스 대상이 아니다.
  *
- * getComputedStyle 은 조상의 display:none 을 자기 것으로 접어 넣지 않는다 —
- * 감춰진 블록 안의 버튼도 자기 display 는 그대로 inline-block 이다. 그래서
- * 요소 자신부터 container 까지 조상을 거슬러 올라가며 확인해야 한다.
+ * inert 는 checkVisibility() 가 판정해주지 않는 별개의 축이다 — 스펙상
+ * inert 요소는 여전히 "보이지만" 상호작용만 막힌 상태라 checkVisibility() 는
+ * inert 조상이 있어도 true 를 돌려준다(크롬 105+, 파이어폭스 122+, 사파리
+ * 17.4+ 등 대부분의 실제 브라우저에서). 그래서 inert 는 checkVisibility 분기
+ * 안이 아니라 항상 독립적으로, 가장 먼저 확인한다. container 위쪽 조상의
+ * inert 는 이 트랩과 무관하므로 container.contains 로 범위를 제한한다.
+ * Task 2 가 배경 콘텐츠에 inert 를 붙일 예정이므로, 이걸 놓치면 트랩이
+ * 배경(비활성 영역)으로 포커스를 넘기는 자체 버그가 된다.
+ */
+function hasInertAncestorWithin(el: HTMLElement, container: HTMLElement): boolean {
+  const inertAncestor = el.closest('[inert]');
+  return inertAncestor !== null && container.contains(inertAncestor);
+}
+
+/**
+ * CSS 상 보이는지 확인한다 (inert 는 위에서 이미 걸렀으므로 여기서는 다루지
+ * 않는다).
  *
- * checkVisibility() 가 있으면 그것을 우선 쓴다 — 조상 display/visibility,
+ * checkVisibility() 가 있으면 그것을 쓴다 — 조상 display/visibility,
  * content-visibility 를 플랫폼이 한 번에 판정해준다. 이 저장소의 테스트
  * 환경(jsdom v28)에는 아직 구현되어 있지 않아(typeof 가 'undefined') 아래
  * 수동 순회가 테스트에서 실제로 쓰인다.
  *
- * inert 는 Task 2 에서 배경 콘텐츠에 붙일 예정이므로, inert 조상 안의 요소도
- * 여기서 함께 배제한다 — 그렇지 않으면 트랩이 배경(비활성 영역)으로 포커스를
- * 넘겨버리는 자체 버그가 된다.
+ * 수동 경로에서 display 는 조상까지 거슬러 올라가며 확인해야 한다 —
+ * getComputedStyle 은 조상의 display:none 을 자기 것으로 접어 넣지 않는다
+ * (감춰진 블록 안의 버튼도 자기 display 는 그대로 inline-block 이다).
+ * 반면 visibility 는 상속되는 속성이라 getComputedStyle 이 이미 상속과
+ * 자손의 재정의(visibility:hidden 조상 안에서 visibility:visible 로 되돌린
+ * 경우)까지 계산해서 알려주므로, 자기 자신의 값만 보면 된다 — 조상을 따로
+ * 훑으면 이런 재정의 사례를 잘못 배제하게 된다.
  */
-function isVisible(el: HTMLElement, container: HTMLElement): boolean {
+function isCssVisible(el: HTMLElement, container: HTMLElement): boolean {
   if (typeof el.checkVisibility === 'function') {
     return el.checkVisibility({
-      checkOpacity: false,
-      checkVisibilityCSS: true,
+      opacityProperty: false,
+      visibilityProperty: true,
     });
   }
 
   let node: HTMLElement | null = el;
   while (node) {
-    const style = getComputedStyle(node);
-    if (style.display === 'none' || style.visibility === 'hidden') {
-      return false;
-    }
-    if (node.hasAttribute('inert')) {
-      return false;
-    }
+    if (getComputedStyle(node).display === 'none') return false;
     if (node === container) break;
     node = node.parentElement;
   }
-  return true;
+  return getComputedStyle(el).visibility !== 'hidden';
+}
+
+function isVisible(el: HTMLElement, container: HTMLElement): boolean {
+  if (hasInertAncestorWithin(el, container)) return false;
+  return isCssVisible(el, container);
 }
 
 /**
