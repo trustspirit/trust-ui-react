@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { assertCoarsePointerActive } from '../shared/coarse';
 
 // package.json 의 "type": "module" 때문에 __dirname 을 쓸 수 없다 (CommonJS 전역).
 // import.meta.url 로 동등하게 계산한다 — 브리프 원안의 __dirname 을 ESM 환경에 맞게 대체한 것.
@@ -57,6 +58,13 @@ const COMBOS = [
   { theme: 'light', density: 'compact' },
 ];
 
+// 참고: components-actionsheet--open-* / components-bottomsheet--open-*
+// 베이스라인(각 3 테마·밀도 조합, 총 6장)에 보이는 포커스 링은
+// useFocusTrap 이 시트가 열리자마자 첫 포커스 가능 요소에 focus() 를
+// 호출해서 생긴 것이다. 그 링 자체는 크로미움의 :focus-visible 휴리스틱이
+// 그리는 것이라 이 저장소가 제어하는 CSS 가 아니다 — 이 여섯 장에서 픽셀
+// diff 가 나면 컴포넌트 CSS 보다 이쪽(포커스 순서/타이밍, 브라우저 버전)을
+// 먼저 의심할 것.
 for (const id of STORIES) {
   for (const { theme, density } of COMBOS) {
     test(`${id} — ${theme}/${density}`, async ({ page }) => {
@@ -70,16 +78,28 @@ for (const id of STORIES) {
   }
 }
 
-for (const id of taggedMobile) {
-  for (const { theme, density } of COMBOS) {
-    test(`${id} — ${theme}/${density} @${MOBILE_WIDTH}`, async ({ page }) => {
-      await page.setViewportSize({ width: MOBILE_WIDTH, height: 844 });
-      await page.goto(`/iframe.html?id=${id}&globals=theme:${theme};density:${density}`);
-      await page.evaluate(() => document.fonts.ready);
-      await page.waitForTimeout(300);
-      await expect(page).toHaveScreenshot(`${id}-${theme}-${density}-${MOBILE_WIDTH}.png`, {
-        fullPage: true,
+test.describe('mobile — coarse pointer', () => {
+  // setViewportSize 만으로는 폭만 좁아질 뿐 (pointer: coarse) 는 성립하지
+  // 않는다. hasTouch: true 를 걸어야 브라우저가 실제로 터치 환경으로
+  // 흉내를 내고, density.css 의 coarse 오버라이드(행 높이 64px, 글자
+  // 16px)가 켜진다 — table-geometry.spec.ts 와 같은 접근이다.
+  test.use({ hasTouch: true, viewport: { width: MOBILE_WIDTH, height: 844 } });
+
+  for (const id of taggedMobile) {
+    for (const { theme, density } of COMBOS) {
+      test(`${id} — ${theme}/${density} @${MOBILE_WIDTH}`, async ({ page }) => {
+        await page.goto(`/iframe.html?id=${id}&globals=theme:${theme};density:${density}`);
+        await page.evaluate(() => document.fonts.ready);
+        await page.waitForTimeout(300);
+
+        // 가드 — coarse 흉내가 실제로 먹혔는지 값으로 확인한다
+        // (tests/shared/coarse.ts, table-geometry.spec.ts 와 공유).
+        await assertCoarsePointerActive(page);
+
+        await expect(page).toHaveScreenshot(`${id}-${theme}-${density}-${MOBILE_WIDTH}.png`, {
+          fullPage: true,
+        });
       });
-    });
+    }
   }
-}
+});

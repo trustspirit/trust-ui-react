@@ -7,11 +7,16 @@ import { test, expect, type Page } from '@playwright/test';
  * 반복해서 숨어 있었고, 그때마다 사람이 브라우저를 띄워 손으로 계산 스타일을
  * 읽어 확인했다. 그 절차를 여기서 코드로 만든다.
  *
- * 라이브러리의 포커스 관용구는 둘뿐이다 (Global Constraints):
- *   - 두껍게 할 테두리가 있는 요소: border-color: var(--tui-ink) +
+ * 이 하네스가 다루는 포커스 관용구는 셋이다:
+ *   - bordered: 두껍게 할 테두리가 있는 요소 — border-color: var(--tui-ink) +
  *     box-shadow: inset 0 0 0 1px var(--tui-ink), 바깥(비-inset) 레이어 없음.
- *   - 두껍게 할 테두리가 없는 요소: box-shadow 바깥 링만, inset 레이어 없음.
- * "boxShadow가 비어있지 않다" 같은 약한 신호는 이 두 관용구를 구분하지
+ *   - ring: 두껍게 할 테두리가 없는 요소 — box-shadow 바깥 링 두 겹(분리층 +
+ *     주 층)만, inset 레이어 없음. 분리·주 색은 표면마다 다를 수 있다
+ *     (기본은 --tui-paper/--tui-ink, Toast는 --tui-sheet 위이거나 danger
+ *     면이라 다른 토큰을 쓴다 — Case.ringSeparatorToken/ringMainToken).
+ *   - insetRing: 표 안쪽처럼 바깥 링을 그리면 이웃에 잘리는 자리 — inset
+ *     링 한 겹만, border-color 전환도 바깥 레이어도 없음.
+ * "boxShadow가 비어있지 않다" 같은 약한 신호는 이 관용구들을 구분하지
  * 못해 지금까지의 결함을 하나도 못 잡았을 것이므로 쓰지 않는다.
  */
 
@@ -80,28 +85,76 @@ const ROOT = '#storybook-root';
  *    (`.hiddenInput:focus-visible + .indicator` — 인접 형제 선택자).
  */
 type VisualResolver = 'self' | 'closestWrapper' | 'nextSibling';
+type Idiom = 'bordered' | 'ring' | 'insetRing';
 
 interface Case {
   story: string;
   label: string;
   focusSelector: string;
   visual: VisualResolver;
-  bordered: boolean;
+  idiom: Idiom;
+  /** idiom: 'ring' 전용. 분리층 색 — 미지정 시 --tui-paper. */
+  ringSeparatorToken?: string;
+  /** idiom: 'ring' 전용. 주 층 색 — 미지정 시 --tui-ink. */
+  ringMainToken?: string;
+  /** 좁은 화면(640px 미만)에서만 렌더되는 요소는 뷰포트를 좁혀야 한다. */
+  viewport?: { width: number; height: number };
 }
 
 const CASES: Case[] = [
-  { story: 'form-textfield--default', label: 'TextField', focusSelector: 'input', visual: 'closestWrapper', bordered: true },
+  { story: 'form-textfield--default', label: 'TextField', focusSelector: 'input', visual: 'closestWrapper', idiom: 'bordered' },
   // Select 의 트리거는 <button>이 아니라 role="combobox"인 tabindex div다
   // (Select.tsx) — 브리프가 추정한 'button' 선택자는 존재하지 않는 요소였다.
-  { story: 'form-select--default', label: 'Select', focusSelector: '[role="combobox"]', visual: 'self', bordered: true },
-  { story: 'form-checkbox--default', label: 'Checkbox', focusSelector: 'input[type="checkbox"]', visual: 'nextSibling', bordered: true },
-  { story: 'form-radio--default', label: 'Radio', focusSelector: 'input[type="radio"]', visual: 'nextSibling', bordered: true },
-  { story: 'components-button--variants', label: 'Button', focusSelector: 'button', visual: 'self', bordered: false },
+  { story: 'form-select--default', label: 'Select', focusSelector: '[role="combobox"]', visual: 'self', idiom: 'bordered' },
+  { story: 'form-checkbox--default', label: 'Checkbox', focusSelector: 'input[type="checkbox"]', visual: 'nextSibling', idiom: 'bordered' },
+  { story: 'form-radio--default', label: 'Radio', focusSelector: 'input[type="radio"]', visual: 'nextSibling', idiom: 'bordered' },
+  { story: 'components-button--variants', label: 'Button', focusSelector: 'button', visual: 'self', idiom: 'ring' },
   // Pagination의 버튼은 항상 1px 테두리를 가지며 포커스 시 그 테두리가
   // inset box-shadow로 두꺼워진다(Pagination.module.css .button:focus-visible) —
   // 바깥 링이 아니다. 브리프는 이를 bordered:false(링)로 잘못 추정했다;
   // 실제 CSS를 읽어 bordered:true로 바로잡았다.
-  { story: 'navigation-pagination--default', label: 'Pagination', focusSelector: 'button[aria-label="Page 2"]', visual: 'self', bordered: true },
+  { story: 'navigation-pagination--default', label: 'Pagination', focusSelector: 'button[aria-label="Page 2"]', visual: 'self', idiom: 'bordered' },
+  // 정렬 헤더 버튼(.sortButton)은 표 안쪽 컨트롤이라 바깥 링을 그리면 이웃
+  // 칸에 잘린다(Table.module.css) — border:none 이라 bordered 도 아니고,
+  // 바깥 두 겹도 아닌 inset 한 겹뿐인 셋째 관용구를 쓴다.
+  { story: 'components-table--sortable', label: 'Table 정렬 헤더 버튼', focusSelector: 'thead button', visual: 'self', idiom: 'insetRing' },
+  // 모바일 정렬 바(.sortBar)는 요약 2행 모드에서 열 머리가 사라지는 640px
+  // 미만에서만 display:flex 로 나타난다(Table.module.css
+  // @media (max-width: 640px)) — 기본 뷰포트(1280px)에서는 display:none
+  // 이라 .focus() 가 무시되므로 이 케이스만 뷰포트를 좁힌다.
+  {
+    story: 'components-table--mobile-summary',
+    label: 'Table 모바일 정렬 바',
+    focusSelector: 'button[aria-haspopup="dialog"]',
+    visual: 'self',
+    idiom: 'insetRing',
+    viewport: { width: 390, height: 844 },
+  },
+  // overlay-toast--open 스토리는 success·danger·warning·info 순서로 네
+  // 토스트를 한 번에 렌더한다. 여기서는 success(1번째) 위에서 기본(비반전)
+  // 링을 확인한다 — "기본"은 별도 variant가 아니라 danger로 뒤집히지 않은
+  // 기본 링 규칙을 뜻한다. 분리색이 --tui-paper 가 아니라 --tui-sheet 인 것은
+  // Toast 가 페이지가 아니라 뜬 지면(sheet) 위에 있기 때문이다.
+  {
+    story: 'overlay-toast--open',
+    label: 'Toast 닫기 버튼(기본 링, success 표면)',
+    focusSelector: '[role="alert"]:nth-of-type(1) button',
+    visual: 'self',
+    idiom: 'ring',
+    ringSeparatorToken: '--tui-sheet',
+    ringMainToken: '--tui-ink',
+  },
+  // danger(2번째) 위에서는 두 층이 뒤집힌다 — 기본 링의 밝은 안쪽 층이 붉은
+  // 면 위에 흰 테를 남기기 때문이다(Toast.module.css .danger .closeButton:focus-visible).
+  {
+    story: 'overlay-toast--open',
+    label: 'Toast 닫기 버튼(danger 면)',
+    focusSelector: '[role="alert"]:nth-of-type(2) button',
+    visual: 'self',
+    idiom: 'ring',
+    ringSeparatorToken: '--tui-danger',
+    ringMainToken: '--tui-on-danger',
+  },
 ];
 
 async function readVisual(page: Page, focusSelector: string, visual: VisualResolver): Promise<Visual> {
@@ -124,6 +177,10 @@ async function readVisual(page: Page, focusSelector: string, visual: VisualResol
 
 for (const c of CASES) {
   test.describe(`${c.label} (${c.story})`, () => {
+    if (c.viewport) {
+      test.use({ viewport: c.viewport });
+    }
+
     test('포커스 신호가 관용구를 지킨다', async ({ page }) => {
       await page.goto(`/iframe.html?id=${c.story}&viewMode=story`);
       await page.evaluate(() => document.fonts.ready);
@@ -137,29 +194,45 @@ for (const c of CASES) {
       // page.evaluate 를 별도의 왕복으로 분리해서 이 함정을 피한다.
       const visual = await readVisual(page, c.focusSelector, c.visual);
       const inkColor = await resolveTokenColor(page, '--tui-ink');
-      const paperColor = await resolveTokenColor(page, '--tui-paper');
 
       const layers = splitShadowLayers(visual.boxShadow);
       const insetLayers = layers.filter((l) => /\binset\b/.test(l));
       const outerLayers = layers.filter((l) => !/\binset\b/.test(l));
 
-      if (c.bordered) {
+      if (c.idiom === 'bordered') {
         expect(visual.borderColor, `${c.label}: border-color가 --tui-ink(${inkColor})가 아니라 ${visual.borderColor}다`).toBe(inkColor);
         expect(
           insetLayers.some((l) => l.includes(inkColor)),
           `${c.label}: inset 레이어에 --tui-ink 색이 없다 (box-shadow: ${visual.boxShadow})`,
         ).toBe(true);
         expect(outerLayers, `${c.label}: 테두리를 두껍게 할 수 있는 요소인데 바깥(비-inset) 레이어가 남아 있다 — 두 겹 신호다`).toEqual([]);
-      } else {
+      } else if (c.idiom === 'ring') {
+        const separatorToken = c.ringSeparatorToken ?? '--tui-paper';
+        const mainToken = c.ringMainToken ?? '--tui-ink';
+        const separatorColor = await resolveTokenColor(page, separatorToken);
+        const mainColor = await resolveTokenColor(page, mainToken);
+
         expect(insetLayers, `${c.label}: 테두리를 두껍게 할 수 없는 요소인데 inset 레이어가 있다 — 관용구 위반이다`).toEqual([]);
         expect(outerLayers.length, `${c.label}: 포커스 링이 없다 (box-shadow: ${visual.boxShadow})`).toBeGreaterThan(0);
         expect(
-          outerLayers.some((l) => l.includes(paperColor)),
-          `${c.label}: 링의 paper 분리층(0 0 0 2px var(--tui-paper))이 없다`,
+          outerLayers.some((l) => l.includes(separatorColor)),
+          `${c.label}: 링의 분리층(${separatorToken} = ${separatorColor})이 없다 (box-shadow: ${visual.boxShadow})`,
         ).toBe(true);
         expect(
-          outerLayers.some((l) => l.includes(inkColor)),
-          `${c.label}: 링의 ink 층(0 0 0 4px var(--tui-ink))이 없다`,
+          outerLayers.some((l) => l.includes(mainColor)),
+          `${c.label}: 링의 주 층(${mainToken} = ${mainColor})이 없다 (box-shadow: ${visual.boxShadow})`,
+        ).toBe(true);
+      } else {
+        // insetRing: 표 안쪽처럼 바깥 링이 잘리는 자리 — inset 한 겹만, 바깥
+        // 레이어는 없어야 한다.
+        expect(
+          outerLayers,
+          `${c.label}: inset 전용 관용구인데 바깥(비-inset) 레이어가 있다 (box-shadow: ${visual.boxShadow})`,
+        ).toEqual([]);
+        expect(insetLayers.length, `${c.label}: 포커스 링이 없다 (box-shadow: ${visual.boxShadow})`).toBeGreaterThan(0);
+        expect(
+          insetLayers.some((l) => l.includes(inkColor)),
+          `${c.label}: inset 레이어에 --tui-ink(${inkColor}) 색이 없다 (box-shadow: ${visual.boxShadow})`,
         ).toBe(true);
       }
     });

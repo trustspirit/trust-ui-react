@@ -30,12 +30,14 @@
     "docs:dev": "cd docs-site && pnpm start",
     "docs:build": "cd docs-site && pnpm build",
     "docs:serve": "cd docs-site && pnpm serve",
+    "prepublishOnly": "pnpm build",
     "test": "vitest",
     "test:run": "vitest run",
     "test:visual": "pnpm build-storybook --quiet && playwright test tests/visual/visual.spec.ts",
     "test:visual:update": "pnpm build-storybook --quiet && playwright test tests/visual/visual.spec.ts -u",
     "test:interaction": "pnpm build-storybook --quiet && playwright test tests/visual/interaction.spec.ts",
     "test:geometry": "pnpm build-storybook --quiet && playwright test tests/visual/table-geometry.spec.ts tests/visual/table-rules.spec.ts",
+    "test:focus": "pnpm build-storybook --quiet && playwright test tests/visual/overlay-focus.spec.ts",
     "typecheck": "tsc --noEmit"
   },
   "keywords": [

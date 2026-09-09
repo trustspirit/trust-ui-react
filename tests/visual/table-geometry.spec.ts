@@ -1,4 +1,5 @@
 import { test, expect, type Page, type Locator } from '@playwright/test';
+import { assertCoarsePointerActive } from '../shared/coarse';
 
 /**
  * 터치 환경을 흉내 낸다. 이 파일의 모든 단언은 pointer: coarse 분기가
@@ -24,14 +25,9 @@ async function open(page: Page, id: string) {
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(300);
 
-  // 가드 — coarse 분기가 켜졌는지 값으로 확인한다. 흉내가 먹히지 않으면
-  // density.css 의 오버라이드가 적용되지 않아 row-height 가 46px 로 남고,
-  // 그러면 이 파일의 모든 측정이 조용히 데스크톱 분기를 재는 셈이 된다.
+  // 가드 — coarse 분기가 켜졌는지 값으로 확인한다(tests/shared/coarse.ts).
   // compact 를 고른 것은 이 구별이 가장 크게 벌어지기 때문이다(46 vs 64).
-  const rowHeight = await page.evaluate(() =>
-    getComputedStyle(document.documentElement).getPropertyValue('--tui-row-height').trim(),
-  );
-  expect(rowHeight, 'pointer: coarse 흉내가 먹히지 않았다').toBe('64px');
+  await assertCoarsePointerActive(page);
 }
 
 /** 요소가 실제로 차지하는 사각형. 없으면 던진다 — 조용히 넘어가지 않는다. */
