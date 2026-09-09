@@ -58,6 +58,13 @@ const COMBOS = [
   { theme: 'light', density: 'compact' },
 ];
 
+// 참고: components-actionsheet--open-* / components-bottomsheet--open-*
+// 베이스라인(각 3 테마·밀도 조합, 총 6장)에 보이는 포커스 링은
+// useFocusTrap 이 시트가 열리자마자 첫 포커스 가능 요소에 focus() 를
+// 호출해서 생긴 것이다. 그 링 자체는 크로미움의 :focus-visible 휴리스틱이
+// 그리는 것이라 이 저장소가 제어하는 CSS 가 아니다 — 이 여섯 장에서 픽셀
+// diff 가 나면 컴포넌트 CSS 보다 이쪽(포커스 순서/타이밍, 브라우저 버전)을
+// 먼저 의심할 것.
 for (const id of STORIES) {
   for (const { theme, density } of COMBOS) {
     test(`${id} — ${theme}/${density}`, async ({ page }) => {

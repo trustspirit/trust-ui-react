@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useRef, useState, type ReactNode } from 'react';
@@ -364,5 +364,88 @@ describe('useFocusTrap', () => {
 
     await user.click(screen.getByRole('button', { name: '닫기' }));
     expect(container).not.toHaveAttribute('tabindex');
+  });
+
+  // F1: Dialog.tsx 의 <dialog> 는 포털되지 않으므로, BottomSheet 컨텐츠 안에서
+  // 연 Dialog 는 시트 컨테이너의 DOM 자손이 된다. showModal() 의 top-layer
+  // 비활성화는 inert 속성으로 나타나지 않아 이 훅의 getFocusableElements 가
+  // 걸러내지 못했었다 — 그러면 다이얼로그 마지막 버튼에서 Tab 을 누를 때
+  // 트랩의 경계 분기가 preventDefault() 로 브라우저의 네이티브 순환을 막아놓고
+  // (실제 브라우저라면 도달 불가능한) 시트 쪽 요소로 focus() 를 호출해 Tab 이
+  // 아무 데도 못 가는 키보드 데드엔드가 된다.
+  //
+  // jsdom(v28) 은 <dialog>.showModal() 의 진짜 top-layer/비활성화 의미론을
+  // 구현하지 않는다 — 그래서 이 테스트는 실제 모달 동작에 기대지 않고,
+  // `open` 속성 + 수동 focus() + 수동 keydown dispatch 로 이 훅의 로직만
+  // 직접 몬다. 이 테스트가 증명하는 것: 포커스가 중첩된 열린 <dialog> 안에
+  // 있을 때 트랩의 onKeyDown 이 preventDefault() 를 호출하지 않고 물러난다
+  // (그래서 포커스도 옮기지 않는다). 증명하지 못하는 것: 실제 브라우저의
+  // showModal() 이 만드는 진짜 top-layer 비활성화 자체나, 그 환경에서
+  // 네이티브 Tab 순환이 실제로 어떻게 동작하는지 — 그건 jsdom 이 흉내낼 수
+  // 없는 영역이라 실제 브라우저(Playwright 등)로만 확인 가능하다.
+  it('중첩된 네이티브 <dialog> 안에서 Tab 을 누르면 트랩이 개입하지 않는다 (F1)', () => {
+    render(
+      <TrapHarness active>
+        <button>시트 버튼</button>
+        <dialog open>
+          <button>다이얼로그 첫 버튼</button>
+          <button data-testid="dialog-last">다이얼로그 마지막 버튼</button>
+        </dialog>
+      </TrapHarness>,
+    );
+
+    const lastButton = screen.getByTestId('dialog-last');
+    lastButton.focus();
+    expect(lastButton).toHaveFocus();
+
+    const preventDefaultSpy = vi.fn();
+    const event = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      cancelable: true,
+    });
+    Object.defineProperty(event, 'preventDefault', { value: preventDefaultSpy });
+    lastButton.dispatchEvent(event);
+
+    // 고치기 전에는 이 버튼이 (트랩이 계산한) 컨테이너 전체의 마지막
+    // 포커스 가능 요소로 잡혀 preventDefault() 가 호출되고 시트의 첫
+    // 요소로 focus() 가 넘어갔다. 고친 뒤에는 트랩이 아예 물러나 아무
+    // 일도 하지 않는다.
+    expect(preventDefaultSpy).not.toHaveBeenCalled();
+    expect(lastButton).toHaveFocus();
+  });
+
+  // F1 의 또 다른 축: getFocusableElements 자체가 열린 <dialog> 서브트리를
+  // 후보에서 빼는지 확인한다. 컨테이너 안의 유일한 버튼이 열린 dialog 안에
+  // 있으므로, 제외가 되면 트랩은 "포커스 가능 후보가 없을 때"의 경로(컨테이너
+  // 자신에 tabindex=-1 을 주고 포커스)를 타야 한다. 제외가 안 되면 그
+  // 다이얼로그 버튼에 초기 포커스가 가버린다.
+  it('getFocusableElements 는 열린 dialog 서브트리를 후보에서 제외한다 (F1)', () => {
+    render(
+      <TrapHarness active>
+        <dialog open>
+          <button>다이얼로그 버튼</button>
+        </dialog>
+      </TrapHarness>,
+    );
+    const container = screen.getByTestId('container');
+    expect(container).toHaveAttribute('tabindex', '-1');
+    expect(container).toHaveFocus();
+  });
+
+  // F4: React 의 autoFocus 는 커밋 단계에서 처리되고 자식 effect 가 부모
+  // effect 보다 먼저 실행되므로, 트랩이 무조건 "첫 포커스 가능 요소"로
+  // 덮어쓰면 호출자가 명시한 autoFocus 가 항상 무시됐다. 네이티브 <dialog>
+  // 의 showModal() 은 [autofocus] 를 우선하므로, 이 훅도 그렇게 해야 Dialog
+  // 의 modal/sheet 두 변형이 다시 일치한다.
+  it('[autofocus] 요소가 있으면 첫 포커스 가능 요소 대신 그것에 포커스한다 (F4)', () => {
+    render(
+      <TrapHarness active>
+        <button>첫번째</button>
+        <input autoFocus placeholder="오토포커스 입력" />
+        <button>세번째</button>
+      </TrapHarness>,
+    );
+    expect(screen.getByPlaceholderText('오토포커스 입력')).toHaveFocus();
   });
 });

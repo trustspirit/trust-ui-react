@@ -12,50 +12,17 @@ import { useDrag } from '../../hooks/touch/useDrag';
 import { useSnapPoints } from '../../hooks/touch/useSnapPoints';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { acquireScrollLock, releaseScrollLock } from '../../utils/scrollLock';
+import { acquireBackgroundInert, releaseBackgroundInert } from '../../utils/backgroundInert';
 import styles from './BottomSheet.module.css';
 
-// inert 는 대부분의 최신 브라우저(크롬 102+, 사파리 15.5+, 파이어폭스 112+)에
-// 있지만, 이 값은 모듈 로드 시 한 번만 확인해 매 마운트마다 다시 묻지 않는다.
-// 없으면 aria-hidden 으로 물러난다 — 그런데 aria-hidden 은 스크린리더 등
+// inert(또는 미지원 시 aria-hidden 폴백)는 aria-hidden 인 경우 스크린리더 등
 // 보조 기술의 접근성 트리에서만 배경을 감춘다. 마우스/터치 같은 포인터
 // 상호작용은 막지 못한다(백드롭의 스택 컨텍스트 밖에 있는 배경 요소는
-// 여전히 클릭/터치될 수 있다) — 그러니 이 폴백에서 키보드 격리는 전적으로
-// useFocusTrap 이 지고, 포인터 격리는 아예 보장되지 않는다.
-const SUPPORTS_INERT =
-  typeof HTMLElement !== 'undefined' && 'inert' in HTMLElement.prototype;
-
-/**
- * document.body 의 직계 자식 중 이 시트가 아닌 것들을 비활성화한다.
- * 이미 inert(또는 aria-hidden) 였던 요소는 각자 원래 속성 유무·값을 스냅샷해
- * 두었다가 그대로 되돌린다 — 다른 오버레이가 걸어둔 상태를 지우지 않는다.
- */
-function inertifySiblings(exclude: (Element | null)[]): () => void {
-  if (typeof document === 'undefined') return () => {};
-
-  const attr = SUPPORTS_INERT ? 'inert' : 'aria-hidden';
-  const siblings = Array.from(document.body.children).filter(
-    (el) => !exclude.includes(el),
-  );
-  const snapshots = siblings.map((el) => ({
-    el,
-    hadAttr: el.hasAttribute(attr),
-    prevValue: el.getAttribute(attr),
-  }));
-
-  siblings.forEach((el) => {
-    el.setAttribute(attr, SUPPORTS_INERT ? '' : 'true');
-  });
-
-  return () => {
-    snapshots.forEach(({ el, hadAttr, prevValue }) => {
-      if (hadAttr) {
-        el.setAttribute(attr, prevValue!);
-      } else {
-        el.removeAttribute(attr);
-      }
-    });
-  };
-}
+// 여전히 클릭/터치될 수 있다). 그리고 키보드 쪽도 이 폴백에서 완전히
+// 막히는 건 아니다 — useFocusTrap 의 Tab 리스너는 이 컨테이너에 달려
+// 있으므로 포커스가 이미 시트 "안"에 들어온 뒤에만 개입한다. 주소창에서
+// Tab 으로 들어오거나 스크립트가 포커스를 직접 옮기면, aria-hidden 배경은
+// 여전히 Tab 순서에 남아 있어 그 경로는 이 폴백으로 막히지 않는다.
 
 export interface BottomSheetProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onClose'> {
   /** Whether the sheet is open. Controlled. */
@@ -189,9 +156,17 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
     // focus() 가 조용히 실패한다(inert 요소는 포커스 대상이 아니므로) —
     // 그러면 포커스가 복구되지 않고 body 로 떨어진다. 이 순서를 바꾸면 그
     // 버그가 재현된다.
+    // F2: 참조 카운트된 backgroundInert 유틸을 쓴다(scrollLock.ts 와 같은
+    // 모양). 시트마다 자기 스냅샷을 따로 들고 마지막 클린업이 이기게
+    // 두면, 시트 A 가 퇴장 애니메이션 중(여전히 mounted) 시트 B 가 열렸다가
+    // A 의 언마운트 타이머가 끝날 때 A 자신의(B 가 없던 시절) 스냅샷으로
+    // 배경을 복구해버려 B 가 아직 열려 있는데도 격리가 풀리고 트리거로
+    // 포커스가 튈 수 있었다. acquire/release 를 참조 카운트하면 마지막
+    // release 만 실제로 복구한다.
     useEffect(() => {
       if (!mounted || typeof document === 'undefined') return;
-      return inertifySiblings([backdropRef.current, sheetRef.current]);
+      acquireBackgroundInert([backdropRef.current, sheetRef.current]);
+      return () => releaseBackgroundInert();
     }, [mounted]);
 
     // 포커스 트랩 — aria-modal="true" 를 실제로 참으로 만드는 부분.
