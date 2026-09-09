@@ -229,13 +229,13 @@ Available token categories include:
 | `--tui-accent` / `--tui-accent-hover`         | Brand accent (defaults to ink)       |
 | `--tui-success` / `--tui-danger` / `--tui-warning` | State colors                    |
 | `--tui-rise` / `--tui-fall`          | Market colors (only after importing `market.css`) |
-| `--tui-font-sans` / `--tui-font-size-body` / `--tui-weight-regular` | Font family, sizes, weights, line-height, letter-spacing |
+| `--tui-font-sans` / `--tui-font-size-body` / `--tui-weight-regular` / `--tui-line-height-body` / `--tui-letter-body` | Font family, sizes, weights, line-height, letter-spacing |
 | `--tui-gap-1` … `--tui-gap-6` | Outer spacing scale (fixed, 1 through 6)  |
 | `--tui-pad-1` … `--tui-pad-4` | Inner padding (density-linked)            |
 | `--tui-radius-tight` / `--tui-radius-control` / `--tui-radius-sheet` / `--tui-radius-full` | Border radius scale |
 | `--tui-shadow-overlay` | The one box-shadow token, used for overlay surfaces |
-| `--tui-duration-fast` / `--tui-duration-base` / `--tui-ease-out` | Motion durations and the single easing curve |
-| `--tui-z-dropdown` … `--tui-z-toast` | Z-index layers                    |
+| `--tui-duration-fast` / `--tui-duration-base` / `--tui-duration-instant` / `--tui-ease-out` | Motion durations and the single easing curve |
+| `--tui-z-dropdown` / `--tui-z-sticky` / `--tui-z-popover` / `--tui-z-modal` / `--tui-z-bottom-sheet` / `--tui-z-tooltip` / `--tui-z-toast` | Z-index layers (stacking order, low to high) |
 
 ---
 
