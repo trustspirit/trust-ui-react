@@ -10,10 +10,19 @@ const read = (f: string) => readFileSync(resolve(root, f), 'utf8');
  * 문서 사이트가 안내해도 되는 컴포넌트 예제·설명의 대상 파일들.
  * docs-site 는 루트 tsc 대상이 아닌 별도 Docusaurus 프로젝트라 이 검사가
  * 유일하게 그 내용을 훑는다.
+ *
+ * README.md 도 여기 포함한다 — npm 타르볼에 그대로 실려 나가는 가장 많이
+ * 읽히는 문서인데 지금까지 어떤 검사도 보지 않았다. docs-site 글롭 두 개와는
+ * 무관하게 별도 항목으로 추가해, docs-site 글롭 자체의 동작(대상 확장자)은
+ * 건드리지 않는다.
+ *
+ * docs-site 글롭은 *.md(docs)와 *.js/*.jsx/*.mdx(src)까지 넓혔다 — 예전에는
+ * 이 확장자로 저장된 문서·예제가 검사를 조용히 피해 나갔다.
  */
 const docsFiles = [
-  ...globSync('docs-site/docs/**/*.mdx', { cwd: root }),
-  ...globSync('docs-site/src/**/*.{tsx,ts,css}', { cwd: root }),
+  'README.md',
+  ...globSync('docs-site/docs/**/*.{md,mdx}', { cwd: root }),
+  ...globSync('docs-site/src/**/*.{tsx,ts,css,js,jsx,mdx}', { cwd: root }),
 ].sort();
 
 /**

@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { assertCoarsePointerActive } from '../shared/coarse';
 
 // package.json 의 "type": "module" 때문에 __dirname 을 쓸 수 없다 (CommonJS 전역).
 // import.meta.url 로 동등하게 계산한다 — 브리프 원안의 __dirname 을 ESM 환경에 맞게 대체한 것.
@@ -84,14 +85,9 @@ test.describe('mobile — coarse pointer', () => {
         await page.evaluate(() => document.fonts.ready);
         await page.waitForTimeout(300);
 
-        // 가드 — coarse 흉내가 실제로 먹혔는지 값으로 확인한다. 먹히지
-        // 않으면 density.css 의 오버라이드가 적용되지 않아 이 스냅샷은
-        // 조용히 데스크톱 분기를 담게 된다(table-geometry.spec.ts 의
-        // 가드와 동일한 목적).
-        const rowHeight = await page.evaluate(() =>
-          getComputedStyle(document.documentElement).getPropertyValue('--tui-row-height').trim(),
-        );
-        expect(rowHeight, 'pointer: coarse 흉내가 먹히지 않았다').toBe('64px');
+        // 가드 — coarse 흉내가 실제로 먹혔는지 값으로 확인한다
+        // (tests/shared/coarse.ts, table-geometry.spec.ts 와 공유).
+        await assertCoarsePointerActive(page);
 
         await expect(page).toHaveScreenshot(`${id}-${theme}-${density}-${MOBILE_WIDTH}.png`, {
           fullPage: true,
