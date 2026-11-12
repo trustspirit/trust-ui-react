@@ -217,3 +217,49 @@ describe('DateRangePicker — 키보드', () => {
     expect(screen.getByText(/2025년 12월/)).toBeInTheDocument();
   });
 });
+
+describe('DatePicker — 이름, 범위, 모바일', () => {
+  const stubTouch = () =>
+    vi.stubGlobal('matchMedia', (query: string) => ({
+      matches: query.includes('coarse'),
+      media: query,
+      addEventListener: () => {},
+      removeEventListener: () => {},
+    }));
+
+  it('label 이 콤보박스의 이름이 되고 오류 메시지가 설명으로 연결된다', () => {
+    render(<DatePicker label="생년월일" errorMessage="날짜를 고르세요" />);
+    const combobox = screen.getByRole('combobox', { name: /생년월일/ });
+    expect(combobox).toHaveAccessibleDescription('날짜를 고르세요');
+  });
+
+  it('네이티브 입력에 minDate / maxDate 를 전달하고 label 과 연결한다', async () => {
+    stubTouch();
+    render(
+      <DatePicker
+        label="예약일"
+        mobileVariant="native"
+        minDate={new Date(2026, 2, 5)}
+        maxDate={new Date(2026, 2, 20)}
+      />,
+    );
+    const input = await screen.findByLabelText(/예약일/);
+    expect(input).toHaveAttribute('type', 'date');
+    expect(input).toHaveAttribute('min', '2026-03-05');
+    expect(input).toHaveAttribute('max', '2026-03-20');
+    vi.unstubAllGlobals();
+  });
+
+  it('네이티브 입력으로 범위 밖 날짜가 들어오면 받지 않는다', async () => {
+    stubTouch();
+    const onChange = vi.fn();
+    render(<DatePicker label="예약일" mobileVariant="native" minDate={new Date(2026, 2, 5)} onChange={onChange} />);
+    const input = await screen.findByLabelText(/예약일/);
+
+    const { fireEvent } = await import('@testing-library/react');
+    fireEvent.change(input, { target: { value: '2026-03-01' } });
+
+    expect(onChange).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
+});

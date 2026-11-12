@@ -1,4 +1,5 @@
 import {
+  useId,
   forwardRef,
   useCallback,
   useEffect,
@@ -11,7 +12,7 @@ import {
 import { createPortal } from 'react-dom';
 import styles from './DatePicker.module.css';
 import { Calendar } from './Calendar';
-import { formatDate, getMonthLabel, parseDateInputValue } from './utils';
+import { formatDate, getMonthLabel, isDateInRange, parseDateInputValue } from './utils';
 import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
 import { Dialog } from '../Dialog';
 import { useAnchoredLayer } from '../../hooks/useAnchoredLayer';
@@ -180,6 +181,18 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
 
     const isError = error || !!errorMessage;
 
+    const fieldId = useId();
+    const labelId = `${fieldId}-label`;
+    const errorId = `${fieldId}-error`;
+    const nativeId = `${fieldId}-native`;
+    /** 트리거(콤보박스·버튼)에 공통으로 거는 이름·설명·상태. */
+    const fieldAria = {
+      'aria-labelledby': label ? labelId : undefined,
+      'aria-describedby': errorMessage ? errorId : undefined,
+      'aria-invalid': isError || undefined,
+      'aria-required': required || undefined,
+    };
+
     const displayText = useMemo(() => {
       if (!selectedDate) return '';
       return formatDate(selectedDate, dateFormat);
@@ -326,7 +339,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       return (
         <div ref={ref} className={containerClassNames} style={style}>
           {label && (
-            <label className={labelClassNames}>
+            <label id={labelId} htmlFor={nativeId} className={labelClassNames}>
               {label}
               {required && <span className={styles.requiredAsterisk}> *</span>}
             </label>
@@ -337,14 +350,21 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
             value={nativeValue}
             onChange={(e) => {
               const d = e.target.value ? parseDateInputValue(e.target.value) : null;
+              // min/max 속성은 OS 피커만 제한한다. 직접 입력한 값은 여기서 걸러낸다.
+              if (d && !isDateInRange(d, minDate, maxDate)) return;
               if (!isControlled) setInternalValue(d);
               onChange?.(d);
             }}
+            id={nativeId}
+            min={minDate ? formatDate(minDate, 'yyyy-MM-dd') : undefined}
+            max={maxDate ? formatDate(maxDate, 'yyyy-MM-dd') : undefined}
+            required={required}
             disabled={disabled}
+            aria-describedby={errorMessage ? errorId : undefined}
             aria-invalid={isError || undefined}
           />
           {errorMessage && (
-            <p className={styles.errorMessage} role="alert">
+            <p className={styles.errorMessage} id={errorId} role="alert">
               {errorMessage}
             </p>
           )}
@@ -357,7 +377,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       return (
         <div ref={ref} className={containerClassNames} style={style}>
           {label && (
-            <label className={labelClassNames}>
+            <label id={labelId} className={labelClassNames}>
               {label}
               {required && <span className={styles.requiredAsterisk}> *</span>}
             </label>
@@ -383,6 +403,8 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
               }
             }}
             role="button"
+            aria-haspopup="dialog"
+            {...fieldAria}
             aria-disabled={disabled || undefined}
           >
             <input
@@ -400,11 +422,13 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
             </span>
           </div>
           {errorMessage && (
-            <p className={styles.errorMessage} role="alert">
+            <p className={styles.errorMessage} id={errorId} role="alert">
               {errorMessage}
             </p>
           )}
           <Dialog open={isOpen} onClose={() => setIsOpen(false)} mobileVariant="fullscreen">
+            {/* 제목 줄의 닫기 버튼이 유일한 "고르지 않고 나가기" 수단이다. */}
+            <Dialog.Title>{label ?? 'Select date'}</Dialog.Title>
             <div className={styles.navHeader}>
               <button
                 type="button"
@@ -484,7 +508,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     return (
       <div ref={ref} className={containerClassNames} style={style}>
         {label && (
-          <label className={labelClassNames}>
+          <label id={labelId} className={labelClassNames}>
             {label}
             {required && <span className={styles.requiredAsterisk}> *</span>}
           </label>
@@ -504,6 +528,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
           role="combobox"
           aria-expanded={isOpen}
           aria-haspopup="dialog"
+          {...fieldAria}
           aria-disabled={disabled || undefined}
         >
           <input
@@ -523,7 +548,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
         </div>
 
         {errorMessage && (
-          <p className={styles.errorMessage} role="alert">
+          <p className={styles.errorMessage} id={errorId} role="alert">
             {errorMessage}
           </p>
         )}

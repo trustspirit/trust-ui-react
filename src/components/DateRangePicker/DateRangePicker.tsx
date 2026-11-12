@@ -1,4 +1,5 @@
 import {
+  useId,
   forwardRef,
   useCallback,
   useEffect,
@@ -10,7 +11,7 @@ import {
 import { createPortal } from 'react-dom';
 import styles from './DateRangePicker.module.css';
 import { Calendar } from '../DatePicker/Calendar';
-import { formatDate, getMonthLabel, parseDateInputValue } from '../DatePicker/utils';
+import { formatDate, getMonthLabel, isDateInRange, parseDateInputValue } from '../DatePicker/utils';
 import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
 import { Dialog } from '../Dialog';
 import { useAnchoredLayer } from '../../hooks/useAnchoredLayer';
@@ -200,6 +201,18 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
     const popupStyle: CSSProperties = { ...layer.style, maxHeight: undefined };
 
     const isError = error || !!errorMessage;
+
+    const fieldId = useId();
+    const labelId = `${fieldId}-label`;
+    const errorId = `${fieldId}-error`;
+    const nativeId = `${fieldId}-native`;
+    /** 트리거(콤보박스·버튼)에 공통으로 거는 이름·설명·상태. */
+    const fieldAria = {
+      'aria-labelledby': label ? labelId : undefined,
+      'aria-describedby': errorMessage ? errorId : undefined,
+      'aria-invalid': isError || undefined,
+      'aria-required': required || undefined,
+    };
 
     const displayText = useMemo(() => {
       const { start, end } = selectedRange;
@@ -459,7 +472,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
       return (
         <div ref={ref} className={containerClassNames} style={style}>
           {label && (
-            <label className={labelClassNames}>
+            <label id={labelId} className={labelClassNames}>
               {label}
               {required && <span className={styles.requiredAsterisk}> *</span>}
             </label>
@@ -470,13 +483,19 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
               className={styles.nativeInput}
               value={startStr}
               onChange={(e) => {
-                const newRange: DateRange = {
-                  start: e.target.value ? parseDateInputValue(e.target.value) : null,
-                  end: selectedRange.end,
-                };
+                const start = e.target.value ? parseDateInputValue(e.target.value) : null;
+                if (start && !isDateInRange(start, minDate, maxDate)) return;
+                // 시작일이 종료일보다 뒤로 가면 종료일을 비운다.
+                const end =
+                  start && selectedRange.end && start.getTime() > selectedRange.end.getTime()
+                    ? null
+                    : selectedRange.end;
+                const newRange: DateRange = { start, end };
                 if (!isControlled) setInternalValue(newRange);
                 onChange?.(newRange);
               }}
+              min={minDate ? formatDate(minDate, 'yyyy-MM-dd') : undefined}
+              max={maxDate ? formatDate(maxDate, 'yyyy-MM-dd') : undefined}
               disabled={disabled}
               aria-label="Start date"
             />
@@ -485,19 +504,21 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
               className={styles.nativeInput}
               value={endStr}
               onChange={(e) => {
-                const newRange: DateRange = {
-                  start: selectedRange.start,
-                  end: e.target.value ? parseDateInputValue(e.target.value) : null,
-                };
+                const end = e.target.value ? parseDateInputValue(e.target.value) : null;
+                if (end && !isDateInRange(end, selectedRange.start ?? minDate, maxDate)) return;
+                const newRange: DateRange = { start: selectedRange.start, end };
                 if (!isControlled) setInternalValue(newRange);
                 onChange?.(newRange);
               }}
+              // 종료일은 시작일보다 앞설 수 없다.
+              min={startStr || (minDate ? formatDate(minDate, 'yyyy-MM-dd') : undefined)}
+              max={maxDate ? formatDate(maxDate, 'yyyy-MM-dd') : undefined}
               disabled={disabled}
               aria-label="End date"
             />
           </div>
           {errorMessage && (
-            <p className={styles.errorMessage} role="alert">
+            <p className={styles.errorMessage} id={errorId} role="alert">
               {errorMessage}
             </p>
           )}
@@ -510,7 +531,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
       return (
         <div ref={ref} className={containerClassNames} style={style}>
           {label && (
-            <label className={labelClassNames}>
+            <label id={labelId} className={labelClassNames}>
               {label}
               {required && <span className={styles.requiredAsterisk}> *</span>}
             </label>
@@ -537,7 +558,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
             </span>
           </button>
           {errorMessage && (
-            <p className={styles.errorMessage} role="alert">
+            <p className={styles.errorMessage} id={errorId} role="alert">
               {errorMessage}
             </p>
           )}
@@ -605,7 +626,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
     return (
       <div ref={ref} className={containerClassNames} style={style}>
         {label && (
-          <label className={labelClassNames}>
+          <label id={labelId} className={labelClassNames}>
             {label}
             {required && <span className={styles.requiredAsterisk}> *</span>}
           </label>
@@ -634,6 +655,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
           role="combobox"
           aria-expanded={isOpen}
           aria-haspopup="dialog"
+          {...fieldAria}
           aria-disabled={disabled || undefined}
         >
           <input
@@ -652,7 +674,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
         </div>
 
         {errorMessage && (
-          <p className={styles.errorMessage} role="alert">
+          <p className={styles.errorMessage} id={errorId} role="alert">
             {errorMessage}
           </p>
         )}
