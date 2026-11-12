@@ -41,6 +41,10 @@ export interface BottomSheetProps extends Omit<HTMLAttributes<HTMLDivElement>, '
   showHandle?: boolean;
   /** Allow swipe-down to dismiss. Default true. */
   dismissible?: boolean;
+  /** Close when the backdrop is tapped. Default true. */
+  closeOnBackdrop?: boolean;
+  /** Close when Escape is pressed. Default true. */
+  closeOnEscape?: boolean;
   /** Sheet content. */
   children?: ReactNode;
 }
@@ -68,6 +72,18 @@ export interface BottomSheetProps extends Omit<HTMLAttributes<HTMLDivElement>, '
  * On close, the parent should set `open={false}` and the exit animation plays before
  * the element unmounts.
  */
+// 열려 있는 시트를 연 순서대로 쌓는다. Escape 는 맨 위 시트만 닫는다.
+const openSheets: symbol[] = [];
+
+/** 시트 위에 떠 있는 네이티브 모달 dialog 가 있는가. 있다면 Escape 는 그쪽 몫이다. */
+function hasModalDialogOnTop(): boolean {
+  try {
+    return document.querySelector('dialog:modal') !== null;
+  } catch {
+    return false; // :modal 을 모르는 환경
+  }
+}
+
 export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
   function BottomSheet(
     {
@@ -77,6 +93,8 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
       initialSnap = 0,
       showHandle = true,
       dismissible = true,
+      closeOnBackdrop = true,
+      closeOnEscape = true,
       className,
       children,
       ...rest
@@ -138,12 +156,24 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
     // ESC dismiss
     useEffect(() => {
       if (!mounted) return;
+      const token = Symbol('sheet');
+      openSheets.push(token);
       const onKey = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') onClose();
+        if (e.key !== 'Escape' || !closeOnEscape) return;
+        // 안쪽 위젯(열린 Select, Menu 등)이 이미 이 Escape 를 썼다.
+        if (e.defaultPrevented) return;
+        // 겹쳐 열린 시트 중 맨 위 것만, 그리고 그 위에 모달 dialog 가 없을 때만 닫는다.
+        if (openSheets[openSheets.length - 1] !== token) return;
+        if (hasModalDialogOnTop()) return;
+        onClose();
       };
       document.addEventListener('keydown', onKey);
-      return () => document.removeEventListener('keydown', onKey);
-    }, [mounted, onClose]);
+      return () => {
+        document.removeEventListener('keydown', onKey);
+        const index = openSheets.indexOf(token);
+        if (index >= 0) openSheets.splice(index, 1);
+      };
+    }, [mounted, onClose, closeOnEscape]);
 
     // 배경 비활성화 — 시트가 DOM 에 떠 있는 동안(퇴장 애니메이션 포함)
     // document.body 의 이 시트 아닌 형제 요소들을 inert(또는 대체 수단)로
@@ -285,7 +315,7 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
         <div
           ref={backdropRef}
           className={[styles.backdrop, exiting && styles.backdropExit].filter(Boolean).join(' ')}
-          onClick={onClose}
+          onClick={closeOnBackdrop ? onClose : undefined}
           aria-hidden="true"
         />
         <div

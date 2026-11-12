@@ -11,6 +11,7 @@
   font-family: var(--tui-font-sans);
   box-shadow: var(--tui-shadow-overlay);
   max-height: 85vh;
+  max-height: 85dvh;
   overflow: hidden;
   /* 다이얼로그가 뜨는 동작은 사용자 행동에 대한 응답이므로 등장 애니메이션을 유지한다. */
   animation: dialogEnter var(--tui-duration-base) var(--tui-ease-out);
@@ -60,8 +61,11 @@
 
 .fullscreen {
   width: 100vw;
+  /* dvh 는 모바일 브라우저 주소창을 뺀 실제 보이는 높이다. vh 는 폴백. */
   height: 100vh;
+  height: 100dvh;
   max-height: 100vh;
+  max-height: 100dvh;
   border-radius: 0;
 }
 
@@ -69,6 +73,7 @@
 .mobileFullscreen {
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   max-width: none;
   max-height: none;
   border-radius: 0;
@@ -83,11 +88,13 @@
   display: flex;
   flex-direction: column;
   max-height: 85vh;
+  max-height: 85dvh;
 }
 
 .fullscreen .inner,
 .mobileFullscreen .inner {
   max-height: 100vh;
+  max-height: 100dvh;
 }
 
 /* ── Title bar ── */
@@ -122,6 +129,19 @@
   cursor: pointer;
   transition: var(--tui-transition-color);
   flex-shrink: 0;
+  position: relative;
+}
+
+/* 터치 타깃 — 다른 컴포넌트와 같은 max(100%, 44px) 표현을 쓴다. */
+@media (pointer: coarse) {
+  .closeButton::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
 }
 
 @media (hover: hover) {
