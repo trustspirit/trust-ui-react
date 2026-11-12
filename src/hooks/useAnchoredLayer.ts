@@ -14,6 +14,7 @@ import {
   type AnchoredPosition,
   type Placement,
 } from '../utils/anchoredPosition';
+import { isRtl } from '../utils/direction';
 
 // 서버 렌더에서 useLayoutEffect 는 경고만 내고 아무 일도 하지 않는다.
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
@@ -84,6 +85,7 @@ export function useAnchoredLayer({
         placement,
         align,
         offset,
+        rtl: isRtl(anchor),
       }),
     );
   }, [anchorRef, layerRef, placement, align, offset, matchAnchorWidth]);

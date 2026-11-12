@@ -36,7 +36,7 @@
   font-size: var(--tui-font-size-small);
   font-family: var(--tui-font-sans);
   line-height: var(--tui-line-height-body);
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   transition: var(--tui-transition-color);
   outline: none;

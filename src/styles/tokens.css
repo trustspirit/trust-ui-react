@@ -69,6 +69,10 @@
 
   --tui-tap-highlight: transparent;
 
+  /* ── 글 방향 ── */
+  /* translateX 처럼 물리 방향인 값에 곱해 RTL 에서 부호를 뒤집는다. */
+  --tui-dir: 1;
+
   /* ── Z-index (v1 계승) ── */
   --tui-z-dropdown: 1000;
   --tui-z-sticky: 1010;
@@ -77,6 +81,15 @@
   --tui-z-bottom-sheet: 1055;
   --tui-z-tooltip: 1060;
   --tui-z-toast: 1070;
+}
+
+[dir='rtl'] {
+  --tui-dir: -1;
+}
+
+/* 방향을 가리키는 아이콘(이전·다음 화살표)은 RTL 에서 좌우를 뒤집는다. */
+.tui-mirror-rtl {
+  transform: scaleX(var(--tui-dir));
 }
 
 /* 등폭 숫자 — 장식이 아니라 자릿수 정렬 기능이다. */

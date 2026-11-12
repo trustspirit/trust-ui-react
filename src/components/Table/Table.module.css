@@ -31,7 +31,7 @@
    가득 채워야 터치 타깃이 칸 크기와 같아지기 때문이다. */
 .th {
   padding: 0;
-  text-align: left;
+  text-align: start;
   font-size: var(--tui-font-size-caption);
   font-weight: var(--tui-weight-medium);
   letter-spacing: var(--tui-letter-body);
@@ -121,7 +121,7 @@
 
 /* ── 정렬 ── */
 .alignRight {
-  text-align: right;
+  text-align: end;
 }
 
 .alignRight .sortButton {
@@ -326,7 +326,7 @@
     font: inherit;
     letter-spacing: inherit;
     color: var(--tui-ink);
-    text-align: left;
+    text-align: start;
     cursor: pointer;
     transition: var(--tui-transition-color);
   }
@@ -370,7 +370,7 @@
 
   .slotValue {
     grid-area: 1 / 2;
-    text-align: right;
+    text-align: end;
     font-weight: var(--tui-weight-medium);
   }
 
@@ -397,7 +397,7 @@
   /* 한 줄에 값이 둘일 때만 가운뎃점을 넣는다. */
   .slotItem + .slotItem::before {
     content: '·';
-    margin-right: var(--tui-gap-2);
+    margin-inline-end: var(--tui-gap-2);
     color: var(--tui-ink-3);
   }
 
@@ -413,8 +413,8 @@
   .mobileScroll .th:first-child,
   .mobileScroll .td:first-child {
     position: sticky;
-    left: 0;
-    border-right: 1px solid var(--tui-rule);
+    inset-inline-start: 0;
+    border-inline-end: 1px solid var(--tui-rule);
   }
 
   /* 머리 칸은 머리 바탕을, 본문 칸은 본문 바탕을 쓴다 — 다른 머리 칸은

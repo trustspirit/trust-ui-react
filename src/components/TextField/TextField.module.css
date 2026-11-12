@@ -197,15 +197,15 @@
 }
 
 .sm .prefix {
-  padding-left: var(--tui-pad-2);
+  padding-inline-start: var(--tui-pad-2);
 }
 
 .md .prefix {
-  padding-left: var(--tui-pad-3);
+  padding-inline-start: var(--tui-pad-3);
 }
 
 .lg .prefix {
-  padding-left: var(--tui-pad-4);
+  padding-inline-start: var(--tui-pad-4);
 }
 
 .suffix {
@@ -216,15 +216,15 @@
 }
 
 .sm .suffix {
-  padding-right: var(--tui-pad-2);
+  padding-inline-end: var(--tui-pad-2);
 }
 
 .md .suffix {
-  padding-right: var(--tui-pad-3);
+  padding-inline-end: var(--tui-pad-3);
 }
 
 .lg .suffix {
-  padding-right: var(--tui-pad-4);
+  padding-inline-end: var(--tui-pad-4);
 }
 
 /* ── Visibility toggle ── */
@@ -282,7 +282,7 @@
 .characterCount {
   font-size: var(--tui-font-size-caption);
   color: var(--tui-ink-3);
-  text-align: right;
+  text-align: end;
 }
 
 .characterCountOver {
@@ -299,7 +299,7 @@
 
 /* 서식 있는 숫자 입력은 자릿수를 정렬한다. 장식이 아니라 기능이다. */
 .numeric {
-  text-align: right;
+  text-align: end;
   font-variant-numeric: tabular-nums;
   font-feature-settings: 'tnum' 1;
   letter-spacing: var(--tui-letter-num);

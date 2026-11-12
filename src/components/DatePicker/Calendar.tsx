@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { isRtl } from '../../utils/direction';
 import styles from './Calendar.module.css';
 import {
   getCalendarDays,
@@ -113,8 +114,9 @@ export function Calendar({
 
     let next: Date | null = null;
     switch (e.key) {
-      case 'ArrowLeft': next = shift(-1); break;
-      case 'ArrowRight': next = shift(1); break;
+      // 화살표는 화면에서의 방향이다. RTL 달력은 날짜가 오른쪽에서 왼쪽으로 흐른다.
+      case 'ArrowLeft': next = shift(isRtl(e.currentTarget) ? 1 : -1); break;
+      case 'ArrowRight': next = shift(isRtl(e.currentTarget) ? -1 : 1); break;
       case 'ArrowUp': next = shift(-7); break;
       case 'ArrowDown': next = shift(7); break;
       case 'Home': next = shift(-date.getDay()); break;

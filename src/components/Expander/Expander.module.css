@@ -65,7 +65,7 @@
   font-size: var(--tui-font-size-base);
   font-weight: var(--tui-weight-medium);
   color: var(--tui-ink);
-  text-align: left;
+  text-align: start;
   line-height: var(--tui-line-height-body);
   transition: var(--tui-transition-color);
 }

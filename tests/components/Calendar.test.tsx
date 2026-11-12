@@ -116,6 +116,23 @@ describe('Calendar — 키보드', () => {
   });
 });
 
+describe('RTL — 화살표 키', () => {
+  it('Calendar: 오른쪽에서 왼쪽으로 읽는 화면에서는 ← 가 다음 날이다', async () => {
+    const user = userEvent.setup();
+    render(
+      <div dir="rtl">
+        <Calendar {...MARCH} locale="ko-KR" selectedDate={new Date(2026, 2, 15)} onDateClick={() => {}} />
+      </div>,
+    );
+    cell(/3월 15일/).focus();
+
+    await user.keyboard('{ArrowLeft}');
+    expect(cell(/3월 16일/)).toHaveFocus();
+    await user.keyboard('{ArrowRight}{ArrowRight}');
+    expect(cell(/3월 14일/)).toHaveFocus();
+  });
+});
+
 describe('DatePicker — 키보드', () => {
   it('Enter 로 열면 선택된 날짜에 포커스가 가고, 달을 넘겨 고른 뒤 트리거로 돌아온다', async () => {
     const user = userEvent.setup();

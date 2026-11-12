@@ -44,6 +44,58 @@ describe('Tabs', () => {
   });
 });
 
+describe('RTL — 화살표 키', () => {
+  it('Tabs: ← 가 다음 탭이다', async () => {
+    const user = userEvent.setup();
+    render(
+      <div dir="rtl">
+        <Tabs defaultValue="a">
+          <Tabs.List>
+            <Tabs.Trigger value="a">개요</Tabs.Trigger>
+            <Tabs.Trigger value="b">내역</Tabs.Trigger>
+            {/* 셋 이상이어야 "다음"과 "끝에서 넘어감"이 구분된다. */}
+            <Tabs.Trigger value="c">설정</Tabs.Trigger>
+          </Tabs.List>
+        </Tabs>
+      </div>,
+    );
+    screen.getByRole('tab', { name: '개요' }).focus();
+
+    await user.keyboard('{ArrowLeft}');
+
+    expect(screen.getByRole('tab', { name: '내역' })).toHaveFocus();
+  });
+
+  it('SegmentedControl: ← 가 다음 세그먼트다', async () => {
+    const { SegmentedControl } = await import('../../src/components/SegmentedControl');
+    const { useState } = await import('react');
+    function Sample() {
+      const [value, setValue] = useState('day');
+      return (
+        <div dir="rtl">
+          <SegmentedControl
+            aria-label="기간"
+            value={value}
+            onChange={setValue}
+            options={[
+              { value: 'day', label: '일' },
+              { value: 'week', label: '주' },
+              { value: 'month', label: '월' },
+            ]}
+          />
+        </div>
+      );
+    }
+    const user = userEvent.setup();
+    render(<Sample />);
+    screen.getByRole('radio', { name: '일' }).focus();
+
+    await user.keyboard('{ArrowLeft}');
+
+    expect(screen.getByRole('radio', { name: '주' })).toBeChecked();
+  });
+});
+
 describe('Expander id', () => {
   it('공백이 든 value 로도 패널이 트리거로 이름 붙는다', () => {
     render(

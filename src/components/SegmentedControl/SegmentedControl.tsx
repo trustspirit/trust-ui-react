@@ -1,4 +1,5 @@
 import { forwardRef, useRef, type CSSProperties, type KeyboardEvent, type ReactNode } from 'react';
+import { isRtl } from '../../utils/direction';
 import styles from './SegmentedControl.module.css';
 
 export interface SegmentedControlOption<T extends string = string> {
@@ -62,13 +63,19 @@ function SegmentedControlInner<T extends string = string>(
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>, index: number) => {
+    // 좌우 화살표는 화면에서의 방향이다. RTL 에서는 왼쪽이 "다음"이다.
+    const horizontal: 1 | -1 = isRtl(e.currentTarget) ? -1 : 1;
     let target: number;
     switch (e.key) {
       case 'ArrowRight':
+        target = nextEnabled(index, horizontal);
+        break;
+      case 'ArrowLeft':
+        target = nextEnabled(index, horizontal === 1 ? -1 : 1);
+        break;
       case 'ArrowDown':
         target = nextEnabled(index, 1);
         break;
-      case 'ArrowLeft':
       case 'ArrowUp':
         target = nextEnabled(index, -1);
         break;

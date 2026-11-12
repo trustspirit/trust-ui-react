@@ -37,7 +37,8 @@
      선택 상태가 잘 보이지 않는다(다크 테마에서 특히). 헤어라인을 더해
      떠 있는 셀처럼 보이게 한다 — Button 의 secondary 와 같은 해법. */
   border: 1px solid var(--tui-rule);
-  transform: translateX(calc(var(--tui-seg-active, 0) * (100% + 2px)));
+  /* translateX 는 물리 방향이라 --tui-dir(LTR 1, RTL -1)을 곱해 글 방향을 따르게 한다. */
+  transform: translateX(calc(var(--tui-dir) * var(--tui-seg-active, 0) * (100% + 2px)));
   transition:
     transform var(--tui-duration-base) var(--tui-ease-out),
     width var(--tui-duration-base) var(--tui-ease-out);

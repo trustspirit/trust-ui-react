@@ -88,4 +88,20 @@ function CloseButton(props) {
 
 - Text you pass as props (`label`, `placeholder`, `errorMessage`, …) is yours to translate.
 - Dates: `DatePicker`, `DateRangePicker` and `Calendar` take a separate `locale` prop (a BCP 47 tag such as `ko-KR`) for month names, weekday labels and the full date read by screen readers.
-- Text direction: the library does not mirror for right-to-left languages yet.
+
+## Right-to-left
+
+Set `dir="rtl"` on `<html>` (or on any container) and the components mirror:
+
+```html
+<html dir="rtl" lang="ar">
+```
+
+- Spacing, alignment and borders use logical properties, so prefixes, icons and sticky columns move to the other side.
+- Popovers align to the trigger's start edge, which is the right edge in RTL.
+- `←` and `→` follow what is on screen: in `Tabs`, `SegmentedControl` and `Calendar` the left arrow moves forward.
+- Previous / next chevrons flip; the `Switch` thumb, `Slider` fill and `Progress` animation run from the right.
+
+Things that stay physical on purpose: `Tooltip` and `Popover` `placement="left" | "right"`, `ToastProvider` positions such as `top-right`, and `SafeAreaView` edges, which follow the device.
+
+For your own directional icons, add the `tui-mirror-rtl` class. For your own transforms, multiply by `var(--tui-dir)` (`1`, or `-1` in RTL).

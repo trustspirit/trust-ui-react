@@ -95,4 +95,10 @@ describe('computeAnchoredPosition', () => {
     });
     expect(result.left).toBe(8);
   });
+
+  it('RTL 에서는 start 가 오른쪽 가장자리, end 가 왼쪽 가장자리다', () => {
+    const base = { anchor: rect(150, 100, 100, 40), layer: { width: 60, height: 50 }, viewport, rtl: true };
+    expect(computeAnchoredPosition({ ...base, align: 'start' }).left).toBe(250 - 60);
+    expect(computeAnchoredPosition({ ...base, align: 'end' }).left).toBe(150);
+  });
 });

@@ -83,7 +83,7 @@
 .statusDot {
   position: absolute;
   bottom: 0;
-  right: 0;
+  inset-inline-end: 0;
   width: 25%;
   height: 25%;
   min-width: 8px;

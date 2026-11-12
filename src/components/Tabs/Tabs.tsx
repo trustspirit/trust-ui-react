@@ -13,6 +13,7 @@ import {
   type ReactNode,
 } from 'react';
 import { idSegment } from '../../utils/idSegment';
+import { isRtl } from '../../utils/direction';
 import styles from './Tabs.module.css';
 
 /* ── Context ── */
@@ -195,9 +196,13 @@ function TabsList({ children, className }: TabsListProps) {
 
     let nextIndex: number | null = null;
 
-    if (e.key === 'ArrowRight') {
+    // 화살표는 화면에서의 방향이다. RTL 에서는 왼쪽이 "다음"이다.
+    const forwardKey = isRtl(list) ? 'ArrowLeft' : 'ArrowRight';
+    const backwardKey = isRtl(list) ? 'ArrowRight' : 'ArrowLeft';
+
+    if (e.key === forwardKey) {
       nextIndex = (currentIndex + 1) % triggers.length;
-    } else if (e.key === 'ArrowLeft') {
+    } else if (e.key === backwardKey) {
       nextIndex = (currentIndex - 1 + triggers.length) % triggers.length;
     } else if (e.key === 'Home') {
       nextIndex = 0;

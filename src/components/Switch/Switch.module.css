@@ -127,17 +127,18 @@
   height: 24px;
 }
 
-/* ── Checked: move thumb right ── */
+/* ── Checked: move thumb toward the inline end ──
+   translateX 는 물리 방향이다. --tui-dir(LTR 1, RTL -1)을 곱해 글 방향을 따르게 한다. */
 .checked.sm .thumb {
-  transform: translateX(16px);
+  transform: translateX(calc(var(--tui-dir) * 16px));
 }
 
 .checked.md .thumb {
-  transform: translateX(20px);
+  transform: translateX(calc(var(--tui-dir) * 20px));
 }
 
 .checked.lg .thumb {
-  transform: translateX(24px);
+  transform: translateX(calc(var(--tui-dir) * 24px));
 }
 
 /* ── Checked state - Primary ── */

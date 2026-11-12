@@ -114,7 +114,7 @@
   content: '';
   position: absolute;
   top: 0;
-  left: 0;
+  inset-inline-start: 0;
   height: 100%;
   width: 40%;
   border-radius: var(--tui-radius-full);
@@ -139,13 +139,13 @@
 
 @keyframes indeterminate {
   0% {
-    left: -40%;
+    inset-inline-start: -40%;
   }
   50% {
-    left: 30%;
+    inset-inline-start: 30%;
   }
   100% {
-    left: 100%;
+    inset-inline-start: 100%;
   }
 }
 
@@ -157,6 +157,6 @@
   color: var(--tui-ink-2);
   white-space: nowrap;
   min-width: 3ch;
-  text-align: right;
+  text-align: end;
   font-variant-numeric: tabular-nums;
 }

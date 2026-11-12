@@ -28,6 +28,8 @@ export interface AnchoredPositionInput {
   offset?: number;
   /** Minimum distance kept from every viewport edge. Default 8. */
   padding?: number;
+  /** Right-to-left context: `start` and `end` swap sides for top/bottom placements. */
+  rtl?: boolean;
 }
 
 export interface AnchoredPosition {
@@ -59,6 +61,7 @@ export function computeAnchoredPosition({
   align = 'start',
   offset = 4,
   padding = 8,
+  rtl = false,
 }: AnchoredPositionInput): AnchoredPosition {
   const vertical = placement === 'bottom' || placement === 'top';
 
@@ -82,9 +85,14 @@ export function computeAnchoredPosition({
   const layerAlong = vertical ? layer.width : layer.height;
   const viewportAlong = vertical ? viewport.width : viewport.height;
 
+  // 위·아래 배치의 start/end 는 글 방향을 따른다. RTL 에서 start 는 오른쪽 가장자리다.
+  // 좌·우 배치의 교차축은 세로라 방향과 무관하다.
+  const effectiveAlign: Alignment =
+    rtl && vertical && align !== 'center' ? (align === 'start' ? 'end' : 'start') : align;
+
   let along = alongStart;
-  if (align === 'center') along = alongStart + alongSize / 2 - layerAlong / 2;
-  if (align === 'end') along = alongStart + alongSize - layerAlong;
+  if (effectiveAlign === 'center') along = alongStart + alongSize / 2 - layerAlong / 2;
+  if (effectiveAlign === 'end') along = alongStart + alongSize - layerAlong;
   along = clamp(along, padding, Math.max(padding, viewportAlong - layerAlong - padding));
 
   let top: number;

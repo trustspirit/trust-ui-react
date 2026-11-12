@@ -170,6 +170,15 @@
   background: linear-gradient(to left, transparent 50%, var(--tui-field) 50%);
 }
 
+/* RTL 에서는 범위가 오른쪽에서 시작해 왼쪽으로 이어진다. 칠하는 절반을 맞바꾼다. */
+[dir='rtl'] .dayCellRangeStart {
+  background: linear-gradient(to left, transparent 50%, var(--tui-field) 50%);
+}
+
+[dir='rtl'] .dayCellRangeEnd {
+  background: linear-gradient(to right, transparent 50%, var(--tui-field) 50%);
+}
+
 .dayCellRangeStartEnd {
   background: transparent;
 }

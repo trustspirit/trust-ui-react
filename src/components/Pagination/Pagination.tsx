@@ -78,7 +78,9 @@ function buildPageRange(
 
 function ChevronLeft() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      // 방향을 가리키는 아이콘이라 RTL 에서 좌우를 뒤집는다(tokens.css 의 .tui-mirror-rtl).
+      className="tui-mirror-rtl" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M10 4l-4 4 4 4" />
     </svg>
   );
@@ -86,7 +88,9 @@ function ChevronLeft() {
 
 function ChevronRight() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      // 방향을 가리키는 아이콘이라 RTL 에서 좌우를 뒤집는다(tokens.css 의 .tui-mirror-rtl).
+      className="tui-mirror-rtl" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M6 4l4 4-4 4" />
     </svg>
   );
