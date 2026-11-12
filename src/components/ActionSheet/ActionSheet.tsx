@@ -11,7 +11,7 @@ import styles from './ActionSheet.module.css';
 
 export interface ActionSheetAction {
   /** Visible label for the action. */
-  label: string;
+  label: ReactNode;
   /** Click handler. The sheet does NOT auto-close — call onClose yourself if desired. */
   onClick: () => void;
   /** Renders the label in danger color + semibold (iOS destructive style). */

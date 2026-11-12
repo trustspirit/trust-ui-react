@@ -16,6 +16,9 @@
   border-radius: var(--tui-radius-sheet);
   box-shadow: var(--tui-shadow-overlay);
   font-family: var(--tui-font-sans);
+  /* 화면에 다 들어가지 않는 긴 메뉴는 남은 공간 안에서 스크롤한다(max-height 는 인라인). */
+  overflow-y: auto;
+  overscroll-behavior: contain;
   /* 열리는 동작은 사용자 행동에 대한 응답이므로 등장 애니메이션을 유지한다. */
   animation: menuFadeIn var(--tui-duration-fast) var(--tui-ease-out);
 }

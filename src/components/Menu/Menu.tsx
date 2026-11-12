@@ -1,12 +1,13 @@
 import {
   Children,
+  Fragment,
   cloneElement,
   createContext,
+  isValidElement,
   useCallback,
   useContext,
   useEffect,
   useId,
-  useLayoutEffect,
   useRef,
   useState,
   type CSSProperties,
@@ -17,7 +18,17 @@ import {
 import { createPortal } from 'react-dom';
 import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
 import { ActionSheet } from '../ActionSheet';
+import { useAnchoredLayer } from '../../hooks/useAnchoredLayer';
 import styles from './Menu.module.css';
+
+/** Fragment 로 묶인 자식까지 한 겹으로 펼친다. */
+function flattenChildren(children: ReactNode): ReactNode[] {
+  return Children.toArray(children).flatMap((child) =>
+    isValidElement<{ children?: ReactNode }>(child) && child.type === Fragment
+      ? flattenChildren(child.props.children)
+      : [child],
+  );
+}
 
 /* ── Context ── */
 
@@ -100,7 +111,10 @@ function MenuTrigger({ children }: MenuTriggerProps) {
   return cloneElement(children, {
     ref: (node: HTMLElement | null) => {
       triggerRef.current = node;
-      const childRef = (children as { ref?: React.Ref<HTMLElement> }).ref;
+      // React 19 는 ref 를 props 로 넘긴다. element.ref 접근은 경고를 낸다.
+      const childRef =
+        (childProps.ref as React.Ref<HTMLElement> | undefined) ??
+        (children as { ref?: React.Ref<HTMLElement> }).ref;
       if (typeof childRef === 'function') {
         childRef(node);
       } else if (childRef && typeof childRef === 'object') {
@@ -145,63 +159,14 @@ function MenuContent({
   const { open, setOpen, triggerRef, triggerId, mobileVariant } = useMenuContext();
   const isTouch = useTouchDevice();
   const contentRef = useRef<HTMLDivElement>(null);
-  const [position, setPosition] = useState<{ top: number; left: number } | null>(null);
-
-  const updatePosition = useCallback(() => {
-    const trigger = triggerRef.current;
-    const content = contentRef.current;
-    if (!trigger || !content) return;
-
-    const triggerRect = trigger.getBoundingClientRect();
-    const contentRect = content.getBoundingClientRect();
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
-    const gap = 4;
-
-    let top = triggerRect.bottom + scrollY + gap;
-    let left: number;
-
-    if (align === 'end') {
-      left = triggerRect.right + scrollX - contentRect.width;
-    } else {
-      left = triggerRect.left + scrollX;
-    }
-
-    // Prevent overflow right
-    if (left + contentRect.width > window.innerWidth) {
-      left = window.innerWidth - contentRect.width - 8;
-    }
-    // Prevent overflow left
-    if (left < 0) {
-      left = 8;
-    }
-    // Prevent overflow bottom
-    if (top + contentRect.height > window.innerHeight + window.scrollY) {
-      top = triggerRect.top + scrollY - contentRect.height - gap;
-    }
-
-    setPosition({ top, left });
-  }, [align, triggerRef]);
-
-  // Position the menu below the trigger (useLayoutEffect to prevent flash)
-  useLayoutEffect(() => {
-    if (!open) {
-      setPosition(null);
-      return;
-    }
-    updatePosition();
-  }, [open, updatePosition]);
-
-  // Reposition on scroll/resize
-  useEffect(() => {
-    if (!open) return;
-    window.addEventListener('scroll', updatePosition, true);
-    window.addEventListener('resize', updatePosition);
-    return () => {
-      window.removeEventListener('scroll', updatePosition, true);
-      window.removeEventListener('resize', updatePosition);
-    };
-  }, [open, updatePosition]);
+  // 위치·포털 대상·화면 충돌 처리는 공용 훅이 맡는다.
+  const layer = useAnchoredLayer({
+    open: open && !(mobileVariant === 'sheet' && isTouch),
+    anchorRef: triggerRef,
+    layerRef: contentRef,
+    placement: 'bottom',
+    align,
+  });
 
   // Close on click outside
   useEffect(() => {
@@ -264,6 +229,16 @@ function MenuContent({
           items[prevIndex]?.focus();
           break;
         }
+        case 'Home': {
+          e.preventDefault();
+          items[0]?.focus();
+          break;
+        }
+        case 'End': {
+          e.preventDefault();
+          items[items.length - 1]?.focus();
+          break;
+        }
         case 'Escape': {
           e.preventDefault();
           setOpen(false);
@@ -271,6 +246,9 @@ function MenuContent({
           break;
         }
         case 'Tab': {
+          // 포커스를 가진 항목이 언마운트되면 탐색이 문서 처음에서 다시 시작된다.
+          // 트리거로 먼저 옮겨, 기본 Tab 동작이 트리거의 다음 요소로 가게 한다.
+          triggerRef.current?.focus();
           setOpen(false);
           break;
         }
@@ -281,17 +259,13 @@ function MenuContent({
 
   // Action-sheet variant: render as bottom sheet on touch devices
   if (mobileVariant === 'sheet' && isTouch) {
-    const actions = Children.toArray(children)
+    const actions = flattenChildren(children)
       .filter((child): child is ReactElement<MenuItemProps> => {
-        return (
-          typeof child === 'object' &&
-          child !== null &&
-          'type' in child &&
-          (child as ReactElement).type === MenuItem
-        );
+        return isValidElement(child) && child.type === MenuItem;
       })
       .map((child) => ({
-        label: typeof child.props.children === 'string' ? child.props.children : String(child.props.children ?? ''),
+        // 문자열로 바꾸지 않는다. "{name} 삭제" 같은 여러 조각이나 요소도 그대로 보여 준다.
+        label: child.props.children,
         onClick: () => {
           child.props.onClick?.();
           setOpen(false);
@@ -314,14 +288,9 @@ function MenuContent({
 
   const classNames = [styles.content, className].filter(Boolean).join(' ');
 
-  const contentStyle: CSSProperties = {
-    ...style,
-    top: position?.top ?? 0,
-    left: position?.left ?? 0,
-    visibility: position ? 'visible' : 'hidden',
-  };
+  const contentStyle: CSSProperties = { ...style, ...layer.style };
 
-  return typeof document !== 'undefined'
+  return layer.container
     ? createPortal(
         <div
           ref={contentRef}
@@ -333,7 +302,7 @@ function MenuContent({
         >
           {children}
         </div>,
-        document.body,
+        layer.container,
       )
     : null;
 }
@@ -365,13 +334,15 @@ function MenuItem({
   children,
   className,
 }: MenuItemProps) {
-  const { setOpen } = useMenuContext();
+  const { setOpen, triggerRef } = useMenuContext();
 
   const handleClick = useCallback(() => {
     if (disabled) return;
     onClick?.();
     setOpen(false);
-  }, [disabled, onClick, setOpen]);
+    // 고른 항목이 사라지면 포커스가 body 로 떨어진다. 트리거로 돌려준다.
+    triggerRef.current?.focus();
+  }, [disabled, onClick, setOpen, triggerRef]);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLDivElement>) => {
