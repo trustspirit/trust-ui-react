@@ -97,6 +97,10 @@ Pass `defaultTheme` when rendering on the server. Without it the server renders 
 
 Both ES modules and CommonJS (`require('trust-ui-react')`) are supported.
 
+### Bundle size
+
+The ES build keeps one file per component, so bundlers include only what you import: `import { Badge } from 'trust-ui-react'` adds under 1 kB of JavaScript. The stylesheet is a single file (about 19 kB gzipped) that you import once.
+
 ## Usage
 
 ```tsx

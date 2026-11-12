@@ -37,4 +37,11 @@ describe('package entry points', () => {
     expect(pkg.license).toBe('MIT');
     expect(existsSync(resolve(root, 'LICENSE'))).toBe(true);
   });
+
+  // 한 파일로 묶인 ESM 은 최상위의 createContext()/forwardRef() 호출 때문에 번들러가
+  // 안 쓰는 컴포넌트를 지우지 못한다. 모듈을 파일 단위로 남겨야 Badge 하나만 import 했을 때
+  // Badge 만 들어간다.
+  it('ES 빌드는 모듈을 파일 단위로 남긴다', () => {
+    expect(viteConfig).toMatch(/preserveModules:\s*true/);
+  });
 });
