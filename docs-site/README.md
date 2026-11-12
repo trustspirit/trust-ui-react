@@ -1,41 +1,19 @@
-# Website
+# trust-ui docs site
 
-This website is built using [Docusaurus](https://docusaurus.io/), a modern static website generator.
+The documentation site for `trust-ui-react`, built with [Docusaurus](https://docusaurus.io/).
 
-## Installation
-
-```bash
-yarn
-```
-
-## Local Development
+The site imports the library from `../dist`, so build the library first.
 
 ```bash
-yarn start
+# from the repository root
+pnpm install
+pnpm build          # builds ../dist, which the docs import
+pnpm docs:dev       # local dev server
+pnpm docs:build     # static build into docs-site/build
+pnpm docs:serve     # serve the static build
 ```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+Pages live in `docs/`. Component pages use two helpers from `src/components/`:
+`ComponentPreview` (live demo with a theme toggle and the source) and `PropsTable`.
 
-## Build
-
-```bash
-yarn build
-```
-
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
-
-## Deployment
-
-Using SSH:
-
-```bash
-USE_SSH=true yarn deploy
-```
-
-Not using SSH:
-
-```bash
-GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+Deployment is handled by `.github/workflows/deploy-docs.yml` on every push to `main`.

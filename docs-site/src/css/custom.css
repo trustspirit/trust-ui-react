@@ -52,6 +52,35 @@
   align-items: center;
   justify-content: center;
   min-height: 80px;
+  /* 넓은 데모(두 달 달력 등)는 잘라내지 않고 프리뷰 안에서 가로로 스크롤한다. */
+  overflow-x: auto;
+
+  /*
+   * Docusaurus(Infima)는 모든 <table> 에 줄무늬·테두리·display:block 을 건다.
+   * 데모 안의 trust-ui Table 이 실제와 다르게 보이지 않도록 변수로 무력화한다.
+   * 선택자 특이도를 올리지 않으므로 컴포넌트 자신의 스타일은 그대로 이긴다.
+   */
+  --ifm-table-background: transparent;
+  --ifm-table-stripe-background: transparent;
+  --ifm-table-head-background: transparent;
+  --ifm-table-border-width: 0;
+}
+
+:where(.component-preview__demo) table {
+  display: table;
+  margin: 0;
+  overflow: visible;
+}
+
+:where(.component-preview__demo) table thead tr {
+  border-bottom: 0;
+}
+
+/* 좁은 화면에서는 데모에 쓸 폭을 더 남긴다. */
+@media (max-width: 640px) {
+  .component-preview__demo {
+    padding: var(--tui-gap-4, 16px);
+  }
 }
 
 [data-theme='dark'] .component-preview__demo {
@@ -66,7 +95,7 @@
   background: var(--tui-paper, #fff);
 }
 
-.component-preview__theme-toggle {
+.component-preview__button {
   cursor: pointer;
   background: transparent;
   border: 1px solid var(--tui-rule, var(--ifm-color-emphasis-300));
@@ -80,11 +109,42 @@
     border-color var(--tui-duration-fast, 140ms) var(--tui-ease-out, ease);
 }
 
+.component-preview__button--plain {
+  border-color: transparent;
+}
+
 @media (hover: hover) {
-  .component-preview__theme-toggle:hover {
+  .component-preview__button:hover {
     background: var(--tui-field, var(--ifm-color-emphasis-100));
     border-color: var(--tui-rule-strong, var(--ifm-color-emphasis-400));
   }
+}
+
+.component-preview__button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-ink);
+}
+
+/* 터치에서는 44px 높이를 확보한다. */
+@media (pointer: coarse) {
+  .component-preview__button {
+    min-height: 44px;
+    padding-inline: 14px;
+  }
+}
+
+.component-preview__code-bar {
+  display: flex;
+  align-items: center;
+  padding: var(--tui-gap-1, 4px) var(--tui-gap-2, 8px);
+  background: var(--tui-paper, #fff);
+}
+
+/* 코드 블록은 프리뷰 테두리 안에 붙여 넣는다. */
+.component-preview__code .theme-code-block {
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .component-preview__code {

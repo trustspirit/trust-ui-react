@@ -5,7 +5,7 @@ import path from 'path';
 
 const config: Config = {
   title: 'trust-ui',
-  tagline: 'A mobile-optimized React UI library — 22 themeable components, native touch UX, CSS-variable theming.',
+  tagline: 'A mobile-optimized React UI library — themeable components, native touch UX, CSS-variable theming.',
   favicon: 'img/favicon.ico',
 
   future: {
