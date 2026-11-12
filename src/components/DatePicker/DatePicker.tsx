@@ -14,6 +14,7 @@ import { Calendar } from './Calendar';
 import { formatDate, getMonthLabel, parseDateInputValue } from './utils';
 import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
 import { Dialog } from '../Dialog';
+import { useAnchoredLayer } from '../../hooks/useAnchoredLayer';
 
 export interface DatePickerProps {
   /** Controlled selected date */
@@ -171,13 +172,11 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     const triggerRef = useRef<HTMLDivElement>(null);
     const popupRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const [popupStyle, setPopupStyle] = useState<CSSProperties>({});
-
-    // Detect if DatePicker is inside a <dialog> (showModal creates a top-layer that blocks portals to body)
-    const getPortalContainer = useCallback(() => {
-      const dialog = triggerRef.current?.closest('dialog');
-      return dialog || document.body;
-    }, []);
+    // 위치·포털 대상·화면 충돌 처리는 공용 훅이 맡는다. 뷰포트 기준 fixed 좌표라
+    // Dialog 안에서 열어도 dialog 의 overflow 에 잘리지 않는다.
+    const layer = useAnchoredLayer({ open: isOpen, anchorRef: triggerRef, layerRef: popupRef });
+    // 달력은 스크롤되는 내용이 아니므로 높이 제한은 쓰지 않는다.
+    const popupStyle: CSSProperties = { ...layer.style, maxHeight: undefined };
 
     const isError = error || !!errorMessage;
 
@@ -188,36 +187,8 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
 
     const effectivePlaceholder = placeholder ?? dateFormat;
 
-    // Positioning
-    const updatePosition = useCallback(() => {
-      if (!triggerRef.current) return;
-      const rect = triggerRef.current.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - rect.bottom;
-      const popupHeight = 340;
-      const top =
-        spaceBelow > popupHeight ? rect.bottom + 4 : rect.top - popupHeight - 4;
-      const container = getPortalContainer();
-      if (container !== document.body) {
-        const containerRect = container.getBoundingClientRect();
-        setPopupStyle({
-          position: 'absolute',
-          top: top - containerRect.top,
-          left: rect.left - containerRect.left,
-          zIndex: 'var(--tui-z-dropdown)' as unknown as number,
-        });
-      } else {
-        setPopupStyle({
-          position: 'fixed',
-          top,
-          left: rect.left,
-          zIndex: 'var(--tui-z-dropdown)' as unknown as number,
-        });
-      }
-    }, [getPortalContainer]);
-
     const openPopup = useCallback(() => {
       if (disabled) return;
-      updatePosition();
       setIsOpen(true);
       setShowYearGrid(false);
       // Sync view to selected date or now
@@ -226,7 +197,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       setViewYear(d.getFullYear());
       // 팝업은 문서 끝에 포털되므로 포커스를 직접 넣어 주지 않으면 키보드로 닿을 수 없다.
       setFocusDate(d);
-    }, [disabled, updatePosition, selectedDate]);
+    }, [disabled, selectedDate]);
 
     const closePopup = useCallback(() => {
       setIsOpen(false);
@@ -258,18 +229,6 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isOpen, closePopup]);
-
-    // Reposition on scroll/resize
-    useEffect(() => {
-      if (!isOpen) return;
-      const handle = () => updatePosition();
-      window.addEventListener('scroll', handle, true);
-      window.addEventListener('resize', handle);
-      return () => {
-        window.removeEventListener('scroll', handle, true);
-        window.removeEventListener('resize', handle);
-      };
-    }, [isOpen, updatePosition]);
 
     // Keyboard
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -672,7 +631,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                 />
               )}
             </div>,
-            getPortalContainer(),
+            layer.container ?? document.body,
           )}
       </div>
     );

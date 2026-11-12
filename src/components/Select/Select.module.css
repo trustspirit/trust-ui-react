@@ -212,6 +212,7 @@
 
 /* ── Search input in dropdown ── */
 .searchWrapper {
+  flex-shrink: 0;
   padding: var(--tui-pad-2);
   border-bottom: 1px solid var(--tui-rule);
 }
@@ -247,11 +248,17 @@
   background-color: var(--tui-sheet);
   box-shadow: var(--tui-shadow-overlay);
   overflow: hidden;
+  /* 화면에 남은 공간이 모자라면 인라인 max-height 가 걸린다. 그때 목록이
+     잘리지 않고 줄어들어 스크롤되도록 세로 flex 로 둔다. */
+  display: flex;
+  flex-direction: column;
 }
 
 .optionsList {
   max-height: 240px;
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding: var(--tui-pad-1) 0;
 }
 

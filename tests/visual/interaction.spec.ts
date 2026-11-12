@@ -138,7 +138,7 @@ const CASES: Case[] = [
   {
     story: 'overlay-toast--open',
     label: 'Toast 닫기 버튼(기본 링, success 표면)',
-    focusSelector: '[role="alert"]:nth-of-type(1) button',
+    focusSelector: '[role="status"]:nth-of-type(1) button',
     visual: 'self',
     idiom: 'ring',
     ringSeparatorToken: '--tui-sheet',

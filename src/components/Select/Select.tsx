@@ -10,6 +10,8 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
+import { useAnchoredLayer } from '../../hooks/useAnchoredLayer';
+import { getLayerContainer } from '../../utils/anchoredPosition';
 import styles from './Select.module.css';
 
 export interface SelectOption {
@@ -161,14 +163,19 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     const triggerRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
-    const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
-
     // Detect if Select is inside a <dialog> (showModal creates a top-layer that blocks portals to body)
     const getPortalContainer = useCallback((): HTMLElement | null => {
       if (typeof document === 'undefined') return null; // SSR + defaultOpen
-      const dialog = triggerRef.current?.closest('dialog');
-      return dialog || document.body;
+      return getLayerContainer(triggerRef.current);
     }, []);
+
+    // 위치·화면 충돌 처리. 드롭다운은 트리거와 같은 폭을 쓴다.
+    const layer = useAnchoredLayer({
+      open: isOpen && !useNative && !useMobileSheet,
+      anchorRef: triggerRef,
+      layerRef: dropdownRef,
+      matchAnchorWidth: true,
+    });
 
     const isControlled = controlledValue !== undefined;
     const currentValue = isControlled ? controlledValue : internalValue;
@@ -188,53 +195,19 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       return options.filter((opt) => opt.label.toLowerCase().includes(query));
     }, [options, searchQuery]);
 
-    // Position the dropdown
-    const updateDropdownPosition = useCallback(() => {
-      if (!triggerRef.current) return;
-      const rect = triggerRef.current.getBoundingClientRect();
-      const container = getPortalContainer();
-      if (container && container !== document.body) {
-        // Inside a <dialog>: use absolute positioning relative to the dialog
-        const containerRect = container.getBoundingClientRect();
-        setDropdownStyle({
-          position: 'absolute',
-          top: rect.bottom - containerRect.top + 4,
-          left: rect.left - containerRect.left,
-          width: rect.width,
-          zIndex: 'var(--tui-z-dropdown)' as unknown as number,
-        });
-      } else {
-        setDropdownStyle({
-          position: 'fixed',
-          top: rect.bottom + 4,
-          left: rect.left,
-          width: rect.width,
-          zIndex: 'var(--tui-z-dropdown)' as unknown as number,
-        });
-      }
-    }, [getPortalContainer]);
-
     // Open/close
     const openDropdown = useCallback(() => {
       if (disabled) return;
-      updateDropdownPosition();
       setIsOpen(true);
       setSearchQuery('');
       setHighlightedIndex(-1);
-    }, [disabled, updateDropdownPosition]);
+    }, [disabled]);
 
     const closeDropdown = useCallback(() => {
       setIsOpen(false);
       setSearchQuery('');
       setHighlightedIndex(-1);
     }, []);
-
-    // Position the dropdown once it's open. openDropdown() already computes
-    // this before setting isOpen, but defaultOpen skips that path entirely —
-    // this effect covers the initial-mount case too.
-    useEffect(() => {
-      if (isOpen && !useMobileSheet) updateDropdownPosition();
-    }, [isOpen, useMobileSheet, updateDropdownPosition]);
 
     // If the input device changes mid-life (e.g., user connects a mouse to
     // an iPad), the dropdown variant switches between mobile sheet and
@@ -292,29 +265,18 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isOpen, useMobileSheet, closeDropdown]);
 
-    // Update position on scroll/resize; close on scroll for touch devices (but not for mobile sheet)
+    // 터치 기기에서는 페이지가 스크롤되면 닫는다(손가락 아래에서 목록이 따라 움직이는 것보다 낫다).
+    // 위치 추적 자체는 useAnchoredLayer 가 한다.
     useEffect(() => {
-      if (!isOpen) return;
-      // Mobile sheet handles its own scrolling — skip scroll/resize listeners
-      if (useMobileSheet) return;
-
+      if (!isOpen || useMobileSheet || !isTouchDevice) return;
       const handleScroll = (e: Event) => {
         // 캡처 단계라 옵션 목록 자신의 스크롤도 여기로 온다. 그건 닫을 이유가 아니다.
         if (dropdownRef.current?.contains(e.target as Node)) return;
-        if (isTouchDevice) {
-          closeDropdown();
-        } else {
-          updateDropdownPosition();
-        }
+        closeDropdown();
       };
-      const handleResize = () => updateDropdownPosition();
       window.addEventListener('scroll', handleScroll, true);
-      window.addEventListener('resize', handleResize);
-      return () => {
-        window.removeEventListener('scroll', handleScroll, true);
-        window.removeEventListener('resize', handleResize);
-      };
-    }, [isOpen, isTouchDevice, useMobileSheet, closeDropdown, updateDropdownPosition]);
+      return () => window.removeEventListener('scroll', handleScroll, true);
+    }, [isOpen, isTouchDevice, useMobileSheet, closeDropdown]);
 
     // Select an option
     const handleSelect = useCallback(
@@ -606,7 +568,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       if (!container) return null;
 
       return createPortal(
-        <div ref={dropdownRef} className={styles.dropdown} style={dropdownStyle}>
+        <div ref={dropdownRef} className={styles.dropdown} style={layer.style}>
           {searchable && (
             <div className={styles.searchWrapper}>
               <input

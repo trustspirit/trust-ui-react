@@ -120,8 +120,9 @@ export function useAnchoredLayer({
   const anchor = anchorRef.current;
   const style: CSSProperties = {
     position: 'fixed',
-    top: position?.top ?? 0,
-    left: position?.left ?? 0,
+    // 소수 좌표에 놓이면 글자와 1px 테두리가 흐려진다. 정수 픽셀에 맞춘다.
+    top: Math.round(position?.top ?? 0),
+    left: Math.round(position?.left ?? 0),
     maxHeight: position?.maxHeight,
     width: matchAnchorWidth ? anchorWidth : undefined,
     visibility: position ? 'visible' : 'hidden',

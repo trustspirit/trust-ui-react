@@ -13,6 +13,7 @@ import {
 import { createPortal } from 'react-dom';
 import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
 import { useLongPress } from '../../hooks/touch/useLongPress';
+import { useAnchoredLayer } from '../../hooks/useAnchoredLayer';
 import styles from './Tooltip.module.css';
 
 export type TooltipMobileVariant = 'tap' | 'longpress' | 'inline' | 'hidden';
@@ -84,44 +85,21 @@ export function Tooltip({
   );
 
   const [visible, setVisible] = useState(defaultVisible);
-  const [position, setPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const triggerRef = useRef<HTMLElement | null>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const autoDismissTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const tooltipId = useId();
 
-  const updatePosition = useCallback(() => {
-    const trigger = triggerRef.current;
-    const tooltip = tooltipRef.current;
-    if (!trigger || !tooltip) return;
-    const triggerRect = trigger.getBoundingClientRect();
-    const tooltipRect = tooltip.getBoundingClientRect();
-    const scrollX = window.scrollX;
-    const scrollY = window.scrollY;
-    const gap = 8;
-    let top = 0;
-    let left = 0;
-    switch (placement) {
-      case 'top':
-        top = triggerRect.top + scrollY - tooltipRect.height - gap;
-        left = triggerRect.left + scrollX + triggerRect.width / 2 - tooltipRect.width / 2;
-        break;
-      case 'bottom':
-        top = triggerRect.bottom + scrollY + gap;
-        left = triggerRect.left + scrollX + triggerRect.width / 2 - tooltipRect.width / 2;
-        break;
-      case 'left':
-        top = triggerRect.top + scrollY + triggerRect.height / 2 - tooltipRect.height / 2;
-        left = triggerRect.left + scrollX - tooltipRect.width - gap;
-        break;
-      case 'right':
-        top = triggerRect.top + scrollY + triggerRect.height / 2 - tooltipRect.height / 2;
-        left = triggerRect.right + scrollX + gap;
-        break;
-    }
-    setPosition({ top, left });
-  }, [placement]);
+  // 위치·화면 충돌 처리. 가장자리에서는 반대편으로 뒤집고 화면 안으로 당긴다.
+  const layer = useAnchoredLayer({
+    open: visible,
+    anchorRef: triggerRef,
+    layerRef: tooltipRef,
+    placement,
+    align: 'center',
+    offset: 8,
+  });
 
   const showWithDelay = useCallback(() => {
     timerRef.current = setTimeout(() => setVisible(true), delay);
@@ -179,22 +157,15 @@ export function Tooltip({
     };
   }, [visible, isTouch, effectiveMobileVariant, hide]);
 
-  useEffect(() => {
-    if (visible) {
-      const frame = requestAnimationFrame(() => updatePosition());
-      return () => cancelAnimationFrame(frame);
-    }
-  }, [visible, updatePosition]);
-
+  // Escape 로 닫을 수 있어야 한다(WCAG 1.4.13). 포커스가 어디에 있든 듣는다.
   useEffect(() => {
     if (!visible) return;
-    window.addEventListener('scroll', updatePosition, true);
-    window.addEventListener('resize', updatePosition);
-    return () => {
-      window.removeEventListener('scroll', updatePosition, true);
-      window.removeEventListener('resize', updatePosition);
+    const onKey = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') hide();
     };
-  }, [visible, updatePosition]);
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [visible, hide]);
 
   useEffect(() => {
     return () => {
@@ -203,10 +174,16 @@ export function Tooltip({
     };
   }, []);
 
+  const childProps = children.props as Record<string, unknown>;
+  const existingDescribedBy = childProps['aria-describedby'] as string | undefined;
+  /** 자식이 이미 가진 설명 id 를 지우지 않고 뒤에 덧붙인다. */
+  const describedBy = (extra: string | undefined) =>
+    [existingDescribedBy, extra].filter(Boolean).join(' ') || undefined;
+
   if (isTouch && effectiveMobileVariant === 'inline') {
     return (
       <div className={styles.inlineContainer}>
-        {children}
+        {cloneElement(children, { 'aria-describedby': describedBy(tooltipId) } as Record<string, unknown>)}
         <span className={styles.inlineHint} id={tooltipId}>
           {content}
         </span>
@@ -221,7 +198,8 @@ export function Tooltip({
   const tooltipClassNames = [
     styles.tooltip,
     styles[variant],
-    styles[placement],
+    // 뒤집혔다면 화살표도 실제로 놓인 쪽을 따른다.
+    styles[layer.placement],
     visible ? styles.visible : '',
     className,
   ]
@@ -229,12 +207,10 @@ export function Tooltip({
     .join(' ');
 
   const tooltipStyle: CSSProperties = {
-    top: position.top,
-    left: position.left,
+    ...layer.style,
+    maxHeight: undefined,
     maxWidth: isTouch && mobileMaxWidth ? mobileMaxWidth : maxWidth,
   };
-
-  const childProps = children.props as Record<string, unknown>;
 
   const onMouseEnter = (e: React.MouseEvent) => {
     if (!isTouch) showWithDelay();
@@ -245,11 +221,18 @@ export function Tooltip({
     (childProps.onMouseLeave as ((e: React.MouseEvent) => void) | undefined)?.(e);
   };
   const onFocus = (e: React.FocusEvent) => {
-    if (!isTouch) showWithDelay();
+    // 터치 기기라도 키보드를 붙여 쓰는 경우가 있다. 키보드 포커스에는 보여 준다.
+    let keyboardFocus = false;
+    try {
+      keyboardFocus = (e.target as Element).matches(':focus-visible');
+    } catch {
+      /* :focus-visible 을 모르는 환경 */
+    }
+    if (!isTouch || keyboardFocus) showWithDelay();
     (childProps.onFocus as ((e: React.FocusEvent) => void) | undefined)?.(e);
   };
   const onBlur = (e: React.FocusEvent) => {
-    if (!isTouch) hide();
+    if (!isTouch || effectiveMobileVariant !== 'tap') hide();
     (childProps.onBlur as ((e: React.FocusEvent) => void) | undefined)?.(e);
   };
   const onClick = (e: React.MouseEvent) => {
@@ -269,7 +252,10 @@ export function Tooltip({
   const triggerElement = cloneElement(children, {
     ref: (node: HTMLElement | null) => {
       triggerRef.current = node;
-      const childRef = (children as { ref?: React.Ref<HTMLElement> }).ref;
+      // React 19 는 ref 를 props 로 넘긴다. element.ref 접근은 경고를 낸다.
+      const childRef =
+        (childProps.ref as React.Ref<HTMLElement> | undefined) ??
+        (children as { ref?: React.Ref<HTMLElement> }).ref;
       if (typeof childRef === 'function') childRef(node);
       else if (childRef && typeof childRef === 'object') {
         (childRef as React.MutableRefObject<HTMLElement | null>).current = node;
@@ -281,27 +267,26 @@ export function Tooltip({
     onBlur,
     onClick,
     className: triggerClassName,
-    'aria-describedby': visible ? tooltipId : undefined,
+    'aria-describedby': describedBy(visible ? tooltipId : undefined),
   } as Record<string, unknown>);
 
   return (
     <>
       {triggerElement}
-      {typeof document !== 'undefined' &&
-        visible &&
+      {visible &&
+        layer.container &&
         createPortal(
           <div
             ref={tooltipRef}
             id={tooltipId}
             role="tooltip"
-            aria-live="polite"
             className={tooltipClassNames}
             style={tooltipStyle}
           >
             {content}
             <span className={styles.arrow} aria-hidden="true" />
           </div>,
-          document.body,
+          layer.container,
         )}
     </>
   );
