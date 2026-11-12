@@ -243,7 +243,13 @@
 .bottomCenter {
   bottom: 0;
   left: 50%;
+  /* 가운데 정렬은 transform 이 맡는다. 키보드 회피는 bottom 으로 해서 둘이 겹치지 않게 한다. */
   transform: translateX(-50%);
   align-items: center;
   padding-bottom: max(var(--tui-pad-3), var(--tui-safe-bottom));
+}
+
+/* 타이머가 멈춘 동안에는 남은 시간을 나타내는 괘선도 멈춘다. */
+.toast[data-paused] .drain {
+  animation-play-state: paused;
 }

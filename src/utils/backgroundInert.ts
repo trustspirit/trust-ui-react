@@ -48,7 +48,9 @@ export function acquireBackgroundInert(exclude: (Element | null)[]): void {
   if (lockCount === 0) {
     const attr = SUPPORTS_INERT ? 'inert' : 'aria-hidden';
     const siblings = Array.from(document.body.children).filter(
-      (el) => !exclude.includes(el),
+      // 토스트 영역은 항상 살려 둔다. Provider 가 마운트될 때부터 body 에 상주하므로
+      // 제외하지 않으면 모달 안에서 띄운 알림이 읽히지도 닫히지도 않는다.
+      (el) => !exclude.includes(el) && !el.hasAttribute('data-tui-toast-root'),
     );
     snapshots = siblings.map((el) => ({
       el,

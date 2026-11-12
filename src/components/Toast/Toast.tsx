@@ -1,4 +1,5 @@
-import { useEffect, useLayoutEffect, useRef, type CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, useRef,
+  useState, type CSSProperties } from 'react';
 import styles from './Toast.module.css';
 
 export type ToastVariant = 'success' | 'danger' | 'warning' | 'info';
@@ -90,25 +91,48 @@ export function Toast({
     onCloseRef.current = onClose;
   });
 
+  // 읽거나 닫기 버튼으로 가는 동안 사라지면 안 된다(WCAG 2.2.1).
+  // 포인터가 올라와 있거나 포커스가 안에 있으면 타이머를 멈추고 남은 시간을 기억한다.
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const paused = hovered || focused;
+  const remainingRef = useRef(duration);
   useEffect(() => {
-    if (duration > 0) {
-      timerRef.current = setTimeout(() => {
-        onCloseRef.current?.();
-      }, duration);
-    }
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
+    remainingRef.current = duration;
   }, [duration]);
+
+  useEffect(() => {
+    if (duration <= 0 || paused) return;
+    const startedAt = Date.now();
+    timerRef.current = setTimeout(() => {
+      onCloseRef.current?.();
+    }, remainingRef.current);
+    return () => {
+      clearTimeout(timerRef.current);
+      remainingRef.current = Math.max(0, remainingRef.current - (Date.now() - startedAt));
+    };
+  }, [duration, paused]);
+
+  // 성공·안내는 하던 말을 끊지 않고 알린다. 경고·오류만 즉시 끼어든다.
+  const role = variant === 'danger' || variant === 'warning' ? 'alert' : 'status';
 
   const classNames = [styles.toast, styles[variant], className]
     .filter(Boolean)
     .join(' ');
 
   return (
-    <div role="alert" className={classNames} style={style}>
+    <div
+      role={role}
+      className={classNames}
+      style={style}
+      data-paused={paused || undefined}
+      onPointerEnter={() => setHovered(true)}
+      onPointerLeave={() => setHovered(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocused(false);
+      }}
+    >
       <span className={styles.icon} aria-hidden="true">
         <VariantIcon variant={variant} />
       </span>

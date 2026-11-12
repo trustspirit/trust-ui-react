@@ -1,6 +1,7 @@
 import {
   createContext,
   useCallback,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -38,6 +39,8 @@ export const ToastContext = createContext<ToastContextValue | null>(null);
 interface ToastProviderProps {
   /** Position of the toast container (default: 'top-right') */
   position?: ToastPosition;
+  /** Maximum number of toasts shown at once. The oldest is dropped first. Default 5. */
+  max?: number;
   /** Children */
   children: ReactNode;
 }
@@ -53,6 +56,7 @@ const positionClassMap: Record<ToastPosition, string> = {
 
 export function ToastProvider({
   position = 'top-right',
+  max = 5,
   children,
 }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastData[]>([]);
@@ -70,11 +74,14 @@ export function ToastProvider({
   const toast = useCallback(
     (data: Omit<ToastData, 'id'>) => {
       const id = `toast-${++toastCounter.current}`;
-      setToasts((prev) => [...prev, { ...data, id }]);
+      setToasts((prev) => [...prev, { ...data, id }].slice(-Math.max(1, max)));
       return id;
     },
-    [],
+    [max],
   );
+
+  // 소비자(useToast)가 뷰포트 변화마다 다시 그려지지 않도록 값을 고정한다.
+  const contextValue = useMemo(() => ({ toast, dismiss, dismissAll }), [toast, dismiss, dismissAll]);
 
   const containerClass = [styles.container, positionClassMap[position]]
     .filter(Boolean)
@@ -86,17 +93,20 @@ export function ToastProvider({
       ? window.innerHeight - height
       : 0;
 
+  // transform 을 쓰면 bottom-center 의 가운데 정렬(translateX(-50%))을 덮어쓴다.
   const containerStyle = {
-    transform: keyboardOffset ? `translateY(-${keyboardOffset}px)` : undefined,
-    transition: 'transform var(--tui-duration-base) var(--tui-ease-out)',
+    bottom: keyboardOffset || undefined,
+    transition: 'bottom var(--tui-duration-base) var(--tui-ease-out)',
   };
 
   return (
-    <ToastContext.Provider value={{ toast, dismiss, dismissAll }}>
+    <ToastContext.Provider value={contextValue}>
       {children}
       {typeof document !== 'undefined' &&
         createPortal(
-          <div className={containerClass} style={containerStyle}>
+          // 모달이 배경을 비활성화할 때 이 영역은 건너뛴다(backgroundInert.ts).
+          // 모달 안에서 띄운 알림도 읽히고 닫을 수 있어야 한다.
+          <div className={containerClass} style={containerStyle} data-tui-toast-root="">
             {toasts.map((t) => (
               <Toast
                 key={t.id}

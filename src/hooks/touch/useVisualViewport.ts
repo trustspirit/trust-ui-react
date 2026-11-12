@@ -28,7 +28,9 @@ export function useVisualViewport(): VisualViewportState {
     const vv = window.visualViewport;
 
     const update = () => {
-      const heightDiff = window.innerHeight - vv.height;
+      // 핀치 줌을 하면 vv.height 가 scale 만큼 줄어든다. 확대를 키보드로 오판하지
+      // 않도록 scale 을 곱해 레이아웃 뷰포트 기준으로 되돌려 비교한다.
+      const heightDiff = window.innerHeight - vv.height * (vv.scale || 1);
       setState({
         height: vv.height,
         offsetTop: vv.offsetTop,
