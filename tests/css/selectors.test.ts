@@ -60,4 +60,14 @@ describe('CSS 셀렉터 계약', () => {
       expect(lists).not.toContain(`.shape_${shape} .inputWrapper`);
     }
   });
+
+  // 컴포넌트는 포커스를 box-shadow 링으로 그리고 outline 은 끈다. 강제 색상 모드
+  // (Windows 고대비)는 box-shadow 를 지우므로, 그 모드에서는 outline 을 되살려야
+  // 키보드 포커스가 보인다(WCAG 2.4.7).
+  it('강제 색상 모드에서 포커스 outline 을 되살린다', () => {
+    const css = readFileSync(join(srcDir, 'styles/tokens.css'), 'utf8').replace(/\s+/g, ' ');
+    expect(css).toMatch(
+      /@media \(forced-colors: active\) \{ :focus-visible \{ outline: 2px solid Highlight !important;/,
+    );
+  });
 });
