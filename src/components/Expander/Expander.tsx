@@ -9,6 +9,7 @@ import {
   type CSSProperties,
   type ReactNode,
 } from 'react';
+import { idSegment } from '../../utils/idSegment';
 import styles from './Expander.module.css';
 
 /* ── Context ── */
@@ -218,8 +219,8 @@ function ExpanderTrigger({ children, className }: ExpanderTriggerProps) {
   const { toggle, baseId } = useExpanderContext();
   const { value, isOpen, disabled } = useItemContext();
 
-  const triggerId = `${baseId}-trigger-${value}`;
-  const contentId = `${baseId}-content-${value}`;
+  const triggerId = `${baseId}-trigger-${idSegment(value)}`;
+  const contentId = `${baseId}-content-${idSegment(value)}`;
 
   const classNames = [styles.trigger, className].filter(Boolean).join(' ');
   const chevronClassNames = [styles.chevron, isOpen ? styles.chevronOpen : '']
@@ -261,8 +262,8 @@ function ExpanderContent({ children, className }: ExpanderContentProps) {
   const { baseId } = useExpanderContext();
   const { value, isOpen } = useItemContext();
 
-  const triggerId = `${baseId}-trigger-${value}`;
-  const contentId = `${baseId}-content-${value}`;
+  const triggerId = `${baseId}-trigger-${idSegment(value)}`;
+  const contentId = `${baseId}-content-${idSegment(value)}`;
 
   const wrapperClassNames = [
     styles.contentWrapper,

@@ -91,9 +91,10 @@ function RowCells<T>({
 
   return (
     <>
-      {columns.map((col) => (
+      {columns.map((col, index) => (
         <td
-          key={col.key}
+          // 같은 key 를 가진 두 열을 허용하므로 React key 에는 위치를 함께 넣는다.
+          key={`${col.key}:${index}`}
           className={cx(
             styles.td,
             alignClass(col),
@@ -126,15 +127,15 @@ function RowCells<T>({
           )}
           {mobileLayout.secondary.length > 0 && (
             <span className={styles.slotSecondary}>
-              {mobileLayout.secondary.map((col) => (
-                <SummaryItem key={col.key} col={col} row={row} content={cells.get(col)} />
+              {mobileLayout.secondary.map((col, index) => (
+                <SummaryItem key={`${col.key}:${index}`} col={col} row={row} content={cells.get(col)} />
               ))}
             </span>
           )}
           {mobileLayout.delta.length > 0 && (
             <span className={styles.slotDelta}>
-              {mobileLayout.delta.map((col) => (
-                <SummaryItem key={col.key} col={col} row={row} content={cells.get(col)} />
+              {mobileLayout.delta.map((col, index) => (
+                <SummaryItem key={`${col.key}:${index}`} col={col} row={row} content={cells.get(col)} />
               ))}
             </span>
           )}
@@ -243,7 +244,7 @@ export function Table<T extends Record<string, any>>({
       >
         <thead className={stickyHeader ? styles.stickyHeader : undefined}>
           <tr>
-            {columns.map((col) => {
+            {columns.map((col, index) => {
               const isSorted = sort.key === col.key;
               const thStyle: CSSProperties = {};
               if (col.width) {
@@ -251,7 +252,7 @@ export function Table<T extends Record<string, any>>({
               }
               return (
                 <th
-                  key={col.key}
+                  key={`${col.key}:${index}`}
                   scope="col"
                   className={cx(styles.th, alignClass(col), isSorted && styles.sorted)}
                   style={thStyle}

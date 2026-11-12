@@ -86,6 +86,22 @@ describe('compareValues', () => {
   });
 });
 
+describe('compareValues — 날짜와 숫자 문자열', () => {
+  it('Date 는 요일 이름이 아니라 시각으로 비교한다', () => {
+    // 2026-03-06 은 금요일, 2026-03-09 는 월요일. 문자열로 비교하면 "Fri" < "Mon" 이라
+    // 우연히 맞지만, 2026-03-10(화, "Tue") 과 2026-03-12(목, "Thu") 는 뒤집힌다.
+    const tue = new Date(2026, 2, 10);
+    const thu = new Date(2026, 2, 12);
+    expect(compareValues(tue, thu)).toBeLessThan(0);
+    expect(compareValues(thu, tue)).toBeGreaterThan(0);
+  });
+
+  it('숫자로 시작하는 문자열은 자릿수가 아니라 크기로 비교한다', () => {
+    expect(compareValues('9', '10')).toBeLessThan(0);
+    expect(compareValues('항목 2', '항목 10')).toBeLessThan(0);
+  });
+});
+
 describe('sortRows', () => {
   const rows = [{ n: 9 }, { n: 100 }, { n: 20 }];
 

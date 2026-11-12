@@ -12,6 +12,7 @@ import {
   type MutableRefObject,
   type ReactNode,
 } from 'react';
+import { idSegment } from '../../utils/idSegment';
 import styles from './Tabs.module.css';
 
 /* ── Context ── */
@@ -22,6 +23,12 @@ interface TabsContextValue {
   variant: 'underline' | 'pill';
   baseId: string;
   triggerRefs: MutableRefObject<Map<string, HTMLButtonElement>>;
+  /**
+   * 활성 탭이 없거나 비활성화돼 있을 때 Tab 키가 멈출 탭. 탭 목록에는 언제나
+   * 키보드로 들어갈 수 있는 탭이 하나 있어야 한다.
+   */
+  fallbackTabStop: string | null;
+  setFallbackTabStop: (value: string | null) => void;
 }
 
 const TabsContext = createContext<TabsContextValue | null>(null);
@@ -65,6 +72,7 @@ function TabsRoot({
   const [internalValue, setInternalValue] = useState(defaultValue ?? '');
   const baseId = useId();
   const triggerRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const [fallbackTabStop, setFallbackTabStop] = useState<string | null>(null);
 
   const isControlled = value !== undefined;
   const activeValue = isControlled ? value : internalValue;
@@ -87,7 +95,15 @@ function TabsRoot({
 
   return (
     <TabsContext.Provider
-      value={{ activeValue, setActiveValue, variant: normalizedVariant, baseId, triggerRefs }}
+      value={{
+        activeValue,
+        setActiveValue,
+        variant: normalizedVariant,
+        baseId,
+        triggerRefs,
+        fallbackTabStop,
+        setFallbackTabStop,
+      }}
     >
       <div className={classNames} style={style}>
         {children}
@@ -108,7 +124,7 @@ interface TabsListProps {
 }
 
 function TabsList({ children, className }: TabsListProps) {
-  const { variant, activeValue, triggerRefs } = useTabsContext();
+  const { variant, activeValue, triggerRefs, setFallbackTabStop } = useTabsContext();
   const listRef = useRef<HTMLDivElement>(null);
   const [indicatorStyle, setIndicatorStyle] = useState<{ left: number; width: number }>({
     left: 0,
@@ -123,7 +139,8 @@ function TabsList({ children, className }: TabsListProps) {
     const listRect = list.getBoundingClientRect();
     const triggerRect = activeTrigger.getBoundingClientRect();
     setIndicatorStyle({
-      left: triggerRect.left - listRect.left,
+      // 목록이 가로로 스크롤돼 있으면 그만큼 더해야 내용 기준 위치가 된다.
+      left: triggerRect.left - listRect.left + list.scrollLeft,
       width: triggerRect.width,
     });
   }, [variant, activeValue, triggerRefs]);
@@ -132,11 +149,39 @@ function TabsList({ children, className }: TabsListProps) {
     updateIndicator();
   }, [updateIndicator]);
 
+  // 창 크기뿐 아니라 탭 자체의 크기 변화도 따라간다: 닫힌 Dialog 안에서 폭 0 으로
+  // 측정된 뒤 열리는 경우, 웹폰트가 늦게 로드되는 경우, 라벨이 바뀌는 경우.
   useEffect(() => {
     if (variant !== 'underline' || typeof window === 'undefined') return;
     window.addEventListener('resize', updateIndicator);
-    return () => window.removeEventListener('resize', updateIndicator);
-  }, [variant, updateIndicator]);
+    let observer: ResizeObserver | undefined;
+    if (typeof ResizeObserver !== 'undefined' && listRef.current) {
+      observer = new ResizeObserver(updateIndicator);
+      observer.observe(listRef.current);
+      triggerRefs.current.forEach((el) => observer!.observe(el));
+    }
+    return () => {
+      window.removeEventListener('resize', updateIndicator);
+      observer?.disconnect();
+    };
+  }, [variant, updateIndicator, triggerRefs]);
+
+  // 목록이 넘쳐 스크롤될 때 활성 탭이 보이는 곳에 오게 한다.
+  useEffect(() => {
+    const active = triggerRefs.current.get(activeValue);
+    active?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' });
+  }, [activeValue, triggerRefs]);
+
+  // 활성 탭이 없거나 비활성화돼 있으면 첫 번째 쓸 수 있는 탭을 Tab 정지점으로 삼는다.
+  useEffect(() => {
+    const active = triggerRefs.current.get(activeValue);
+    if (active && !active.disabled) {
+      setFallbackTabStop(null);
+      return;
+    }
+    const firstEnabled = [...triggerRefs.current.entries()].find(([, el]) => !el.disabled);
+    setFallbackTabStop(firstEnabled ? firstEnabled[0] : null);
+  });
 
   const handleKeyDown = useCallback((e: KeyboardEvent<HTMLDivElement>) => {
     const list = listRef.current;
@@ -212,11 +257,12 @@ interface TabsTriggerProps {
 }
 
 function TabsTrigger({ value, disabled = false, children, className }: TabsTriggerProps) {
-  const { activeValue, setActiveValue, variant, baseId, triggerRefs } = useTabsContext();
+  const { activeValue, setActiveValue, variant, baseId, triggerRefs, fallbackTabStop } =
+    useTabsContext();
   const isActive = activeValue === value;
 
-  const triggerId = `${baseId}-trigger-${value}`;
-  const panelId = `${baseId}-panel-${value}`;
+  const triggerId = `${baseId}-trigger-${idSegment(value)}`;
+  const panelId = `${baseId}-panel-${idSegment(value)}`;
 
   const classNames = [
     styles.trigger,
@@ -235,7 +281,7 @@ function TabsTrigger({ value, disabled = false, children, className }: TabsTrigg
       className={classNames}
       aria-selected={isActive}
       aria-controls={panelId}
-      tabIndex={isActive ? 0 : -1}
+      tabIndex={isActive || fallbackTabStop === value ? 0 : -1}
       disabled={disabled}
       onClick={() => setActiveValue(value)}
       ref={(el) => {
@@ -267,8 +313,8 @@ function TabsContent({ value, children, className }: TabsContentProps) {
 
   if (!isActive) return null;
 
-  const triggerId = `${baseId}-trigger-${value}`;
-  const panelId = `${baseId}-panel-${value}`;
+  const triggerId = `${baseId}-trigger-${idSegment(value)}`;
+  const panelId = `${baseId}-panel-${idSegment(value)}`;
 
   const classNames = [styles.content, className].filter(Boolean).join(' ');
 

@@ -42,7 +42,10 @@ export function compareValues(a: unknown, b: unknown): number {
   if (aEmpty) return 1;
   if (bEmpty) return -1;
   if (typeof a === 'number' && typeof b === 'number') return a - b;
-  return String(a).localeCompare(String(b));
+  // Date 를 문자열로 바꾸면 "Tue Mar 10 …" 처럼 요일 이름부터 비교하게 된다.
+  if (a instanceof Date && b instanceof Date) return a.getTime() - b.getTime();
+  // numeric: "9" 와 "10", "항목 2" 와 "항목 10" 을 사전순이 아니라 수의 크기로 비교한다.
+  return String(a).localeCompare(String(b), undefined, { numeric: true });
 }
 
 export function sortRows<T>(rows: T[], key: string | null, direction: SortDirection): T[] {
