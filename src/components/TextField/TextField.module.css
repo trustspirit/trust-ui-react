@@ -33,15 +33,15 @@
 }
 
 /* ── Shapes ── */
-.shape_square .inputWrapper {
+.inputWrapper.shape_square {
   border-radius: var(--tui-radius-control);
 }
 
-.shape_rounded .inputWrapper {
+.inputWrapper.shape_rounded {
   border-radius: var(--tui-radius-sheet);
 }
 
-.shape_pill .inputWrapper {
+.inputWrapper.shape_pill {
   border-radius: var(--tui-radius-full);
 }
 
@@ -239,6 +239,19 @@
   padding: var(--tui-pad-1);
   border-radius: var(--tui-radius-control);
   transition: var(--tui-transition-color);
+  position: relative;
+}
+
+/* 터치 타깃 — 다른 컴포넌트와 같은 max(100%, 44px) 표현을 쓴다. */
+@media (pointer: coarse) {
+  .visibilityToggle::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
 }
 
 @media (hover: hover) {

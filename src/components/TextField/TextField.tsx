@@ -155,8 +155,9 @@ export const TextField = forwardRef<
     const helperId = `${uid}-helper`;
 
     const [showPassword, setShowPassword] = useState(false);
+    // defaultValue 는 타입상 number 도 허용된다. 서식 함수는 문자열만 받는다.
     const [internalValue, setInternalValue] = useState<string>(
-      (defaultValue as string) ?? '',
+      defaultValue === undefined || defaultValue === null ? '' : String(defaultValue),
     );
 
     const isControlled = controlledValue !== undefined;
@@ -201,7 +202,7 @@ export const TextField = forwardRef<
       [type, format],
     );
 
-    // Maintain cursor position after formatting
+    // 서식을 다시 입힌 뒤 캐럿을 되돌릴 위치. 렌더가 끝난 뒤에 적용한다.
     const cursorRef = useRef<number | null>(null);
 
     useEffect(() => {
@@ -217,26 +218,50 @@ export const TextField = forwardRef<
       const newValue = e.target.value;
 
       if (needsFormatting && !multiline) {
-        const raw = getRawValue(newValue);
+        const input = e.target as HTMLInputElement;
+        const selStart = input.selectionStart ?? newValue.length;
+        const isSignificant = (ch: string) =>
+          /\d/.test(ch) || (format === 'decimal' && ch === '.');
+
+        let edited = newValue;
+        // 캐럿 왼쪽에 있는 "의미 있는 글자"(숫자, 소수점) 수. 서식 후에도 이 수를 유지한다.
+        let significantBefore = [...newValue.slice(0, selStart)].filter(isSignificant).length;
+
+        // 구분자(쉼표·하이픈) 하나만 지워진 경우: 그대로 두면 같은 값으로 다시
+        // 서식되어 아무것도 지워지지 않는다. 사용자의 의도는 그 앞 글자를 지우는 것이다.
+        const previous = renderedValue;
+        const removedOne = newValue.length === previous.length - 1;
+        if (
+          removedOne &&
+          previous.slice(0, selStart) === newValue.slice(0, selStart) &&
+          !isSignificant(previous[selStart]) &&
+          previous.slice(selStart + 1) === newValue.slice(selStart) &&
+          selStart > 0
+        ) {
+          edited = newValue.slice(0, selStart - 1) + newValue.slice(selStart);
+          significantBefore = Math.max(0, significantBefore - 1);
+        }
+
+        const raw = getRawValue(edited);
         const formatted = getFormattedValue(raw);
 
-        // Calculate new cursor position
-        const input = e.target as HTMLInputElement;
-        const selStart = input.selectionStart ?? 0;
-        const diff = formatted.length - newValue.length;
-        cursorRef.current = Math.max(0, selStart + diff);
+        // 서식된 문자열에서 같은 수의 의미 있는 글자가 왼쪽에 오는 위치를 찾는다.
+        let position = 0;
+        for (let seen = 0; position < formatted.length && seen < significantBefore; position++) {
+          if (isSignificant(formatted[position])) seen++;
+        }
+        cursorRef.current = position;
 
         if (!isControlled) {
           setInternalValue(formatted);
         }
         onValueChange?.(raw);
 
-        // Create a synthetic event with the formatted value
-        const syntheticEvent = {
-          ...e,
-          target: { ...e.target, value: formatted },
-        } as ChangeEvent<HTMLInputElement>;
-        onChange?.(syntheticEvent);
+        // 이벤트를 복제하지 않는다. 스프레드 복제는 DOM 요소의 프로토타입
+        // 접근자(name, id …)와 이벤트 메서드를 잃는다. 실제 input 의 값을
+        // 서식된 값으로 맞춘 뒤 원본 이벤트를 그대로 넘긴다.
+        input.value = formatted;
+        onChange?.(e as ChangeEvent<HTMLInputElement>);
       } else {
         if (!isControlled) {
           setInternalValue(newValue);
@@ -267,6 +292,16 @@ export const TextField = forwardRef<
 
     // For formatted number inputs, use text type
     const inputType = needsFormatting ? 'text' : effectiveType;
+
+    // type 을 text 로 바꾸면 모바일이 일반 키보드를 띄운다. 서식에 맞는 키보드를 요청한다.
+    const defaultInputMode: InputHTMLAttributes<HTMLInputElement>['inputMode'] =
+      type === 'tel'
+        ? 'tel'
+        : format === 'decimal'
+          ? 'decimal'
+          : format === 'currency'
+            ? 'numeric'
+            : undefined;
 
     const isError = error || !!errorMessage;
 
@@ -309,8 +344,8 @@ export const TextField = forwardRef<
           type="button"
           className={styles.visibilityToggle}
           onClick={() => setShowPassword((prev) => !prev)}
-          tabIndex={-1}
-          aria-label={showPassword ? 'Hide password' : 'Show password'}
+          aria-label="Show password"
+          aria-pressed={showPassword}
         >
           {showPassword ? <EyeOffIcon /> : <EyeIcon />}
         </button>
@@ -335,6 +370,7 @@ export const TextField = forwardRef<
               className={styles.textarea}
               placeholder={placeholder}
               disabled={disabled}
+              required={required}
               rows={rows}
               maxLength={maxLength}
               value={isControlled ? displayValue : internalValue}
@@ -353,6 +389,9 @@ export const TextField = forwardRef<
               type={inputType}
               placeholder={placeholder}
               disabled={disabled}
+              required={required}
+              inputMode={defaultInputMode}
+              autoComplete={type === 'tel' ? 'tel' : undefined}
               maxLength={
                 needsFormatting
                   ? undefined

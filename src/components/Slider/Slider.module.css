@@ -213,25 +213,40 @@
 }
 
 /* ── Mobile thumb sizes (touch devices) ── */
+/*
+ * 벤더 의사 요소는 규칙을 따로 쓴다. 한 셀렉터 목록에 섞으면 브라우저가
+ * 모르는 쪽 때문에 규칙 전체를 버린다.
+ */
 @media (pointer: coarse) {
-  .sm .slider::-webkit-slider-thumb,
+  .sm .slider::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    margin-top: -8px;
+  }
+  .md .slider::-webkit-slider-thumb {
+    width: 24px;
+    height: 24px;
+    margin-top: -9px;
+  }
+  .lg .slider::-webkit-slider-thumb {
+    width: 28px;
+    height: 28px;
+    margin-top: -10px;
+  }
+
   .sm .slider::-moz-range-thumb {
     width: 20px;
     height: 20px;
   }
-  .md .slider::-webkit-slider-thumb,
   .md .slider::-moz-range-thumb {
     width: 24px;
     height: 24px;
   }
-  .lg .slider::-webkit-slider-thumb,
   .lg .slider::-moz-range-thumb {
     width: 28px;
     height: 28px;
   }
-  .sm .slider::-webkit-slider-thumb { margin-top: -8px; }
-  .md .slider::-webkit-slider-thumb { margin-top: -9px; }
-  .lg .slider::-webkit-slider-thumb { margin-top: -10px; }
+}
 }
 
 /* ── Value label ── */
