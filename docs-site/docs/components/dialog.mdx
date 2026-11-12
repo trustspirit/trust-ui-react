@@ -83,7 +83,11 @@ The `size` prop controls the width of the dialog panel on desktop.
   { name: 'mobileVariant', type: "'modal' | 'sheet' | 'fullscreen'", default: "'modal'", description: 'Mobile rendering strategy' },
   { name: 'closeOnBackdrop', type: 'boolean', default: 'true', description: 'Close when backdrop is clicked' },
   { name: 'closeOnEscape', type: 'boolean', default: 'true', description: 'Close when Escape key is pressed' },
-  { name: 'children', type: 'ReactNode', description: 'Dialog content' },
+  { name: 'aria-label', type: "string", description: 'Accessible name. Not needed when a Dialog.Title is rendered' },
+  { name: 'aria-labelledby', type: "string", description: 'Id of the element naming the dialog; overrides the Dialog.Title wiring' },
+  { name: 'className', type: "string", description: 'Additional CSS class name' },
+  { name: 'style', type: "CSSProperties", description: 'Additional inline styles' },
+  { name: 'children', type: 'ReactNode', required: true, description: 'Dialog content' },
 ]} />
 
 ## Dialog.Title Props

@@ -97,7 +97,7 @@ Pair with `mobileIndicator` to add a subtle dotted underline on the trigger — 
 ## Props
 
 <PropsTable props={[
-  { name: 'content', type: 'ReactNode', description: 'Content to display inside the tooltip' },
+  { name: 'content', type: 'ReactNode', required: true, description: 'Content to display inside the tooltip' },
   { name: 'placement', type: "'top' | 'bottom' | 'left' | 'right'", default: "'top'", description: 'Placement relative to the trigger' },
   { name: 'variant', type: "'dark' | 'light'", default: "'dark'", description: 'Visual variant' },
   { name: 'delay', type: 'number', default: '200', description: 'Delay in milliseconds before showing' },
@@ -106,6 +106,7 @@ Pair with `mobileIndicator` to add a subtle dotted underline on the trigger — 
   { name: 'mobileAutoDismiss', type: 'number', default: '4000', description: 'Auto-dismiss duration in tap mode (ms). Set 0 to disable.' },
   { name: 'mobileIndicator', type: 'boolean', default: 'false', description: 'Add a dotted-underline visual hint on the trigger' },
   { name: 'mobileMaxWidth', type: 'number', description: 'Override maxWidth on mobile (defaults to maxWidth)' },
-  { name: 'children', type: 'ReactElement', description: 'Trigger element' },
+  { name: 'defaultVisible', type: "boolean", default: "false", description: 'Renders the tooltip visible on mount (uncontrolled)' },
+  { name: 'children', type: 'ReactElement', required: true, description: 'Trigger element' },
   { name: 'className', type: 'string', description: 'Additional CSS class name' },
 ]} />

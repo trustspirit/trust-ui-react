@@ -117,6 +117,7 @@ The 2-step `modal` flow feels native to mobile users (think Airbnb / Google Flig
   { name: 'required', type: 'boolean', default: 'false', description: 'Whether the field is required (shows red asterisk)' },
   { name: 'presets', type: 'Array<{ label: string; range: DateRange }>', description: 'Preset ranges shown in sidebar' },
   { name: 'mobileVariant', type: "'modal' | 'native'", default: "'modal'", description: 'Mobile rendering: 2-step fullscreen flow or stacked native inputs' },
+  { name: 'defaultOpen', type: "boolean", default: "false", description: 'Renders the calendar open on mount (uncontrolled)' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },
   { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
 ]} />

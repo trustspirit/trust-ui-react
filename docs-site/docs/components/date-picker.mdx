@@ -105,6 +105,7 @@ Pick `native` for system-critical fields (DOB, deadlines) where OS familiarity w
   { name: 'label', type: 'string', description: 'Label displayed above the input' },
   { name: 'required', type: 'boolean', default: 'false', description: 'Whether the field is required (shows red asterisk)' },
   { name: 'mobileVariant', type: "'modal' | 'native'", default: "'modal'", description: 'Mobile rendering: themed fullscreen dialog or native OS picker' },
+  { name: 'defaultOpen', type: "boolean", default: "false", description: 'Renders the calendar open on mount (uncontrolled)' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },
   { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
 ]} />

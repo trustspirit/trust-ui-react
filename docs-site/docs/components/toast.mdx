@@ -102,9 +102,9 @@ function App() {
 ### Toast
 
 <PropsTable props={[
-  { name: 'id', type: 'string', description: 'Unique identifier for the toast' },
-  { name: 'variant', type: "'success' | 'danger' | 'warning' | 'info'", description: 'Visual variant' },
-  { name: 'message', type: 'string', description: 'Main message text' },
+  { name: 'id', type: 'string', required: true, description: 'Unique identifier for the toast' },
+  { name: 'variant', type: "'success' | 'danger' | 'warning' | 'info'", required: true, description: 'Visual variant' },
+  { name: 'message', type: 'string', required: true, description: 'Main message text' },
   { name: 'description', type: 'string', description: 'Optional description below the message' },
   { name: 'duration', type: 'number', default: '4000', description: 'Auto-dismiss duration in milliseconds' },
   { name: 'showProgress', type: 'boolean', default: 'false', description: 'Draw a draining 1px rule under the toast, timed to duration' },
@@ -117,6 +117,7 @@ function App() {
 
 <PropsTable props={[
   { name: 'position', type: "'top-right' | 'top-left' | 'top-center' | 'bottom-right' | 'bottom-left' | 'bottom-center'", default: "'top-right'", description: 'Where the toast container is anchored' },
+  { name: 'max', type: "number", default: "5", description: 'Maximum number of toasts shown at once; the oldest is dropped first' },
   { name: 'children', type: 'ReactNode', description: 'Subtree that can call useToast()' },
 ]} />
 

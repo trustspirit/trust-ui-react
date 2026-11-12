@@ -85,6 +85,7 @@ A file upload component with drag-and-drop support, file validation, and preview
   { name: 'placeholder', type: 'string', description: 'Custom placeholder text' },
   { name: 'browseText', type: 'string', default: "'browse'", description: 'Text for the browse link' },
   { name: 'renderPreview', type: '(file: FileUploadFile) => ReactNode', description: 'Custom preview renderer for grid items' },
+  { name: 'mobileVariant', type: "'dropzone' | 'button'", default: "'dropzone'", description: 'Rendering on touch devices' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },
   { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
 ]} />

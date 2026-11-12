@@ -61,5 +61,11 @@ A toggle switch for binary on/off states.
   { name: 'required', type: 'boolean', default: 'false', description: 'Whether the field is required (shows red asterisk)' },
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the switch is disabled' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'error', type: "boolean", default: "false", description: 'Whether the field is in error state' },
+  { name: 'errorMessage', type: "string", description: 'Error message shown below and linked to the control' },
+  { name: 'aria-label', type: "string", description: 'Accessible name when there is no visible label (e.g. a settings row with its own text)' },
+  { name: 'aria-labelledby', type: "string", description: 'Id of an element that names the control' },
+  { name: 'id', type: "string", description: 'Id for the switch button' },
+  { name: 'name', type: "string", description: 'Form field name; when set, the value is submitted with the form' },
   { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
 ]} />

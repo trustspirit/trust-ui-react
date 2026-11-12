@@ -110,6 +110,8 @@ Set `dismissible={false}` to prevent swipe-down dismiss (e.g., for confirmation 
   { name: 'initialSnap', type: 'number', default: '0', description: 'Index into snapPoints when the sheet opens' },
   { name: 'showHandle', type: 'boolean', default: 'true', description: 'Show the drag handle at the top' },
   { name: 'dismissible', type: 'boolean', default: 'true', description: 'Allow swipe-down to dismiss' },
+  { name: 'closeOnBackdrop', type: "boolean", default: "true", description: 'Close when the backdrop is tapped' },
+  { name: 'closeOnEscape', type: "boolean", default: "true", description: 'Close when Escape is pressed' },
   { name: 'children', type: 'ReactNode', description: 'Sheet content' },
   { name: 'className', type: 'string', description: 'Additional CSS class for the sheet element' },
 ]} />

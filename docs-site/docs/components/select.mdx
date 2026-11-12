@@ -134,7 +134,7 @@ Desktop layout is unaffected — a floating dropdown anchored to the trigger.
 ## Props
 
 <PropsTable props={[
-  { name: 'options', type: 'SelectOption[]', description: 'Available options ({ value, label, disabled? })' },
+  { name: 'options', type: 'SelectOption[]', required: true, description: 'Available options ({ value, label, disabled? })' },
   { name: 'value', type: 'string | string[]', description: 'Controlled value (string for single, string[] for multi)' },
   { name: 'defaultValue', type: 'string | string[]', description: 'Default value (uncontrolled)' },
   { name: 'onChange', type: '(value: string | string[]) => void', description: 'Change callback' },
@@ -149,6 +149,8 @@ Desktop layout is unaffected — a floating dropdown anchored to the trigger.
   { name: 'error', type: 'boolean', default: 'false', description: 'Whether the field is in error state' },
   { name: 'errorMessage', type: 'string', description: 'Error message' },
   { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Stretches to fill container' },
+  { name: 'aria-label', type: "string", description: 'Accessible name when there is no visible label' },
+  { name: 'defaultOpen', type: "boolean", default: "false", description: 'Renders the dropdown open on mount (uncontrolled)' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },
   { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
 ]} />

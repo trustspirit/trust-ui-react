@@ -71,6 +71,8 @@ v2 has no raised/elevated state and no color-blended fills — every variant fil
   { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Height of the progress bar' },
   { name: 'indeterminate', type: 'boolean', default: 'false', description: 'Shows an animated indeterminate loading bar' },
   { name: 'showLabel', type: 'boolean', default: 'false', description: 'Shows the percentage label' },
+  { name: 'aria-label', type: "string", description: 'Accessible name when there is no visible label (e.g. \"Upload progress\")' },
+  { name: 'aria-labelledby', type: "string", description: 'Id of an element that names the control' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },
   { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
 ]} />

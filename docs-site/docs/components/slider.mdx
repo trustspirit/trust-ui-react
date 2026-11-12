@@ -86,6 +86,11 @@ v2 has no raised/elevated state and no color-blended fills — the track fill is
   { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size' },
   { name: 'showValue', type: 'boolean', default: 'false', description: 'Show the current value label' },
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the slider is disabled' },
+  { name: 'aria-label', type: "string", description: 'Accessible name when there is no visible label (a slider always needs a name)' },
+  { name: 'aria-labelledby', type: "string", description: 'Id of an element that names the control' },
+  { name: 'aria-valuetext', type: "string", description: 'Human-readable value, e.g. \"30%\"' },
+  { name: 'id', type: "string", description: 'Id for the range input' },
+  { name: 'name', type: "string", description: 'Form field name' },
   { name: 'className', type: 'string', description: 'Additional CSS class' },
   { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
 ]} />

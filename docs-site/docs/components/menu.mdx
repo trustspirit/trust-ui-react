@@ -118,21 +118,22 @@ Desktop layout is unaffected — the dropdown still anchors to the trigger.
 ## Menu Props
 
 <PropsTable props={[
-  { name: 'children', type: 'ReactNode', description: 'Menu children (Trigger, Content)' },
+  { name: 'children', type: 'ReactNode', required: true, description: 'Menu children (Trigger, Content)' },
   { name: 'mobileVariant', type: "'dropdown' | 'sheet'", default: "'dropdown'", description: 'On touch devices, render as ActionSheet when set to "sheet"' },
+  { name: 'defaultOpen', type: "boolean", default: "false", description: 'Initial open state (uncontrolled)' },
 ]} />
 
 ## Menu.Trigger Props
 
 <PropsTable props={[
-  { name: 'children', type: 'ReactElement', description: 'Trigger element' },
+  { name: 'children', type: 'ReactElement', required: true, description: 'Trigger element' },
 ]} />
 
 ## Menu.Content Props
 
 <PropsTable props={[
   { name: 'align', type: "'start' | 'end'", default: "'start'", description: 'Alignment relative to trigger' },
-  { name: 'children', type: 'ReactNode', description: 'Content children (Menu.Item, Menu.Divider)' },
+  { name: 'children', type: 'ReactNode', required: true, description: 'Content children (Menu.Item, Menu.Divider)' },
   { name: 'className', type: 'string', description: 'Additional CSS class name' },
   { name: 'style', type: 'CSSProperties', description: 'Additional inline styles' },
 ]} />
@@ -144,6 +145,6 @@ Desktop layout is unaffected — the dropdown still anchors to the trigger.
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the item is disabled' },
   { name: 'danger', type: 'boolean', default: 'false', description: 'Render as a destructive action (red)' },
   { name: 'startIcon', type: 'ReactNode', description: 'Icon before the label' },
-  { name: 'children', type: 'ReactNode', description: 'Item content' },
+  { name: 'children', type: 'ReactNode', required: true, description: 'Item content' },
   { name: 'className', type: 'string', description: 'Additional CSS class name' },
 ]} />
