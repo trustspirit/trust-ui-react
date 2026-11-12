@@ -1,6 +1,6 @@
 {
   "name": "trust-ui-react",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "A mobile-optimized, themeable React UI library — 48 components, native touch UX, CSS-variable theming, sophisticated v2 design system.",
   "type": "module",
   "main": "./dist/index.cjs",
