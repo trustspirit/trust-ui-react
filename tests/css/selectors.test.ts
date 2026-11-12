@@ -19,6 +19,23 @@ function selectorLists(css: string): string[] {
 }
 
 describe('CSS 셀렉터 계약', () => {
+  // 단위 테스트는 CSS 를 파싱하지 않는다. 닫는 괄호 하나가 남으면 번들러만 실패한다.
+  it('모든 스타일시트의 중괄호가 짝이 맞는다', () => {
+    const offenders: string[] = [];
+    for (const file of cssFiles(srcDir)) {
+      const css = readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');
+      let depth = 0;
+      let broken = false;
+      for (const ch of css) {
+        if (ch === '{') depth++;
+        if (ch === '}') depth--;
+        if (depth < 0) broken = true;
+      }
+      if (broken || depth !== 0) offenders.push(relative(srcDir, file));
+    }
+    expect(offenders).toEqual([]);
+  });
+
   // 브라우저는 셀렉터 목록에 모르는 의사 요소가 하나라도 있으면 규칙 전체를 버린다.
   // Blink/WebKit 은 ::-moz-* 를, Gecko 는 ::-webkit-slider-* 를 모른다.
   it('한 셀렉터 목록에 ::-webkit- 과 ::-moz- 의사 요소를 섞지 않는다', () => {
