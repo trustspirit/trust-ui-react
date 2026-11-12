@@ -99,6 +99,14 @@ jobs:
         if: steps.check_version.outputs.changed == 'true'
         run: pnpm install --frozen-lockfile
 
+      - name: Typecheck
+        if: steps.check_version.outputs.changed == 'true'
+        run: pnpm typecheck
+
+      - name: Test
+        if: steps.check_version.outputs.changed == 'true'
+        run: pnpm test:run
+
       - name: Build trust-ui library
         if: steps.check_version.outputs.changed == 'true'
         run: pnpm build

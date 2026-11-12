@@ -38,11 +38,14 @@ export default defineConfig({
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'TrustUI',
       formats: ['es', 'cjs'],
-      fileName: (format) => `index.${format === 'es' ? 'es' : 'cjs'}.js`,
+      // package.json 이 "type": "module" 이므로 CommonJS 파일은 .cjs 여야 Node 가 CJS 로 읽는다.
+      fileName: (format) => (format === 'es' ? 'index.es.js' : 'index.cjs'),
     },
     rollupOptions: {
       external: ['react', 'react-dom', 'react/jsx-runtime'],
       output: {
+        // 훅·컨텍스트를 쓰는 라이브러리라 Next.js App Router 에서는 클라이언트 경계가 필요하다.
+        banner: '"use client";',
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
