@@ -1,0 +1,129 @@
+---
+sidebar_position: 42
+title: Banner
+---
+
+import { Banner, Button } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Banner
+
+A persistent message at the top of a page or section. Unlike a [Toast](./toast), it stays until the condition it describes is resolved or the user dismisses it.
+
+## Basic Usage
+
+<ComponentPreview code={`<Banner
+  status="info"
+  title="Scheduled maintenance on Sunday"
+  description="Transfers will be unavailable between 02:00 and 04:00."
+/>`}>
+  <div style={{ width: '100%' }}>
+    <Banner
+      status="info"
+      title="Scheduled maintenance on Sunday"
+      description="Transfers will be unavailable between 02:00 and 04:00."
+    />
+  </div>
+</ComponentPreview>
+
+## Statuses
+
+Status is carried by the icon and a 2px rule on the leading edge. The surface itself is never filled with colour.
+
+<ComponentPreview code={`<Banner status="info" title="Scheduled maintenance on Sunday" />
+<Banner status="success" title="Your identity has been verified" />
+<Banner status="warning" title="Your card expires this month" />
+<Banner status="danger" title="We could not process your last payment" />`}>
+  <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
+    <Banner status="info" title="Scheduled maintenance on Sunday" />
+    <Banner status="success" title="Your identity has been verified" />
+    <Banner status="warning" title="Your card expires this month" />
+    <Banner status="danger" title="We could not process your last payment" />
+  </div>
+</ComponentPreview>
+
+## Actions
+
+`actions` sit at the inline end. When the banner itself is narrower than about 480px they wrap below the text — this follows the banner's own width, not the viewport, so it also works in a sidebar or card.
+
+<ComponentPreview code={`<Banner
+  status="warning"
+  title="Your card expires this month"
+  description="Update your payment method to avoid an interruption."
+  actions={<Button size="sm">Update card</Button>}
+/>`}>
+  <div style={{ width: '100%' }}>
+    <Banner
+      status="warning"
+      title="Your card expires this month"
+      description="Update your payment method to avoid an interruption."
+      actions={<Button size="sm">Update card</Button>}
+    />
+  </div>
+</ComponentPreview>
+
+## Dismissible
+
+Passing `onDismiss` renders a close button. The banner does not hide itself — remove it from your own state.
+
+<ComponentPreview code={`const [open, setOpen] = useState(true);
+
+{open && (
+  <Banner
+    status="success"
+    title="Your identity has been verified"
+    onDismiss={() => setOpen(false)}
+  />
+)}`}>
+  <div style={{ width: '100%' }}>
+    <Banner status="success" title="Your identity has been verified" onDismiss={() => {}} />
+  </div>
+</ComponentPreview>
+
+## Custom icon
+
+`icon` replaces the default status icon; `icon={null}` removes it.
+
+<ComponentPreview code={`<Banner status="info" icon={null} title="Rates are updated every weekday at 09:00" />`}>
+  <div style={{ width: '100%' }}>
+    <Banner status="info" icon={null} title="Rates are updated every weekday at 09:00" />
+  </div>
+</ComponentPreview>
+
+## Accessibility
+
+- **No role by default.** A banner that is on the page from the first render is ordinary content and is read in document order. Set `role="status"` (polite) or `role="alert"` (assertive, for errors that need attention now) only when the banner is inserted after something the user just did.
+- The status icon is decorative (`aria-hidden`). Status is otherwise conveyed by colour only, so word the `title` so that it stands on its own — "We could not process your last payment", not "Payment".
+- The close button is a native `<button type="button">` named by `dismissLabel` (default `Dismiss`). Translate it with the prop.
+- After dismissing, focus is lost with the button. Move focus to a sensible place (the next heading or the control that follows) in your `onDismiss` handler.
+- Do not put interactive elements in `title` if the banner also has a live-region role.
+
+| Key | Action |
+| --- | --- |
+| `Tab` | Moves through the actions, then the close button |
+| `Enter` / `Space` | Activates the focused action or close button |
+
+## Mobile
+
+- The close button is 24px visually and extends its hit area to 44×44px on touch devices (`pointer: coarse`).
+- Actions wrap below the text in narrow containers and wrap among themselves, so there is no horizontal overflow at 320px. Long words in the title or description break rather than overflow.
+- Padding follows the density axis, so it tightens under `data-density="compact"`.
+- A banner is in the page flow, not pinned. If you make it sticky at the top of the screen yourself, add `padding-top: var(--tui-safe-top)` to the sticky wrapper.
+
+## Props
+
+<PropsTable props={[
+  { name: 'status', type: "'info' | 'success' | 'warning' | 'danger'", description: 'Meaning of the message. Sets the icon and the colour of the leading rule. Required.' },
+  { name: 'title', type: 'ReactNode', description: 'Main message. Required.' },
+  { name: 'description', type: 'ReactNode', description: 'Supporting text below the title' },
+  { name: 'icon', type: 'ReactNode', description: 'Replaces the default status icon; null renders no icon' },
+  { name: 'actions', type: 'ReactNode', description: 'Buttons or links at the inline end; wrap below the text in narrow containers' },
+  { name: 'onDismiss', type: '() => void', description: 'Called when the close button is pressed. The button renders only when this is provided.' },
+  { name: 'dismissLabel', type: 'string', default: "'Dismiss'", description: 'Accessible name of the close button' },
+  { name: 'role', type: "'status' | 'alert'", description: 'Live-region role. Unset by default — set it only for a banner that was just inserted.' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+Other props are passed to the root `<div>`. The forwarded `ref` points at it.

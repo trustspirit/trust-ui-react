@@ -1,0 +1,129 @@
+---
+sidebar_position: 34
+title: Breadcrumbs
+---
+
+import { Breadcrumbs } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Breadcrumbs
+
+Shows where the current page sits in a hierarchy and links back to each ancestor.
+
+## Basic Usage
+
+The last item is the current page: it is rendered as text, never as a link.
+
+<ComponentPreview code={`<Breadcrumbs>
+  <Breadcrumbs.Item href="#home">Home</Breadcrumbs.Item>
+  <Breadcrumbs.Item href="#accounts">Accounts</Breadcrumbs.Item>
+  <Breadcrumbs.Item>Savings</Breadcrumbs.Item>
+</Breadcrumbs>`}>
+  <Breadcrumbs>
+    <Breadcrumbs.Item href="#home">Home</Breadcrumbs.Item>
+    <Breadcrumbs.Item href="#accounts">Accounts</Breadcrumbs.Item>
+    <Breadcrumbs.Item>Savings</Breadcrumbs.Item>
+  </Breadcrumbs>
+</ComponentPreview>
+
+## Separator
+
+<ComponentPreview code={`<Breadcrumbs separator="›">
+  <Breadcrumbs.Item href="#home">Home</Breadcrumbs.Item>
+  <Breadcrumbs.Item href="#accounts">Accounts</Breadcrumbs.Item>
+  <Breadcrumbs.Item>Savings</Breadcrumbs.Item>
+</Breadcrumbs>`}>
+  <Breadcrumbs separator="›">
+    <Breadcrumbs.Item href="#home">Home</Breadcrumbs.Item>
+    <Breadcrumbs.Item href="#accounts">Accounts</Breadcrumbs.Item>
+    <Breadcrumbs.Item>Savings</Breadcrumbs.Item>
+  </Breadcrumbs>
+</ComponentPreview>
+
+## Collapsing long trails
+
+With `maxItems`, a longer trail keeps its first item and its last `maxItems - 1` items and folds the rest into a single "…" button. Pressing it reveals the full trail and moves focus to the first revealed item.
+
+<ComponentPreview code={`<Breadcrumbs maxItems={3}>
+  <Breadcrumbs.Item href="#home">Home</Breadcrumbs.Item>
+  <Breadcrumbs.Item href="#accounts">Accounts</Breadcrumbs.Item>
+  <Breadcrumbs.Item href="#savings">Savings</Breadcrumbs.Item>
+  <Breadcrumbs.Item href="#transactions">Transactions</Breadcrumbs.Item>
+  <Breadcrumbs.Item href="#november">November</Breadcrumbs.Item>
+  <Breadcrumbs.Item>Transfer to brokerage</Breadcrumbs.Item>
+</Breadcrumbs>`}>
+  <Breadcrumbs maxItems={3}>
+    <Breadcrumbs.Item href="#home">Home</Breadcrumbs.Item>
+    <Breadcrumbs.Item href="#accounts">Accounts</Breadcrumbs.Item>
+    <Breadcrumbs.Item href="#savings">Savings</Breadcrumbs.Item>
+    <Breadcrumbs.Item href="#transactions">Transactions</Breadcrumbs.Item>
+    <Breadcrumbs.Item href="#november">November</Breadcrumbs.Item>
+    <Breadcrumbs.Item>Transfer to brokerage</Breadcrumbs.Item>
+  </Breadcrumbs>
+</ComponentPreview>
+
+## Router links and buttons
+
+Pass a link component with `as`; extra props (such as `to`) are forwarded to it. An item with only `onClick` renders as a button.
+
+```tsx
+import { Link } from 'react-router-dom';
+
+<Breadcrumbs>
+  <Breadcrumbs.Item as={Link} to="/">Home</Breadcrumbs.Item>
+  <Breadcrumbs.Item as={Link} to="/accounts">Accounts</Breadcrumbs.Item>
+  <Breadcrumbs.Item>Savings</Breadcrumbs.Item>
+</Breadcrumbs>
+```
+
+<ComponentPreview code={`<Breadcrumbs>
+  <Breadcrumbs.Item onClick={() => history.back()}>Accounts</Breadcrumbs.Item>
+  <Breadcrumbs.Item>Savings</Breadcrumbs.Item>
+</Breadcrumbs>`}>
+  <Breadcrumbs>
+    <Breadcrumbs.Item onClick={() => {}}>Accounts</Breadcrumbs.Item>
+    <Breadcrumbs.Item>Savings</Breadcrumbs.Item>
+  </Breadcrumbs>
+</ComponentPreview>
+
+## Accessibility
+
+- Renders `<nav aria-label="Breadcrumb">` containing an ordered list (`<ol>`).
+- The last item has `aria-current="page"` and is plain text even when it is given `href` or `as`.
+- Separators are `aria-hidden`, so they are not read between links.
+- The "…" button is named by `expandLabel` (default "Show path") and has `aria-expanded="false"`. After expanding, focus moves to the first item that was hidden so it is not lost when the button disappears.
+
+| Key | Behaviour |
+| --- | --- |
+| `Tab` / `Shift` + `Tab` | Move between links and the "…" button |
+| `Enter` | Follow the focused link |
+| `Enter` / `Space` on "…" | Expand the full trail |
+
+## Mobile
+
+- **The trail wraps** onto further lines instead of scrolling sideways, so nothing overflows at 320px and the current page is always on screen. Wrapping was chosen over a horizontally scrolling trail because scrolling hides the beginning of the path and needs its own keyboard affordance. A single long item breaks inside the word rather than widening the page.
+- To keep the trail to one line on phones, combine short labels with `maxItems`.
+- On coarse pointers each link is 44px tall and the "…" button's touch target is extended to 44px.
+
+## Breadcrumbs Props
+
+<PropsTable props={[
+  { name: 'separator', type: 'ReactNode', default: "'/'", description: 'Separator between items (hidden from assistive technology)' },
+  { name: 'aria-label', type: 'string', default: "'Breadcrumb'", description: 'Accessible name of the navigation landmark' },
+  { name: 'maxItems', type: 'number', description: 'Collapse the middle of the trail when it has more items than this' },
+  { name: 'expandLabel', type: 'string', default: "'Show path'", description: 'Accessible label of the "…" button' },
+  { name: 'children', type: 'ReactNode', description: 'Breadcrumbs.Item elements; the last one is the current page' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+## Breadcrumbs.Item Props
+
+<PropsTable props={[
+  { name: 'href', type: 'string', description: 'Link target; renders an anchor' },
+  { name: 'onClick', type: '(event: MouseEvent) => void', description: 'Click handler; without href or as the item is a button' },
+  { name: 'as', type: 'ElementType', description: 'Custom link component (e.g. a router Link); extra props are forwarded to it' },
+  { name: 'children', type: 'ReactNode', description: 'Item content' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+]} />

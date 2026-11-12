@@ -101,6 +101,49 @@ export type { StickyFooterProps } from './components/layout/StickyFooter';
 export { KeyboardAvoidingView } from './components/layout/KeyboardAvoidingView';
 export type { KeyboardAvoidingViewProps } from './components/layout/KeyboardAvoidingView';
 
+export { Stack, HStack, VStack } from './components/layout/Stack';
+export type { StackProps, HStackProps, VStackProps, StackGap } from './components/layout/Stack';
+export { Grid, GridItem } from './components/layout/Grid';
+export type { GridProps, GridItemProps, GridResponsiveColumns, GridGap } from './components/layout/Grid';
+export { Divider } from './components/layout/Divider';
+export type { DividerProps } from './components/layout/Divider';
+
+// Feedback & status
+export { Skeleton } from './components/Skeleton';
+export type { SkeletonProps } from './components/Skeleton';
+export { Spinner } from './components/Spinner';
+export type { SpinnerProps } from './components/Spinner';
+export { Banner } from './components/Banner';
+export type { BannerProps } from './components/Banner';
+export { EmptyState } from './components/EmptyState';
+export type { EmptyStateProps } from './components/EmptyState';
+export { StatusDot } from './components/StatusDot';
+export type { StatusDotProps } from './components/StatusDot';
+
+// Form building blocks
+export { VisuallyHidden } from './components/VisuallyHidden';
+export type { VisuallyHiddenProps } from './components/VisuallyHidden';
+export { Field, fieldSurfaceClassName } from './components/Field';
+export type { FieldProps, FieldControlProps, FieldMeta, FieldSurfaceOptions } from './components/Field';
+export { NumberInput } from './components/NumberInput';
+export type { NumberInputProps } from './components/NumberInput';
+export { Combobox } from './components/Combobox';
+export type { ComboboxProps, ComboboxOption } from './components/Combobox';
+export { TimeInput } from './components/TimeInput';
+export type { TimeInputProps } from './components/TimeInput';
+
+// Overlay & navigation
+export { Popover } from './components/Popover';
+export type { PopoverProps } from './components/Popover';
+export { Drawer } from './components/Drawer';
+export type { DrawerProps } from './components/Drawer';
+export { BottomNav } from './components/BottomNav';
+export type { BottomNavProps, BottomNavItem } from './components/BottomNav';
+export { Stepper } from './components/Stepper';
+export type { StepperProps, StepperStepProps } from './components/Stepper';
+export { Breadcrumbs } from './components/Breadcrumbs';
+export type { BreadcrumbsProps, BreadcrumbsItemProps } from './components/Breadcrumbs';
+
 // Mobile-first components
 export { BottomSheet } from './components/BottomSheet';
 export type { BottomSheetProps } from './components/BottomSheet';

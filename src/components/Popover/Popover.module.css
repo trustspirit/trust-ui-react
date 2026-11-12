@@ -1,0 +1,47 @@
+/* 오버레이 표면 — 불투명한 한 겹. 위치·최대 높이는 useAnchoredLayer 가 인라인으로 준다. */
+.popover {
+  z-index: var(--tui-z-popover);
+  box-sizing: border-box;
+  min-width: 160px;
+  /* 320px 화면에서도 훅이 지키는 양쪽 8px 여백 안에 들어가야 한다. */
+  max-width: min(360px, calc(100vw - var(--tui-gap-4)));
+  padding: var(--tui-pad-3);
+  background-color: var(--tui-sheet);
+  border: 1px solid var(--tui-rule);
+  border-radius: var(--tui-radius-sheet);
+  box-shadow: var(--tui-shadow-overlay);
+  color: var(--tui-ink);
+  font-family: var(--tui-font-sans);
+  font-size: var(--tui-font-size-body);
+  line-height: var(--tui-line-height-body);
+  /* 화면에 다 들어가지 않는 내용은 남은 공간 안에서 스크롤한다(max-height 는 인라인). */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  overflow-wrap: anywhere;
+  /* 열리는 동작은 사용자 행동에 대한 응답이므로 등장 애니메이션을 유지한다. */
+  animation: popoverIn var(--tui-duration-fast) var(--tui-ease-out);
+}
+
+/* 내용에 포커스할 것이 없을 때 팝오버 자신이 포커스를 받는다. 그때도 위치가 보여야 한다. */
+.popover:focus-visible {
+  outline: none;
+  box-shadow: var(--tui-shadow-overlay), 0 0 0 2px var(--tui-sheet), 0 0 0 4px var(--tui-ink);
+}
+
+/* 시트 표현 — 여백은 BottomSheet 의 내용 영역이 이미 준다. */
+.sheetContent {
+  color: var(--tui-ink);
+  font-family: var(--tui-font-sans);
+  font-size: var(--tui-font-size-body);
+  line-height: var(--tui-line-height-body);
+  overflow-wrap: anywhere;
+}
+
+@keyframes popoverIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

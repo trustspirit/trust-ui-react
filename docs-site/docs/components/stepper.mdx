@@ -1,0 +1,172 @@
+---
+sidebar_position: 33
+title: Stepper
+---
+
+import { Stepper } from 'trust-ui-react';
+import { useState } from 'react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Stepper
+
+Shows progress through a sequence of numbered steps. Steps before `activeStep` are complete, the active one is current, the rest are upcoming.
+
+## Basic Usage
+
+<ComponentPreview code={`<Stepper activeStep={1}>
+  <Stepper.Step label="Cart" />
+  <Stepper.Step label="Shipping" />
+  <Stepper.Step label="Payment" />
+  <Stepper.Step label="Review" />
+</Stepper>`}>
+  <div style={{ width: '100%' }}>
+    <Stepper activeStep={1}>
+      <Stepper.Step label="Cart" />
+      <Stepper.Step label="Shipping" />
+      <Stepper.Step label="Payment" />
+      <Stepper.Step label="Review" />
+    </Stepper>
+  </div>
+</ComponentPreview>
+
+`activeStep` is zero-based. Pass the number of steps to mark every step complete.
+
+## Descriptions, optional steps and errors
+
+<ComponentPreview code={`<Stepper activeStep={2}>
+  <Stepper.Step label="Identity" description="Name and date of birth" />
+  <Stepper.Step label="Documents" description="Photo could not be read" error />
+  <Stepper.Step label="Bank account" description="For deposits" />
+  <Stepper.Step label="Risk profile" optional />
+</Stepper>`}>
+  <div style={{ width: '100%' }}>
+    <Stepper activeStep={2}>
+      <Stepper.Step label="Identity" description="Name and date of birth" />
+      <Stepper.Step label="Documents" description="Photo could not be read" error />
+      <Stepper.Step label="Bank account" description="For deposits" />
+      <Stepper.Step label="Risk profile" optional />
+    </Stepper>
+  </div>
+</ComponentPreview>
+
+## Vertical
+
+<ComponentPreview code={`<Stepper activeStep={1} orientation="vertical">
+  <Stepper.Step label="Identity" description="Name and date of birth" />
+  <Stepper.Step label="Documents" description="Photo ID" />
+  <Stepper.Step label="Bank account" description="For deposits" />
+</Stepper>`}>
+  <Stepper activeStep={1} orientation="vertical">
+    <Stepper.Step label="Identity" description="Name and date of birth" />
+    <Stepper.Step label="Documents" description="Photo ID" />
+    <Stepper.Step label="Bank account" description="For deposits" />
+  </Stepper>
+</ComponentPreview>
+
+## Clickable steps
+
+Steps are plain list items by default. When `onStepClick` is provided each step becomes a button; the callback receives the zero-based index. Disable individual steps with `disabled`.
+
+export const ClickableStepper = () => {
+  const [active, setActive] = useState(1);
+  return (
+    <div style={{ width: '100%' }}>
+      <Stepper activeStep={active} onStepClick={setActive}>
+        <Stepper.Step label="Cart" />
+        <Stepper.Step label="Shipping" />
+        <Stepper.Step label="Payment" />
+        <Stepper.Step label="Review" disabled />
+      </Stepper>
+    </div>
+  );
+};
+
+<ComponentPreview code={`const [active, setActive] = useState(1);
+
+<Stepper activeStep={active} onStepClick={setActive}>
+  <Stepper.Step label="Cart" />
+  <Stepper.Step label="Shipping" />
+  <Stepper.Step label="Payment" />
+  <Stepper.Step label="Review" disabled />
+</Stepper>`}>
+  <ClickableStepper />
+</ComponentPreview>
+
+## Compact
+
+A horizontal stepper that is too narrow for its steps — less than 112px per step — collapses to a one-line summary ("Step 2 of 5 — Shipping") above a segmented progress track. This is decided by a container query on the stepper itself, so it responds to the space it is given, not to the screen width.
+
+<ComponentPreview code={`<div style={{ width: 280 }}>
+  <Stepper activeStep={1}>
+    <Stepper.Step label="Cart" />
+    <Stepper.Step label="Shipping" />
+    <Stepper.Step label="Payment" />
+    <Stepper.Step label="Review" />
+    <Stepper.Step label="Done" />
+  </Stepper>
+</div>`}>
+  <div style={{ width: 280 }}>
+    <Stepper activeStep={1}>
+      <Stepper.Step label="Cart" />
+      <Stepper.Step label="Shipping" />
+      <Stepper.Step label="Payment" />
+      <Stepper.Step label="Review" />
+      <Stepper.Step label="Done" />
+    </Stepper>
+  </div>
+</ComponentPreview>
+
+Translate the summary with `summaryLabel`:
+
+```tsx
+<Stepper activeStep={1} summaryLabel={(current, total) => `${total}단계 중 ${current}단계`} />
+```
+
+## Accessibility
+
+- The root is `role="group"` named by `label` (default "Progress") and contains an ordered list (`<ol>`); the position of each step comes from the list itself.
+- The active step has `aria-current="step"` — on the list item, or on the button when steps are clickable.
+- State is not conveyed by colour or icon alone: each step carries visually hidden text — "Completed", "Current", "Error" — overridable with `completedLabel`, `currentLabel` and `errorLabel`. The number and check mark are decorative and hidden from assistive technology.
+- In the compact layout the full list stays in the accessibility tree: each list item becomes one segment of the track and its text is hidden visually only. The visible summary line is `aria-hidden` because it repeats the list.
+- Steps are buttons only when `onStepClick` is provided, so a read-only stepper adds no tab stops.
+
+| Key | Behaviour |
+| --- | --- |
+| `Tab` / `Shift` + `Tab` | Move between step buttons (clickable steppers only) |
+| `Enter` / `Space` | Activate the focused step |
+
+## Mobile
+
+- Horizontal steppers collapse to the compact layout on their own when space runs out; at 320px that happens from three steps up. Use `orientation="vertical"` when every label and description must stay visible.
+- Clickable steps extend their touch target to 44px on coarse pointers, in both the full and the compact layout.
+- Long labels wrap rather than overflow.
+
+## Stepper Props
+
+<PropsTable props={[
+  { name: 'activeStep', type: 'number', description: 'Zero-based index of the active step' },
+  { name: 'orientation', type: "'horizontal' | 'vertical'", default: "'horizontal'", description: 'Layout direction' },
+  { name: 'onStepClick', type: '(index: number) => void', description: 'Makes steps buttons; called with the step index' },
+  { name: 'label', type: 'string', default: "'Progress'", description: 'Accessible name of the stepper' },
+  { name: 'completedLabel', type: 'string', default: "'Completed'", description: 'Screen-reader text for completed steps' },
+  { name: 'currentLabel', type: 'string', default: "'Current'", description: 'Screen-reader text for the active step' },
+  { name: 'errorLabel', type: 'string', default: "'Error'", description: 'Screen-reader text for steps with error' },
+  { name: 'optionalLabel', type: 'string', default: "'Optional'", description: 'Text shown on optional steps' },
+  { name: 'summaryLabel', type: '(current: number, total: number) => string', description: 'Builds the compact summary; default "Step {current} of {total}"' },
+  { name: 'children', type: 'ReactNode', description: 'Stepper.Step elements' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+## Stepper.Step Props
+
+<PropsTable props={[
+  { name: 'label', type: 'ReactNode', description: 'Step name' },
+  { name: 'description', type: 'ReactNode', description: 'Secondary text under the label' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Marks the step as having a problem' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the step is disabled' },
+  { name: 'optional', type: 'boolean', default: 'false', description: 'Marks the step as optional' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

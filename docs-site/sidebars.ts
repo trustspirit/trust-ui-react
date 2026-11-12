@@ -8,6 +8,7 @@ const sidebars: SidebarsConfig = {
       items: [
         'getting-started/installation',
         'getting-started/theming',
+        'getting-started/localization',
         'getting-started/migration-v1-to-v2',
       ],
     },
@@ -38,6 +39,11 @@ const sidebars: SidebarsConfig = {
             'components/select',
             'components/slider',
             'components/file-upload',
+            'components/number-input',
+            'components/combobox',
+            'components/time-input',
+            'components/field',
+            'components/visually-hidden',
           ],
         },
         {
@@ -45,11 +51,33 @@ const sidebars: SidebarsConfig = {
           label: 'Overlay & Feedback',
           items: [
             'components/dialog',
+            'components/drawer',
+            'components/popover',
             'components/toast',
             'components/menu',
             'components/table',
-            'components/pagination',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Navigation',
+          items: [
             'components/tabs',
+            'components/pagination',
+            'components/breadcrumbs',
+            'components/stepper',
+            'components/bottom-nav',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Feedback',
+          items: [
+            'components/banner',
+            'components/empty-state',
+            'components/skeleton',
+            'components/spinner',
+            'components/status-dot',
           ],
         },
         {
@@ -74,6 +102,9 @@ const sidebars: SidebarsConfig = {
           type: 'category',
           label: 'Layout',
           items: [
+            'components/stack',
+            'components/grid',
+            'components/divider',
             'components/expander',
             'components/safe-area-view',
             'components/sticky-footer',
@@ -85,7 +116,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Guides',
-      items: ['guides/layers', 'guides/mobile-patterns'],
+      items: ['guides/layers', 'guides/mobile-patterns', 'guides/accessibility'],
     },
     {
       type: 'category',

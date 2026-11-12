@@ -1,0 +1,151 @@
+---
+sidebar_position: 31
+title: Drawer
+---
+
+import { Drawer, Button } from 'trust-ui-react';
+import { useState } from 'react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Drawer
+
+A full-height modal panel that slides in from the side of the screen. Use it for detail views, filters and edit forms that should keep the page behind in context. For a short confirmation use [`Dialog`](./dialog.mdx); for a thumb-reachable panel on phones use [`BottomSheet`](./bottom-sheet.mdx).
+
+## Basic Usage
+
+export const BasicDrawer = () => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button variant="outline" onClick={() => setOpen(true)}>Open drawer</Button>
+      <Drawer open={open} onClose={() => setOpen(false)} title="Order details">
+        <p style={{ marginTop: 0 }}>Order #20481 is awaiting settlement.</p>
+      </Drawer>
+    </>
+  );
+};
+
+<ComponentPreview code={`const [open, setOpen] = useState(false);
+
+<Button variant="outline" onClick={() => setOpen(true)}>Open drawer</Button>
+<Drawer open={open} onClose={() => setOpen(false)} title="Order details">
+  <p style={{ marginTop: 0 }}>Order #20481 is awaiting settlement.</p>
+</Drawer>`}>
+  <BasicDrawer />
+</ComponentPreview>
+
+## Footer
+
+`footer` is pinned to the bottom of the panel while the content scrolls.
+
+export const FooterDrawer = () => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button variant="outline" onClick={() => setOpen(true)}>Edit profile</Button>
+      <Drawer
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Edit profile"
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button onClick={() => setOpen(false)}>Save</Button>
+          </>
+        }
+      >
+        {Array.from({ length: 16 }, (_, i) => (
+          <p key={i} style={{ marginTop: 0 }}>Row {i + 1}</p>
+        ))}
+      </Drawer>
+    </>
+  );
+};
+
+<ComponentPreview code={`<Drawer
+  open={open}
+  onClose={() => setOpen(false)}
+  title="Edit profile"
+  footer={
+    <>
+      <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+      <Button onClick={() => setOpen(false)}>Save</Button>
+    </>
+  }
+>
+  …
+</Drawer>`}>
+  <FooterDrawer />
+</ComponentPreview>
+
+## Side and width
+
+`side` is logical: `'end'` (default) is the right edge in left-to-right layouts and the left edge in right-to-left layouts. `width` accepts a number (px) or any CSS length.
+
+export const StartDrawer = () => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button variant="outline" onClick={() => setOpen(true)}>Open on the start side</Button>
+      <Drawer open={open} onClose={() => setOpen(false)} side="start" width={320} title="Filters">
+        <p style={{ marginTop: 0 }}>Filter options</p>
+      </Drawer>
+    </>
+  );
+};
+
+<ComponentPreview code={`<Drawer open={open} onClose={() => setOpen(false)} side="start" width={320} title="Filters">
+  <p style={{ marginTop: 0 }}>Filter options</p>
+</Drawer>`}>
+  <StartDrawer />
+</ComponentPreview>
+
+## Without a title
+
+Without `title` no header (and no close button) is rendered. Give the drawer a name with `aria-label` and include your own close control — on narrow screens the drawer covers the backdrop entirely.
+
+```tsx
+<Drawer open={open} onClose={close} aria-label="Notifications">
+  <NotificationList />
+  <Button onClick={close}>Close</Button>
+</Drawer>
+```
+
+## Accessibility
+
+- `role="dialog"` with `aria-modal="true"`, named by `title` (`aria-labelledby`) or by `aria-label`.
+- While open: focus is trapped inside, the page behind is `inert` and cannot scroll. Closing returns focus to the element that had it before the drawer opened, after the exit animation.
+- On open, focus moves to the first focusable element (the close button when there is a title), or to an element with `autoFocus`.
+- The close button is named by `closeLabel`.
+
+| Key | Behaviour |
+| --- | --- |
+| `Tab` / `Shift` + `Tab` | Cycle through the focusable elements inside the drawer |
+| `Escape` | Calls `onClose` (unless `closeOnEscape={false}`). Ignored when an inner widget such as an open Select or Popover already handled the key, or when another modal is open on top |
+
+## Mobile
+
+- Below 640px the drawer takes the full width of the screen.
+- The panel height is `100dvh` (with a `100vh` fallback), so it follows the visible viewport when the browser's address bar collapses.
+- Safe areas are honoured: the top inset above the header, `--tui-safe-bottom` under the footer (or under the content when there is no footer), and the side inset on the edge the drawer is attached to.
+- The close button's touch target is extended to 44px on coarse pointers.
+- The slide animation is shortened by the global `prefers-reduced-motion` rule; nothing depends on it.
+
+## Props
+
+<PropsTable props={[
+  { name: 'open', type: 'boolean', description: 'Whether the drawer is open (controlled)' },
+  { name: 'onClose', type: '() => void', description: 'Called when the drawer should close (close button, backdrop, Escape)' },
+  { name: 'side', type: "'start' | 'end'", default: "'end'", description: 'Edge the drawer is attached to (logical; mirrors in RTL)' },
+  { name: 'width', type: 'number | string', default: '400', description: 'Panel width. Never wider than the viewport; full width below 640px' },
+  { name: 'title', type: 'ReactNode', description: 'Renders a header with the title and a close button; names the drawer' },
+  { name: 'aria-label', type: 'string', description: 'Accessible name when there is no title' },
+  { name: 'closeOnBackdrop', type: 'boolean', default: 'true', description: 'Close when the backdrop is clicked' },
+  { name: 'closeOnEscape', type: 'boolean', default: 'true', description: 'Close when Escape is pressed' },
+  { name: 'closeLabel', type: 'string', default: "'Close'", description: 'Accessible label of the close button' },
+  { name: 'footer', type: 'ReactNode', description: 'Footer pinned to the bottom of the panel' },
+  { name: 'children', type: 'ReactNode', description: 'Drawer content' },
+  { name: 'className', type: 'string', description: 'Additional CSS class for the panel' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles for the panel' },
+]} />

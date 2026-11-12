@@ -1,0 +1,78 @@
+---
+sidebar_position: 41
+title: Spinner
+---
+
+import { Spinner } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Spinner
+
+An indeterminate loading indicator for content whose shape or duration is not known. When the layout is known, prefer [Skeleton](./skeleton); when progress is measurable, prefer [Progress](./progress).
+
+## Basic Usage
+
+<ComponentPreview code={`<Spinner />`}>
+  <Spinner />
+</ComponentPreview>
+
+## Sizes
+
+The ring is 16px, 20px or 28px.
+
+<ComponentPreview code={`<Spinner size="sm" />
+<Spinner size="md" />
+<Spinner size="lg" />`}>
+  <Spinner size="sm" />
+  <Spinner size="md" />
+  <Spinner size="lg" />
+</ComponentPreview>
+
+## Label
+
+Every spinner has a label (default `Loading`). It is visually hidden unless `showLabel` is set. Say what is loading when the page has more than one spinner.
+
+<ComponentPreview code={`<Spinner label="Loading transactions" showLabel />`}>
+  <Spinner label="Loading transactions" showLabel />
+</ComponentPreview>
+
+## Colour
+
+The ring is drawn with `currentColor`, so it follows the text colour of where it is placed (ink by default). The unfilled quarter uses `--tui-rule`.
+
+<ComponentPreview code={`<span style={{ color: 'var(--tui-ink-3)' }}>
+  <Spinner label="Syncing" showLabel />
+</span>`}>
+  <span style={{ color: 'var(--tui-ink-3)' }}>
+    <Spinner label="Syncing" showLabel />
+  </span>
+</ComponentPreview>
+
+## Accessibility
+
+- The root has `role="status"` (a polite live region) and is named by its label through `aria-labelledby`. Screen readers announce the label when the spinner is inserted.
+- With `showLabel={false}` the label is hidden visually only; it stays in the accessibility tree. The ring itself is `aria-hidden`.
+- Translate the label with the `label` prop — the default string is English.
+- No keyboard interaction — the spinner is not focusable. When it replaces a control, keep focus on a stable element.
+- Under `prefers-reduced-motion` the rotation stops. The ring keeps its unfilled quarter, so it still reads as an in-progress indicator rather than a plain circle; add `showLabel` where the still ring alone would be ambiguous.
+- In forced-colors mode the ring is drawn with system colours so the gap stays visible.
+- `Button` has its own `loading` prop; do not nest a Spinner inside a button.
+
+## Mobile
+
+- The spinner is not interactive, so no touch-target rule applies.
+- Sizes are fixed in px and do not change with density. Use `sm` inline with text and `lg` for a whole empty panel.
+- With `showLabel`, the label does not wrap by itself inside an inline context; in a narrow column put the spinner in a block container so the label can wrap.
+
+## Props
+
+<PropsTable props={[
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Ring size: 16, 20 or 28px' },
+  { name: 'label', type: 'string', default: "'Loading'", description: 'Accessible name of the loading state' },
+  { name: 'showLabel', type: 'boolean', default: 'false', description: 'Shows the label next to the ring instead of hiding it visually' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+Other props are passed to the root `<span>`. The forwarded `ref` points at it.

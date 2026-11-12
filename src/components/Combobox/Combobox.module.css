@@ -1,0 +1,152 @@
+/* 상자(테두리·배경·포커스)는 Field 의 surface 가 그린다. 여기는 안쪽과 팝업. */
+
+/* ── Sizes — TextField 와 같은 값 ── */
+.sm .input { height: var(--tui-control-sm); font-size: var(--tui-font-size-small); padding: 0 var(--tui-pad-2); }
+.md .input { height: var(--tui-control-md); font-size: var(--tui-font-size-base); padding: 0 var(--tui-pad-3); }
+.lg .input { height: var(--tui-control-lg); font-size: var(--tui-font-size-lead); padding: 0 var(--tui-pad-4); }
+
+.input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--tui-ink);
+  font-family: var(--tui-font-sans);
+  line-height: var(--tui-line-height-body);
+  width: 100%;
+  min-width: 0;
+  text-overflow: ellipsis;
+}
+
+.input::placeholder {
+  color: var(--tui-ink-3);
+}
+
+.input:disabled {
+  cursor: not-allowed;
+}
+
+/* ── Clear button ── */
+.clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  flex-shrink: 0;
+  inline-size: 32px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--tui-ink-3);
+  cursor: pointer;
+  transition: var(--tui-transition-color);
+}
+
+@media (hover: hover) {
+  .clear:hover {
+    color: var(--tui-ink);
+  }
+}
+
+.clear:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--tui-ink);
+}
+
+/* ── Popup ── */
+/* 불투명한 한 겹. 위치는 useAnchoredLayer 가 인라인(position: fixed)으로 준다. */
+.popup {
+  position: absolute;
+  z-index: var(--tui-z-dropdown);
+  min-width: 0;
+  border: 1px solid var(--tui-rule);
+  border-radius: var(--tui-radius-sheet);
+  background-color: var(--tui-sheet);
+  box-shadow: var(--tui-shadow-overlay);
+  font-family: var(--tui-font-sans);
+  overflow: hidden;
+  /* 화면에 남은 공간이 모자라면 인라인 max-height 가 걸린다. 그때 목록이 줄어들어 스크롤되게 한다. */
+  display: flex;
+  flex-direction: column;
+}
+
+.list {
+  max-height: 280px;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* 옵션이 있을 때만 위아래 숨을 준다. 빈 목록이 상태 문구 위에 빈 띠를 만들지 않도록. */
+.list:not(:empty) {
+  padding-block: var(--tui-pad-1);
+}
+
+/* ── Option ── */
+.option {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--tui-pad-2) var(--tui-pad-3);
+  font-size: var(--tui-font-size-base);
+  color: var(--tui-ink);
+  cursor: pointer;
+  user-select: none;
+  transition: var(--tui-transition-color);
+}
+
+@media (hover: hover) {
+  .option:hover:not(.optionDisabled) {
+    background-color: var(--tui-field);
+  }
+}
+
+/* 선택은 면, 키보드 커서는 안쪽 테두리 — 둘이 겹쳐도 각각 보인다(Select·Menu 와 같은 규칙). */
+.optionSelected {
+  background-color: var(--tui-field);
+  font-weight: var(--tui-weight-medium);
+}
+
+.optionActive {
+  box-shadow: inset 0 0 0 2px var(--tui-ink);
+}
+
+.optionDisabled {
+  opacity: var(--tui-opacity-disabled);
+  cursor: not-allowed;
+}
+
+.optionLabel {
+  overflow-wrap: anywhere;
+}
+
+.optionDescription {
+  font-size: var(--tui-font-size-caption);
+  font-weight: var(--tui-weight-regular);
+  color: var(--tui-ink-2);
+  overflow-wrap: anywhere;
+}
+
+/* ── Empty / loading ── */
+.status {
+  padding: var(--tui-pad-3);
+  text-align: center;
+  color: var(--tui-ink-3);
+  font-size: var(--tui-font-size-small);
+}
+
+@media (pointer: coarse) {
+  /* 손가락 타깃. */
+  .option {
+    min-height: 44px;
+  }
+
+  .clear {
+    inline-size: 44px;
+  }
+
+  /* iOS 는 16px 미만 입력에 포커스하면 화면을 확대한다. */
+  .sm .input {
+    font-size: max(16px, var(--tui-font-size-small));
+  }
+}

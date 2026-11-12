@@ -1,0 +1,334 @@
+/* ── Root ── */
+.stepper {
+  /* 단계 수. Stepper.tsx 가 인라인으로 덮어쓴다. */
+  --tui-stepper-count: 1;
+  /* 번호 원의 지름. 연결선 위치 계산이 이 값에 묶여 있다. */
+  --tui-stepper-indicator: 24px;
+
+  font-family: var(--tui-font-sans);
+  color: var(--tui-ink);
+}
+
+/*
+ * 가로 스테퍼가 "내용보다 좁은지"를 컨테이너 쿼리로 판단하는 장치.
+ *
+ * 컨테이너 쿼리의 기준 폭에는 var() 를 쓸 수 없어서 "단계 수 × 최소 폭"을 직접 적을 수 없다.
+ * 대신 컨테이너(.probe)의 폭을 전체의 1/단계수 로 만들고, 그 안의 .inner 를 다시 단계수 배로
+ * 늘려 원래 폭을 되찾는다. 그러면 .probe 의 폭이 곧 "단계 하나에 돌아가는 폭"이 되어,
+ * 단계가 몇 개든 쿼리 하나(단계당 112px 미만)로 접힘 여부를 정할 수 있다.
+ * .inner 는 .probe 밖으로 넘치지만 정확히 루트의 폭까지만이라 가로 스크롤은 생기지 않는다.
+ */
+.horizontal .probe {
+  container-type: inline-size;
+  container-name: tui-stepper;
+  inline-size: calc(100% / var(--tui-stepper-count));
+}
+
+.horizontal .inner {
+  inline-size: calc(100% * var(--tui-stepper-count));
+}
+
+/* ── List ── */
+.list {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.horizontal .list {
+  align-items: flex-start;
+}
+
+.vertical .list {
+  flex-direction: column;
+}
+
+/* ── Step ── */
+.step {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  min-inline-size: 0;
+}
+
+/* 마지막 단계 뒤에는 연결선이 없으므로 남는 폭을 가져가지 않는다. */
+.horizontal .step {
+  flex: 1 1 0;
+}
+
+.horizontal .step:last-child {
+  flex: 0 1 auto;
+}
+
+.vertical .step:not(:last-child) {
+  padding-block-end: var(--tui-gap-5);
+}
+
+.stepInner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--tui-gap-2);
+  min-inline-size: 0;
+  text-align: start;
+}
+
+/* ── Step as a button (only when onStepClick is given) ── */
+.stepButton {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: var(--tui-radius-control);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: var(--tui-tap-highlight);
+}
+
+.stepButton:disabled {
+  cursor: not-allowed;
+}
+
+.stepButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-ink);
+}
+
+@media (hover: hover) {
+  .stepButton:hover:not(:disabled) .label {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+/* 터치 타깃 — 번호 원(24px)과 한 줄 라벨만으로는 44px 에 못 미친다. */
+@media (pointer: coarse) {
+  .stepButton::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+}
+
+.disabled .stepInner {
+  opacity: var(--tui-opacity-disabled);
+}
+
+/* ── Indicator ── */
+.indicator {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--tui-stepper-indicator);
+  block-size: var(--tui-stepper-indicator);
+  border: 1px solid var(--tui-rule-strong);
+  border-radius: var(--tui-radius-full);
+  background-color: transparent;
+  color: var(--tui-ink-2);
+  font-size: var(--tui-font-size-caption);
+  font-weight: var(--tui-weight-medium);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.current .indicator {
+  border-color: var(--tui-ink);
+  color: var(--tui-ink);
+  font-weight: var(--tui-weight-semibold);
+}
+
+.complete .indicator {
+  border-color: var(--tui-ink);
+  background-color: var(--tui-ink);
+  color: var(--tui-on-ink);
+}
+
+/* 상태색은 테두리와 글자에만. 면을 채우지 않는다. */
+.error .indicator {
+  border-color: var(--tui-danger);
+  background-color: transparent;
+  color: var(--tui-danger);
+  font-weight: var(--tui-weight-semibold);
+}
+
+/* ── Text ── */
+.text {
+  display: flex;
+  flex-direction: column;
+  min-inline-size: 0;
+  /* 첫 줄을 번호 원의 세로 중앙에 맞춘다. */
+  padding-block-start: calc((var(--tui-stepper-indicator) - 1lh) / 2);
+  font-size: var(--tui-font-size-small);
+  line-height: var(--tui-line-height-heading);
+  letter-spacing: var(--tui-letter-body);
+  overflow-wrap: anywhere;
+}
+
+.label {
+  color: var(--tui-ink-2);
+  font-weight: var(--tui-weight-medium);
+}
+
+.current .label {
+  color: var(--tui-ink);
+  font-weight: var(--tui-weight-semibold);
+}
+
+.complete .label {
+  color: var(--tui-ink);
+}
+
+.error .label {
+  color: var(--tui-danger);
+}
+
+.optional,
+.description {
+  color: var(--tui-ink-2);
+  font-size: var(--tui-font-size-caption);
+  line-height: var(--tui-line-height-body);
+}
+
+/* ── Connector ── */
+.connector {
+  background-color: var(--tui-rule-strong);
+}
+
+.complete .connector {
+  background-color: var(--tui-ink);
+}
+
+.horizontal .connector {
+  flex: 1 1 auto;
+  min-inline-size: var(--tui-gap-3);
+  block-size: 1px;
+  margin-inline: var(--tui-gap-2);
+  /* 번호 원의 세로 중앙. */
+  margin-block-start: calc(var(--tui-stepper-indicator) / 2);
+}
+
+.vertical .connector {
+  position: absolute;
+  inset-inline-start: calc(var(--tui-stepper-indicator) / 2);
+  inset-block: calc(var(--tui-stepper-indicator) + var(--tui-gap-1)) var(--tui-gap-1);
+  inline-size: 1px;
+}
+
+/* ── Compact summary (shown only when collapsed) ── */
+.summary {
+  display: none;
+  align-items: baseline;
+  gap: var(--tui-gap-2);
+  margin-block-end: var(--tui-gap-2);
+  font-size: var(--tui-font-size-small);
+  line-height: var(--tui-line-height-heading);
+  letter-spacing: var(--tui-letter-body);
+}
+
+.summaryCount {
+  flex-shrink: 0;
+  color: var(--tui-ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.summaryDash {
+  flex-shrink: 0;
+  color: var(--tui-ink-3);
+}
+
+.summaryStep {
+  min-inline-size: 0;
+  color: var(--tui-ink);
+  font-weight: var(--tui-weight-semibold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/*
+ * ── Collapsed: 단계 하나에 112px 이 돌아가지 않을 때 ──
+ * 요약 한 줄("Step 2 of 5 — 라벨")과 구간 트랙으로 바꾼다. 목록(<ol>)은 지우지 않는다:
+ * 각 항목이 트랙의 한 구간이 되고, 글자는 시각적으로만 숨겨 보조 기술에는 그대로 읽힌다.
+ * 단계가 버튼일 때도 구간이 곧 버튼이라 키보드 포커스가 보이는 곳에 머문다.
+ */
+@container tui-stepper (max-width: 111.98px) {
+  .summary {
+    display: flex;
+  }
+
+  .list {
+    gap: var(--tui-gap-1);
+  }
+
+  .horizontal .step,
+  .horizontal .step:last-child {
+    flex: 1 1 0;
+  }
+
+  .stepInner {
+    flex: 1 1 auto;
+    gap: 0;
+  }
+
+  .connector {
+    display: none;
+  }
+
+  .text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  /* 번호 원이 트랙의 한 구간이 된다. 번호·체크는 숨긴다(순서는 목록이 전한다). */
+  .indicator {
+    flex: 1 1 auto;
+    inline-size: auto;
+    block-size: 4px;
+    border: none;
+    background-color: var(--tui-rule-strong);
+    font-size: 0;
+  }
+
+  .indicator svg {
+    display: none;
+  }
+
+  .complete .indicator,
+  .current .indicator {
+    background-color: var(--tui-ink);
+  }
+
+  .error .indicator {
+    background-color: var(--tui-danger);
+  }
+
+  /* 4px 구간만으로는 포커스 링과 누를 자리가 없다. 위아래로 여백을 둔다. */
+  .stepButton {
+    padding-block: var(--tui-pad-2);
+  }
+}

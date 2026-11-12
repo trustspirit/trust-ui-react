@@ -1,0 +1,76 @@
+/* ── Base ──
+   빈 자리를 채우는 장식이 아니라 한 문단의 안내문이다. 면도 테두리도 두지
+   않는다 — 놓이는 자리(표, 카드, 페이지)가 이미 경계를 갖고 있다. */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tui-gap-4);
+  padding: var(--tui-gap-6) var(--tui-gap-4);
+  color: var(--tui-ink);
+  font-family: var(--tui-font-sans);
+  text-align: center;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tui-ink-3);
+}
+
+/* 한 줄이 길어지면 가운데 정렬된 글은 읽기 어렵다. */
+.text {
+  max-width: 40ch;
+  overflow-wrap: anywhere;
+}
+
+/* 크기는 단계(headingLevel)와 무관하다 — 단계는 문서 개요를 위한 것이다. */
+.title {
+  margin: 0;
+  font-size: var(--tui-font-size-h3);
+  font-weight: var(--tui-weight-strong);
+  line-height: var(--tui-line-height-heading);
+  letter-spacing: var(--tui-letter-heading);
+}
+
+.description {
+  margin: var(--tui-gap-2) 0 0;
+  font-size: var(--tui-font-size-body);
+  line-height: var(--tui-line-height-body);
+  letter-spacing: var(--tui-letter-body);
+  color: var(--tui-ink-2);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tui-gap-2);
+  max-width: 100%;
+}
+
+/* ── Compact ──
+   카드·패널처럼 좁은 자리용. 버튼을 세로로 쌓아 폭을 채우면 좁은 폭에서도
+   누르기 쉽고 줄바꿈 모양이 흐트러지지 않는다. */
+.compact {
+  gap: var(--tui-gap-3);
+  padding: var(--tui-gap-4) var(--tui-gap-3);
+}
+
+.compact .title {
+  font-size: var(--tui-font-size-lead);
+}
+
+.compact .description {
+  margin-block-start: var(--tui-gap-1);
+  font-size: var(--tui-font-size-small);
+}
+
+.compact .actions {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  align-self: stretch;
+}

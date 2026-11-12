@@ -1,0 +1,136 @@
+/* ── Nav ── */
+.breadcrumbs {
+  font-family: var(--tui-font-sans);
+  font-size: var(--tui-font-size-small);
+  line-height: var(--tui-line-height-heading);
+  letter-spacing: var(--tui-letter-body);
+  color: var(--tui-ink-2);
+}
+
+/*
+ * 좁은 화면 전략: 줄바꿈. 가로 스크롤은 경로의 앞부분을 화면 밖에 숨기고, 스크롤 영역에
+ * 키보드로 닿을 방법도 따로 마련해야 한다. 줄을 바꾸면 320px 에서도 전체 경로가 보이고
+ * 현재 페이지가 항상 화면 안에 있다. 경로가 길면 maxItems 로 가운데를 접는다.
+ */
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--tui-gap-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  column-gap: var(--tui-gap-2);
+  /* 긴 항목 하나가 줄 전체보다 넓어지지 않게 한다. */
+  min-width: 0;
+  max-width: 100%;
+}
+
+.separator {
+  flex-shrink: 0;
+  color: var(--tui-ink-3);
+  user-select: none;
+}
+
+/* ── Link / button items ── */
+.link,
+.current,
+.text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.link {
+  border-radius: var(--tui-radius-tight);
+  color: var(--tui-ink-2);
+  text-decoration: none;
+  transition: var(--tui-transition-color);
+}
+
+.linkButton {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .link:hover {
+    color: var(--tui-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+.link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-ink);
+}
+
+/* 터치에서는 줄 높이를 44px 로 올려 누를 자리를 만든다. */
+@media (pointer: coarse) {
+  .link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+}
+
+/* ── Current page ── */
+.current {
+  color: var(--tui-ink);
+  font-weight: var(--tui-weight-semibold);
+}
+
+/* ── Collapsed middle ("…") ── */
+.expandButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 24px;
+  margin: 0;
+  padding: 0 var(--tui-gap-1);
+  border: 1px solid var(--tui-rule);
+  border-radius: var(--tui-radius-tight);
+  background-color: transparent;
+  color: var(--tui-ink-2);
+  font: inherit;
+  line-height: 1;
+  cursor: pointer;
+  transition: var(--tui-transition-color);
+}
+
+@media (pointer: coarse) {
+  .expandButton::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media (hover: hover) {
+  .expandButton:hover {
+    background-color: var(--tui-field);
+    border-color: var(--tui-rule-strong);
+    color: var(--tui-ink);
+  }
+}
+
+.expandButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-ink);
+}

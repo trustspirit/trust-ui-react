@@ -1,0 +1,120 @@
+---
+sidebar_position: 32
+title: Divider
+---
+
+import { Divider, HStack, VStack } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Divider
+
+A hairline that separates sections of content or items in a row.
+
+## Horizontal
+
+<ComponentPreview code={`<VStack gap={4}>
+  <span>Shipping address</span>
+  <Divider />
+  <span>Payment method</span>
+</VStack>`}>
+  <VStack gap={4} style={{ width: '100%' }}>
+    <span>Shipping address</span>
+    <Divider />
+    <span>Payment method</span>
+  </VStack>
+</ComponentPreview>
+
+The divider has no margin of its own. Spacing comes from the layout around it — a [`Stack`](./stack.mdx) gap, or your own margin via `className` / `style`.
+
+## Variants
+
+`subtle` (default) uses `--tui-rule`; `strong` uses `--tui-rule-strong` for separations that need to hold up against dense content.
+
+<ComponentPreview code={`<Divider variant="subtle" />
+<Divider variant="strong" />`}>
+  <VStack gap={5} style={{ width: '100%' }}>
+    <Divider variant="subtle" />
+    <Divider variant="strong" />
+  </VStack>
+</ComponentPreview>
+
+## With a label
+
+`label` centres text between two rules — the usual "or" between sign-in methods, or a date between groups of messages. Long labels wrap rather than overflow.
+
+<ComponentPreview code={`<Divider label="or" />`}>
+  <VStack gap={4} style={{ width: '100%' }}>
+    <span>Continue with email</span>
+    <Divider label="or" />
+    <span>Continue with a passkey</span>
+  </VStack>
+</ComponentPreview>
+
+`label` applies to horizontal dividers only and is ignored when `orientation="vertical"`.
+
+## Vertical
+
+A vertical divider stretches to the height of the row it sits in.
+
+<ComponentPreview code={`<HStack align="center">
+  <span>Edit</span>
+  <Divider orientation="vertical" />
+  <span>Duplicate</span>
+  <Divider orientation="vertical" />
+  <span>Archive</span>
+</HStack>`}>
+  <HStack align="center">
+    <span>Edit</span>
+    <Divider orientation="vertical" />
+    <span>Duplicate</span>
+    <Divider orientation="vertical" />
+    <span>Archive</span>
+  </HStack>
+</ComponentPreview>
+
+Outside a flex or grid row (inline in text) it is one line of text tall.
+
+## Decorative
+
+By default a divider is announced as a separator. When the structure around it already conveys the break — headings, list items, landmarks — the announcement is noise. `decorative` removes it from the accessibility tree while keeping the line.
+
+```tsx
+<h2>Profile</h2>
+…
+<Divider decorative />
+<h2>Notifications</h2>
+```
+
+## Accessibility
+
+| Usage | Rendered as |
+|---|---|
+| Horizontal | `<hr>` — implicit `separator` role |
+| Vertical | `<div role="separator" aria-orientation="vertical">` |
+| With `label` | `<div role="separator">` named by the label via `aria-labelledby` |
+| `decorative` | The same element with `role="presentation"`; a label, if any, is still read as plain text |
+
+- The label is the separator's accessible name, so screen readers announce "or, separator". Pass `aria-label` to give it a different name than the visible text.
+- A divider is static and not focusable. There is no keyboard interaction; it is not the draggable window-splitter variant of `separator`.
+- Lines are drawn with borders, so they remain visible in forced-colors (high contrast) mode.
+- Do not rely on a divider alone to group content for screen-reader users; headings and landmarks are navigable, separators are not.
+
+## Mobile
+
+- A horizontal divider fills the width of its container and adds no height beyond the 1px line, so it cannot cause horizontal overflow.
+- Labelled dividers keep a short rule on both sides and wrap the label text when it is long, staying inside a 320px screen.
+- To run a divider edge to edge inside a padded container, give it a negative inline margin with your own class; the component does not assume your page gutter.
+
+## Props
+
+<PropsTable props={[
+  { name: 'orientation', type: "'horizontal' | 'vertical'", default: "'horizontal'", description: 'Direction of the rule' },
+  { name: 'variant', type: "'subtle' | 'strong'", default: "'subtle'", description: 'Rule weight — --tui-rule or --tui-rule-strong' },
+  { name: 'label', type: 'ReactNode', description: 'Centred label with a rule on both sides; horizontal only' },
+  { name: 'decorative', type: 'boolean', default: 'false', description: 'Render role="presentation" so assistive technology skips the rule' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+Also accepts standard HTML attributes via spread, and forwards its ref to the root element (`<hr>` or `<div>`).

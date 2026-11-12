@@ -1,0 +1,89 @@
+---
+sidebar_position: 40
+title: Skeleton
+---
+
+import { Skeleton } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Skeleton
+
+A placeholder that mirrors the shape of content while it loads. Use it when you know the layout that is coming (a list row, a card, a paragraph); use [Spinner](./spinner) when you do not.
+
+## Basic Usage
+
+<ComponentPreview code={`<Skeleton />`}>
+  <div style={{ width: 280 }}>
+    <Skeleton />
+  </div>
+</ComponentPreview>
+
+## Shapes
+
+`text` and `rect` differ only in corner radius. `circle` is fully round and uses a single dimension for both sides: `width` if given, otherwise `height`, otherwise 40px.
+
+<ComponentPreview code={`<Skeleton shape="text" width="70%" />
+<Skeleton shape="rect" height={96} />
+<Skeleton shape="circle" width={48} />`}>
+  <div style={{ width: 280, display: 'flex', flexDirection: 'column', gap: 16 }}>
+    <Skeleton shape="text" width="70%" />
+    <Skeleton shape="rect" height={96} />
+    <Skeleton shape="circle" width={48} />
+  </div>
+</ComponentPreview>
+
+## Lines
+
+`lines` renders a paragraph-shaped block. The last bar is 60% wide. `height` applies to each bar and `width` to the whole block. Only `shape="text"` honours it.
+
+<ComponentPreview code={`<Skeleton lines={3} />`}>
+  <div style={{ width: 280 }}>
+    <Skeleton lines={3} />
+  </div>
+</ComponentPreview>
+
+## Composing a loading region
+
+Mark the region that is loading with `aria-busy` and swap the skeletons for the real content when it arrives.
+
+<ComponentPreview code={`<div aria-busy="true" style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+  <Skeleton shape="circle" width={40} />
+  <div style={{ flex: 1, minWidth: 0 }}>
+    <Skeleton lines={2} />
+  </div>
+</div>`}>
+  <div aria-busy="true" style={{ width: 280, display: 'flex', gap: 12, alignItems: 'center' }}>
+    <Skeleton shape="circle" width={40} />
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <Skeleton lines={2} />
+    </div>
+  </div>
+</ComponentPreview>
+
+## Accessibility
+
+- Skeleton is decorative: it renders with `aria-hidden="true"` and has no role. It does not announce anything by itself.
+- The **container** announces the loading state. Put `aria-busy="true"` on the region whose content is being replaced and remove it when the content is in place. If the wait is long or the user started it, pair the region with a visually hidden `role="status"` message or a [Spinner](./spinner).
+- No keyboard interaction — nothing in a skeleton is focusable. Do not put real controls inside a busy region.
+- The surface is a flat `--tui-field` block with a slow opacity pulse. The pulse is turned off under `prefers-reduced-motion`; the static block still reads as a placeholder.
+- In forced-colors mode the block is outlined so it stays visible.
+
+## Mobile
+
+- Skeletons never exceed their parent (`max-width: 100%`), so a fixed `width` does not cause horizontal overflow at 320px.
+- Match the dimensions of the real content so the page does not jump when it loads — use the same `height` the loaded row or image will have.
+- The pulse animates `opacity` only, which stays on the compositor and is cheap on low-end devices.
+
+## Props
+
+<PropsTable props={[
+  { name: 'width', type: 'number | string', default: "'100%'", description: 'Width of the placeholder. Numbers are pixels.' },
+  { name: 'height', type: 'number | string', default: "'1em'", description: 'Height of the placeholder, or of each bar when lines is set. Numbers are pixels.' },
+  { name: 'shape', type: "'text' | 'rect' | 'circle'", default: "'text'", description: 'Corner shape. circle uses one dimension for both sides.' },
+  { name: 'lines', type: 'number', description: 'Number of text bars (shape="text" only). The last bar is 60% wide.' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+Other props are passed to the root `<span>`. The forwarded `ref` points at it.

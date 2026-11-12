@@ -1,0 +1,146 @@
+---
+sidebar_position: 30
+title: Popover
+---
+
+import { Popover, Button } from 'trust-ui-react';
+import { useState } from 'react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Popover
+
+A click-triggered overlay anchored to its trigger, for secondary content: an explanation, a short form, a handful of options. It is non-modal — the page behind stays usable. For a list of actions use [`Menu`](./menu.mdx); for a hover hint use [`Tooltip`](./tooltip.mdx); for a task that must be finished or dismissed use [`Dialog`](./dialog.mdx).
+
+## Basic Usage
+
+<ComponentPreview code={`<Popover content={<p style={{ margin: 0 }}>Trades settle two business days after execution.</p>}>
+  <Button variant="outline">Settlement</Button>
+</Popover>`}>
+  <Popover content={<p style={{ margin: 0 }}>Trades settle two business days after execution.</p>}>
+    <Button variant="outline">Settlement</Button>
+  </Popover>
+</ComponentPreview>
+
+The single child is the trigger. Popover clones it to attach the ref, the click handler and the ARIA attributes; an existing `ref`, `id`, `onClick` and `onKeyDown` on the trigger keep working. Calling `event.preventDefault()` in the trigger's own `onClick` stops the popover from toggling.
+
+## Placement and alignment
+
+`placement` is the preferred side; the popover flips to the opposite side when it does not fit and is always kept inside the viewport. `align` positions it along the trigger's edge.
+
+<ComponentPreview code={`<Popover placement="top" align="center" content="Above, centred">
+  <Button variant="outline">top / center</Button>
+</Popover>
+<Popover placement="right" content="To the right">
+  <Button variant="outline">right / start</Button>
+</Popover>
+<Popover placement="bottom" align="end" content="Below, end-aligned">
+  <Button variant="outline">bottom / end</Button>
+</Popover>`}>
+  <Popover placement="top" align="center" content="Above, centred">
+    <Button variant="outline">top / center</Button>
+  </Popover>
+  <Popover placement="right" content="To the right">
+    <Button variant="outline">right / start</Button>
+  </Popover>
+  <Popover placement="bottom" align="end" content="Below, end-aligned">
+    <Button variant="outline">bottom / end</Button>
+  </Popover>
+</ComponentPreview>
+
+## Controlled
+
+Pass `open` and `onOpenChange` to own the state — for example to close the popover from a button inside it. Focus returns to the trigger when the popover closes.
+
+export const ControlledPopover = () => {
+  const [open, setOpen] = useState(false);
+  return (
+    <Popover
+      open={open}
+      onOpenChange={setOpen}
+      label="Confirm transfer"
+      content={
+        <div style={{ display: 'grid', gap: 12 }}>
+          <span>Send 250,000 to savings?</span>
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+            <Button size="sm" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button size="sm" onClick={() => setOpen(false)}>Send</Button>
+          </div>
+        </div>
+      }
+    >
+      <Button variant="outline">Transfer</Button>
+    </Popover>
+  );
+};
+
+<ComponentPreview code={`const [open, setOpen] = useState(false);
+
+<Popover
+  open={open}
+  onOpenChange={setOpen}
+  label="Confirm transfer"
+  content={
+    <div style={{ display: 'grid', gap: 12 }}>
+      <span>Send 250,000 to savings?</span>
+      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+        <Button size="sm" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
+        <Button size="sm" onClick={() => setOpen(false)}>Send</Button>
+      </div>
+    </div>
+  }
+>
+  <Button variant="outline">Transfer</Button>
+</Popover>`}>
+  <ControlledPopover />
+</ComponentPreview>
+
+## Presentation
+
+`presentation="adaptive"` (the default) shows the content in a [`BottomSheet`](./bottom-sheet.mdx) on touch devices and as an anchored popover everywhere else. Force one of the two with `"popover"` or `"sheet"`.
+
+<ComponentPreview code={`<Popover presentation="sheet" content={<p style={{ margin: 0 }}>Shown in a bottom sheet.</p>}>
+  <Button variant="outline">Open as sheet</Button>
+</Popover>`}>
+  <Popover presentation="sheet" content={<p style={{ margin: 0 }}>Shown in a bottom sheet.</p>}>
+    <Button variant="outline">Open as sheet</Button>
+  </Popover>
+</ComponentPreview>
+
+## Accessibility
+
+- The popover has `role="dialog"` and is **not** modal (no `aria-modal`, no focus trap, background not inert). In the sheet presentation it is a modal dialog, with the focus trap, scroll lock and inert background of `BottomSheet`.
+- It is named by `label` (`aria-label`); without one it is labelled by the trigger (`aria-labelledby`).
+- The trigger gets `aria-haspopup="dialog"`, `aria-expanded`, and `aria-controls` while open.
+- On open, focus moves to the first focusable element inside, or to the popover itself when there is none. On close, focus returns to the trigger unless the user moved it somewhere else (for example by clicking another control).
+
+| Key | Behaviour |
+| --- | --- |
+| `Enter` / `Space` on the trigger | Toggles the popover |
+| `Escape` | Closes and returns focus to the trigger. The event is marked handled (`preventDefault`), so an enclosing Dialog, Drawer or BottomSheet stays open |
+| `Tab` on the last element | Closes; focus continues with the element after the trigger |
+| `Shift` + `Tab` on the first element | Closes; focus lands on the trigger |
+
+## Mobile
+
+- On coarse pointers the default presentation is a bottom sheet: an anchored popover next to a small trigger is easy to cover with a thumb and hard to dismiss.
+- The anchored popover is at most 360px wide and never wider than the viewport minus an 8px margin on each side, so it fits a 320px screen. Content taller than the available space scrolls inside the popover.
+- Keep interactive content inside the popover at least 44px tall on touch (library controls already are).
+
+## Props
+
+<PropsTable props={[
+  { name: 'content', type: 'ReactNode', description: 'Content shown inside the popover' },
+  { name: 'children', type: 'ReactElement', description: 'The trigger element' },
+  { name: 'placement', type: "'bottom' | 'top' | 'left' | 'right'", default: "'bottom'", description: 'Preferred side of the trigger; flips when it does not fit' },
+  { name: 'align', type: "'start' | 'center' | 'end'", default: "'start'", description: "Alignment along the trigger's edge" },
+  { name: 'open', type: 'boolean', description: 'Whether the popover is open (controlled)' },
+  { name: 'defaultOpen', type: 'boolean', default: 'false', description: 'Initial open state (uncontrolled)' },
+  { name: 'onOpenChange', type: '(open: boolean) => void', description: 'Called whenever the popover wants to open or close' },
+  { name: 'label', type: 'string', description: 'Accessible name; falls back to the trigger via aria-labelledby' },
+  { name: 'presentation', type: "'popover' | 'sheet' | 'adaptive'", default: "'adaptive'", description: 'Anchored popover, bottom sheet, or sheet on touch devices only' },
+  { name: 'closeOnOutsideClick', type: 'boolean', default: 'true', description: 'Close on a press outside (or on the sheet backdrop)' },
+  { name: 'closeOnEscape', type: 'boolean', default: 'true', description: 'Close when Escape is pressed' },
+  { name: 'className', type: 'string', description: 'Additional CSS class for the popover surface' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles for the popover surface' },
+]} />

@@ -1,0 +1,103 @@
+/* 상자(테두리·배경·포커스)는 Field 의 surface 가 그린다. 여기는 안쪽만. */
+
+/* ── Sizes — TextField 와 같은 값 ── */
+.sm .input { height: var(--tui-control-sm); font-size: var(--tui-font-size-small); padding: 0 var(--tui-pad-2); }
+.md .input { height: var(--tui-control-md); font-size: var(--tui-font-size-base); padding: 0 var(--tui-pad-3); }
+.lg .input { height: var(--tui-control-lg); font-size: var(--tui-font-size-lead); padding: 0 var(--tui-pad-4); }
+
+.input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--tui-ink);
+  font-family: var(--tui-font-sans);
+  line-height: var(--tui-line-height-body);
+  width: 100%;
+  min-width: 0;
+  /* 자릿수가 바뀌어도 글자 폭이 흔들리지 않게 한다. */
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tui-letter-num);
+}
+
+.input::placeholder {
+  color: var(--tui-ink-3);
+}
+
+.input:disabled {
+  cursor: not-allowed;
+}
+
+/* ── Units ── */
+.units {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--tui-ink-2);
+  font-size: var(--tui-font-size-small);
+  white-space: nowrap;
+}
+
+.sm .units { padding-inline-end: var(--tui-pad-2); }
+.md .units { padding-inline-end: var(--tui-pad-3); }
+.lg .units { padding-inline-end: var(--tui-pad-4); }
+
+/* ── Steppers ── */
+.steppers {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  flex-shrink: 0;
+  border-inline-start: 1px solid var(--tui-rule);
+}
+
+.stepper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--tui-ink-2);
+  cursor: pointer;
+  transition: var(--tui-transition-color);
+}
+
+.stepper + .stepper {
+  border-block-start: 1px solid var(--tui-rule);
+}
+
+@media (hover: hover) {
+  .stepper:hover:not(:disabled) {
+    background-color: var(--tui-field);
+    color: var(--tui-ink);
+  }
+}
+
+.stepper:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--tui-ink);
+}
+
+.stepper:disabled {
+  opacity: var(--tui-opacity-disabled);
+  cursor: not-allowed;
+}
+
+/*
+ * 터치에서는 버튼을 그리지 않는다(반 칸 높이는 44px 타깃이 될 수 없고, 숫자
+ * 키패드가 있다). JS 판정(useTouchDevice)은 마운트 뒤에야 알 수 있으므로
+ * 첫 페인트에 잠깐 보이지 않도록 CSS 로도 막는다.
+ */
+@media (pointer: coarse) {
+  .steppers {
+    display: none;
+  }
+
+  /* iOS 는 16px 미만 입력에 포커스하면 화면을 확대한다. */
+  .sm .input {
+    font-size: max(16px, var(--tui-font-size-small));
+  }
+}

@@ -1,0 +1,220 @@
+/* ── Backdrop ── */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--tui-z-modal);
+  background-color: var(--tui-scrim);
+  animation: drawerBackdropIn var(--tui-duration-base) var(--tui-ease-out);
+}
+
+.backdropExiting {
+  animation: drawerBackdropOut var(--tui-duration-base) var(--tui-ease-out) forwards;
+}
+
+/* ── Panel ── */
+/* 오버레이 표면 — 불투명한 한 겹. 화면 가장자리에 붙으므로 모서리를 둥글리지 않는다. */
+.drawer {
+  /* 폭은 width prop 이 인라인으로 덮어쓴다. */
+  --tui-drawer-width: 400px;
+  /* 등장·퇴장 때 밀려나는 방향. 붙은 가장자리 쪽으로 자기 폭만큼. */
+  --tui-drawer-offset: 100%;
+
+  position: fixed;
+  inset-block-start: 0;
+  z-index: var(--tui-z-modal);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  inline-size: var(--tui-drawer-width);
+  /* 뷰포트보다 넓어지지 않는다. */
+  max-inline-size: 100%;
+  /* dvh 는 모바일 브라우저 주소창을 뺀 실제 보이는 높이다. vh 는 폴백. */
+  block-size: 100vh;
+  block-size: 100dvh;
+  padding-block-start: var(--tui-safe-top);
+  background-color: var(--tui-sheet);
+  color: var(--tui-ink);
+  font-family: var(--tui-font-sans);
+  box-shadow: var(--tui-shadow-overlay);
+  /* 패널이 들어오는 동작은 사용자 행동에 대한 응답이므로 등장 애니메이션을 유지한다. */
+  animation: drawerIn var(--tui-duration-base) var(--tui-ease-out);
+}
+
+/* 내용에 포커스할 것이 없으면 패널 자신이 포커스를 받는다. 화면 가장자리에 붙어 있어
+   바깥 링은 잘리므로 안쪽에 그린다. */
+.drawer:focus-visible {
+  outline: none;
+  box-shadow: var(--tui-shadow-overlay), inset 0 0 0 2px var(--tui-ink);
+}
+
+/*
+ * 가로 안전영역(노치)은 물리 방향이고 패널이 붙는 쪽은 논리 방향이다. 가로 모드에서
+ * 좌우 인셋은 대칭이므로, 붙은 쪽에 둘 중 큰 값을 준다 — LTR/RTL 어느 쪽이든 맞는다.
+ */
+.end {
+  inset-inline-end: 0;
+  border-inline-start: 1px solid var(--tui-rule);
+  padding-inline-end: max(var(--tui-safe-left), var(--tui-safe-right));
+}
+
+.start {
+  --tui-drawer-offset: -100%;
+  inset-inline-start: 0;
+  border-inline-end: 1px solid var(--tui-rule);
+  padding-inline-start: max(var(--tui-safe-left), var(--tui-safe-right));
+}
+
+/* translateX 는 물리 방향이라 RTL 에서 부호를 뒤집는다. :dir() 을 모르는 브라우저는
+   이 규칙만 버리고, 패널은 반대쪽에서 들어오되 제자리에 멈춘다. */
+.end:dir(rtl) {
+  --tui-drawer-offset: -100%;
+}
+
+.start:dir(rtl) {
+  --tui-drawer-offset: 100%;
+}
+
+.exiting {
+  animation: drawerOut var(--tui-duration-base) var(--tui-ease-out) forwards;
+}
+
+/* 좁은 화면에서는 전체 폭. 뒤에 남는 좁은 띠는 누를 수도 읽을 수도 없다. */
+@media (max-width: 639.98px) {
+  .drawer {
+    inline-size: 100%;
+    border-inline: none;
+    padding-inline: var(--tui-safe-left) var(--tui-safe-right);
+  }
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tui-gap-3);
+  flex-shrink: 0;
+  padding: var(--tui-pad-3) var(--tui-pad-4);
+  border-block-end: 1px solid var(--tui-rule);
+}
+
+.title {
+  margin: 0;
+  min-inline-size: 0;
+  font-size: var(--tui-font-size-lead);
+  font-weight: var(--tui-weight-semibold);
+  line-height: var(--tui-line-height-heading);
+  letter-spacing: var(--tui-letter-heading);
+  color: var(--tui-ink);
+  overflow-wrap: anywhere;
+}
+
+/* ── Close button ── */
+.closeButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: var(--tui-radius-control);
+  background: transparent;
+  color: var(--tui-ink-2);
+  cursor: pointer;
+  transition: var(--tui-transition-color);
+}
+
+/* 터치 타깃 — 다른 컴포넌트와 같은 max(100%, 44px) 표현을 쓴다. */
+@media (pointer: coarse) {
+  .closeButton::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+}
+
+@media (hover: hover) {
+  .closeButton:hover {
+    background-color: var(--tui-field);
+    color: var(--tui-ink);
+  }
+}
+
+.closeButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--tui-sheet), 0 0 0 4px var(--tui-ink);
+}
+
+/* ── Body ── */
+.body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: var(--tui-pad-4);
+  font-size: var(--tui-font-size-base);
+  line-height: var(--tui-line-height-body);
+  color: var(--tui-ink-2);
+}
+
+/* 푸터가 없으면 본문이 화면 아래 가장자리(홈 인디케이터)까지 닿는다. */
+.bodyLast {
+  padding-block-end: calc(var(--tui-pad-4) + var(--tui-safe-bottom));
+}
+
+/* ── Footer ── */
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--tui-gap-2);
+  flex-shrink: 0;
+  padding: var(--tui-pad-3) var(--tui-pad-4);
+  padding-block-end: calc(var(--tui-pad-3) + var(--tui-safe-bottom));
+  border-block-start: 1px solid var(--tui-rule);
+  background-color: var(--tui-sheet);
+}
+
+/* ── Animations ── */
+@keyframes drawerIn {
+  from {
+    transform: translateX(var(--tui-drawer-offset));
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes drawerOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(var(--tui-drawer-offset));
+  }
+}
+
+@keyframes drawerBackdropIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes drawerBackdropOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

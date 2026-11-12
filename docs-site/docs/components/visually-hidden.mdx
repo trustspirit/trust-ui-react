@@ -1,0 +1,65 @@
+---
+sidebar_position: 50
+title: VisuallyHidden
+---
+
+import { VisuallyHidden } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# VisuallyHidden
+
+Text that is invisible on screen but still read by screen readers. Use it to name icon-only controls, add context that sighted users get from layout, or keep a heading in the document outline without showing it.
+
+## Basic Usage
+
+<ComponentPreview code={`<button type="button">
+  ✕<VisuallyHidden>Close dialog</VisuallyHidden>
+</button>`}>
+  <button type="button">
+    ✕<VisuallyHidden>Close dialog</VisuallyHidden>
+  </button>
+</ComponentPreview>
+
+## Rendering another element
+
+`as` changes the element. The content stays in the accessibility tree with that element's semantics.
+
+<ComponentPreview code={`<section>
+  <VisuallyHidden as="h2">Recent transactions</VisuallyHidden>
+  <ul>
+    <li>Coffee — 4,500</li>
+    <li>Transit — 1,400</li>
+  </ul>
+</section>`}>
+  <section>
+    <VisuallyHidden as="h2">Recent transactions</VisuallyHidden>
+    <ul>
+      <li>Coffee — 4,500</li>
+      <li>Transit — 1,400</li>
+    </ul>
+  </section>
+</ComponentPreview>
+
+## Accessibility
+
+- Uses the standard clip technique (a 1px clipped box). `display: none` and `visibility: hidden` are not used because they remove content from the accessibility tree as well.
+- Do not hide focusable elements with it: a keyboard user would land on something they cannot see.
+- Has no role and no keyboard interaction of its own.
+
+## Mobile
+
+- The hidden box is taken out of the layout flow (`position: absolute`), so it never causes horizontal overflow at narrow widths.
+- VoiceOver and TalkBack read the content in DOM order, exactly where you place it.
+
+## Props
+
+<PropsTable props={[
+  { name: 'as', type: 'ElementType', default: "'span'", description: 'Element to render' },
+  { name: 'htmlFor', type: 'string', description: 'Target control id when rendered as a label' },
+  { name: 'children', type: 'ReactNode', description: 'Content read by assistive technology' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+Other HTML attributes are passed to the rendered element.

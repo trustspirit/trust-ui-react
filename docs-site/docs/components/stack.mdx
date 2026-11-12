@@ -1,0 +1,155 @@
+---
+sidebar_position: 30
+title: Stack
+---
+
+import { Stack, HStack, VStack, Button, Badge } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Stack
+
+A flexbox layout primitive that spaces its children with a step from the spacing scale. Use it instead of hand-written `display: flex` wrappers so every gap in the app comes from `--tui-gap-1` … `--tui-gap-6`.
+
+`HStack` and `VStack` are the same component with the direction fixed.
+
+## Direction
+
+<ComponentPreview code={`<VStack>
+  <Button>Continue</Button>
+  <Button variant="secondary">Back</Button>
+</VStack>
+
+<HStack>
+  <Button>Continue</Button>
+  <Button variant="secondary">Back</Button>
+</HStack>`}>
+  <VStack gap={5}>
+    <VStack>
+      <Button>Continue</Button>
+      <Button variant="secondary">Back</Button>
+    </VStack>
+    <HStack>
+      <Button>Continue</Button>
+      <Button variant="secondary">Back</Button>
+    </HStack>
+  </VStack>
+</ComponentPreview>
+
+`<Stack direction="horizontal">` is equivalent to `<HStack>`; use `Stack` when the direction is computed.
+
+## Gap
+
+`gap` takes a step, not a pixel value. The scale is fixed and does not change with density.
+
+| `gap` | Token | Size |
+|---|---|---|
+| `0` | none | 0 |
+| `1` | `--tui-gap-1` | 4px |
+| `2` | `--tui-gap-2` | 8px |
+| `3` (default) | `--tui-gap-3` | 12px |
+| `4` | `--tui-gap-4` | 16px |
+| `5` | `--tui-gap-5` | 24px |
+| `6` | `--tui-gap-6` | 32px |
+
+<ComponentPreview code={`<HStack gap={1}>…</HStack>
+<HStack gap={3}>…</HStack>
+<HStack gap={6}>…</HStack>`}>
+  <VStack gap={4}>
+    <HStack gap={1}><Badge>One</Badge><Badge>Two</Badge><Badge>Three</Badge></HStack>
+    <HStack gap={3}><Badge>One</Badge><Badge>Two</Badge><Badge>Three</Badge></HStack>
+    <HStack gap={6}><Badge>One</Badge><Badge>Two</Badge><Badge>Three</Badge></HStack>
+  </VStack>
+</ComponentPreview>
+
+## Align and justify
+
+`align` sets the cross axis (`align-items`), `justify` the main axis (`justify-content`). Leave them unset to keep the flexbox defaults — children stretch across the cross axis and start at the beginning of the main axis.
+
+<ComponentPreview code={`<HStack justify="between" align="center">
+  <Badge variant="subtle">Draft</Badge>
+  <Button size="sm">Publish</Button>
+</HStack>`}>
+  <HStack justify="between" align="center" style={{ width: '100%' }}>
+    <Badge variant="subtle">Draft</Badge>
+    <Button size="sm">Publish</Button>
+  </HStack>
+</ComponentPreview>
+
+## Wrap
+
+A horizontal stack does not wrap by default. Set `wrap` for rows whose item count is not known in advance — tags, filter chips, button groups.
+
+<ComponentPreview code={`<HStack wrap gap={2}>
+  <Badge variant="outline">Seoul</Badge>
+  <Badge variant="outline">Busan</Badge>
+  …
+</HStack>`}>
+  <HStack wrap gap={2} style={{ maxWidth: 240 }}>
+    <Badge variant="outline">Seoul</Badge>
+    <Badge variant="outline">Busan</Badge>
+    <Badge variant="outline">Incheon</Badge>
+    <Badge variant="outline">Daegu</Badge>
+    <Badge variant="outline">Daejeon</Badge>
+    <Badge variant="outline">Gwangju</Badge>
+  </HStack>
+</ComponentPreview>
+
+## Rendering another element
+
+`as` changes the root element, so the stack can be the list, section or nav itself rather than an extra wrapper. Lists rendered this way lose their default bullets and indentation.
+
+```tsx
+<Stack as="ul" gap={2} aria-label="Checklist">
+  <li>Verify identity</li>
+  <li>Add a payment method</li>
+</Stack>
+
+<HStack as="nav" aria-label="Breadcrumb" gap={1}>…</HStack>
+```
+
+## Overriding the layout
+
+Layout values are never written as inline flex styles. They reach the DOM as `data-direction`, `data-align`, `data-justify` and `data-wrap` attributes plus a gap custom property, and the stylesheet rules that read them have single-class specificity. A class of your own is therefore enough to change the layout at a breakpoint:
+
+```css
+/* Row on wide screens, column on phones */
+@media (max-width: 480px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+```
+
+```tsx
+<HStack className="toolbar" justify="between">…</HStack>
+```
+
+## Accessibility
+
+- `Stack` adds no role, name or keyboard behaviour — it renders a plain element and is invisible to assistive technology. There are no keys to document.
+- Visual order follows DOM order. The component does not expose `order` or reverse directions, so reading and tab order always match what is on screen.
+- Use `as` to keep the semantics the content needs (`ul`/`ol` with `li` children, `nav`, `section` with a label). Native attributes such as `role` and `aria-label` are passed through to the root.
+
+## Mobile
+
+- Gaps come from the fixed spacing scale (`--tui-gap-1` … `--tui-gap-6`), so spacing is identical on touch and pointer devices and does not shift when density changes.
+- A horizontal stack without `wrap` can overflow a 320px screen if its children are wide. Set `wrap`, or switch to a vertical stack below your breakpoint with a class (see above).
+- The root has `min-inline-size: 0`, so a stack nested in another flex or grid container shrinks with it instead of pushing the page sideways. Long unbroken text inside children still needs its own wrapping rule.
+
+## Props
+
+<PropsTable props={[
+  { name: 'direction', type: "'vertical' | 'horizontal'", default: "'vertical'", description: 'Main axis. Fixed by HStack and VStack, which do not accept this prop' },
+  { name: 'gap', type: '0 | 1 | 2 | 3 | 4 | 5 | 6', default: '3', description: 'Space between children on the spacing scale; 0 removes it' },
+  { name: 'align', type: "'start' | 'center' | 'end' | 'stretch' | 'baseline'", description: 'Cross-axis alignment (align-items)' },
+  { name: 'justify', type: "'start' | 'center' | 'end' | 'between'", description: 'Main-axis distribution (justify-content)' },
+  { name: 'wrap', type: 'boolean', default: 'false', description: 'Let children wrap onto further lines' },
+  { name: 'as', type: 'keyof JSX.IntrinsicElements', default: "'div'", description: 'Element to render' },
+  { name: 'children', type: 'ReactNode', description: 'Stack content' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+Also accepts standard HTML attributes via spread, and forwards its ref to the root element.

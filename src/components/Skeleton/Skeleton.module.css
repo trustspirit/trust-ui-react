@@ -1,0 +1,40 @@
+/* ── Base ──
+   평평한 field 면 하나다. 빛이 훑고 지나가는 효과는 쓰지 않는다 —
+   면이 천천히 옅어졌다 돌아오는 것만으로 "아직 오는 중"이 읽힌다. */
+.skeleton {
+  display: block;
+  flex-shrink: 0;
+  /* 부모가 좁아져도 넘치지 않게 한다 — 고정 폭을 준 자리에서도 320px 에서 잘리지 않는다. */
+  max-width: 100%;
+  background-color: var(--tui-field);
+  animation: skeletonPulse 1.6s ease-in-out infinite alternate;
+}
+
+/* ── Shapes ── */
+.text { border-radius: var(--tui-radius-tight); }
+.rect { border-radius: var(--tui-radius-control); }
+.circle { border-radius: var(--tui-radius-full); }
+
+/* ── Lines ── */
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tui-gap-2);
+  max-width: 100%;
+}
+
+@keyframes skeletonPulse {
+  from { opacity: 1; }
+  to { opacity: 0.5; }
+}
+
+/* 전역 규칙은 애니메이션을 0.01ms 로 줄일 뿐이라 마지막 프레임에서 한 번 깜빡인다.
+   여기서는 아예 끈다 — 멈춘 면만으로도 자리 표시 역할은 한다. */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+
+/* 강제 색상 모드는 배경색을 지운다. 테두리로 자리를 남긴다. */
+@media (forced-colors: active) {
+  .skeleton { border: 1px solid CanvasText; }
+}

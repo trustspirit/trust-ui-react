@@ -1,0 +1,115 @@
+/* ── 표면 ──
+   페이지에 놓인 종이 한 장이다. 떠 있지 않으므로 그림자가 없다.
+   상태는 앞쪽 2px 괘선과 아이콘의 색으로만 알린다 — 면은 채우지 않는다. */
+.banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--tui-gap-3);
+  padding: var(--tui-pad-3) var(--tui-pad-4);
+  border: 1px solid var(--tui-rule);
+  border-inline-start: 2px solid var(--tui-banner-rule);
+  border-radius: var(--tui-radius-control);
+  background-color: var(--tui-sheet);
+  color: var(--tui-ink);
+  font-family: var(--tui-font-sans);
+  font-size: var(--tui-font-size-body);
+  line-height: var(--tui-line-height-body);
+  letter-spacing: var(--tui-letter-body);
+}
+
+/* ── 상태 ── info 는 시맨틱 색이 없어 잉크로 그린다. */
+.info { --tui-banner-rule: var(--tui-ink); }
+.success { --tui-banner-rule: var(--tui-success); }
+.warning { --tui-banner-rule: var(--tui-warning); }
+.danger { --tui-banner-rule: var(--tui-danger); }
+
+/* ── 아이콘 ── 첫 줄의 시각 중심에 맞춘다. */
+.icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: calc(var(--tui-font-size-body) * var(--tui-line-height-body));
+  color: var(--tui-banner-rule);
+}
+
+/* ── 본문과 액션 ──
+   뷰포트가 아니라 배너 자신의 폭을 따라 접힌다: 글의 기준 폭(18rem)과 액션이
+   한 줄에 못 들어가면 액션이 글 아래로 내려간다. 아이콘·여백을 더하면 배너
+   폭 480px 언저리다. 사이드바나 카드 안처럼 좁은 자리에서도 같은 규칙이 통한다. */
+.content {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--tui-gap-2) var(--tui-gap-4);
+  min-width: 0;
+}
+
+.text {
+  flex: 1 1 18rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.title {
+  margin: 0;
+  font-weight: var(--tui-weight-medium);
+}
+
+.description {
+  margin: var(--tui-gap-1) 0 0;
+  font-size: var(--tui-font-size-small);
+  color: var(--tui-ink-2);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tui-gap-2);
+  max-width: 100%;
+}
+
+/* ── 닫기 ── */
+.dismissButton {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--tui-radius-tight);
+  background: transparent;
+  color: var(--tui-ink-3);
+  cursor: pointer;
+  -webkit-tap-highlight-color: var(--tui-tap-highlight);
+  transition: var(--tui-transition-color);
+}
+
+/* 포커스 중에는 호버가 물러난다. */
+@media (hover: hover) {
+  .dismissButton:hover:not(:focus-visible) {
+    background-color: var(--tui-field);
+    color: var(--tui-ink);
+  }
+}
+
+/* sheet 면 위에 앉으므로 링의 안쪽 층도 sheet 다. */
+.dismissButton:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--tui-sheet), 0 0 0 4px var(--tui-ink);
+}
+
+@media (pointer: coarse) {
+  .dismissButton::after {
+    content: '';
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+}

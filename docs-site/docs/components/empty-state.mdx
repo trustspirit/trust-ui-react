@@ -1,0 +1,118 @@
+---
+sidebar_position: 43
+title: EmptyState
+---
+
+import { EmptyState, Button } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# EmptyState
+
+A placeholder for an area that has no data yet — an empty list, a search with no results, a feature that has not been set up.
+
+## Basic Usage
+
+<ComponentPreview code={`<EmptyState
+  title="No transactions yet"
+  description="Transactions will appear here once you make your first transfer."
+/>`}>
+  <EmptyState
+    title="No transactions yet"
+    description="Transactions will appear here once you make your first transfer."
+  />
+</ComponentPreview>
+
+## With icon and actions
+
+The icon is decorative. Put the primary action first.
+
+<ComponentPreview code={`<EmptyState
+  icon={<InboxIcon />}
+  title="No transactions yet"
+  description="Transactions will appear here once you make your first transfer."
+  actions={
+    <>
+      <Button>Send money</Button>
+      <Button variant="outline">Import history</Button>
+    </>
+  }
+/>`}>
+  <EmptyState
+    icon={
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M4 18l4-11h16l4 11v7H4z" />
+        <path d="M4 18h7l1.5 3h7L21 18h7" />
+      </svg>
+    }
+    title="No transactions yet"
+    description="Transactions will appear here once you make your first transfer."
+    actions={
+      <>
+        <Button>Send money</Button>
+        <Button variant="outline">Import history</Button>
+      </>
+    }
+  />
+</ComponentPreview>
+
+## Compact
+
+For cards and side panels. Spacing and type are smaller, and actions stack vertically and stretch to the full width.
+
+<ComponentPreview code={`<EmptyState
+  compact
+  title="No saved recipients"
+  description="Save a recipient to send faster next time."
+  actions={<Button>Add recipient</Button>}
+/>`}>
+  <div style={{ width: 280, maxWidth: '100%' }}>
+    <EmptyState
+      compact
+      title="No saved recipients"
+      description="Save a recipient to send faster next time."
+      actions={<Button>Add recipient</Button>}
+    />
+  </div>
+</ComponentPreview>
+
+## Heading level
+
+`headingLevel` changes the tag (`h1`–`h6`) and nothing else. Choose the level that continues the outline of the surrounding page.
+
+<ComponentPreview code={`<EmptyState headingLevel={2} title="No results for “invoice 2031”" description="Check the spelling or try a different search." />`}>
+  <EmptyState headingLevel={2} title="No results for “invoice 2031”" description="Check the spelling or try a different search." />
+</ComponentPreview>
+
+## Accessibility
+
+- The title is a real heading (`h3` by default), so screen-reader users can reach the empty area by heading navigation. Set `headingLevel` so levels are not skipped.
+- The `icon` wrapper is `aria-hidden` — do not put meaning in it that the title does not also state.
+- The root has no role. If the empty state replaces content after a user action (for example a search that returned nothing), announce the result with your own `role="status"` message; do not rely on the heading being noticed.
+- `actions` are your own controls and keep their own keyboard behaviour.
+
+| Key | Action |
+| --- | --- |
+| `Tab` | Moves through the actions |
+| `Enter` / `Space` | Activates the focused action |
+
+## Mobile
+
+- Text is capped at about 40 characters per line and centred; it shrinks with the container and long words break, so nothing overflows at 320px.
+- Actions wrap in the default layout. Use `compact` in narrow containers to stack them full-width, which gives larger, easier touch targets.
+- Use buttons of `size="md"` or larger so targets reach 44px on touch.
+
+## Props
+
+<PropsTable props={[
+  { name: 'title', type: 'string', description: 'Heading that says what is missing. Required.' },
+  { name: 'description', type: 'ReactNode', description: 'Supporting text: why the area is empty and what to do next' },
+  { name: 'icon', type: 'ReactNode', description: 'Decorative icon above the title; hidden from assistive technology' },
+  { name: 'actions', type: 'ReactNode', description: 'Buttons or links below the text' },
+  { name: 'headingLevel', type: '1 | 2 | 3 | 4 | 5 | 6', default: '3', description: 'Heading level of the title. Changes the tag only.' },
+  { name: 'compact', type: 'boolean', default: 'false', description: 'Smaller spacing; actions stack vertically and stretch' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+Other props are passed to the root `<div>`. The forwarded `ref` points at it.

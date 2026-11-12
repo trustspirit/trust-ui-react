@@ -1,0 +1,58 @@
+/*
+ * 변형 셀렉터는 :where() 로 감싸 특이도를 클래스 하나(0,1,0)로 묶는다 —
+ * 소비자가 className 하나로 grid-template-columns 나 gap 을 덮을 수 있다.
+ */
+.grid {
+  /* 인라인 style 의 같은 이름이 이 기본값들을 덮는다. 여기서 선언해 두면 중첩된
+     Grid 가 부모의 열 정의를 상속받지 않는다. */
+  --tui-grid-row-gap: var(--tui-gap-4);
+  --tui-grid-column-gap: var(--tui-gap-4);
+  --tui-grid-columns: 1;
+  --tui-grid-min: 240px;
+  --tui-grid-max: 1;
+
+  display: grid;
+  row-gap: var(--tui-grid-row-gap);
+  column-gap: var(--tui-grid-column-gap);
+  box-sizing: border-box;
+  min-inline-size: 0;
+}
+
+/* 고정 열. minmax(0, …) 이 없으면 1fr 의 최소값이 내용 너비라서, 긴 단어나 표가
+   든 칸 하나가 트랙을 밀어 320px 화면에서 가로 스크롤을 만든다. */
+.grid:where([data-columns='fixed']) {
+  grid-template-columns: repeat(var(--tui-grid-columns), minmax(0, 1fr));
+}
+
+/* 반응형 열. min(100%, …) 이 핵심이다 — 컨테이너가 minWidth 보다 좁으면 트랙
+   최소값이 컨테이너 너비로 줄어 한 열로 접히고 넘치지 않는다. */
+.grid:where([data-columns='responsive']) {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--tui-grid-min)), 1fr));
+}
+
+/* 열 수 상한. 트랙 최소값을 "max 개가 간격을 빼고 정확히 들어가는 너비" 이상으로
+   올리면 auto-fill 이 max+1 번째 트랙을 만들 자리가 없다. */
+.grid:where([data-columns='responsive'][data-max]) {
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(
+      min(
+        100%,
+        max(
+          var(--tui-grid-min),
+          (100% - (var(--tui-grid-max) - 1) * var(--tui-grid-column-gap)) / var(--tui-grid-max)
+        )
+      ),
+      1fr
+    )
+  );
+}
+
+.item {
+  --tui-grid-item-column: auto;
+
+  grid-column: var(--tui-grid-item-column);
+  box-sizing: border-box;
+  /* 격자 아이템의 기본 min-width:auto 가 트랙을 넓히지 않게 한다 */
+  min-inline-size: 0;
+}

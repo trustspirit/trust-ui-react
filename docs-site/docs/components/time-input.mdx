@@ -1,0 +1,144 @@
+---
+sidebar_position: 54
+title: TimeInput
+---
+
+import { TimeInput } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# TimeInput
+
+A time-of-day field. The value is always a 24-hour `'HH:mm'` string (or `null`), whatever clock is displayed.
+
+## Basic Usage
+
+<ComponentPreview code={`<TimeInput label="Start time" hourCycle={24} />`}>
+  <TimeInput label="Start time" hourCycle={24} />
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<TimeInput variant="outlined" label="Outlined" hourCycle={24} defaultValue="09:30" />
+<TimeInput variant="filled" label="Filled" hourCycle={24} defaultValue="09:30" />`}>
+  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+    <TimeInput variant="outlined" label="Outlined" hourCycle={24} defaultValue="09:30" />
+    <TimeInput variant="filled" label="Filled" hourCycle={24} defaultValue="09:30" />
+  </div>
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<TimeInput size="sm" label="Small" hourCycle={24} defaultValue="09:30" />
+<TimeInput size="md" label="Medium" hourCycle={24} defaultValue="09:30" />
+<TimeInput size="lg" label="Large" hourCycle={24} defaultValue="09:30" />`}>
+  <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+    <TimeInput size="sm" label="Small" hourCycle={24} defaultValue="09:30" />
+    <TimeInput size="md" label="Medium" hourCycle={24} defaultValue="09:30" />
+    <TimeInput size="lg" label="Large" hourCycle={24} defaultValue="09:30" />
+  </div>
+</ComponentPreview>
+
+## 12-hour clock and locale
+
+Without `hourCycle`, the clock follows `locale` (and the runtime's default locale when `locale` is not set either). The AM/PM names and their position come from the locale too.
+
+<ComponentPreview code={`<TimeInput label="Reminder" hourCycle={12} locale="en-US" defaultValue="15:30" />
+<TimeInput label="알림 시각" locale="ko-KR" defaultValue="15:30" />`}>
+  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+    <TimeInput label="Reminder" hourCycle={12} locale="en-US" defaultValue="15:30" />
+    <TimeInput label="알림 시각" locale="ko-KR" defaultValue="15:30" />
+  </div>
+</ComponentPreview>
+
+When rendering on a server, pass `hourCycle` or `locale` explicitly. Otherwise the server and the browser may resolve different default locales and render different segments.
+
+## Min, max and step
+
+A time outside `min`/`max` is never reported through `onChange`. While the segments show such a time the field is marked invalid, and on leaving the field it moves to the nearest allowed time. `step` is the minute increment of the arrow keys (and of the native picker); typed minutes are not snapped.
+
+<ComponentPreview code={`<TimeInput
+  label="Transfer time"
+  hourCycle={24}
+  defaultValue="10:00"
+  min="09:00"
+  max="15:30"
+  step={15}
+  helperText="Between 09:00 and 15:30"
+/>`}>
+  <TimeInput
+    label="Transfer time"
+    hourCycle={24}
+    defaultValue="10:00"
+    min="09:00"
+    max="15:30"
+    step={15}
+    helperText="Between 09:00 and 15:30"
+  />
+</ComponentPreview>
+
+## Error State
+
+<ComponentPreview code={`<TimeInput label="Start time" hourCycle={24} required errorMessage="Enter a start time" />`}>
+  <TimeInput label="Start time" hourCycle={24} required errorMessage="Enter a start time" />
+</ComponentPreview>
+
+## Value behaviour
+
+- `onChange` receives `null` until both the hour and the minute are set, then `'HH:mm'`.
+- With `name`, the `'HH:mm'` value is submitted (through a hidden input in the segmented rendering).
+
+## Accessibility
+
+On fine pointers the field is a `group` named by the label and described by the helper text or error message. Inside it, the hour, the minute and (on a 12-hour clock) AM/PM are separate `spinbutton` segments with `aria-valuenow`, `aria-valuemin`, `aria-valuemax` and `aria-valuetext`. `aria-invalid` and `aria-required` are set on the segments. Segment names are overridable (`hourLabel`, `minuteLabel`, `periodLabel`, `emptyValueText`).
+
+| Key | Action |
+| --- | --- |
+| `ArrowUp` / `ArrowDown` | Increase / decrease the focused segment, wrapping at the ends |
+| `0`–`9` | Type into the segment; focus advances when the segment is complete |
+| `ArrowLeft` / `ArrowRight` | Previous / next segment |
+| `:` | Next segment |
+| `Backspace` / `Delete` | Clear the segment (`Backspace` on an empty segment moves back) |
+| `Home` / `End` | Lowest / highest value of the segment |
+| `A` / `P` | AM / PM on the AM/PM segment |
+| `Tab` | Next segment, then out of the field |
+
+Key handling is skipped during IME composition.
+
+## Mobile
+
+- On touch devices a native time input is rendered, so the OS time picker is used. `min`, `max` and `step` (converted to seconds) are passed through, and the label is tied to it with `htmlFor`.
+- The iOS picker does not enforce `min`/`max`; the component does, the same way as in the segmented rendering.
+- The field height follows the control height tokens (`--tui-control-md` for the default size), which are at least 44px under `(pointer: coarse)`. The `sm` size keeps a 16px font so iOS does not zoom on focus.
+
+## Props
+
+<PropsTable props={[
+  { name: 'label', type: 'ReactNode', required: true, description: 'Label displayed above the input' },
+  { name: 'value', type: 'string | null', description: "Controlled value as 24-hour 'HH:mm'. null means empty" },
+  { name: 'defaultValue', type: 'string | null', default: 'null', description: "Initial value (uncontrolled), 24-hour 'HH:mm'" },
+  { name: 'onChange', type: '(value: string | null) => void', description: "Called with 'HH:mm' once hour and minute are set and in range; null while incomplete" },
+  { name: 'min', type: 'string', description: "Earliest allowed time, 'HH:mm'" },
+  { name: 'max', type: 'string', description: "Latest allowed time, 'HH:mm'" },
+  { name: 'step', type: 'number', default: '1', description: 'Minute increment used by the arrow keys and the native picker' },
+  { name: 'hourCycle', type: '12 | 24', description: '12-hour or 24-hour clock. Defaults to the convention of locale' },
+  { name: 'locale', type: 'string', description: 'Locale used to pick the hour cycle and the AM/PM names' },
+  { name: 'hourLabel', type: 'string', default: "'Hour'", description: 'Accessible name of the hour segment' },
+  { name: 'minuteLabel', type: 'string', default: "'Minute'", description: 'Accessible name of the minute segment' },
+  { name: 'periodLabel', type: 'string', default: "'AM/PM'", description: 'Accessible name of the AM/PM segment' },
+  { name: 'emptyValueText', type: 'string', default: "'Empty'", description: 'Value text announced for a segment that has not been filled in' },
+  { name: 'helperText', type: 'ReactNode', description: 'Helper text displayed below the input' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Whether the field is in error state' },
+  { name: 'errorMessage', type: 'ReactNode', description: 'Error message displayed below the input' },
+  { name: 'required', type: 'boolean', default: 'false', description: 'Whether the field is required (shows an asterisk)' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the field is disabled' },
+  { name: 'readOnly', type: 'boolean', default: 'false', description: 'Whether the value can be read but not changed' },
+  { name: 'hideLabel', type: 'boolean', default: 'false', description: 'Hides the label visually. It remains the accessible name' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size of the field' },
+  { name: 'variant', type: "'outlined' | 'filled'", default: "'outlined'", description: 'Visual variant' },
+  { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Stretches the field to fill its container' },
+  { name: 'className', type: 'string', description: 'Additional CSS class (on the field root)' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles (on the field root)' },
+]} />
+
+`id` and `name` apply to both renderings. Other native input attributes (`autoComplete`, `onBlur`, …) are passed to the native input on touch devices only. The ref points at the field root.

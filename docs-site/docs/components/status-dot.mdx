@@ -1,0 +1,89 @@
+---
+sidebar_position: 44
+title: StatusDot
+---
+
+import { StatusDot } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# StatusDot
+
+A small dot that shows presence or severity next to a name, a row or a heading.
+
+## Basic Usage
+
+<ComponentPreview code={`<StatusDot variant="success" label="Online" />`}>
+  <StatusDot variant="success" label="Online" />
+</ComponentPreview>
+
+## Variants
+
+`neutral` is ink grey and `accent` follows `--tui-accent` (ink unless the app sets a brand colour).
+
+<ComponentPreview code={`<StatusDot variant="neutral" label="Offline" />
+<StatusDot variant="success" label="Online" />
+<StatusDot variant="warning" label="Degraded" />
+<StatusDot variant="danger" label="Down" />
+<StatusDot variant="accent" label="New" />`}>
+  <StatusDot variant="neutral" label="Offline" />
+  <StatusDot variant="success" label="Online" />
+  <StatusDot variant="warning" label="Degraded" />
+  <StatusDot variant="danger" label="Down" />
+  <StatusDot variant="accent" label="New" />
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<StatusDot variant="success" label="Online" size="sm" />
+<StatusDot variant="success" label="Online" size="md" />`}>
+  <StatusDot variant="success" label="Online" size="sm" />
+  <StatusDot variant="success" label="Online" size="md" />
+</ComponentPreview>
+
+## Pulse
+
+`pulse` adds a thin ring that expands and fades, for a status that is live right now. Use it for one or two dots on a screen, not for every row.
+
+<ComponentPreview code={`<StatusDot variant="success" label="Syncing" pulse />`}>
+  <StatusDot variant="success" label="Syncing" pulse />
+</ComponentPreview>
+
+## With text
+
+<ComponentPreview code={`<span style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
+  <StatusDot variant="success" label="Online" />
+  Payments API
+</span>`}>
+  <span style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
+    <StatusDot variant="success" label="Online" />
+    Payments API
+  </span>
+</ComponentPreview>
+
+## Accessibility
+
+- The dot has `role="img"` and `aria-label` set from `label`, which is required. Write the status itself ("Online", "Payment failed"), not the colour.
+- Colour alone does not reach everyone who can see the dot. Where the status matters, show it as visible text next to the dot as well; if that text says the same thing as `label`, pass `aria-hidden` to the dot so it is not read twice.
+- The dot is not a live region. If the status changes while the user is on the page and they need to know, announce it separately.
+- No keyboard interaction — the dot is not focusable.
+- `pulse` stops under `prefers-reduced-motion`; the dot itself never fades, so the status colour is always fully visible.
+- In forced-colors mode the dot is drawn in the system text colour. Variants are then indistinguishable by colour, which is another reason to pair it with text.
+
+## Mobile
+
+- The dot is 6px (`sm`) or 8px (`md`) and is not interactive. Do not attach click handlers to it; make the surrounding row or a button the target instead.
+- It does not shrink inside flex rows, so it stays round next to long, wrapping text.
+
+## Props
+
+<PropsTable props={[
+  { name: 'variant', type: "'neutral' | 'success' | 'warning' | 'danger' | 'accent'", description: 'Meaning of the dot. Required.' },
+  { name: 'label', type: 'string', description: 'Text alternative exposed as the accessible name. Required.' },
+  { name: 'pulse', type: 'boolean', default: 'false', description: 'Expanding ring for a live status. Stops under reduced motion.' },
+  { name: 'size', type: "'sm' | 'md'", default: "'md'", description: 'Dot size: 6 or 8px' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+Other props are passed to the root `<span>`. The forwarded `ref` points at it.

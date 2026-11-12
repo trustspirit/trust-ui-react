@@ -1,0 +1,42 @@
+/*
+ * 변형 셀렉터는 전부 :where() 로 감싸 특이도를 클래스 하나(0,1,0)로 묶는다.
+ * 소비자가 className 하나로 방향·정렬·간격을 덮을 수 있어야 하기 때문이다.
+ */
+.stack {
+  /* 인라인 style 의 같은 이름이 이 기본값을 덮는다. 여기서 선언해 두면 중첩된
+     Stack 이 부모의 간격을 상속받지 않는다. */
+  --tui-stack-gap: var(--tui-gap-3);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--tui-stack-gap);
+  box-sizing: border-box;
+  /* 부모 flex/grid 안에서 긴 내용이 트랙을 밀어내지 않게 한다 */
+  min-inline-size: 0;
+}
+
+/* as="ul" / "ol" 로 쓸 때 브라우저 기본 들여쓰기가 간격을 어긋나게 한다 */
+:where(ul, ol).stack {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stack:where([data-direction='horizontal']) {
+  flex-direction: row;
+}
+
+.stack:where([data-wrap]) {
+  flex-wrap: wrap;
+}
+
+.stack:where([data-align='start']) { align-items: flex-start; }
+.stack:where([data-align='center']) { align-items: center; }
+.stack:where([data-align='end']) { align-items: flex-end; }
+.stack:where([data-align='stretch']) { align-items: stretch; }
+.stack:where([data-align='baseline']) { align-items: baseline; }
+
+.stack:where([data-justify='start']) { justify-content: flex-start; }
+.stack:where([data-justify='center']) { justify-content: center; }
+.stack:where([data-justify='end']) { justify-content: flex-end; }
+.stack:where([data-justify='between']) { justify-content: space-between; }

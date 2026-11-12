@@ -1,0 +1,195 @@
+---
+sidebar_position: 53
+title: Combobox
+---
+
+import { Combobox } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Combobox
+
+A searchable single-select where the user types freely and picks from a filtered list. Use it for long or server-backed lists; for a short static list, `Select` with `searchable` is enough.
+
+## Basic Usage
+
+<ComponentPreview code={`<Combobox
+  label="Bank"
+  placeholder="Type to search"
+  options={[
+    { value: 'kb', label: '국민은행' },
+    { value: 'sh', label: '신한은행' },
+    { value: 'wr', label: '우리은행' },
+    { value: 'hn', label: '하나은행' },
+  ]}
+/>`}>
+  <div style={{ width: '100%', maxWidth: 320 }}>
+    <Combobox
+      fullWidth
+      label="Bank"
+      placeholder="Type to search"
+      options={[
+        { value: 'kb', label: '국민은행' },
+        { value: 'sh', label: '신한은행' },
+        { value: 'wr', label: '우리은행' },
+        { value: 'hn', label: '하나은행' },
+      ]}
+    />
+  </div>
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<Combobox variant="outlined" label="Outlined" options={options} defaultValue="kb" />
+<Combobox variant="filled" label="Filled" options={options} defaultValue="sh" />`}>
+  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+    <Combobox variant="outlined" label="Outlined" defaultValue="kb" options={[{ value: 'kb', label: '국민은행' }, { value: 'sh', label: '신한은행' }]} />
+    <Combobox variant="filled" label="Filled" defaultValue="sh" options={[{ value: 'kb', label: '국민은행' }, { value: 'sh', label: '신한은행' }]} />
+  </div>
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<Combobox size="sm" label="Small" options={options} />
+<Combobox size="md" label="Medium" options={options} />
+<Combobox size="lg" label="Large" options={options} />`}>
+  <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+    <Combobox size="sm" label="Small" options={[{ value: 'kb', label: '국민은행' }, { value: 'sh', label: '신한은행' }]} />
+    <Combobox size="md" label="Medium" options={[{ value: 'kb', label: '국민은행' }, { value: 'sh', label: '신한은행' }]} />
+    <Combobox size="lg" label="Large" options={[{ value: 'kb', label: '국민은행' }, { value: 'sh', label: '신한은행' }]} />
+  </div>
+</ComponentPreview>
+
+## Descriptions and disabled options
+
+<ComponentPreview code={`<Combobox
+  label="Stock"
+  placeholder="Name"
+  options={[
+    { value: '005930', label: '삼성전자', description: '005930 · KOSPI' },
+    { value: '000660', label: 'SK하이닉스', description: '000660 · KOSPI' },
+    { value: '035420', label: 'NAVER', description: '035420 · KOSPI', disabled: true },
+  ]}
+/>`}>
+  <div style={{ width: '100%', maxWidth: 320 }}>
+    <Combobox
+      fullWidth
+      label="Stock"
+      placeholder="Name"
+      options={[
+        { value: '005930', label: '삼성전자', description: '005930 · KOSPI' },
+        { value: '000660', label: 'SK하이닉스', description: '000660 · KOSPI' },
+        { value: '035420', label: 'NAVER', description: '035420 · KOSPI', disabled: true },
+      ]}
+    />
+  </div>
+</ComponentPreview>
+
+## Async search
+
+`onSearch` receives the typed text. Load the options yourself and pass them back through `options`, with `loading` while the request runs. Pass `filter={null}` so results the server already filtered are shown as they are, and `minQueryLength` to wait for a few characters.
+
+```tsx
+function StockPicker() {
+  const [options, setOptions] = useState<ComboboxOption[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [value, setValue] = useState<string | null>(null);
+
+  const search = async (query: string) => {
+    setLoading(true);
+    setOptions(await fetchStocks(query));
+    setLoading(false);
+  };
+
+  return (
+    <Combobox
+      label="Stock"
+      options={options}
+      loading={loading}
+      onSearch={search}
+      filter={null}
+      minQueryLength={2}
+      value={value}
+      onChange={setValue}
+    />
+  );
+}
+```
+
+`onSearch` is called on every change, including text that is still being composed with an IME, so Korean input filters syllable by syllable. Debounce and discard stale responses in your own code. The component remembers the selected option, so its label stays visible when later results no longer contain it. A controlled `value` whose option has never been in `options` is shown as the raw value.
+
+## Error State
+
+<ComponentPreview code={`<Combobox label="Bank" options={options} required errorMessage="Choose a bank" />`}>
+  <Combobox label="Bank" required errorMessage="Choose a bank" options={[{ value: 'kb', label: '국민은행' }, { value: 'sh', label: '신한은행' }]} />
+</ComponentPreview>
+
+## Text and selection
+
+- Typing never changes the value; only picking an option does.
+- On blur, text that does not match the selected option reverts to the selected label. Text that was deleted completely clears the selection.
+- The clear button and `Escape` (with the list closed) clear both the text and the selection.
+- With `name`, the selected `value` is submitted through a hidden input.
+
+## Accessibility
+
+Follows the WAI-ARIA "editable combobox with list autocomplete" pattern.
+
+- The input has `role="combobox"`, `aria-autocomplete="list"`, `aria-expanded`, `aria-controls` and `aria-activedescendant`. DOM focus stays in the input the whole time.
+- The popup is a `listbox` named by the field label; items are `option` elements with `aria-selected` and `aria-disabled`.
+- The result count, the empty text and the loading text are announced through a polite live region.
+- Helper text and error message are linked with `aria-describedby`; the error state sets `aria-invalid`.
+
+| Key | Action |
+| --- | --- |
+| `ArrowDown` / `ArrowUp` | Open the list; move to the next / previous option, skipping disabled ones |
+| `Home` / `End` | First / last option while an option is active (otherwise the caret moves) |
+| `Enter` | Select the active option |
+| `Escape` | Close the list; when already closed, clear the text and the selection |
+| `Tab` | Close the list without selecting and move on |
+
+All key handling is skipped during IME composition, so the `Enter` that commits a Hangul syllable does not select an option.
+
+## Mobile
+
+- Touch devices get the same inline popup (no separate sheet), so the keyboard and the results are visible together. Options are at least 44px tall and the clear button is 44px wide.
+- The popup closes when the page is scrolled; scrolling inside the list does not close it, and neither does the scroll the browser performs while the on-screen keyboard opens.
+- The popup takes the width of the field and stays inside the viewport, flipping above the field when there is no room below.
+- The `sm` size keeps a 16px font on touch so iOS does not zoom on focus.
+
+## Props
+
+<PropsTable props={[
+  { name: 'label', type: 'ReactNode', required: true, description: 'Label displayed above the input' },
+  { name: 'options', type: '{ value: string; label: string; disabled?: boolean; description?: string }[]', default: '[]', description: 'Options to choose from' },
+  { name: 'value', type: 'string | null', description: 'Controlled selected value' },
+  { name: 'defaultValue', type: 'string | null', default: 'null', description: 'Initial selected value (uncontrolled)' },
+  { name: 'onChange', type: '(value: string | null, option: ComboboxOption | null) => void', description: 'Called when the selection changes' },
+  { name: 'inputValue', type: 'string', description: 'Controlled input text' },
+  { name: 'onInputValueChange', type: '(inputValue: string) => void', description: 'Called whenever the input text changes' },
+  { name: 'onSearch', type: '(query: string) => void', description: 'Called with the typed text; load options and pass them back through options' },
+  { name: 'loading', type: 'boolean', default: 'false', description: 'Shows the loading state in the popup' },
+  { name: 'filter', type: '((option, query) => boolean) | null', description: 'Client-side match. Defaults to a case-insensitive label match; null disables filtering' },
+  { name: 'minQueryLength', type: 'number', default: '0', description: 'Characters required before the popup opens and onSearch is called' },
+  { name: 'emptyText', type: 'string', default: "'No results'", description: 'Text shown when no option matches' },
+  { name: 'loadingText', type: 'string', default: "'Loading'", description: 'Text shown while loading' },
+  { name: 'resultCountText', type: '(count: number) => string', description: 'Text announced to screen readers when the result list changes' },
+  { name: 'clearable', type: 'boolean', default: 'true', description: 'Shows a button that clears the selection' },
+  { name: 'clearLabel', type: 'string', default: "'Clear'", description: 'Accessible name of the clear button' },
+  { name: 'placeholder', type: 'string', description: 'Placeholder text' },
+  { name: 'helperText', type: 'ReactNode', description: 'Helper text displayed below the input' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Whether the field is in error state' },
+  { name: 'errorMessage', type: 'ReactNode', description: 'Error message displayed below the input' },
+  { name: 'required', type: 'boolean', default: 'false', description: 'Whether the field is required (shows an asterisk)' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the field is disabled' },
+  { name: 'hideLabel', type: 'boolean', default: 'false', description: 'Hides the label visually. It remains the accessible name' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size of the field' },
+  { name: 'variant', type: "'outlined' | 'filled'", default: "'outlined'", description: 'Visual variant' },
+  { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Stretches the field to fill its container' },
+  { name: 'id', type: 'string', description: 'Id for the input' },
+  { name: 'name', type: 'string', description: 'Form field name. The selected value is submitted' },
+  { name: 'className', type: 'string', description: 'Additional CSS class (on the field root)' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles (on the field root)' },
+]} />
+
+The ref points at the input.

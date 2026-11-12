@@ -1,0 +1,137 @@
+---
+sidebar_position: 52
+title: NumberInput
+---
+
+import { NumberInput } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# NumberInput
+
+A numeric field with keyboard stepping, range clamping and optional locale formatting. The value is a `number` (or `null` when empty), not a string.
+
+## Basic Usage
+
+<ComponentPreview code={`<NumberInput label="Quantity" defaultValue={1} min={0} max={99} />`}>
+  <NumberInput label="Quantity" defaultValue={1} min={0} max={99} />
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<NumberInput variant="outlined" label="Outlined" defaultValue={10} />
+<NumberInput variant="filled" label="Filled" defaultValue={10} />`}>
+  <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+    <NumberInput variant="outlined" label="Outlined" defaultValue={10} />
+    <NumberInput variant="filled" label="Filled" defaultValue={10} />
+  </div>
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<NumberInput size="sm" label="Small" defaultValue={1} />
+<NumberInput size="md" label="Medium" defaultValue={1} />
+<NumberInput size="lg" label="Large" defaultValue={1} />`}>
+  <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+    <NumberInput size="sm" label="Small" defaultValue={1} />
+    <NumberInput size="md" label="Medium" defaultValue={1} />
+    <NumberInput size="lg" label="Large" defaultValue={1} />
+  </div>
+</ComponentPreview>
+
+## Step, precision and units
+
+`precision` defaults to the decimal places of `step`. Values are rounded to it when stepping and on blur, so repeated steps do not accumulate floating-point error (0.1 + 0.2 gives 0.3).
+
+<ComponentPreview code={`<NumberInput label="Interest rate" defaultValue={3.5} step={0.1} min={0} max={20} units="%" />`}>
+  <NumberInput label="Interest rate" defaultValue={3.5} step={0.1} min={0} max={20} units="%" />
+</ComponentPreview>
+
+## Formatted display
+
+With `formatOptions`, the value is formatted through `Intl.NumberFormat` while the input is not focused. On focus the raw number is shown for editing.
+
+<ComponentPreview code={`<NumberInput
+  label="Transfer amount"
+  defaultValue={1250000}
+  step={10000}
+  min={0}
+  locale="ko-KR"
+  formatOptions={{ style: 'currency', currency: 'KRW' }}
+/>`}>
+  <NumberInput
+    label="Transfer amount"
+    defaultValue={1250000}
+    step={10000}
+    min={0}
+    locale="ko-KR"
+    formatOptions={{ style: 'currency', currency: 'KRW' }}
+  />
+</ComponentPreview>
+
+## Error State
+
+<ComponentPreview code={`<NumberInput label="Quantity" defaultValue={120} max={99} errorMessage="At most 99 per order" />`}>
+  <NumberInput label="Quantity" defaultValue={120} max={99} errorMessage="At most 99 per order" />
+</ComponentPreview>
+
+## Value behaviour
+
+- While typing, `onChange` receives the parsed number as it is, so you can validate live. Partial text such as `-` or `1.` stays in the input; `-` alone reports `null`.
+- On blur and when stepping, the value is clamped to `min`/`max` and rounded to `precision`, and `onChange` fires again if that changed it.
+- An empty input is `null`.
+- With `name`, the unformatted number is submitted through a hidden input.
+- The mouse wheel never changes the value.
+
+## Accessibility
+
+- Role: `spinbutton` on a text input, named by the label, with `aria-valuenow`, `aria-valuemin`, `aria-valuemax`. `aria-valuetext` carries the formatted value (and string `units`).
+- Helper text and error message are linked with `aria-describedby`; the error state sets `aria-invalid`.
+- The stepper buttons have accessible names (`incrementLabel`, `decrementLabel`) and are left out of the tab order because the arrow keys do the same job.
+
+| Key | Action |
+| --- | --- |
+| `ArrowUp` / `ArrowDown` | Add / remove one `step` |
+| `PageUp` / `PageDown` | Add / remove ten steps |
+| `Home` / `End` | Jump to `min` / `max` when defined (otherwise the caret moves) |
+
+Key handling is skipped during IME composition.
+
+## Mobile
+
+- The stepper buttons are not rendered on touch devices: half-height buttons cannot be 44px targets. The numeric keypad is requested instead (`inputMode="decimal"`, or `"numeric"` when `precision` is 0).
+- The iOS numeric keypads have no minus key. If negative values are needed on phones, pass `inputMode="text"`.
+- The `sm` size keeps a 16px font on touch so iOS does not zoom on focus.
+
+## Props
+
+<PropsTable props={[
+  { name: 'label', type: 'ReactNode', required: true, description: 'Label displayed above the input' },
+  { name: 'value', type: 'number | null', description: 'Controlled value. null means empty' },
+  { name: 'defaultValue', type: 'number | null', default: 'null', description: 'Initial value (uncontrolled)' },
+  { name: 'onChange', type: '(value: number | null) => void', description: 'Called with the parsed number while typing and the clamped, rounded number on blur and stepping' },
+  { name: 'min', type: 'number', description: 'Minimum value' },
+  { name: 'max', type: 'number', description: 'Maximum value' },
+  { name: 'step', type: 'number', default: '1', description: 'Amount added or removed by the arrow keys and stepper buttons' },
+  { name: 'precision', type: 'number', description: 'Decimal places kept. Defaults to the decimal places of step' },
+  { name: 'units', type: 'ReactNode', description: 'Unit shown after the number' },
+  { name: 'showSteppers', type: 'boolean', default: 'true', description: 'Shows the stepper buttons. Always hidden on touch devices' },
+  { name: 'formatOptions', type: 'Intl.NumberFormatOptions', description: 'Formats the value while the input is not focused' },
+  { name: 'locale', type: 'string', description: 'Locale used with formatOptions' },
+  { name: 'incrementLabel', type: 'string', default: "'Increase'", description: 'Accessible name of the increment button' },
+  { name: 'decrementLabel', type: 'string', default: "'Decrease'", description: 'Accessible name of the decrement button' },
+  { name: 'helperText', type: 'ReactNode', description: 'Helper text displayed below the input' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Whether the field is in error state' },
+  { name: 'errorMessage', type: 'ReactNode', description: 'Error message displayed below the input' },
+  { name: 'required', type: 'boolean', default: 'false', description: 'Whether the field is required (shows an asterisk)' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the field is disabled' },
+  { name: 'readOnly', type: 'boolean', default: 'false', description: 'Whether the value can be read but not changed' },
+  { name: 'hideLabel', type: 'boolean', default: 'false', description: 'Hides the label visually. It remains the accessible name' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size of the field' },
+  { name: 'variant', type: "'outlined' | 'filled'", default: "'outlined'", description: 'Visual variant' },
+  { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Stretches the field to fill its container' },
+  { name: 'className', type: 'string', description: 'Additional CSS class (on the field root)' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles (on the field root)' },
+]} />
+
+Other native input attributes (`name`, `id`, `placeholder`, `autoComplete`, …) are passed to the input. The ref points at the input.

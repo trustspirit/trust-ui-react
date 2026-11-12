@@ -1,0 +1,54 @@
+/* ── Base ──
+   점 하나가 곧 상태다. 색은 color 에 두고 면은 currentColor 로 칠해,
+   맥박 고리가 같은 색을 그대로 물려받게 한다. */
+.statusDot {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  border-radius: var(--tui-radius-full);
+  background-color: currentColor;
+  vertical-align: middle;
+}
+
+/* ── Sizes ── */
+.sm { width: 6px; height: 6px; }
+.md { width: 8px; height: 8px; }
+
+/* ── Variants ── */
+.neutral { color: var(--tui-ink-3); }
+.success { color: var(--tui-success); }
+.warning { color: var(--tui-warning); }
+.danger { color: var(--tui-danger); }
+.accent { color: var(--tui-accent); }
+
+/* ── Pulse ──
+   번지는 그림자가 아니라 1px 괘선 고리가 퍼지며 사라진다. 점 자체는 흐려지지
+   않으므로 어느 순간에 봐도 상태 색이 온전하다. */
+.pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid currentColor;
+  border-radius: var(--tui-radius-full);
+  opacity: 0;
+  pointer-events: none;
+  animation: statusDotPulse 1.8s var(--tui-ease-out) infinite;
+}
+
+@keyframes statusDotPulse {
+  from { transform: scale(1); opacity: 0.7; }
+  to { transform: scale(2.6); opacity: 0; }
+}
+
+/* 멈추면 고리는 보이지 않고(opacity: 0) 점만 남는다 — 의미는 점과 label 이 갖는다. */
+@media (prefers-reduced-motion: reduce) {
+  .pulse::after { animation: none; }
+}
+
+/* 강제 색상 모드는 배경색을 지워 점이 사라진다. 시스템 글자색으로 직접 칠한다. */
+@media (forced-colors: active) {
+  .statusDot {
+    forced-color-adjust: none;
+    color: CanvasText;
+  }
+}

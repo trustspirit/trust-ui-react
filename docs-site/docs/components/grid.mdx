@@ -1,0 +1,158 @@
+---
+sidebar_position: 31
+title: Grid
+---
+
+import { Grid } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+export const cell = {
+  padding: 'var(--tui-pad-3)',
+  border: '1px solid var(--tui-rule)',
+  borderRadius: 'var(--tui-radius-tight)',
+  background: 'var(--tui-field)',
+  color: 'var(--tui-ink)',
+};
+
+# Grid
+
+A CSS grid layout primitive. By default it is responsive without media queries: it fits as many columns as the **container** allows and collapses to a single column when space runs out.
+
+## Responsive columns
+
+Pass an object to `columns`. Tracks are at least `minWidth` px wide and share the remaining space equally. The default is `{ minWidth: 240 }`.
+
+<ComponentPreview code={`<Grid columns={{ minWidth: 140 }}>
+  <div>1</div>
+  <div>2</div>
+  <div>3</div>
+  <div>4</div>
+  <div>5</div>
+</Grid>`}>
+  <Grid columns={{ minWidth: 140 }} style={{ width: '100%' }}>
+    <div style={cell}>1</div>
+    <div style={cell}>2</div>
+    <div style={cell}>3</div>
+    <div style={cell}>4</div>
+    <div style={cell}>5</div>
+  </Grid>
+</ComponentPreview>
+
+Because the column count follows the container rather than the viewport, the same grid works in a full-width page, a sidebar and a dialog.
+
+### Limiting the column count
+
+`max` caps the number of columns however wide the container gets — useful when four cards across would leave each one too sparse.
+
+<ComponentPreview code={`<Grid columns={{ minWidth: 140, max: 2 }}>
+  <div>1</div>
+  <div>2</div>
+  <div>3</div>
+  <div>4</div>
+</Grid>`}>
+  <Grid columns={{ minWidth: 140, max: 2 }} style={{ width: '100%' }}>
+    <div style={cell}>1</div>
+    <div style={cell}>2</div>
+    <div style={cell}>3</div>
+    <div style={cell}>4</div>
+  </Grid>
+</ComponentPreview>
+
+## Fixed columns
+
+A number means exactly that many equal tracks at **every** width — the grid does not collapse on narrow screens. Use it for content that is meaningless when reflowed (a keypad, a week of days), not for cards.
+
+<ComponentPreview code={`<Grid columns={3} gap={2}>
+  <div>1</div>
+  <div>2</div>
+  <div>3</div>
+  <div>4</div>
+  <div>5</div>
+  <div>6</div>
+</Grid>`}>
+  <Grid columns={3} gap={2} style={{ width: '100%' }}>
+    <div style={cell}>1</div>
+    <div style={cell}>2</div>
+    <div style={cell}>3</div>
+    <div style={cell}>4</div>
+    <div style={cell}>5</div>
+    <div style={cell}>6</div>
+  </Grid>
+</ComponentPreview>
+
+## Gap
+
+`gap` uses the same steps as [`Stack`](./stack.mdx): `0` for none, `1`–`6` for `--tui-gap-1` … `--tui-gap-6`. The default is `4` (16px). `rowGap` and `columnGap` override one axis each.
+
+```tsx
+<Grid columns={3} rowGap={6} columnGap={2}>…</Grid>
+```
+
+## Spanning columns
+
+Any element can be a grid cell. Wrap a cell in `Grid.Item` (also exported as `GridItem`) only when it needs to span columns.
+
+<ComponentPreview code={`<Grid columns={4} gap={2}>
+  <Grid.Item span="full">span="full"</Grid.Item>
+  <Grid.Item span={2}>span={2}</Grid.Item>
+  <div>1</div>
+  <div>1</div>
+</Grid>`}>
+  <Grid columns={4} gap={2} style={{ width: '100%' }}>
+    <Grid.Item span="full" style={cell}>span="full"</Grid.Item>
+    <Grid.Item span={2} style={cell}>span=2</Grid.Item>
+    <div style={cell}>1</div>
+    <div style={cell}>1</div>
+  </Grid>
+</ComponentPreview>
+
+- `span="full"` stretches from the first to the last column line and is safe at any column count, including one. Use it for headings and full-width rows in a responsive grid.
+- A numeric `span` is a fixed span. Pair it with a numeric `columns` no smaller than the span. In a responsive grid the column count can drop below the span on narrow screens, and the browser then adds extra columns to honour it, which overflows the container.
+
+## Overriding the layout
+
+Column definitions and gaps are passed to the stylesheet as custom properties and `data-columns` attributes, never as inline `grid-template-columns`. The rules have single-class specificity, so a class of your own can replace the template:
+
+```css
+.gallery {
+  grid-template-columns: 2fr 1fr;
+}
+```
+
+## Accessibility
+
+- `Grid` and `Grid.Item` render plain `div` elements with no role and no keyboard behaviour. `Grid` is a layout tool, not the ARIA `grid` widget — do not use it for interactive data grids; use [`Table`](./table.mdx) for tabular data.
+- Cells are placed in DOM order and the component offers no reordering, so reading order and tab order match the visual order at every column count.
+- For a list of cards, pass `role="list"` to `Grid` and `role="listitem"` to each cell so screen readers announce the item count. Native attributes are passed through.
+
+## Mobile
+
+- The responsive form needs no breakpoints. When the container is narrower than `minWidth`, the track minimum shrinks to the container width, so the grid becomes one column and never scrolls sideways — including at 320px.
+- Fixed tracks are `minmax(0, 1fr)`: they stay equal and shrink below their content's intrinsic width rather than overflowing. With many fixed columns on a phone the cells become very narrow, so prefer the responsive form unless the column count is part of the meaning.
+- Gaps come from the fixed spacing scale (`--tui-gap-1` … `--tui-gap-6`) and do not change with density.
+
+## Props
+
+### Grid
+
+<PropsTable props={[
+  { name: 'columns', type: 'number | { minWidth: number; max?: number }', default: '{ minWidth: 240 }', description: 'A number is exactly N equal tracks at every width. An object is responsive: tracks at least minWidth px wide, at most max columns, one column on narrow containers' },
+  { name: 'gap', type: '0 | 1 | 2 | 3 | 4 | 5 | 6', default: '4', description: 'Space between rows and columns on the spacing scale' },
+  { name: 'rowGap', type: '0 | 1 | 2 | 3 | 4 | 5 | 6', description: 'Space between rows; overrides gap on the block axis' },
+  { name: 'columnGap', type: '0 | 1 | 2 | 3 | 4 | 5 | 6', description: 'Space between columns; overrides gap on the inline axis' },
+  { name: 'children', type: 'ReactNode', description: 'Grid cells — any elements, or Grid.Item' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+### Grid.Item
+
+<PropsTable props={[
+  { name: 'span', type: "number | 'full'", description: "Columns the cell occupies. 'full' spans the whole row" },
+  { name: 'children', type: 'ReactNode', description: 'Cell content' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+Both accept standard `<div>` HTML attributes via spread and forward their ref to the root element.

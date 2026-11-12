@@ -1,0 +1,123 @@
+---
+sidebar_position: 32
+title: BottomNav
+---
+
+import { BottomNav } from 'trust-ui-react';
+import { useState } from 'react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# BottomNav
+
+A bottom bar for switching between the 2–5 top-level destinations of a mobile app. It is navigation, not a set of tabs: for switching panels inside one screen use [`Tabs`](./tabs.mdx).
+
+## Basic Usage
+
+export const NavIcon = ({ d }) => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <path d={d} />
+  </svg>
+);
+
+export const navItems = [
+  { value: 'home', label: 'Home', icon: <NavIcon d="M4 11l8-7 8 7v9h-5v-6H9v6H4z" /> },
+  { value: 'markets', label: 'Markets', icon: <NavIcon d="M4 19V9m5 10V5m5 14v-7m5 7V8" /> },
+  { value: 'inbox', label: 'Inbox', icon: <NavIcon d="M4 6h16v12H4zM4 7l8 6 8-6" />, badge: 3 },
+  { value: 'profile', label: 'Profile', icon: <NavIcon d="M12 12a4 4 0 100-8 4 4 0 000 8zM4 20c1.5-4 14.5-4 16 0" /> },
+];
+
+export const BasicBottomNav = (props) => {
+  const [value, setValue] = useState('home');
+  return (
+    <div style={{ width: '100%', maxWidth: 390 }}>
+      <BottomNav items={navItems} value={value} onChange={setValue} fixed={false} {...props} />
+    </div>
+  );
+};
+
+<ComponentPreview code={`const [value, setValue] = useState('home');
+
+<BottomNav
+  value={value}
+  onChange={setValue}
+  items={[
+    { value: 'home', label: 'Home', icon: <HomeIcon /> },
+    { value: 'markets', label: 'Markets', icon: <ChartIcon /> },
+    { value: 'inbox', label: 'Inbox', icon: <MailIcon />, badge: 3 },
+    { value: 'profile', label: 'Profile', icon: <UserIcon /> },
+  ]}
+/>`}>
+  <BasicBottomNav />
+</ComponentPreview>
+
+The previews on this page pass `fixed={false}` so the bar stays inside the preview. By default the bar is fixed to the bottom of the viewport; leave room for it at the end of the page content (about 56px plus the bottom safe area).
+
+## Icons only
+
+`showLabels={false}` hides the labels visually. They remain the accessible names of the items, so `label` is still required.
+
+<ComponentPreview code={`<BottomNav items={items} value={value} onChange={setValue} showLabels={false} />`}>
+  <BasicBottomNav showLabels={false} />
+</ComponentPreview>
+
+## Links
+
+Items with `href` render as links. `onChange` receives the click event as its second argument, so a client-side router can cancel the full page load:
+
+```tsx
+<BottomNav
+  value={pathname}
+  items={[
+    { value: '/', label: 'Home', icon: <HomeIcon />, href: '/' },
+    { value: '/markets', label: 'Markets', icon: <ChartIcon />, href: '/markets' },
+  ]}
+  onChange={(value, event) => {
+    event.preventDefault();
+    router.push(value);
+  }}
+/>
+```
+
+## Accessibility
+
+- Renders `<nav aria-label="Primary">` containing a list; each destination is a `<button>`, or an `<a>` when `href` is given. There is no `tablist` / `tab` role — the items move the user to another screen rather than switch a panel.
+- The active destination has `aria-current="page"`. It is also marked without colour: heavier label weight and a bar above the item.
+- Icons are hidden from assistive technology; the item's name is its `label`, followed by the `badge` content when there is one ("Inbox 3").
+- Disabled buttons use the native `disabled` attribute. Disabled links lose their `href` and get `aria-disabled="true"`.
+- If the page has more than one navigation landmark, give each a distinct `aria-label`.
+
+| Key | Behaviour |
+| --- | --- |
+| `Tab` / `Shift` + `Tab` | Move between destinations (each is its own tab stop) |
+| `Enter` (and `Space` on buttons) | Activate the destination |
+
+## Mobile
+
+- Every item is at least 56px tall and shares the bar's width equally, so targets stay above 48px even with five destinations at 320px. Long labels are truncated with an ellipsis rather than wrapping — keep them to one word.
+- With `fixed` (default) the bar is padded by `--tui-safe-bottom` so it clears the home indicator, and by the side insets in landscape. It sits at `--tui-z-sticky`, below overlays.
+- Inactive labels use `--tui-ink-2` rather than `--tui-ink-3` to keep 4.5:1 contrast at the small label size.
+
+## Props
+
+<PropsTable props={[
+  { name: 'items', type: 'BottomNavItem[]', description: 'Destinations in display order (2–5)' },
+  { name: 'value', type: 'string', description: 'Value of the active destination' },
+  { name: 'onChange', type: '(value: string, event: MouseEvent) => void', description: 'Called when a destination is activated' },
+  { name: 'aria-label', type: 'string', default: "'Primary'", description: 'Accessible name of the navigation landmark' },
+  { name: 'fixed', type: 'boolean', default: 'true', description: 'Fix the bar to the bottom of the viewport; false renders it in flow' },
+  { name: 'showLabels', type: 'boolean', default: 'true', description: 'Show the text labels (always available to assistive technology)' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+## BottomNavItem
+
+<PropsTable props={[
+  { name: 'value', type: 'string', description: 'Unique value identifying the destination' },
+  { name: 'label', type: 'string', description: 'Visible label and accessible name' },
+  { name: 'icon', type: 'ReactNode', description: 'Decorative icon shown above the label' },
+  { name: 'badge', type: 'ReactNode', description: "Counter or status at the icon's corner; read after the label" },
+  { name: 'href', type: 'string', description: 'Render the item as a link to this URL' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the item is disabled' },
+]} />

@@ -1,0 +1,121 @@
+---
+sidebar_position: 51
+title: Field
+---
+
+import { Field } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Field
+
+A low-level shell that gives any custom control a label, helper text, a required marker and an error message, with the ARIA wiring done for you. `NumberInput`, `Combobox` and `TimeInput` are built on it. Reach for it when you wrap a control the library does not provide.
+
+## Basic Usage
+
+`children` is a render prop. Spread `control` onto the focusable element: it carries `id`, `aria-describedby`, `aria-invalid`, `aria-required`, `required` and `disabled`.
+
+<ComponentPreview code={`<Field label="Bank" helperText="The account salary is paid into">
+  {(control) => <input {...control} />}
+</Field>`}>
+  <Field label="Bank" helperText="The account salary is paid into">
+    {(control) => <input {...control} />}
+  </Field>
+</ComponentPreview>
+
+## Required and error
+
+The error message replaces the helper text. It is rendered in an element that is always in the DOM, so a message that appears later is announced.
+
+<ComponentPreview code={`<Field label="Bank" required helperText="Type a bank name" errorMessage="Enter a bank name">
+  {(control) => <input {...control} />}
+</Field>`}>
+  <Field label="Bank" required helperText="Type a bank name" errorMessage="Enter a bank name">
+    {(control) => <input {...control} />}
+  </Field>
+</ComponentPreview>
+
+## Hidden label
+
+`hideLabel` hides the label visually. It is still the accessible name.
+
+<ComponentPreview code={`<Field label="Search transactions" hideLabel>
+  {(control) => <input {...control} placeholder="Search transactions" />}
+</Field>`}>
+  <Field label="Search transactions" hideLabel>
+    {(control) => <input {...control} placeholder="Search transactions" />}
+  </Field>
+</ComponentPreview>
+
+## Groups
+
+A `label` element can point at one form control only. For radio or checkbox groups and other controls made of several elements, set `group`: the label is rendered as a `span` and `control` carries `aria-labelledby` for the group element. Native `required` is left out in this mode because it is not valid on a group; use `aria-required`.
+
+<ComponentPreview code={`<Field label="Statement delivery" group helperText="You can change this later">
+  {({ disabled, ...control }) => (
+    <div role="radiogroup" {...control}>
+      <label><input type="radio" name="delivery" disabled={disabled} defaultChecked /> Email</label>
+      <label><input type="radio" name="delivery" disabled={disabled} /> Post</label>
+    </div>
+  )}
+</Field>`}>
+  <Field label="Statement delivery" group helperText="You can change this later">
+    {({ disabled, ...control }) => (
+      <div role="radiogroup" {...control} style={{ display: 'flex', gap: 16 }}>
+        <label><input type="radio" name="delivery" disabled={disabled} defaultChecked /> Email</label>
+        <label><input type="radio" name="delivery" disabled={disabled} /> Post</label>
+      </div>
+    )}
+  </Field>
+</ComponentPreview>
+
+## Matching the TextField look
+
+`fieldSurfaceClassName({ variant, error, disabled })` returns the class names of the box TextField draws around its input (border, background, focus and error states). Put it on a wrapper and make the inner input borderless.
+
+```tsx
+import { Field, fieldSurfaceClassName } from 'trust-ui-react';
+
+<Field label="Bank" errorMessage={error}>
+  {(control, meta) => (
+    <div className={fieldSurfaceClassName({ variant: 'outlined', error: meta.invalid })}>
+      <input {...control} className="my-borderless-input" />
+    </div>
+  )}
+</Field>
+```
+
+The second argument, `meta`, contains `labelId`, `helperId`, `errorId` and `invalid` for controls that need more than the spreadable props (for example to name a popup with the field label).
+
+## Accessibility
+
+- Roles: none of its own. The label is a `label` element tied to the control with `htmlFor`; in `group` mode a `span` referenced by `aria-labelledby`.
+- `aria-describedby` points at the error message while there is one, otherwise at the helper text.
+- `aria-invalid` is set when `error` is true or `errorMessage` is not empty. `aria-required` follows `required`.
+- The error element has `aria-live="polite"` and exists from the first render.
+- The asterisk is decorative (`aria-hidden`); the required state is conveyed by `aria-required`.
+- Keyboard: none. Keys belong to the control you render.
+
+## Mobile
+
+- The label and messages wrap; nothing forces a minimum width, so the field fits a 320px viewport.
+- Field does not size the control. Make the control at least 44px tall on touch devices; `--tui-control-md` already is under `(pointer: coarse)`.
+- Tapping the label focuses the control (not in `group` mode, where there is no single control to focus).
+
+## Props
+
+<PropsTable props={[
+  { name: 'label', type: 'ReactNode', required: true, description: 'Label text. Always the accessible name of the control, even when hidden' },
+  { name: 'children', type: '(control, meta) => ReactNode', required: true, description: 'Render prop. Spread control onto the focusable control or the group element' },
+  { name: 'helperText', type: 'ReactNode', description: 'Helper text displayed below the control' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Whether the field is in error state' },
+  { name: 'errorMessage', type: 'ReactNode', description: 'Error message displayed below the control. Replaces the helper text' },
+  { name: 'required', type: 'boolean', default: 'false', description: 'Whether the field is required (shows an asterisk)' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the field is disabled' },
+  { name: 'hideLabel', type: 'boolean', default: 'false', description: 'Hides the label visually. It remains the accessible name' },
+  { name: 'group', type: 'boolean', default: 'false', description: 'Renders the label as a span and passes aria-labelledby to the control' },
+  { name: 'id', type: 'string', description: 'Overrides the generated control id' },
+  { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Stretches the field to fill its container' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

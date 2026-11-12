@@ -1,0 +1,67 @@
+/*
+ * 선은 background 가 아니라 border 로 그린다. 강제 색상 모드(Windows 고대비)는
+ * 배경색을 지우지만 테두리는 시스템 색으로 남긴다.
+ */
+.horizontal,
+.vertical,
+.labelled {
+  --tui-divider-color: var(--tui-rule);
+
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  /* flex/grid 컨테이너 안에서 줄어들어 사라지지 않게 한다 */
+  flex-shrink: 0;
+}
+
+.horizontal:where([data-variant='strong']),
+.vertical:where([data-variant='strong']),
+.labelled:where([data-variant='strong']) {
+  --tui-divider-color: var(--tui-rule-strong);
+}
+
+.horizontal {
+  inline-size: 100%;
+  block-size: 0;
+  border-block-start: 1px solid var(--tui-divider-color);
+  /* 세로 Stack 이 align="center" 여도 선은 전체 너비를 유지한다 */
+  align-self: stretch;
+}
+
+.vertical {
+  display: inline-block;
+  inline-size: 0;
+  /* flex 행 안에서는 행 높이만큼 늘어나고, 인라인 문맥에서는 글자 높이만큼 선다 */
+  min-block-size: 1em;
+  align-self: stretch;
+  border-inline-start: 1px solid var(--tui-divider-color);
+  vertical-align: middle;
+}
+
+.labelled {
+  display: flex;
+  align-items: center;
+  gap: var(--tui-gap-3);
+  inline-size: 100%;
+  align-self: stretch;
+}
+
+.rule {
+  flex: 1 1 0;
+  /* 라벨이 길어도 양쪽 선이 완전히 사라지지 않는다 */
+  min-inline-size: var(--tui-gap-4);
+  block-size: 0;
+  border-block-start: 1px solid var(--tui-divider-color);
+}
+
+.label {
+  /* 긴 라벨은 줄바꿈된다 — 320px 화면에서 넘치지 않는다 */
+  min-inline-size: 0;
+  color: var(--tui-ink-3);
+  font-family: var(--tui-font-sans);
+  font-size: var(--tui-font-size-caption);
+  line-height: var(--tui-line-height-heading);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
