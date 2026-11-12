@@ -76,7 +76,7 @@ Set `showProgress` to draw a 1px rule along the bottom edge that drains from ful
 - Success and info toasts are announced politely (`role="status"`); warning and danger toasts interrupt (`role="alert"`).
 - The dismiss timer pauses while the pointer is over a toast or keyboard focus is inside it, and resumes with the time that was left.
 - `ToastProvider` shows at most `max` toasts (default 5) and drops the oldest first.
-- Toasts stay readable and dismissible while a `BottomSheet` or `Drawer` is open.
+- Toasts stay readable and dismissible while a `BottomSheet`, `Drawer` or modal `Dialog` is open. A toast raised while a `Dialog` is open is rendered inside that dialog, above its backdrop.
 
 ## Usage
 

@@ -1,6 +1,7 @@
 import {
   createContext,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -54,6 +55,23 @@ const positionClassMap: Record<ToastPosition, string> = {
   'bottom-center': styles.bottomCenter,
 };
 
+/**
+ * 지금 맨 위에 떠 있는 모달 dialog. showModal() 로 열린 dialog 는 top layer 에 있고
+ * 바깥 전체를 비활성화하므로, body 에 둔 토스트는 백드롭 아래에 깔리고 누를 수도 없다.
+ */
+function findTopModalDialog(): HTMLElement | null {
+  if (typeof document === 'undefined') return null;
+  let dialogs: NodeListOf<HTMLElement>;
+  try {
+    dialogs = document.querySelectorAll<HTMLElement>('dialog:modal');
+  } catch {
+    // :modal 을 모르는 환경에서는 열려 있는 dialog 로 대신한다.
+    dialogs = document.querySelectorAll<HTMLElement>('dialog[open]');
+  }
+  // 나중에 열린 dialog 가 보통 문서에서도 뒤에 있다(안쪽에 중첩되거나 뒤에 포털된다).
+  return dialogs.length > 0 ? dialogs[dialogs.length - 1] : null;
+}
+
 export function ToastProvider({
   position = 'top-right',
   max = 5,
@@ -61,6 +79,16 @@ export function ToastProvider({
 }: ToastProviderProps) {
   const [toasts, setToasts] = useState<ToastData[]>([]);
   const toastCounter = useRef(0);
+  // 토스트 영역을 붙일 곳. null 이면 body, 모달 dialog 가 떠 있으면 그 dialog.
+  const [host, setHost] = useState<HTMLElement | null>(null);
+
+  // 그 dialog 가 닫히면 안의 토스트도 함께 가려진다. 닫히는 순간 다시 자리를 찾는다.
+  useEffect(() => {
+    if (!host) return;
+    const relocate = () => setHost(findTopModalDialog());
+    host.addEventListener('close', relocate);
+    return () => host.removeEventListener('close', relocate);
+  }, [host]);
   const { keyboardOpen, height } = useVisualViewport();
 
   const dismiss = useCallback((id: string) => {
@@ -74,6 +102,7 @@ export function ToastProvider({
   const toast = useCallback(
     (data: Omit<ToastData, 'id'>) => {
       const id = `toast-${++toastCounter.current}`;
+      setHost(findTopModalDialog());
       setToasts((prev) => [...prev, { ...data, id }].slice(-Math.max(1, max)));
       return id;
     },
@@ -120,7 +149,7 @@ export function ToastProvider({
               />
             ))}
           </div>,
-          document.body,
+          host ?? document.body,
         )}
     </ToastContext.Provider>
   );

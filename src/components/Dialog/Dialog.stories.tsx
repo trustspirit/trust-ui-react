@@ -2,6 +2,8 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import { Dialog } from './Dialog';
 import { Button } from '../Button';
+import { ToastProvider } from '../../providers/ToastProvider';
+import { useToast } from '../../hooks/useToast';
 
 const meta: Meta<typeof Dialog> = {
   title: 'Overlay/Dialog',
@@ -290,4 +292,39 @@ function MobileFullscreenDialog() {
 export const MobileFullscreen: Story = {
   args: { mobileVariant: 'fullscreen' },
   render: () => <MobileFullscreenDialog />,
+};
+
+/* ── Toast raised from inside a modal dialog ── */
+
+function ToastInDialogContent() {
+  const { toast } = useToast();
+  return (
+    <Button onClick={() => toast({ variant: 'success', message: 'Saved', duration: 0 })}>
+      Save
+    </Button>
+  );
+}
+
+function ToastInDialogDemo() {
+  const [open, setOpen] = useState(true);
+  return (
+    <ToastProvider>
+      <Button onClick={() => setOpen(true)}>Open</Button>
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <Dialog.Title>Settings</Dialog.Title>
+        <Dialog.Content>
+          <ToastInDialogContent />
+        </Dialog.Content>
+      </Dialog>
+    </ToastProvider>
+  );
+}
+
+/**
+ * A modal dialog lives in the top layer and makes everything outside it inert.
+ * Toasts raised while it is open are rendered inside the dialog so they stay
+ * visible above the backdrop and can be dismissed.
+ */
+export const ToastInDialog: Story = {
+  render: () => <ToastInDialogDemo />,
 };

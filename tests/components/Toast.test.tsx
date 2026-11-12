@@ -167,3 +167,22 @@ describe('ToastProvider', () => {
     expect(root).not.toHaveAttribute('aria-hidden');
   });
 });
+
+describe('ToastProvider — 모달 Dialog 위', () => {
+  function Raise() {
+    const { toast } = useToast();
+    return <button onClick={() => toast({ variant: 'info', message: '저장됨', duration: 0 })}>띄우기</button>;
+  }
+
+  // 모달 dialog 안으로 옮겨지는 동작은 실제 top layer 가 필요하므로 브라우저 스펙
+  // (tests/visual/toast-in-dialog.spec.ts)이 검증한다. jsdom 은 :modal 을 구분하지 못한다.
+  it('열린 Dialog 가 없으면 body 에 놓인다', async () => {
+    render(
+      <ToastProvider>
+        <Raise />
+      </ToastProvider>,
+    );
+    await userEvent.click(screen.getByRole('button', { name: '띄우기' }));
+    expect(screen.getByRole('status').closest('dialog')).toBeNull();
+  });
+});
