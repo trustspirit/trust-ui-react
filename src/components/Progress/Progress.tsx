@@ -15,6 +15,10 @@ export interface ProgressProps {
   className?: string;
   /** Inline styles */
   style?: React.CSSProperties;
+  /** Accessible name, e.g. "Upload progress". */
+  'aria-label'?: string;
+  /** Id of an element that names the progress bar. */
+  'aria-labelledby'?: string;
 }
 
 export function Progress({
@@ -25,6 +29,8 @@ export function Progress({
   showLabel = false,
   className,
   style,
+  'aria-label': ariaLabel,
+  'aria-labelledby': ariaLabelledBy,
 }: ProgressProps) {
   const clamped = Math.min(100, Math.max(0, value));
 
@@ -50,6 +56,8 @@ export function Progress({
         className={progressClassNames}
         value={indeterminate ? undefined : clamped}
         max={100}
+        aria-label={ariaLabel}
+        aria-labelledby={ariaLabelledBy}
         aria-valuenow={indeterminate ? undefined : clamped}
         aria-valuemin={0}
         aria-valuemax={100}

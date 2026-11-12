@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useId, useState, type ReactNode } from 'react';
 import { RadioGroupContext } from './RadioContext';
 import styles from './Radio.module.css';
 
@@ -47,6 +47,7 @@ export function RadioGroup({
   style,
 }: RadioGroupProps) {
   const [internalValue, setInternalValue] = useState<string | undefined>(defaultValue);
+  const errorId = `${useId()}-error`;
 
   const isControlled = controlledValue !== undefined;
   const currentValue = isControlled ? controlledValue : internalValue;
@@ -84,12 +85,13 @@ export function RadioGroup({
           role="radiogroup"
           aria-label={label || name}
           aria-invalid={isError || undefined}
+          aria-describedby={errorMessage ? errorId : undefined}
           className={groupClassNames}
         >
           {children}
         </div>
         {errorMessage && (
-          <p className={styles.errorMessage} role="alert">
+          <p className={styles.errorMessage} id={errorId} role="alert">
             {errorMessage}
           </p>
         )}

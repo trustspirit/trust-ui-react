@@ -11,6 +11,9 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  /* 좁은 화면(360px 이하)에서 버튼 9개가 한 줄에 들어가지 않는다.
+     가로로 넘치는 대신 다음 줄로 내린다. */
+  flex-wrap: wrap;
 }
 
 /* ── Base button ── */

@@ -219,10 +219,11 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
       setIsDragOver(false);
       if (disabled) return;
 
-      const files = Array.from(e.dataTransfer.files);
-      handleFiles(files);
+      // multiple 은 <input> 의 파일 선택 창만 제한한다. 드롭은 여기서 직접 제한한다.
+      const dropped = Array.from(e.dataTransfer.files);
+      handleFiles(multiple ? dropped : dropped.slice(0, 1));
     },
-    [disabled, handleFiles],
+    [disabled, handleFiles, multiple],
   );
 
   // Reset drag state when drag leaves the window entirely

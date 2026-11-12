@@ -87,3 +87,10 @@
 
 /* Sizes */
 .md .segment { padding: var(--tui-pad-2) var(--tui-pad-4); font-size: var(--tui-font-size-base); }
+
+/* 터치 환경에서는 크기 변형과 무관하게 세그먼트 높이를 44px 이상으로 둔다. */
+@media (pointer: coarse) {
+  .segment {
+    min-height: 44px;
+  }
+}

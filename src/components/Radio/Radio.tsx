@@ -1,4 +1,4 @@
-import { forwardRef, type InputHTMLAttributes } from 'react';
+import { forwardRef, type ChangeEvent, type InputHTMLAttributes } from 'react';
 import styles from './Radio.module.css';
 import { useRadioGroup } from './RadioContext';
 
@@ -19,17 +19,19 @@ export interface RadioProps
 }
 
 export const Radio = forwardRef<HTMLInputElement, RadioProps>(
-  ({ value, label, required = false, disabled = false, className, style, ...rest }, ref) => {
+  ({ value, label, required = false, disabled = false, className, style, onChange, ...rest }, ref) => {
     const group = useRadioGroup();
 
     const isDisabled = disabled || group?.disabled || false;
     const variant = group?.variant ?? 'primary';
-    const isChecked = group?.value !== undefined ? group.value === value : undefined;
+    // 그룹 안에서는 항상 제어 상태다. 값이 아직 없을 때 undefined 를 넘기면
+    // 첫 선택에서 비제어 → 제어로 바뀌어 React 가 경고하고 DOM 체크가 남는다.
+    const isChecked = group ? group.value === value : undefined;
 
-    const handleChange = () => {
-      if (!isDisabled) {
-        group?.onChange?.(value);
-      }
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+      if (isDisabled) return;
+      group?.onChange?.(value);
+      onChange?.(e);
     };
 
     const containerClassNames = [
@@ -59,6 +61,7 @@ export const Radio = forwardRef<HTMLInputElement, RadioProps>(
           checked={isChecked}
           onChange={handleChange}
           disabled={isDisabled}
+          required={required}
           aria-invalid={group?.error || undefined}
           {...rest}
         />

@@ -1,4 +1,5 @@
 import {
+  useId,
   forwardRef,
   useEffect,
   useState,
@@ -91,6 +92,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     ref,
   ) => {
     const internalRef = useRef<HTMLInputElement>(null);
+    const errorId = `${useId()}-error`;
 
     const mergedRef = useCallback(
       (node: HTMLInputElement | null) => {
@@ -166,7 +168,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             defaultChecked={isControlled ? undefined : defaultChecked}
             onChange={handleChange}
             disabled={disabled}
+            required={required}
             aria-invalid={isError || undefined}
+            aria-describedby={errorMessage ? errorId : undefined}
             {...rest}
           />
           <span className={indicatorClassNames}>
@@ -185,7 +189,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           )}
         </label>
         {errorMessage && (
-          <p className={styles.errorMessage} role="alert">
+          <p className={styles.errorMessage} id={errorId} role="alert">
             {errorMessage}
           </p>
         )}

@@ -26,6 +26,14 @@ export interface SwitchProps {
   className?: string;
   /** Inline styles */
   style?: React.CSSProperties;
+  /** Accessible name when there is no visible `label`. */
+  'aria-label'?: string;
+  /** Id of an element that names the switch. */
+  'aria-labelledby'?: string;
+  /** Id for the switch button. */
+  id?: string;
+  /** Form field name. When set, the value is submitted with the form. */
+  name?: string;
 }
 
 export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
@@ -43,11 +51,16 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
       errorMessage,
       className,
       style,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
+      id: idProp,
+      name,
     },
     ref,
   ) => {
     const [internalChecked, setInternalChecked] = useState(defaultChecked);
     const id = useId();
+    const errorId = `${id}-error`;
 
     const isControlled = controlledChecked !== undefined;
     const isChecked = isControlled ? controlledChecked : internalChecked;
@@ -82,13 +95,19 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
             role="switch"
             aria-checked={isChecked}
             aria-invalid={isError || undefined}
-            aria-labelledby={label ? `${id}-label` : undefined}
+            aria-required={required || undefined}
+            aria-label={label ? undefined : ariaLabel}
+            aria-labelledby={ariaLabelledBy ?? (label ? `${id}-label` : undefined)}
+            aria-describedby={errorMessage ? errorId : undefined}
+            id={idProp}
             className={switchClassNames}
             disabled={disabled}
             onClick={handleClick}
           >
             <span className={styles.thumb} />
           </button>
+          {/* 버튼은 폼 값이 없다. name 이 있으면 숨은 input 으로 제출에 참여시킨다. */}
+          {name && isChecked && <input type="hidden" name={name} value="on" />}
           {label && (
             <span
               id={`${id}-label`}
@@ -101,7 +120,7 @@ export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(
           )}
         </div>
         {errorMessage && (
-          <p className={styles.errorMessage} role="alert">
+          <p className={styles.errorMessage} id={errorId} role="alert">
             {errorMessage}
           </p>
         )}

@@ -26,6 +26,16 @@ export interface SliderProps {
   className?: string;
   /** Inline styles */
   style?: React.CSSProperties;
+  /** Accessible name. A slider always needs one of `aria-label` / `aria-labelledby`. */
+  'aria-label'?: string;
+  /** Id of an element that names the slider. */
+  'aria-labelledby'?: string;
+  /** Human-readable value, e.g. "30%" or "3 of 5". */
+  'aria-valuetext'?: string;
+  /** Id for the range input. */
+  id?: string;
+  /** Form field name. */
+  name?: string;
 }
 
 export const Slider = forwardRef<HTMLInputElement, SliderProps>(
@@ -43,6 +53,11 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
       disabled = false,
       className,
       style,
+      'aria-label': ariaLabel,
+      'aria-labelledby': ariaLabelledBy,
+      'aria-valuetext': ariaValueText,
+      id,
+      name,
     },
     ref,
   ) => {
@@ -99,6 +114,11 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
             value={currentValue}
             disabled={disabled}
             onChange={handleChange}
+            id={id}
+            name={name}
+            aria-label={ariaLabel}
+            aria-labelledby={ariaLabelledBy}
+            aria-valuetext={ariaValueText}
             aria-valuenow={currentValue}
             aria-valuemin={min}
             aria-valuemax={max}

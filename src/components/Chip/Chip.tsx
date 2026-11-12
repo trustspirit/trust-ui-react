@@ -63,6 +63,8 @@ export function Chip({
     .join(' ');
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLSpanElement>) => {
+    // 안쪽 삭제 버튼에서 올라온 키는 그 버튼의 것이다.
+    if (e.target !== e.currentTarget) return;
     if (onClick && (e.key === 'Enter' || e.key === ' ')) {
       e.preventDefault();
       onClick();

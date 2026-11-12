@@ -55,9 +55,10 @@ export function Avatar({
   status,
   outlined,
 }: AvatarProps) {
-  const [imgError, setImgError] = useState(false);
+  // 실패한 주소를 기억한다. boolean 으로 두면 src 가 바뀌어도 실패 상태가 남는다.
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
 
-  const showImage = src && !imgError;
+  const showImage = src && failedSrc !== src;
   const initials = name ? getInitials(name) : '';
 
   const classNames = [
@@ -72,14 +73,20 @@ export function Avatar({
     .join(' ');
 
   return (
-    <span className={classNames} style={style} role="img" aria-label={alt || name || 'avatar'}>
+    <span
+      className={classNames}
+      style={style}
+      role="img"
+      // role="img" 의 자식은 보조 기술에 전달되지 않는다. 상태는 이름에 합친다.
+      aria-label={[alt || name || 'avatar', status].filter(Boolean).join(', ')}
+    >
       <span className={styles.imageWrapper}>
         {showImage ? (
           <img
             className={styles.image}
             src={src}
             alt={alt}
-            onError={() => setImgError(true)}
+            onError={() => setFailedSrc(src ?? null)}
           />
         ) : initials ? (
           <span className={styles.initials} aria-hidden="true">
@@ -92,7 +99,7 @@ export function Avatar({
       {status && (
         <span
           className={[styles.statusDot, styles[status]].join(' ')}
-          aria-label={`Status: ${status}`}
+          aria-hidden="true"
         />
       )}
     </span>
