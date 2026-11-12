@@ -1,4 +1,11 @@
-import { createContext, useCallback, useEffect, useState, type ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from 'react';
 
 export type Theme = 'light' | 'dark';
 export type Density = 'compact' | 'comfortable';
@@ -31,19 +38,33 @@ function useAxis(attribute: string, value: string) {
   }, [attribute, value]);
 }
 
+const DARK_QUERY = '(prefers-color-scheme: dark)';
+
+function readSystemTheme(): Theme {
+  if (typeof window === 'undefined' || !window.matchMedia) return 'light';
+  return window.matchMedia(DARK_QUERY).matches ? 'dark' : 'light';
+}
+
+function subscribeToSystemTheme(onChange: () => void): () => void {
+  if (typeof window === 'undefined' || !window.matchMedia) return () => {};
+  const query = window.matchMedia(DARK_QUERY);
+  query.addEventListener?.('change', onChange);
+  return () => query.removeEventListener?.('change', onChange);
+}
+
 export function ThemeProvider({
   defaultTheme,
   defaultDensity = 'comfortable',
   defaultMarket = 'kr',
   children,
 }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    if (defaultTheme) return defaultTheme;
-    if (typeof window !== 'undefined') {
-      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-    return 'light';
-  });
+  // 사용자가 직접 고른 값. 고르기 전에는 null 이고 defaultTheme → 시스템 설정 순으로 따른다.
+  const [chosenTheme, setChosenTheme] = useState<Theme | null>(null);
+  // 시스템 설정은 외부 저장소로 읽는다. 서버는 알 수 없으므로 'light' 로 그리고,
+  // 브라우저는 하이드레이션 뒤 실제 값으로 다시 그린다. useState 초기값에서 직접
+  // 읽으면 서버와 브라우저의 첫 렌더가 달라 하이드레이션 불일치가 난다.
+  const systemTheme = useSyncExternalStore(subscribeToSystemTheme, readSystemTheme, () => 'light' as Theme);
+  const theme = chosenTheme ?? defaultTheme ?? systemTheme;
   const [density, setDensity] = useState<Density>(defaultDensity);
   const [market, setMarket] = useState<Market>(defaultMarket);
 
@@ -56,10 +77,10 @@ export function ThemeProvider({
     document.documentElement.style.colorScheme = theme;
   }, [theme]);
 
-  const setTheme = useCallback((t: Theme) => setThemeState(t), []);
+  const setTheme = useCallback((t: Theme) => setChosenTheme(t), []);
   const toggleTheme = useCallback(
-    () => setThemeState((t) => (t === 'light' ? 'dark' : 'light')),
-    [],
+    () => setChosenTheme(theme === 'light' ? 'dark' : 'light'),
+    [theme],
   );
 
   return (
