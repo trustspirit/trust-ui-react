@@ -1,0 +1,162 @@
+---
+sidebar_position: 57
+title: AvatarGroup
+---
+
+import { Avatar, AvatarGroup } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# AvatarGroup
+
+Stacks avatars so they overlap, and collapses the ones that do not fit into a "+N" tile.
+
+## Basic Usage
+
+`max` (default 4) is the number of avatars shown. Everyone after that is counted in the tile.
+
+<ComponentPreview code={`<AvatarGroup max={3}>
+  <Avatar name="Ada Park" />
+  <Avatar name="Ben Cho" />
+  <Avatar name="Cy Lim" />
+  <Avatar name="Di Seo" />
+  <Avatar name="Eli Han" />
+</AvatarGroup>`}>
+  <AvatarGroup max={3}>
+    <Avatar name="Ada Park" />
+    <Avatar name="Ben Cho" />
+    <Avatar name="Cy Lim" />
+    <Avatar name="Di Seo" />
+    <Avatar name="Eli Han" />
+  </AvatarGroup>
+</ComponentPreview>
+
+## Total
+
+When only the first few people are loaded, pass the real head count as `total`. The tile and the group name are computed from it. A `total` smaller than the number of children is ignored.
+
+<ComponentPreview code={`<AvatarGroup max={3} total={12}>
+  <Avatar name="Ada Park" />
+  <Avatar name="Ben Cho" />
+  <Avatar name="Cy Lim" />
+</AvatarGroup>`}>
+  <AvatarGroup max={3} total={12}>
+    <Avatar name="Ada Park" />
+    <Avatar name="Ben Cho" />
+    <Avatar name="Cy Lim" />
+  </AvatarGroup>
+</ComponentPreview>
+
+## Sizes
+
+`size` is forwarded to every avatar that does not set its own, and sizes the tile.
+
+<ComponentPreview code={`<AvatarGroup size="sm" total={8}>
+  <Avatar name="Ada Park" />
+  <Avatar name="Ben Cho" />
+  <Avatar name="Cy Lim" />
+</AvatarGroup>
+<AvatarGroup size="lg" total={8}>
+  <Avatar name="Ada Park" />
+  <Avatar name="Ben Cho" />
+  <Avatar name="Cy Lim" />
+</AvatarGroup>`}>
+  <AvatarGroup size="sm" total={8}>
+    <Avatar name="Ada Park" />
+    <Avatar name="Ben Cho" />
+    <Avatar name="Cy Lim" />
+  </AvatarGroup>
+  <AvatarGroup size="lg" total={8}>
+    <Avatar name="Ada Park" />
+    <Avatar name="Ben Cho" />
+    <Avatar name="Cy Lim" />
+  </AvatarGroup>
+</ComponentPreview>
+
+## Spacing
+
+<ComponentPreview code={`<AvatarGroup spacing="normal">…</AvatarGroup>
+<AvatarGroup spacing="tight">…</AvatarGroup>`}>
+  <AvatarGroup spacing="normal">
+    <Avatar name="Ada Park" />
+    <Avatar name="Ben Cho" />
+    <Avatar name="Cy Lim" />
+  </AvatarGroup>
+  <AvatarGroup spacing="tight">
+    <Avatar name="Ada Park" />
+    <Avatar name="Ben Cho" />
+    <Avatar name="Cy Lim" />
+  </AvatarGroup>
+</ComponentPreview>
+
+## Ring colour
+
+Each avatar is separated from its neighbour by a 2px ring in the colour of the surface underneath, so the overlap reads as a clean cut. The default is `--tui-paper`. On another surface, pass that surface's colour as `ringColor`:
+
+```tsx
+<Card>
+  <Card.Content>
+    <AvatarGroup ringColor="var(--tui-sheet)">…</AvatarGroup>
+  </Card.Content>
+</Card>
+```
+
+## Custom overflow tile
+
+`renderOverflow` replaces the tile. It receives the hidden count and the default tile element, so you can wrap the tile in a button, a Popover trigger, or draw your own.
+
+```tsx
+<AvatarGroup
+  max={3}
+  renderOverflow={(hidden, tile) => (
+    <Popover content={<MemberList />}>
+      <button type="button" aria-label={`Show ${hidden} more members`}>{tile}</button>
+    </Popover>
+  )}
+>
+  …
+</AvatarGroup>
+```
+
+## Labels
+
+The default strings are English. Override both for other languages:
+
+```tsx
+<AvatarGroup label="참여자 12명" overflowLabel={(n) => `외 ${n}명`} total={12}>
+  …
+</AvatarGroup>
+```
+
+## Accessibility
+
+- The root has `role="group"` and an accessible name: `label`, or the head count ("5 people", "1 person") by default.
+- Each `Avatar` is an image named by its `alt` or `name`.
+- The "+N" tile is an image named by `overflowLabel` (default "3 more"); the visible "+3" is hidden from assistive technology so it is not read twice.
+- The group has no keyboard interaction of its own. If `renderOverflow` returns a button, that button is reached with `Tab` and activated with `Enter` / `Space` as usual, and you are responsible for its name.
+
+| Key | Behaviour |
+| --- | --- |
+| `Tab` | Skips the group unless `renderOverflow` renders a control |
+
+## Mobile
+
+- The group never wraps and its width is fixed by `max`, so it cannot overflow a 320px screen with the default `max` at any size.
+- Overlap uses logical margins and the first avatar stays on top in both left-to-right and right-to-left layouts.
+- The default tile is not interactive. If you make it a control with `renderOverflow`, give it a touch target of at least 44px — the `sm` and `md` tiles are smaller than that.
+
+## Props
+
+<PropsTable props={[
+  { name: 'children', type: 'ReactNode', description: 'Avatar elements to stack' },
+  { name: 'max', type: 'number', default: '4', description: 'How many avatars to show before the rest collapse into the "+N" tile' },
+  { name: 'total', type: 'number', description: 'Real number of people when it is larger than the number of children' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size forwarded to avatars that do not set their own, and used for the tile' },
+  { name: 'spacing', type: "'tight' | 'normal'", default: "'normal'", description: 'How much neighbours overlap' },
+  { name: 'label', type: 'string', default: '"N people"', description: 'Accessible name of the group' },
+  { name: 'overflowLabel', type: '(hidden: number) => string', default: '"N more"', description: 'Accessible name of the "+N" tile' },
+  { name: 'renderOverflow', type: '(hidden: number, tile: ReactElement) => ReactNode', description: 'Replaces the "+N" tile; receives the hidden count and the default tile' },
+  { name: 'ringColor', type: 'string', description: 'Colour of the ring between avatars; set it to the surface the group sits on' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

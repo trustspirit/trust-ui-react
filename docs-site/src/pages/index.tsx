@@ -45,7 +45,7 @@ export default function Home(): JSX.Element {
             A mobile-optimized React UI library.
           </h1>
           <p className="tui-hero__subtitle">
-            48 themeable components with native-feeling touch behavior, an achromatic core, and CSS-variable theming — no runtime, no lock-in.
+            54 themeable components with native-feeling touch behavior, an achromatic core, and CSS-variable theming — no runtime, no lock-in.
           </p>
           <div className="tui-hero__cta-row">
             <Link className="tui-hero__cta tui-hero__cta--primary" to={docsUrl}>

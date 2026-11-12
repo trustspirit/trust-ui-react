@@ -1,0 +1,130 @@
+---
+sidebar_position: 56
+title: IconButton
+---
+
+import { IconButton } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+export const CloseIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+    <path d="M6 6l12 12M18 6L6 18" />
+  </svg>
+);
+
+# IconButton
+
+A button that shows only an icon. It takes the same variants, sizes and shapes as Button, and always requires a text `label`.
+
+## Basic Usage
+
+`label` is required and becomes the button's accessible name. TypeScript rejects an IconButton without it.
+
+<ComponentPreview code={`<IconButton label="Close" icon={<CloseIcon />} />`}>
+  <IconButton label="Close" icon={<CloseIcon />} />
+</ComponentPreview>
+
+The icon can also be passed as children. SVGs without a `width` attribute are sized to the button (16, 20 and 24px for `sm`, `md` and `lg`).
+
+## Variants
+
+<ComponentPreview code={`<IconButton label="Close" icon={<CloseIcon />} variant="ghost" />
+<IconButton label="Close" icon={<CloseIcon />} variant="outline" />
+<IconButton label="Close" icon={<CloseIcon />} variant="secondary" />
+<IconButton label="Close" icon={<CloseIcon />} variant="primary" />
+<IconButton label="Close" icon={<CloseIcon />} variant="danger" />`}>
+  <IconButton label="Close" icon={<CloseIcon />} variant="ghost" />
+  <IconButton label="Close" icon={<CloseIcon />} variant="outline" />
+  <IconButton label="Close" icon={<CloseIcon />} variant="secondary" />
+  <IconButton label="Close" icon={<CloseIcon />} variant="primary" />
+  <IconButton label="Close" icon={<CloseIcon />} variant="danger" />
+</ComponentPreview>
+
+## Sizes and shapes
+
+The box is a square whose side follows the control height of the current density, so it lines up with Button and TextField of the same `size`.
+
+<ComponentPreview code={`<IconButton label="Close" icon={<CloseIcon />} variant="outline" size="sm" />
+<IconButton label="Close" icon={<CloseIcon />} variant="outline" size="md" shape="rounded" />
+<IconButton label="Close" icon={<CloseIcon />} variant="outline" size="lg" shape="pill" />`}>
+  <IconButton label="Close" icon={<CloseIcon />} variant="outline" size="sm" />
+  <IconButton label="Close" icon={<CloseIcon />} variant="outline" size="md" shape="rounded" />
+  <IconButton label="Close" icon={<CloseIcon />} variant="outline" size="lg" shape="pill" />
+</ComponentPreview>
+
+## Tooltip
+
+`tooltip` shows the label on hover and keyboard focus through the Tooltip component. Pass a string to show a longer hint instead; that string is also exposed as the button's description. `tooltipProps` forwards options such as `placement` and `delay`.
+
+<ComponentPreview code={`<IconButton label="Close" icon={<CloseIcon />} tooltip />
+<IconButton
+  label="Close"
+  icon={<CloseIcon />}
+  tooltip="Close the panel (Esc)"
+  tooltipProps={{ placement: 'bottom' }}
+/>`}>
+  <IconButton label="Close" icon={<CloseIcon />} tooltip />
+  <IconButton label="Close" icon={<CloseIcon />} tooltip="Close the panel (Esc)" tooltipProps={{ placement: 'bottom' }} />
+</ComponentPreview>
+
+## Toggle
+
+Setting `pressed` (to `true` or `false`) makes the button a toggle. Keep the `label` the same in both states — the pressed state is announced separately.
+
+<ComponentPreview code={`const [on, setOn] = useState(false);
+
+<IconButton label="Pin" icon={<PinIcon />} pressed={on} onClick={() => setOn(!on)} />`}>
+  <IconButton label="Pin" icon={<CloseIcon />} pressed={false} variant="outline" />
+  <IconButton label="Pin" icon={<CloseIcon />} pressed variant="outline" />
+</ComponentPreview>
+
+## Loading and disabled
+
+While `loading`, the icon is replaced by the same spinner Button uses and the button is disabled. The accessible name does not change.
+
+<ComponentPreview code={`<IconButton label="Refresh" icon={<RefreshIcon />} loading />
+<IconButton label="Refresh" icon={<RefreshIcon />} disabled />`}>
+  <IconButton label="Refresh" icon={<CloseIcon />} variant="outline" loading />
+  <IconButton label="Refresh" icon={<CloseIcon />} variant="outline" disabled />
+</ComponentPreview>
+
+## Accessibility
+
+- Renders a native `<button type="button">` whose accessible name is `label` (`aria-label`). Icons should be `aria-hidden`.
+- `pressed` sets `aria-pressed`; leave it undefined for a plain action button.
+- `loading` sets `aria-busy="true"` and `disabled`; the name is kept.
+- With `tooltip`, the tooltip has `role="tooltip"`. A string tooltip is linked with `aria-describedby` while it is shown; when the tooltip only repeats the label it is not linked, so the name is not read twice. `Escape` dismisses the tooltip.
+- A disabled button does not receive pointer or focus events, so its tooltip is not shown.
+
+| Key | Behaviour |
+| --- | --- |
+| `Tab` / `Shift` + `Tab` | Move focus to and from the button; shows the tooltip |
+| `Enter` / `Space` | Activate the button |
+| `Escape` | Hide the tooltip |
+
+## Mobile
+
+- On coarse pointers the touch target is at least 44×44px even when the visible box is smaller, so leave about 8px between adjacent icon buttons to keep the targets from overlapping.
+- There is no hover on touch screens. With `tooltip`, the hint appears on long press and the tap still activates the button — do not put information that is needed to use the button only in the tooltip.
+- Hover styles apply only on devices that can hover; pressing gives immediate colour feedback without movement.
+
+## Props
+
+<PropsTable props={[
+  { name: 'label', type: 'string', description: 'Required. Accessible name of the button (aria-label)' },
+  { name: 'icon', type: 'ReactNode', description: 'The icon; children are used when omitted' },
+  { name: 'variant', type: "'primary' | 'secondary' | 'outline' | 'ghost' | 'danger'", default: "'ghost'", description: 'Visual style variant' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size of the square box' },
+  { name: 'shape', type: "'square' | 'rounded' | 'pill'", default: "'square'", description: 'Corner shape' },
+  { name: 'loading', type: 'boolean', default: 'false', description: 'Shows a spinner, sets aria-busy and disables the button' },
+  { name: 'pressed', type: 'boolean', description: 'Toggle state; sets aria-pressed when defined' },
+  { name: 'tooltip', type: 'boolean | string', default: 'false', description: 'true shows the label as a tooltip; a string shows that text instead' },
+  { name: 'tooltipProps', type: "Omit<TooltipProps, 'content' | 'children'>", description: 'Options forwarded to Tooltip (placement, delay, variant, mobileVariant…)' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the button is disabled' },
+  { name: 'type', type: "'button' | 'submit' | 'reset'", default: "'button'", description: 'Native button type' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+All other native `<button>` attributes are forwarded, and `ref` points at the button element.

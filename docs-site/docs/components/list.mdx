@@ -1,0 +1,256 @@
+---
+sidebar_position: 60
+title: List
+---
+
+import { List, Switch, Badge } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# List
+
+Rows for settings screens, menus that are pages, and simple collections. It is the narrow-screen counterpart of a table: one item per row, a title, an optional description, and a slot at each end.
+
+## Basic Usage
+
+<ComponentPreview code={`<List aria-label="Settings">
+  <List.Item title="Account" description="Profile, password and security" href="/account" />
+  <List.Item title="Language" href="/language" trailing="English" />
+  <List.Item title="Version" trailing="2.2.0" />
+</List>`}>
+  <List aria-label="Settings">
+    <List.Item title="Account" description="Profile, password and security" href="#account" />
+    <List.Item title="Language" href="#language" trailing="English" />
+    <List.Item title="Version" trailing="2.2.0" />
+  </List>
+</ComponentPreview>
+
+A row with `href` is a link and gets a trailing chevron unless you pass `trailing`. A row with `onClick` is a button. A row with neither is plain text.
+
+## Variants
+
+`outlined` draws the list on a sheet surface with a hairline border.
+
+<ComponentPreview code={`<List variant="outlined" aria-label="Settings">
+  <List.Item title="Account" href="/account" />
+  <List.Item title="Notifications" href="/notifications" trailing={<Badge size="sm">3</Badge>} />
+  <List.Item title="Sign out" onClick={signOut} />
+</List>`}>
+  <List variant="outlined" aria-label="Settings">
+    <List.Item title="Account" href="#account" />
+    <List.Item title="Notifications" href="#notifications" trailing={<Badge size="sm">3</Badge>} />
+    <List.Item title="Sign out" onClick={() => {}} />
+  </List>
+</ComponentPreview>
+
+## Dividers
+
+`dividers` is on by default. `'inset'` starts the hairline where the text starts, after the leading slot; `false` removes it.
+
+<ComponentPreview code={`<List variant="outlined" dividers="inset" aria-label="People">
+  <List.Item title="Kim Seoyeon" description="Finance" leading={<Avatar />} />
+  <List.Item title="Lee Dohyun" description="Engineering" leading={<Avatar />} />
+</List>`}>
+  <List variant="outlined" dividers="inset" aria-label="People">
+    <List.Item title="Kim Seoyeon" description="Finance" leading={<span aria-hidden="true">●</span>} />
+    <List.Item title="Lee Dohyun" description="Engineering" leading={<span aria-hidden="true">●</span>} />
+  </List>
+</ComponentPreview>
+
+## Density
+
+By default rows follow the density of the page (`--tui-row-height`). Set `density` to scope it to one list.
+
+<ComponentPreview code={`<List variant="outlined" density="compact" aria-label="Compact">
+  <List.Item title="Compact row" trailing="46px" />
+  <List.Item title="Compact row" trailing="46px" />
+</List>`}>
+  <List variant="outlined" density="compact" aria-label="Compact">
+    <List.Item title="Compact row" trailing="46px" />
+    <List.Item title="Compact row" trailing="46px" />
+  </List>
+</ComponentPreview>
+
+## Rows with a control
+
+Put a control such as a Switch in `trailing`. The control is the target; the row itself is not a button.
+
+<ComponentPreview code={`<List variant="outlined" aria-label="Network">
+  <List.Item title="Wi-Fi" trailing={<Switch aria-label="Wi-Fi" defaultChecked />} />
+  <List.Item
+    title="Bluetooth"
+    description="Opens the device list"
+    href="/bluetooth"
+    trailing={<Switch aria-label="Bluetooth" />}
+  />
+</List>`}>
+  <List variant="outlined" aria-label="Network">
+    <List.Item title="Wi-Fi" trailing={<Switch aria-label="Wi-Fi" defaultChecked />} />
+    <List.Item
+      title="Bluetooth"
+      description="Opens the device list"
+      href="#bluetooth"
+      trailing={<Switch aria-label="Bluetooth" />}
+    />
+  </List>
+</ComponentPreview>
+
+### The no-nesting rule
+
+A link or button must not contain another control. When a row has both `href`/`onClick` **and** an interactive `trailing`, List renders two sibling targets inside the list item: the row link or button covers the leading slot and the text, and the trailing control sits next to it, outside the link. A non-interactive `trailing` (a value, a badge) stays inside the link and becomes part of its name.
+
+`trailing` counts as interactive when it is, or wraps, a native control (`button`, `a`, `input`, `select`, `textarea`), a library control (Switch, Checkbox, Button, IconButton, Chip, Select …), or an element with an interactive `role`, a `tabIndex`, or an `onClick` / `onChange` / `href` prop. A custom component that hides its control cannot be detected: pass `trailingInteractive` for it.
+
+## Navigation rows
+
+`selected` marks the current row with `aria-current="true"`. `disabled` rows cannot be activated.
+
+<ComponentPreview code={`<nav aria-label="Main">
+  <List dividers={false}>
+    <List.Item title="Home" href="/" />
+    <List.Item title="Orders" href="/orders" selected />
+    <List.Item title="Reports" href="/reports" disabled />
+  </List>
+</nav>`}>
+  <nav aria-label="Main">
+    <List dividers={false}>
+      <List.Item title="Home" href="#home" />
+      <List.Item title="Orders" href="#orders" selected />
+      <List.Item title="Reports" href="#reports" disabled />
+    </List>
+  </nav>
+</ComponentPreview>
+
+For a client-side router, pass its link component with `as` and its props with `linkProps`:
+
+```tsx
+<List.Item title="Orders" as={Link} linkProps={{ to: '/orders' }} />
+```
+
+## Long text
+
+The title is truncated to one line and the description is clamped to two. `multiline` lets both wrap.
+
+<ComponentPreview code={`<List variant="outlined" aria-label="Notices">
+  <List.Item
+    title="Scheduled maintenance on Saturday between 02:00 and 04:00"
+    description="Transfers and card payments are unavailable during the window. Balances are still shown."
+  />
+  <List.Item
+    multiline
+    title="Scheduled maintenance on Saturday between 02:00 and 04:00"
+    description="Transfers and card payments are unavailable during the window. Balances are still shown."
+  />
+</List>`}>
+  <div style={{ maxWidth: 320 }}>
+    <List variant="outlined" aria-label="Notices">
+      <List.Item
+        title="Scheduled maintenance on Saturday between 02:00 and 04:00"
+        description="Transfers and card payments are unavailable during the window. Balances are still shown."
+      />
+      <List.Item
+        multiline
+        title="Scheduled maintenance on Saturday between 02:00 and 04:00"
+        description="Transfers and card payments are unavailable during the window. Balances are still shown."
+      />
+    </List>
+  </div>
+</ComponentPreview>
+
+## Sections
+
+`List.Section` renders a heading and names the list inside it.
+
+<ComponentPreview code={`<List.Section title="Network">
+  <List variant="outlined">
+    <List.Item title="Wi-Fi" href="/wifi" trailing="Office" />
+    <List.Item title="Mobile data" href="/data" />
+  </List>
+</List.Section>
+<List.Section title="Account">
+  <List variant="outlined">
+    <List.Item title="Profile" href="/profile" />
+    <List.Item title="Sign out" onClick={signOut} />
+  </List>
+</List.Section>`}>
+  <div style={{ width: '100%' }}>
+    <List.Section title="Network">
+      <List variant="outlined">
+        <List.Item title="Wi-Fi" href="#wifi" trailing="Office" />
+        <List.Item title="Mobile data" href="#data" />
+      </List>
+    </List.Section>
+    <List.Section title="Account">
+      <List variant="outlined">
+        <List.Item title="Profile" href="#profile" />
+        <List.Item title="Sign out" onClick={() => {}} />
+      </List>
+    </List.Section>
+  </div>
+</ComponentPreview>
+
+## Accessibility
+
+- Roles: `list` (`ul`, `ol`, or a `div` with `role="list"`) and `listitem`. The role is set explicitly because some screen readers drop list semantics from lists without bullets.
+- An interactive row is a real `a` or `button` inside the list item. Its name is the title, the description and any non-interactive trailing text.
+- A row never nests controls (see the no-nesting rule above).
+- `selected` sets `aria-current="true"` on the row link or button, or on the list item for a static row.
+- A disabled link row loses its `href` and gets `aria-disabled="true"`; a disabled button row is natively disabled.
+- The automatic chevron and anything you pass as an icon should be decorative (`aria-hidden`). The chevron mirrors in right-to-left layouts.
+- `List.Section` renders a heading (`headingLevel`, default 3) and links the list to it with `aria-labelledby`. An `aria-label` on the list takes precedence.
+
+| Key | Action |
+| --- | --- |
+| `Tab` / `Shift+Tab` | Move between row targets and trailing controls |
+| `Enter` | Activate a link or button row |
+| `Space` | Activate a button row |
+
+## Mobile
+
+- Rows are at least 44px tall and follow `--tui-row-height`, which is 64px on touch devices regardless of density.
+- The whole row is the target for link and button rows, not just the text.
+- With a trailing control, the row link and the control are separate targets, so a tap on the Switch never follows the link.
+- Long titles truncate instead of pushing the trailing slot off screen; the list does not overflow horizontally at 320px.
+
+## Props
+
+### List
+
+<PropsTable props={[
+  { name: 'dividers', type: "boolean | 'inset'", default: 'true', description: 'Hairline between rows. inset starts it at the text, after the leading slot' },
+  { name: 'density', type: "'comfortable' | 'compact'", description: 'Row density. Inherits the page density when omitted' },
+  { name: 'variant', type: "'plain' | 'outlined'", default: "'plain'", description: 'outlined draws a sheet surface with a hairline border' },
+  { name: 'as', type: "'ul' | 'ol' | 'div'", default: "'ul'", description: 'Element to render. div keeps list semantics through roles' },
+  { name: 'aria-label', type: 'string', description: 'Accessible name of the list' },
+  { name: 'aria-labelledby', type: 'string', description: 'Id of the element that names the list. Set automatically inside List.Section' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+### List.Item
+
+<PropsTable props={[
+  { name: 'title', type: 'ReactNode', required: true, description: 'Main text of the row' },
+  { name: 'description', type: 'ReactNode', description: 'Secondary text under the title' },
+  { name: 'leading', type: 'ReactNode', description: 'Slot before the text: an icon or avatar' },
+  { name: 'trailing', type: 'ReactNode', description: 'Slot after the text: a value, badge, chevron or a control' },
+  { name: 'href', type: 'string', description: 'Makes the row a link. Adds a chevron unless trailing is given' },
+  { name: 'onClick', type: '(event: MouseEvent) => void', description: 'Makes the row a button' },
+  { name: 'as', type: 'ElementType', description: 'Link component used for the row, such as a router Link' },
+  { name: 'linkProps', type: 'Record<string, unknown>', description: 'Extra props for the row link or button (to, target, rel)' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the row is disabled' },
+  { name: 'selected', type: 'boolean', default: 'false', description: 'Marks the current row of a navigation list' },
+  { name: 'multiline', type: 'boolean', default: 'false', description: 'Lets the title and description wrap instead of truncating' },
+  { name: 'trailingInteractive', type: 'boolean', description: 'Whether trailing contains its own control. Detected automatically; set it for custom components' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+### List.Section
+
+<PropsTable props={[
+  { name: 'title', type: 'ReactNode', required: true, description: 'Heading of the group. Names the list inside' },
+  { name: 'headingLevel', type: '1 | 2 | 3 | 4 | 5 | 6', default: '3', description: 'Heading level of the title' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

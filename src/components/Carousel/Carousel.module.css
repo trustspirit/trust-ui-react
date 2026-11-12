@@ -1,0 +1,246 @@
+/* ── Root ── */
+.carousel {
+  /* 한 번에 보이는 장수와 간격. 장수는 Carousel.tsx 가 인라인으로 덮어쓴다. */
+  --tui-carousel-per-view: 1;
+  --tui-carousel-gap: 0px;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--tui-gap-2);
+  min-width: 0;
+  font-family: var(--tui-font-sans);
+  color: var(--tui-ink);
+}
+
+.gap0 { --tui-carousel-gap: 0px; }
+.gap1 { --tui-carousel-gap: var(--tui-gap-1); }
+.gap2 { --tui-carousel-gap: var(--tui-gap-2); }
+.gap3 { --tui-carousel-gap: var(--tui-gap-3); }
+.gap4 { --tui-carousel-gap: var(--tui-gap-4); }
+.gap5 { --tui-carousel-gap: var(--tui-gap-5); }
+.gap6 { --tui-carousel-gap: var(--tui-gap-6); }
+
+.viewport {
+  position: relative;
+  min-width: 0;
+}
+
+/* ── Track: 움직임은 브라우저의 스크롤 스냅이 맡는다 ── */
+.track {
+  display: flex;
+  gap: var(--tui-carousel-gap);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  /* 끝에서 더 밀어도 페이지의 뒤로 가기 제스처나 바깥 스크롤로 번지지 않는다. */
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--tui-radius-tight);
+}
+
+.track::-webkit-scrollbar {
+  display: none;
+}
+
+/* 트랙은 내용을 잘라 내므로 바깥 링이 보이지 않는다. 안쪽에 그린다. */
+.track:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--tui-ink);
+}
+
+/* ── Slide ── */
+.slide {
+  flex: 0 0
+    calc(
+      (100% - (var(--tui-carousel-per-view) - 1) * var(--tui-carousel-gap)) /
+        var(--tui-carousel-per-view)
+    );
+  min-width: 0;
+  box-sizing: border-box;
+  scroll-snap-align: start;
+}
+
+.alignCenter .slide {
+  scroll-snap-align: center;
+}
+
+.autoWidth .slide {
+  flex: 0 0 auto;
+  max-inline-size: 100%;
+}
+
+/* 한 장씩 볼 때는 세게 밀어도 한 장만 넘어간다. */
+.single .slide {
+  scroll-snap-stop: always;
+}
+
+/* ── Arrows ── */
+.arrow {
+  position: absolute;
+  inset-block-start: 50%;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--tui-control-sm);
+  block-size: var(--tui-control-sm);
+  padding: 0;
+  border: 1px solid var(--tui-rule-strong);
+  border-radius: var(--tui-radius-control);
+  background-color: var(--tui-sheet);
+  color: var(--tui-ink);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    var(--tui-transition-color),
+    opacity var(--tui-duration-fast) var(--tui-ease-out);
+  -webkit-tap-highlight-color: var(--tui-tap-highlight);
+}
+
+.arrowPrevious {
+  inset-inline-start: var(--tui-gap-2);
+}
+
+.arrowNext {
+  inset-inline-end: var(--tui-gap-2);
+}
+
+.arrow::after,
+.playPause::after,
+.dot::after {
+  content: '';
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .arrow::after,
+  .playPause::after,
+  .dot::after {
+    display: block;
+  }
+}
+
+@media (hover: hover) {
+  .arrow:hover:not(:disabled) {
+    background-color: var(--tui-field);
+    border-color: var(--tui-ink-3);
+  }
+}
+
+.arrow:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--tui-sheet), 0 0 0 4px var(--tui-ink);
+}
+
+.arrow:disabled {
+  opacity: var(--tui-opacity-disabled);
+  cursor: not-allowed;
+}
+
+/* 기본: 마우스에서는 보이고, 터치에서는 밀기가 조작법이므로 숨긴다. */
+@media (pointer: coarse) {
+  .arrowsAuto .arrow {
+    display: none;
+  }
+}
+
+/*
+ * hover: 포인터가 올라와 있거나 포커스가 안에 있을 때만 보인다. opacity 로 숨기므로
+ * 보이지 않는 동안에도 Tab 으로 닿을 수 있고, 닿는 순간 focus-within 으로 드러난다.
+ * 끝에 닿아 쓸 수 없는 버튼은 드러내지 않는다.
+ */
+.arrowsHover .arrow {
+  opacity: 0;
+}
+
+@media (hover: hover) {
+  .arrowsHover:hover:not(:focus-within) .arrow:enabled {
+    opacity: 1;
+  }
+}
+
+.arrowsHover:focus-within .arrow:enabled {
+  opacity: 1;
+}
+
+/* ── Controls: 멈춤 버튼 + 점 ── */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tui-gap-3);
+  min-block-size: 24px;
+}
+
+.playPause {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 24px;
+  block-size: 24px;
+  padding: 0;
+  border: none;
+  border-radius: var(--tui-radius-tight);
+  background: transparent;
+  color: var(--tui-ink-2);
+  cursor: pointer;
+  transition: var(--tui-transition-color);
+}
+
+@media (hover: hover) {
+  .playPause:hover {
+    color: var(--tui-ink);
+  }
+}
+
+.playPause:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-ink);
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--tui-gap-2);
+}
+
+/* 점은 작지만 터치 영역은 ::after 가 44px 로 넓힌다. */
+.dot {
+  position: relative;
+  inline-size: 8px;
+  block-size: 8px;
+  padding: 0;
+  border: none;
+  border-radius: var(--tui-radius-full);
+  background-color: var(--tui-rule-strong);
+  cursor: pointer;
+  transition:
+    var(--tui-transition-color),
+    inline-size var(--tui-duration-base) var(--tui-ease-out);
+}
+
+/* 현재 위치는 색만이 아니라 길이로도 구분한다. */
+.dot[aria-current='true'] {
+  inline-size: 20px;
+  background-color: var(--tui-ink);
+}
+
+@media (hover: hover) {
+  .dot:hover:not([aria-current='true']) {
+    background-color: var(--tui-ink-3);
+  }
+}
+
+.dot:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--tui-paper), 0 0 0 4px var(--tui-ink);
+}

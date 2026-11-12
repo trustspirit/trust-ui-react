@@ -1,0 +1,231 @@
+---
+sidebar_position: 55
+title: Card
+---
+
+import { Card, Button, Badge } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# Card
+
+A surface for one discrete item: an account, a report, a plan. A card can be a plain container, a single link or button, a container with a stretched title link, or a selectable option.
+
+## Basic Usage
+
+<ComponentPreview code={`<Card>
+  <Card.Header title="Savings account" titleAs="h3" description="Updated a minute ago" />
+  <Card.Content>The balance grew by 2.4% since the start of the month.</Card.Content>
+  <Card.Footer>
+    <Button size="sm" variant="outline">Details</Button>
+  </Card.Footer>
+</Card>`}>
+  <Card style={{ maxWidth: 360 }}>
+    <Card.Header title="Savings account" titleAs="h3" description="Updated a minute ago" />
+    <Card.Content>The balance grew by 2.4% since the start of the month.</Card.Content>
+    <Card.Footer>
+      <Button size="sm" variant="outline">Details</Button>
+    </Card.Footer>
+  </Card>
+</ComponentPreview>
+
+`Card.Header` takes `title`, `description` and a trailing `action`. The title is a plain `div` by default; set `titleAs` to the heading level that fits the page outline. Use `as` (`'article'`, `'section'`, `'li'`) to change the root element of a static card.
+
+## Variants
+
+<ComponentPreview code={`<Card variant="outlined">…</Card>
+<Card variant="filled">…</Card>
+<Card variant="plain">…</Card>`}>
+  <Card variant="outlined" style={{ flex: '1 1 160px' }}>
+    <Card.Header title="Outlined" description="Sheet surface and a hairline" />
+  </Card>
+  <Card variant="filled" style={{ flex: '1 1 160px' }}>
+    <Card.Header title="Filled" description="Field surface, no border" />
+  </Card>
+  <Card variant="plain" style={{ flex: '1 1 160px' }}>
+    <Card.Header title="Plain" description="No surface" />
+  </Card>
+</ComponentPreview>
+
+## Padding
+
+`padding` (`'none' | 'sm' | 'md' | 'lg'`) sets the inset of the header, content and footer and follows the density setting. `Card.Media` ignores it and always runs edge to edge.
+
+<ComponentPreview code={`<Card padding="sm">
+  <Card.Media aspectRatio="16 / 9">
+    <img src="/img/report.jpg" alt="" />
+  </Card.Media>
+  <Card.Header title="Quarterly report" action={<Badge variant="outline" color="secondary">New</Badge>} />
+</Card>`}>
+  <Card padding="sm" style={{ maxWidth: 320, width: '100%' }}>
+    <Card.Media aspectRatio="16 / 9" style={{ background: 'var(--tui-field)' }} />
+    <Card.Header title="Quarterly report" action={<Badge variant="outline" color="secondary">New</Badge>} />
+  </Card>
+</ComponentPreview>
+
+## Clickable card
+
+Pass `href` to make the whole card a link, or `onClick` (without `href`) to make it a `<button type="button">`. For client-side routing, pass the router's link component as `as`; the remaining props (`to`, `href`, …) are forwarded to it.
+
+<ComponentPreview code={`<Card href="/reports/q3">
+  <Card.Header title="Quarterly report" description="The whole card is one link" />
+</Card>
+
+<Card onClick={addAccount}>
+  <Card.Header title="Add account" description="The whole card is one button" />
+</Card>
+
+<Card as={Link} to="/reports/q3">…</Card>`}>
+  <Card href="#clickable-card" style={{ flex: '1 1 200px' }}>
+    <Card.Header title="Quarterly report" description="The whole card is one link" />
+  </Card>
+  <Card onClick={() => {}} style={{ flex: '1 1 200px' }}>
+    <Card.Header title="Add account" description="The whole card is one button" />
+  </Card>
+</ComponentPreview>
+
+:::caution
+A clickable card must not contain other interactive elements (buttons, links, inputs). Nested controls are invalid HTML and cannot be reached reliably with a keyboard or screen reader. When the card needs its own actions, use a stretched card instead.
+:::
+
+Inside a button card (and a selectable card) the parts render as `<span>` elements, because a button may only contain phrasing content; `titleAs` is ignored there.
+
+## Stretched card
+
+With `interactive="stretched"` the card stays a non-interactive container. Give `href` or `onClick` to `Card.Header`: the title becomes the link or button and its hit area is stretched over the whole card. Other controls inside the card sit above that area and keep working.
+
+<ComponentPreview code={`<Card interactive="stretched" as="article">
+  <Card.Header title="Quarterly report" titleAs="h3" href="/reports/q3" description="12 pages" />
+  <Card.Footer>
+    <Button size="sm" variant="outline">Share</Button>
+    <Button size="sm" variant="ghost">Archive</Button>
+  </Card.Footer>
+</Card>`}>
+  <Card interactive="stretched" as="article" style={{ maxWidth: 360, width: '100%' }}>
+    <Card.Header title="Quarterly report" titleAs="h3" href="#stretched-card" description="12 pages" />
+    <Card.Footer>
+      <Button size="sm" variant="outline">Share</Button>
+      <Button size="sm" variant="ghost">Archive</Button>
+    </Card.Footer>
+  </Card>
+</ComponentPreview>
+
+Root `href` and `onClick` are ignored in this mode. Do not put a positioned (`position: relative`) wrapper between the header and the card, or the stretched area will be confined to that wrapper. Use `linkAs` on the header for a router link.
+
+## Selectable card
+
+`selectable` turns the card into an option backed by a visually hidden native input inside a `<label>` that wraps the card, so it works in forms with `name` and `value`. `selectionMode="multiple"` (default) is a checkbox; `"single"` is a radio button — give the cards of one choice the same `name`.
+
+The selected state is shown by a 2px ink border and a check mark in the corner, not by a colour fill, and it does not shift the layout.
+
+<ComponentPreview code={`<Card selectable name="addons" value="backup" defaultSelected>
+  <Card.Header title="Daily backup" description="Keeps 30 days of history" />
+</Card>
+<Card selectable name="addons" value="support">
+  <Card.Header title="Priority support" description="Answers within an hour" />
+</Card>
+<Card selectable name="addons" value="audit" disabled>
+  <Card.Header title="Audit log" description="Not available on this plan" />
+</Card>`}>
+  <Card selectable name="addons" value="backup" defaultSelected style={{ flex: '1 1 180px' }}>
+    <Card.Header title="Daily backup" description="Keeps 30 days of history" />
+  </Card>
+  <Card selectable name="addons" value="support" style={{ flex: '1 1 180px' }}>
+    <Card.Header title="Priority support" description="Answers within an hour" />
+  </Card>
+  <Card selectable name="addons" value="audit" disabled style={{ flex: '1 1 180px' }}>
+    <Card.Header title="Audit log" description="Not available on this plan" />
+  </Card>
+</ComponentPreview>
+
+<ComponentPreview code={`<div role="radiogroup" aria-label="Plan">
+  <Card selectable selectionMode="single" name="plan" value="basic" defaultSelected>
+    <Card.Header title="Basic" description="One account" />
+  </Card>
+  <Card selectable selectionMode="single" name="plan" value="business">
+    <Card.Header title="Business" description="Unlimited accounts" />
+  </Card>
+</div>`}>
+  <div role="radiogroup" aria-label="Plan" style={{ display: 'flex', flexWrap: 'wrap', gap: 12, width: '100%' }}>
+    <Card selectable selectionMode="single" name="plan" value="basic" defaultSelected style={{ flex: '1 1 180px' }}>
+      <Card.Header title="Basic" description="One account" />
+    </Card>
+    <Card selectable selectionMode="single" name="plan" value="business" style={{ flex: '1 1 180px' }}>
+      <Card.Header title="Business" description="Unlimited accounts" />
+    </Card>
+  </div>
+</ComponentPreview>
+
+Use `selected` with `onSelectedChange` for controlled state. A `"single"` card only reports becoming selected — the browser does not fire a change event on the radio that loses the selection — so in controlled mode derive each card's `selected` from one shared value. Like a clickable card, a selectable card must not contain other interactive elements. The root is always a `<label>`; `as` is ignored.
+
+## Accessibility
+
+- A static card has no role and is not focusable. Use `as="article"` with a heading (`titleAs`) when the card is a self-contained item in a feed.
+- `href` renders a link, `onClick` a native button; both are named by the card's content. A disabled link card keeps focus and gets `aria-disabled="true"`; a disabled button card uses the native `disabled` attribute.
+- In a stretched card only the title is a link or button, so the accessible name is the title alone and inner controls remain separate tab stops in DOM order.
+- A selectable card exposes a native `checkbox` or `radio` named by the card's content (or by `aria-label` / `aria-labelledby`, which are applied to the input). Wrap single-select cards in an element with `role="radiogroup"` and a label.
+- Focus is shown by a ring around the whole card in every mode.
+
+| Key | Behaviour |
+| --- | --- |
+| `Tab` / `Shift` + `Tab` | Move focus to the card (link, button, stretched title or input) and to inner controls of a stretched card |
+| `Enter` | Follow a link card or stretched title link; activate a button card |
+| `Space` | Activate a button card; toggle a multiple-selection card; select a single-selection card |
+| Arrow keys | Move the selection between single-selection cards that share a `name` |
+
+## Mobile
+
+- Cards fill the width of their container and long words wrap, so there is no horizontal overflow at 320px. Lay several cards out with Grid or Stack rather than fixed widths.
+- Hover styles apply only on devices that can hover. On touch, pressing a clickable, stretched or selectable card darkens its surface one step; nothing scales or moves.
+- A clickable or selectable card is a single large target. In a stretched card, make sure the inner controls are themselves at least 44px on touch (Button and IconButton already are).
+- The footer wraps onto further lines when its actions do not fit.
+
+## Card Props
+
+<PropsTable props={[
+  { name: 'variant', type: "'outlined' | 'filled' | 'plain'", default: "'outlined'", description: 'Surface style' },
+  { name: 'padding', type: "'none' | 'sm' | 'md' | 'lg'", default: "'md'", description: 'Inset of header, content and footer (not media)' },
+  { name: 'as', type: "'div' | 'article' | 'section' | 'li' | ElementType", default: "'div'", description: 'Root element of a static card, or a custom link component that makes the whole card a link' },
+  { name: 'href', type: 'string', description: 'Makes the whole card a link' },
+  { name: 'onClick', type: '(event: MouseEvent) => void', description: 'Without href, makes the whole card a button' },
+  { name: 'interactive', type: "'stretched'", description: 'Keeps the card a container and stretches the header title link/button over it' },
+  { name: 'selectable', type: 'boolean', default: 'false', description: 'Makes the card a checkbox or radio option' },
+  { name: 'selectionMode', type: "'single' | 'multiple'", default: "'multiple'", description: 'Radio or checkbox semantics for a selectable card' },
+  { name: 'selected', type: 'boolean', description: 'Whether the card is selected (controlled)' },
+  { name: 'defaultSelected', type: 'boolean', default: 'false', description: 'Initial selection (uncontrolled)' },
+  { name: 'onSelectedChange', type: '(selected: boolean) => void', description: 'Called when the user changes the selection' },
+  { name: 'name', type: 'string', description: 'Form field name of a selectable card' },
+  { name: 'value', type: 'string', description: 'Form value submitted when selected' },
+  { name: 'required', type: 'boolean', default: 'false', description: 'Marks a selectable card as required' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Disables a clickable or selectable card' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+Other native attributes are forwarded to the root element, and `ref` points at it (the `<label>` for a selectable card).
+
+## Card.Header Props
+
+<PropsTable props={[
+  { name: 'title', type: 'ReactNode', description: 'Required. Title text' },
+  { name: 'description', type: 'ReactNode', description: 'Secondary text under the title' },
+  { name: 'action', type: 'ReactNode', description: 'Trailing slot; interactive content only in static or stretched cards' },
+  { name: 'titleAs', type: "'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'div'", default: "'div'", description: 'Element used for the title' },
+  { name: 'href', type: 'string', description: 'Turns the title into a link (stretched over the card in a stretched card)' },
+  { name: 'onClick', type: '(event: MouseEvent) => void', description: 'Without href, turns the title into a button' },
+  { name: 'linkAs', type: 'ElementType', description: 'Custom link component for the title' },
+  { name: 'children', type: 'ReactNode', description: 'Extra content under the title and description' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+## Card.Media Props
+
+<PropsTable props={[
+  { name: 'aspectRatio', type: 'string', description: 'CSS aspect ratio of the media box, e.g. "16 / 9"' },
+  { name: 'children', type: 'ReactNode', description: 'Image, video or any visual; an img or video covers the box' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+`Card.Content` and `Card.Footer` accept `children`, `className`, `style` and native attributes.

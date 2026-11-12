@@ -1,0 +1,224 @@
+---
+sidebar_position: 62
+title: Carousel
+---
+
+import { Carousel } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+export const Panel = ({ n, width }) => (
+  <div
+    style={{
+      display: 'flex',
+      alignItems: 'flex-end',
+      minHeight: 140,
+      width,
+      padding: 'var(--tui-pad-4)',
+      boxSizing: 'border-box',
+      border: '1px solid var(--tui-rule)',
+      borderRadius: 'var(--tui-radius-sheet)',
+      background: 'var(--tui-field)',
+      color: 'var(--tui-ink)',
+      fontWeight: 600,
+    }}
+  >
+    Slide {n}
+  </div>
+);
+
+# Carousel
+
+Horizontally swipeable slides. The track is a native scroll container with CSS scroll snapping, so touch momentum, trackpads and keyboard scrolling behave as they do everywhere else on the platform. JavaScript only tracks the current slide and scrolls for the buttons.
+
+## Basic Usage
+
+<ComponentPreview code={`<Carousel aria-label="Featured">
+  <Carousel.Slide>…</Carousel.Slide>
+  <Carousel.Slide>…</Carousel.Slide>
+  <Carousel.Slide>…</Carousel.Slide>
+</Carousel>`}>
+  <div style={{ width: '100%', maxWidth: 480 }}>
+    <Carousel aria-label="Featured">
+      <Carousel.Slide><Panel n={1} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={2} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={3} /></Carousel.Slide>
+    </Carousel>
+  </div>
+</ComponentPreview>
+
+## Slides per view
+
+A fractional `slidesPerView` shows a peek of the next slide, which tells touch users there is more to swipe to. `gap` uses the spacing scale (`--tui-gap-1` to `--tui-gap-6`).
+
+<ComponentPreview code={`<Carousel aria-label="Featured" slidesPerView={1.2} gap={3}>
+  …
+</Carousel>`}>
+  <div style={{ width: '100%', maxWidth: 480 }}>
+    <Carousel aria-label="Featured with peek" slidesPerView={1.2} gap={3}>
+      <Carousel.Slide><Panel n={1} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={2} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={3} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={4} /></Carousel.Slide>
+    </Carousel>
+  </div>
+</ComponentPreview>
+
+With a whole number above 1 the carousel stops when the last slide comes into view, so seven slides at three per view have five positions and five dots.
+
+<ComponentPreview code={`<Carousel aria-label="Products" slidesPerView={3} gap={3}>
+  …
+</Carousel>`}>
+  <div style={{ width: '100%', maxWidth: 480 }}>
+    <Carousel aria-label="Products" slidesPerView={3} gap={3}>
+      <Carousel.Slide><Panel n={1} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={2} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={3} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={4} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={5} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={6} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={7} /></Carousel.Slide>
+    </Carousel>
+  </div>
+</ComponentPreview>
+
+`slidesPerView="auto"` lets every slide keep its own width.
+
+<ComponentPreview code={`<Carousel aria-label="Collections" slidesPerView="auto" gap={2} showDots={false}>
+  <Carousel.Slide><Card style={{ width: 160 }} /></Carousel.Slide>
+  <Carousel.Slide><Card style={{ width: 240 }} /></Carousel.Slide>
+  …
+</Carousel>`}>
+  <div style={{ width: '100%', maxWidth: 480 }}>
+    <Carousel aria-label="Collections" slidesPerView="auto" gap={2} showDots={false}>
+      <Carousel.Slide><Panel n={1} width={160} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={2} width={240} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={3} width={180} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={4} width={220} /></Carousel.Slide>
+    </Carousel>
+  </div>
+</ComponentPreview>
+
+## Alignment
+
+`align="center"` snaps slides to the middle of the track; use it with a fractional view to show a peek on both sides.
+
+<ComponentPreview code={`<Carousel aria-label="Featured" slidesPerView={1.4} gap={3} align="center">
+  …
+</Carousel>`}>
+  <div style={{ width: '100%', maxWidth: 480 }}>
+    <Carousel aria-label="Featured centered" slidesPerView={1.4} gap={3} align="center">
+      <Carousel.Slide><Panel n={1} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={2} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={3} /></Carousel.Slide>
+    </Carousel>
+  </div>
+</ComponentPreview>
+
+## Loop and arrows
+
+With `loop`, next on the last slide scrolls back to the first (no cloned slides, so the scroll visibly rewinds). `showArrows="hover"` reveals the arrows only while the carousel is hovered or focused.
+
+<ComponentPreview code={`<Carousel aria-label="Featured" loop showArrows="hover">
+  …
+</Carousel>`}>
+  <div style={{ width: '100%', maxWidth: 480 }}>
+    <Carousel aria-label="Featured looping" loop showArrows="hover">
+      <Carousel.Slide><Panel n={1} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={2} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={3} /></Carousel.Slide>
+    </Carousel>
+  </div>
+</ComponentPreview>
+
+## Auto-play
+
+`autoPlay` takes an interval in milliseconds and renders a pause/play button. Rotation pauses while the pointer is over the carousel, while focus is inside it and while the page is hidden. It never runs when the user asks for reduced motion. Without `loop` it stops at the last slide.
+
+<ComponentPreview code={`<Carousel aria-label="Announcements" autoPlay={4000} loop>
+  …
+</Carousel>`}>
+  <div style={{ width: '100%', maxWidth: 480 }}>
+    <Carousel aria-label="Announcements" autoPlay={4000} loop>
+      <Carousel.Slide><Panel n={1} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={2} /></Carousel.Slide>
+      <Carousel.Slide><Panel n={3} /></Carousel.Slide>
+    </Carousel>
+  </div>
+</ComponentPreview>
+
+## Controlled
+
+```tsx
+const [index, setIndex] = useState(0);
+
+<Carousel aria-label="Featured" index={index} onIndexChange={setIndex}>
+  …
+</Carousel>
+```
+
+`onIndexChange` also fires when the user swipes to another slide.
+
+## Accessibility
+
+Follows the basic variant of the WAI-ARIA carousel pattern.
+
+- Root: `role="region"` with `aria-roledescription="carousel"` and the name you pass in `aria-label` or `aria-labelledby`. Always give it one.
+- Each slide: `role="group"` with `aria-roledescription="slide"` and a name from `slideLabel` ("2 of 5").
+- Previous and next are buttons, disabled at the ends unless `loop` is set. Their icons mirror in right-to-left layouts.
+- Dots are buttons in a group; the current one has `aria-current="true"` and is longer as well as darker, so it is not marked by colour alone.
+- The track is focusable so it can be scrolled from the keyboard. It is a live region: `aria-live="off"` while rotating and `polite` when rotation is paused or absent, so slide changes made with the buttons are announced.
+- In a one-slide view, slides that are off screen are `inert`, so Tab never moves into content that cannot be seen. Fractional, multi-slide and `auto` views leave their slides alone because several are visible at once.
+- With `autoPlay`, the pause/play button satisfies WCAG 2.2.2 (Pause, Stop, Hide). It comes first in the control row.
+- Programmatic scrolling is instant instead of smooth under `prefers-reduced-motion`.
+
+| Key | Action |
+| --- | --- |
+| `ArrowRight` / `ArrowLeft` | On the track: next / previous slide (swapped in right-to-left layouts) |
+| `Home` / `End` | On the track: first / last position |
+| `Enter` / `Space` | Activate the focused arrow, dot or pause button |
+
+Arrow keys pressed inside a control within a slide are left to that control.
+
+## Mobile
+
+- Swiping is native scrolling with scroll snapping: it keeps momentum, never fights vertical page scrolling, and does not trigger the browser's back gesture at the ends (`overscroll-behavior-x: contain`).
+- By default the arrows are hidden on touch devices, where swiping is the affordance. Pass `showArrows` to force them on. Use a fractional `slidesPerView` to hint that more slides exist.
+- Dots are small but each has a 44px touch area; so do the arrows and the pause button.
+- In a one-slide view a fast swipe advances a single slide (`scroll-snap-stop: always`).
+- Works in right-to-left layouts: the first slide is on the right and the keys follow the visual direction.
+
+## Props
+
+### Carousel
+
+<PropsTable props={[
+  { name: 'aria-label', type: 'string', description: 'Accessible name of the carousel (or use aria-labelledby)' },
+  { name: 'slidesPerView', type: "number | 'auto'", default: '1', description: 'Slides visible at once. A fraction shows a peek; auto uses each slide\'s own width' },
+  { name: 'gap', type: '0 | 1 | 2 | 3 | 4 | 5 | 6', default: '0', description: 'Space between slides, on the spacing scale' },
+  { name: 'index', type: 'number', description: 'Current slide, zero-based (controlled)' },
+  { name: 'defaultIndex', type: 'number', default: '0', description: 'Initial slide, zero-based (uncontrolled)' },
+  { name: 'onIndexChange', type: '(index: number) => void', description: 'Called when the current slide changes, by the controls, the keyboard or swiping' },
+  { name: 'loop', type: 'boolean', default: 'false', description: 'Next on the last slide returns to the first, and previous on the first goes to the last' },
+  { name: 'showArrows', type: "boolean | 'hover'", description: 'Previous/next buttons. Default: shown with a mouse, hidden on touch' },
+  { name: 'showDots', type: 'boolean', default: 'true', description: 'Shows one dot button per position' },
+  { name: 'autoPlay', type: 'number', description: 'Advances every N milliseconds and renders a pause/play button' },
+  { name: 'align', type: "'start' | 'center'", default: "'start'", description: 'Where a slide snaps inside the track' },
+  { name: 'previousLabel', type: 'string', default: "'Previous slide'", description: 'Accessible name of the previous button' },
+  { name: 'nextLabel', type: 'string', default: "'Next slide'", description: 'Accessible name of the next button' },
+  { name: 'pauseLabel', type: 'string', default: "'Pause slideshow'", description: 'Accessible name of the button that pauses auto-play' },
+  { name: 'playLabel', type: 'string', default: "'Play slideshow'", description: 'Accessible name of the button that resumes auto-play' },
+  { name: 'dotsLabel', type: 'string', default: "'Choose slide'", description: 'Accessible name of the group of dots' },
+  { name: 'dotLabel', type: '(index: number, total: number) => string', description: 'Accessible name of one dot. Default: "Go to slide 2"' },
+  { name: 'slideLabel', type: '(index: number, total: number) => string', description: 'Accessible name of one slide. Default: "2 of 5"' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />
+
+### Carousel.Slide
+
+<PropsTable props={[
+  { name: 'children', type: 'ReactNode', description: 'Slide content' },
+  { name: 'className', type: 'string', description: 'Additional CSS class' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles' },
+]} />

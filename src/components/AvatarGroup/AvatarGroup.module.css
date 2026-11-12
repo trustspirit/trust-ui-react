@@ -1,0 +1,64 @@
+/* ── Group ──
+   링 색은 그룹이 놓인 면의 색이어야 겹친 자리가 "잘린 것"처럼 읽힌다.
+   기본은 paper 이고, sheet 나 field 위에 놓을 때는 이 프로퍼티만 바꾼다. */
+.group {
+  --tui-avatar-group-ring: var(--tui-paper);
+  --tui-avatar-group-overlap: 0.25;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  /* 안쪽 z-index 가 바깥 쌓임 맥락으로 새지 않게 한다. */
+  isolation: isolate;
+}
+
+/* 겹침은 아바타 크기에 비례한다 — 고정 px 는 sm 에서 과하고 lg 에서 모자란다. */
+.sm { --tui-avatar-group-size: 32px; }
+.md { --tui-avatar-group-size: 40px; }
+.lg { --tui-avatar-group-size: 48px; }
+
+.tight { --tui-avatar-group-overlap: 0.4; }
+
+/* ── Items ──
+   Avatar 자신의 클래스(다른 모듈)와 명시도가 같아지지 않도록 그룹을 앞에 둔다. */
+.group > .item {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.group > .item:not(:first-child) {
+  margin-inline-start: calc(var(--tui-avatar-group-size) * var(--tui-avatar-group-overlap) * -1);
+}
+
+.group .ring {
+  box-shadow: 0 0 0 2px var(--tui-avatar-group-ring);
+}
+
+/* ── "+N" tile — 이니셜 아바타와 같은 면·글자 규칙 ── */
+.tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: var(--tui-avatar-group-size);
+  height: var(--tui-avatar-group-size);
+  background-color: var(--tui-field);
+  color: var(--tui-ink-2);
+  font-family: var(--tui-font-sans);
+  font-weight: var(--tui-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  user-select: none;
+}
+
+.sm .tile { font-size: var(--tui-font-size-micro); }
+.md .tile { font-size: var(--tui-font-size-caption); }
+.lg .tile { font-size: var(--tui-font-size-small); }
+
+.circle { border-radius: var(--tui-radius-full); }
+.square { border-radius: var(--tui-radius-control); }
+
+/* 강제 색상 모드는 box-shadow 를 지운다. 테두리로 겹친 경계를 남긴다. */
+@media (forced-colors: active) {
+  .group .ring { outline: 1px solid Canvas; }
+}

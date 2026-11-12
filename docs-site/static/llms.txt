@@ -12,6 +12,7 @@
 ## Components
 
 - [ActionSheet](https://trustspirit.github.io/trust-ui-react/docs/components/action-sheet): A pre-styled action picker built on top of BottomSheet. Renders a vertical list of buttons with optional title and Cancel — modeled after iOS UIActionSheet. Use it when the user needs to pick one action from a short list (3-6 items), typically as a "more actions" or "share" picker.
+- [AvatarGroup](https://trustspirit.github.io/trust-ui-react/docs/components/avatar-group): Stacks avatars so they overlap, and collapses the ones that do not fit into a "+N" tile.
 - [Avatar](https://trustspirit.github.io/trust-ui-react/docs/components/avatar): Displays a user image, initials fallback, or a default icon.
 - [Badge](https://trustspirit.github.io/trust-ui-react/docs/components/badge): A small label used to highlight status, counts, or categories.
 - [Banner](https://trustspirit.github.io/trust-ui-react/docs/components/banner): A persistent message at the top of a page or section. Unlike a Toast, it stays until the condition it describes is resolved or the user dismisses it.
@@ -20,6 +21,8 @@
 - [Breadcrumbs](https://trustspirit.github.io/trust-ui-react/docs/components/breadcrumbs): Shows where the current page sits in a hierarchy and links back to each ancestor.
 - [Button](https://trustspirit.github.io/trust-ui-react/docs/components/button): A clickable button with multiple variants, sizes, shapes, and loading state.
 - [Calendar](https://trustspirit.github.io/trust-ui-react/docs/components/calendar): A standalone calendar grid used internally by DatePicker and DateRangePicker. Can also be used independently to display a month view.
+- [Card](https://trustspirit.github.io/trust-ui-react/docs/components/card): A surface for one discrete item: an account, a report, a plan. A card can be a plain container, a single link or button, a container with a stretched title link, or a selectable option.
+- [Carousel](https://trustspirit.github.io/trust-ui-react/docs/components/carousel): Horizontally swipeable slides. The track is a native scroll container with CSS scroll snapping, so touch momentum, trackpads and keyboard scrolling behave as they do everywhere else on the platform. JavaScript only tracks the current slide and scrolls for the buttons.
 - [Checkbox](https://trustspirit.github.io/trust-ui-react/docs/components/checkbox): A toggle control that allows users to select one or more options.
 - [Chip](https://trustspirit.github.io/trust-ui-react/docs/components/chip): A compact element for tags, filters, or selections. Supports delete and click actions.
 - [Combobox](https://trustspirit.github.io/trust-ui-react/docs/components/combobox): A searchable single-select where the user types freely and picks from a filtered list. Use it for long or server-backed lists; for a short static list, Select with searchable is enough.
@@ -33,7 +36,9 @@
 - [Field](https://trustspirit.github.io/trust-ui-react/docs/components/field): A low-level shell that gives any custom control a label, helper text, a required marker and an error message, with the ARIA wiring done for you. NumberInput, Combobox and TimeInput are built on it. Reach for it when you wrap a control the library does not provide.
 - [FileUpload](https://trustspirit.github.io/trust-ui-react/docs/components/file-upload): A file upload component with drag-and-drop support, file validation, and preview functionality.
 - [Grid](https://trustspirit.github.io/trust-ui-react/docs/components/grid): A CSS grid layout primitive. By default it is responsive without media queries: it fits as many columns as the container allows and collapses to a single column when space runs out.
+- [IconButton](https://trustspirit.github.io/trust-ui-react/docs/components/icon-button): A button that shows only an icon. It takes the same variants, sizes and shapes as Button, and always requires a text label.
 - [KeyboardAvoidingView](https://trustspirit.github.io/trust-ui-react/docs/components/keyboard-avoiding-view): A container that adds bottom padding equal to the on-screen keyboard height when the keyboard is open. Use it for chat input rows, multi-step forms, and any layout that must stay visible above the keyboard.
+- [List](https://trustspirit.github.io/trust-ui-react/docs/components/list): Rows for settings screens, menus that are pages, and simple collections. It is the narrow-screen counterpart of a table: one item per row, a title, an optional description, and a slot at each end.
 - [Menu](https://trustspirit.github.io/trust-ui-react/docs/components/menu): A dropdown menu triggered by a button click. Supports keyboard navigation, disabled items, and dividers.
 - [NumberInput](https://trustspirit.github.io/trust-ui-react/docs/components/number-input): A numeric field with keyboard stepping, range clamping and optional locale formatting. The value is a number (or null when empty), not a string.
 - [Pagination](https://trustspirit.github.io/trust-ui-react/docs/components/pagination): Navigation controls for paging through data. Supports numbered pages and a simple previous/next variant.
@@ -53,6 +58,7 @@
 - [Switch](https://trustspirit.github.io/trust-ui-react/docs/components/switch): A toggle switch for binary on/off states.
 - [Table](https://trustspirit.github.io/trust-ui-react/docs/components/table): A data table with sorting, custom cell rendering, a total row, and a narrow-viewport summary layout.
 - [Tabs](https://trustspirit.github.io/trust-ui-react/docs/components/tabs): Organizes content into tabbed sections. Supports underline and pill variants with keyboard navigation.
+- [TextArea](https://trustspirit.github.io/trust-ui-react/docs/components/text-area): A multi-line text input that grows with its content, with an optional character counter. It shares its label, helper text, error wiring and surface with the other fields.
 - [TextField](https://trustspirit.github.io/trust-ui-react/docs/components/text-field): A versatile text input supporting labels, helper text, validation, passwords, multiline, and number formatting.
 - [TimeInput](https://trustspirit.github.io/trust-ui-react/docs/components/time-input): A time-of-day field. The value is always a 24-hour 'HH:mm' string (or null), whatever clock is displayed.
 - [Toast](https://trustspirit.github.io/trust-ui-react/docs/components/toast): A notification message that appears temporarily to provide feedback about an action.

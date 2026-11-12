@@ -21,8 +21,11 @@ const sidebars: SidebarsConfig = {
           label: 'Basic',
           items: [
             'components/button',
+            'components/icon-button',
+            'components/card',
             'components/badge',
             'components/avatar',
+            'components/avatar-group',
             'components/chip',
             'components/progress',
             'components/tooltip',
@@ -39,6 +42,7 @@ const sidebars: SidebarsConfig = {
             'components/select',
             'components/slider',
             'components/file-upload',
+            'components/text-area',
             'components/number-input',
             'components/combobox',
             'components/time-input',
@@ -56,6 +60,8 @@ const sidebars: SidebarsConfig = {
             'components/toast',
             'components/menu',
             'components/table',
+            'components/list',
+            'components/carousel',
           ],
         },
         {

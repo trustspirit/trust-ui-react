@@ -120,11 +120,26 @@ export type { EmptyStateProps } from './components/EmptyState';
 export { StatusDot } from './components/StatusDot';
 export type { StatusDotProps } from './components/StatusDot';
 
+// Surfaces & actions
+export { Card } from './components/Card';
+export type { CardProps, CardHeaderProps, CardContentProps, CardFooterProps, CardMediaProps } from './components/Card';
+export { IconButton } from './components/IconButton';
+export type { IconButtonProps } from './components/IconButton';
+export { AvatarGroup } from './components/AvatarGroup';
+export type { AvatarGroupProps } from './components/AvatarGroup';
+
+export { List } from './components/List';
+export type { ListProps, ListItemProps, ListSectionProps } from './components/List';
+export { Carousel } from './components/Carousel';
+export type { CarouselProps, CarouselSlideProps } from './components/Carousel';
+
 // Form building blocks
 export { VisuallyHidden } from './components/VisuallyHidden';
 export type { VisuallyHiddenProps } from './components/VisuallyHidden';
 export { Field, fieldSurfaceClassName } from './components/Field';
 export type { FieldProps, FieldControlProps, FieldMeta, FieldSurfaceOptions } from './components/Field';
+export { TextArea } from './components/TextArea';
+export type { TextAreaProps } from './components/TextArea';
 export { NumberInput } from './components/NumberInput';
 export type { NumberInputProps } from './components/NumberInput';
 export { Combobox } from './components/Combobox';

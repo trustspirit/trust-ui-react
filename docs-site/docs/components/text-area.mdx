@@ -1,0 +1,163 @@
+---
+sidebar_position: 61
+title: TextArea
+---
+
+import { TextArea } from 'trust-ui-react';
+import { ComponentPreview } from '@site/src/components/ComponentPreview';
+import { PropsTable } from '@site/src/components/PropsTable';
+
+# TextArea
+
+A multi-line text input that grows with its content, with an optional character counter. It shares its label, helper text, error wiring and surface with the other fields.
+
+## Basic Usage
+
+<ComponentPreview code={`<TextArea label="Message" placeholder="Write a message" />`}>
+  <TextArea label="Message" placeholder="Write a message" />
+</ComponentPreview>
+
+## Variants
+
+<ComponentPreview code={`<TextArea variant="outlined" label="Outlined" />
+<TextArea variant="filled" label="Filled" />`}>
+  <TextArea variant="outlined" label="Outlined" />
+  <TextArea variant="filled" label="Filled" />
+</ComponentPreview>
+
+## Sizes
+
+<ComponentPreview code={`<TextArea size="sm" label="Small" />
+<TextArea size="md" label="Medium" />
+<TextArea size="lg" label="Large" />`}>
+  <TextArea size="sm" label="Small" />
+  <TextArea size="md" label="Medium" />
+  <TextArea size="lg" label="Large" />
+</ComponentPreview>
+
+## Auto resize
+
+By default the textarea starts at `rows` lines, grows with its content up to `maxRows`, and scrolls after that.
+
+<ComponentPreview code={`<TextArea
+  label="Notes"
+  helperText="Starts at 2 lines, scrolls after 6"
+  rows={2}
+  maxRows={6}
+  fullWidth
+/>`}>
+  <TextArea
+    label="Notes"
+    helperText="Starts at 2 lines, scrolls after 6"
+    rows={2}
+    maxRows={6}
+    fullWidth
+  />
+</ComponentPreview>
+
+With `autoResize={false}` the height is fixed at `rows` and the user can drag the corner to resize it vertically.
+
+<ComponentPreview code={`<TextArea label="Notes" autoResize={false} rows={4} fullWidth />`}>
+  <TextArea label="Notes" autoResize={false} rows={4} fullWidth />
+</ComponentPreview>
+
+## Character count
+
+Setting `maxLength` shows a counter. Pass `showCount={false}` to keep the limit without the counter.
+
+<ComponentPreview code={`<TextArea
+  label="Bio"
+  helperText="Shown on your public profile"
+  maxLength={80}
+  defaultValue="Keep it short."
+  fullWidth
+/>`}>
+  <TextArea
+    label="Bio"
+    helperText="Shown on your public profile"
+    maxLength={80}
+    defaultValue="Keep it short."
+    fullWidth
+  />
+</ComponentPreview>
+
+The browser stops typing at `maxLength`, but a value that arrives from elsewhere (a saved draft, a controlled value) can be longer. The counter then turns to the danger colour and the field is marked invalid.
+
+<ComponentPreview code={`<TextArea
+  label="Summary"
+  maxLength={20}
+  defaultValue="This draft is longer than the limit."
+  fullWidth
+/>`}>
+  <TextArea
+    label="Summary"
+    maxLength={20}
+    defaultValue="This draft is longer than the limit."
+    fullWidth
+  />
+</ComponentPreview>
+
+## Error State
+
+<ComponentPreview code={`<TextArea label="Reason" required errorMessage="Tell us why you are cancelling" />`}>
+  <TextArea label="Reason" required errorMessage="Tell us why you are cancelling" />
+</ComponentPreview>
+
+## Value
+
+`onChange` receives the native change event; `onValueChange` receives the text.
+
+```tsx
+const [value, setValue] = useState('');
+
+<TextArea label="Message" value={value} onValueChange={setValue} />
+```
+
+## Accessibility
+
+- A native `textarea` named by its `label`. `hideLabel` hides the label visually but keeps it as the name.
+- Helper text or the error message is linked with `aria-describedby`; the error state sets `aria-invalid`. The error element is a polite live region.
+- The counter is part of the description, so it is read when the field receives focus. A separate polite live region announces the remaining characters only when the text is within the last 20% of the limit (at most 10 characters) or over it, so it does not speak on every keystroke. Override the sentence with `countAnnouncement`.
+- The count does not change in the middle of an IME composition; it updates when the composition ends.
+- `required` sets the native attribute and `aria-required`; the asterisk is decorative.
+
+| Key | Action |
+| --- | --- |
+| `Enter` | Insert a line break |
+| `Tab` | Move focus out of the field |
+
+## Mobile
+
+- The `md` size uses `--tui-font-size-base`, which is 16px on touch devices, and `sm` keeps a 16px minimum there, so iOS does not zoom the page on focus.
+- Auto resize measures once per change of value or width. The field never grows beyond `maxRows`, so it cannot push the submit button off screen under the on-screen keyboard; pair it with `KeyboardAvoidingView` in full-screen forms.
+- The resize handle of `autoResize={false}` is hard to grab on touch. Prefer the default there.
+
+## Props
+
+<PropsTable props={[
+  { name: 'label', type: 'ReactNode', required: true, description: 'Label displayed above the textarea' },
+  { name: 'value', type: 'string', description: 'Controlled value' },
+  { name: 'defaultValue', type: 'string', description: 'Initial value (uncontrolled)' },
+  { name: 'onChange', type: '(event: ChangeEvent<HTMLTextAreaElement>) => void', description: 'Native change event handler' },
+  { name: 'onValueChange', type: '(value: string) => void', description: 'Called with the new text' },
+  { name: 'rows', type: 'number', default: '3', description: 'Number of visible lines when empty (the minimum height)' },
+  { name: 'autoResize', type: 'boolean', default: 'true', description: 'Grows with the content up to maxRows, then scrolls. When false the user can resize vertically' },
+  { name: 'maxRows', type: 'number', default: '8', description: 'Maximum number of lines before the textarea scrolls' },
+  { name: 'maxLength', type: 'number', description: 'Maximum number of characters' },
+  { name: 'showCount', type: 'boolean', description: 'Shows the character counter. Defaults to true when maxLength is set' },
+  { name: 'countAnnouncement', type: '(count: number, max: number) => string', description: 'Text announced when the count is close to or over the limit' },
+  { name: 'helperText', type: 'ReactNode', description: 'Helper text displayed below the textarea' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Whether the field is in error state' },
+  { name: 'errorMessage', type: 'ReactNode', description: 'Error message displayed below the textarea' },
+  { name: 'required', type: 'boolean', default: 'false', description: 'Whether the field is required (shows an asterisk)' },
+  { name: 'disabled', type: 'boolean', default: 'false', description: 'Whether the field is disabled' },
+  { name: 'readOnly', type: 'boolean', default: 'false', description: 'Whether the text can be read but not changed' },
+  { name: 'hideLabel', type: 'boolean', default: 'false', description: 'Hides the label visually. It remains the accessible name' },
+  { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Size of the field' },
+  { name: 'variant', type: "'outlined' | 'filled'", default: "'outlined'", description: 'Visual variant' },
+  { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Stretches the field to fill its container' },
+  { name: 'className', type: 'string', description: 'Additional CSS class (on the field container)' },
+  { name: 'style', type: 'CSSProperties', description: 'Inline styles (on the field container)' },
+]} />
+
+Other native `textarea` attributes (`name`, `placeholder`, `autoComplete`, `onBlur` …) and the `ref` are passed to the `textarea` element.

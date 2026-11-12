@@ -2,7 +2,7 @@
 
 A lightweight, themeable React UI component library built with TypeScript and CSS Modules.
 
-`trust-ui-react` provides 48 production-ready components with built-in dark/light mode support, CSS Custom Properties for easy theming, and full TypeScript type definitions. Every component is designed with accessibility in mind and follows consistent API patterns.
+`trust-ui-react` provides 54 production-ready components with built-in dark/light mode support, CSS Custom Properties for easy theming, and full TypeScript type definitions. Every component is designed with accessibility in mind and follows consistent API patterns.
 
 **[Documentation & Live Examples](https://trustspirit.github.io/trust-ui-react/)**
 
@@ -10,7 +10,7 @@ A lightweight, themeable React UI component library built with TypeScript and CS
 
 ## Features
 
-- **48 ready-to-use components** -- buttons, forms, file upload, data display, dialogs, date pickers, mobile primitives, and more
+- **54 ready-to-use components** -- buttons, forms, file upload, data display, dialogs, date pickers, mobile primitives, and more
 - **Dark / Light mode** -- toggle themes via `data-theme` attribute with `ThemeProvider`
 - **CSS Custom Properties** -- all visual tokens (`--tui-*`) are overridable for full brand customization
 - **TypeScript first** -- every component exports its prop types for a great DX
@@ -144,6 +144,17 @@ export default App;
 | `BottomNav` | Mobile bottom navigation bar |
 | `Stepper` | Progress through numbered steps |
 | `Breadcrumbs` | Trail of links to the current page |
+
+### Added in 2.3
+
+| Component | Description |
+| --------- | ----------- |
+| `Card` | Surface for a discrete item; can be a link, a button or a selectable option |
+| `IconButton` | Icon-only button with a required accessible name |
+| `AvatarGroup` | Overlapping avatars with a "+N" overflow |
+| `List` | Rows for settings screens and simple collections |
+| `TextArea` | Multi-line input that grows with its content, with a character count |
+| `Carousel` | Swipeable slides built on native scroll snapping |
 
 `LocaleProvider` sets the language (`en`, `ko`) of the strings components produce themselves. See the [documentation](https://trustspirit.github.io/trust-ui-react/) for each component.
 
