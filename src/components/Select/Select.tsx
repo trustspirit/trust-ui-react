@@ -55,6 +55,8 @@ export interface SelectProps {
   style?: React.CSSProperties;
   /** Renders the dropdown open on mount (uncontrolled). 표면 자체를 캡처하는 스토리용. */
   defaultOpen?: boolean;
+  /** Accessible name when there is no visible `label`. */
+  'aria-label'?: string;
 }
 
 function ChevronIcon() {
@@ -133,10 +135,16 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       className,
       style,
       defaultOpen = false,
+      'aria-label': ariaLabel,
     },
     ref,
   ) => {
-    const listboxId = useId();
+    const baseId = useId();
+    const listboxId = `${baseId}-listbox`;
+    const labelId = `${baseId}-label`;
+    const errorId = `${baseId}-error`;
+    const nativeId = `${baseId}-native`;
+    const optionId = (index: number) => `${baseId}-opt-${index}`;
     const isTouchDevice = useTouchDevice();
     // Use native <select> on touch devices for simple single selects
     const useNative = isTouchDevice && !multiple && !searchable;
@@ -156,7 +164,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
 
     // Detect if Select is inside a <dialog> (showModal creates a top-layer that blocks portals to body)
-    const getPortalContainer = useCallback(() => {
+    const getPortalContainer = useCallback((): HTMLElement | null => {
+      if (typeof document === 'undefined') return null; // SSR + defaultOpen
       const dialog = triggerRef.current?.closest('dialog');
       return dialog || document.body;
     }, []);
@@ -184,7 +193,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       if (!triggerRef.current) return;
       const rect = triggerRef.current.getBoundingClientRect();
       const container = getPortalContainer();
-      if (container !== document.body) {
+      if (container && container !== document.body) {
         // Inside a <dialog>: use absolute positioning relative to the dialog
         const containerRect = container.getBoundingClientRect();
         setDropdownStyle({
@@ -289,7 +298,9 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
       // Mobile sheet handles its own scrolling — skip scroll/resize listeners
       if (useMobileSheet) return;
 
-      const handleScroll = () => {
+      const handleScroll = (e: Event) => {
+        // 캡처 단계라 옵션 목록 자신의 스크롤도 여기로 온다. 그건 닫을 이유가 아니다.
+        if (dropdownRef.current?.contains(e.target as Node)) return;
         if (isTouchDevice) {
           closeDropdown();
         } else {
@@ -322,6 +333,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
           }
           onChange?.(optionValue);
           closeDropdown();
+          // 검색 input 이 포커스를 가진 채 언마운트되면 포커스가 body 로 떨어진다.
+          triggerRef.current?.focus();
         }
       },
       [multiple, selectedValues, isControlled, onChange, closeDropdown],
@@ -331,18 +344,24 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     const handleChipRemove = useCallback(
       (optionValue: string, e: React.MouseEvent) => {
         e.stopPropagation();
+        if (disabled) return;
         const newValues = selectedValues.filter((v) => v !== optionValue);
         if (!isControlled) {
           setInternalValue(newValues);
         }
         onChange?.(newValues);
       },
-      [selectedValues, isControlled, onChange],
+      [selectedValues, isControlled, onChange, disabled],
     );
 
     // Keyboard navigation
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement | HTMLInputElement>) => {
       if (disabled) return;
+      // 트리거 안의 칩 삭제 버튼에서 올라온 키는 그 버튼의 것이다.
+      if (e.target !== e.currentTarget) return;
+      // 한글 등 IME 조합 중의 keydown 은 조합기가 소비한다. 탐색으로 처리하면
+      // 조합 종료 뒤 같은 키가 한 번 더 와서 두 칸씩 움직인다.
+      if (e.nativeEvent.isComposing || e.keyCode === 229) return;
       // When invoked from the search input, Space must reach the input so the
       // user can type spaces in their query. Only Enter / Escape / Arrows
       // are treated as navigation keys there.
@@ -399,15 +418,24 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
           }
           break;
         case 'Escape':
+          // 닫혀 있을 때는 가로채지 않는다. 바깥 Dialog 가 Escape 로 닫혀야 한다.
+          if (!isOpen) break;
           e.preventDefault();
           closeDropdown();
           triggerRef.current?.focus();
           break;
         case 'Tab':
+          // 검색 input 에서 Tab 을 누르면 트리거 기준으로 다음 요소로 가야 한다.
+          if (fromSearchInput) triggerRef.current?.focus();
           closeDropdown();
           break;
       }
     };
+
+    const activeDescendant =
+      isOpen && highlightedIndex >= 0 && highlightedIndex < filteredOptions.length
+        ? optionId(highlightedIndex)
+        : undefined;
 
     // Get display label for selected value
     const getLabel = (val: string) =>
@@ -434,6 +462,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
                   type="button"
                   className={styles.chipRemove}
                   onClick={(e) => handleChipRemove(val, e)}
+                  disabled={disabled}
                   aria-label={`Remove ${getLabel(val)}`}
                 >
                   <CloseIcon />
@@ -484,6 +513,8 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     // Render the mobile bottom sheet for searchable selects on touch devices
     const renderMobileSheet = () => {
       if (!useMobileSheet || !isOpen) return null;
+      const container = getPortalContainer();
+      if (!container) return null;
 
       return createPortal(
         <div
@@ -493,37 +524,43 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
             if (e.target === e.currentTarget) closeDropdown();
           }}
         >
-          <div
-            ref={dropdownRef}
-            className={styles.mobileSheet}
-            role="listbox"
-            id={listboxId}
-            aria-multiselectable={multiple || undefined}
-          >
+          <div ref={dropdownRef} className={styles.mobileSheet}>
             <div className={styles.mobileSheetHandle} />
             <div className={styles.mobileSheetSearch}>
               <input
                 ref={searchInputRef}
                 className={styles.mobileSheetSearchInput}
                 type="text"
+                role="searchbox"
+                aria-label="Search options"
+                aria-controls={listboxId}
+                aria-activedescendant={activeDescendant}
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
                   setHighlightedIndex(-1);
                 }}
+                onKeyDown={handleKeyDown}
                 autoFocus
               />
             </div>
-            <div className={styles.mobileSheetOptions}>
+            <div
+              className={styles.mobileSheetOptions}
+              role="listbox"
+              id={listboxId}
+              aria-labelledby={label ? labelId : undefined}
+              aria-multiselectable={multiple || undefined}
+            >
               {filteredOptions.length === 0 ? (
                 <div className={styles.mobileNoResults}>No options found</div>
               ) : (
-                filteredOptions.map((option) => {
+                filteredOptions.map((option, index) => {
                   const isSelected = selectedValues.includes(option.value);
                   const optClassNames = [
                     styles.mobileOption,
                     isSelected ? styles.mobileOptionSelected : '',
+                    index === highlightedIndex ? styles.optionHighlighted : '',
                     option.disabled ? styles.mobileOptionDisabled : '',
                   ]
                     .filter(Boolean)
@@ -532,6 +569,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
                   return (
                     <div
                       key={option.value}
+                      id={optionId(index)}
                       role="option"
                       aria-selected={isSelected}
                       aria-disabled={option.disabled || undefined}
@@ -557,29 +595,28 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
             </div>
           </div>
         </div>,
-        document.body,
+        container,
       );
     };
 
     // Render the desktop dropdown (non-touch or non-searchable custom dropdown)
     const renderDesktopDropdown = () => {
       if (useNative || useMobileSheet || !isOpen) return null;
+      const container = getPortalContainer();
+      if (!container) return null;
 
       return createPortal(
-        <div
-          ref={dropdownRef}
-          className={styles.dropdown}
-          style={dropdownStyle}
-          role="listbox"
-          id={listboxId}
-          aria-multiselectable={multiple || undefined}
-        >
+        <div ref={dropdownRef} className={styles.dropdown} style={dropdownStyle}>
           {searchable && (
             <div className={styles.searchWrapper}>
               <input
                 ref={searchInputRef}
                 className={styles.searchInput}
                 type="text"
+                role="searchbox"
+                aria-label="Search options"
+                aria-controls={listboxId}
+                aria-activedescendant={activeDescendant}
                 placeholder="Search..."
                 value={searchQuery}
                 onChange={(e) => {
@@ -590,7 +627,14 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
               />
             </div>
           )}
-          <div className={styles.optionsList}>
+          {/* 검색 input 은 listbox 의 자식이 될 수 없다. 역할은 옵션 목록에만 준다. */}
+          <div
+            className={styles.optionsList}
+            role="listbox"
+            id={listboxId}
+            aria-labelledby={label ? labelId : undefined}
+            aria-multiselectable={multiple || undefined}
+          >
             {filteredOptions.length === 0 ? (
               <div className={styles.noResults}>No options found</div>
             ) : (
@@ -608,6 +652,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
                 return (
                   <div
                     key={option.value}
+                    id={optionId(index)}
                     role="option"
                     aria-selected={isSelected}
                     aria-disabled={option.disabled || undefined}
@@ -635,7 +680,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
             )}
           </div>
         </div>,
-        getPortalContainer(),
+        container,
       );
     };
 
@@ -650,7 +695,15 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     return (
       <div ref={ref} className={containerClassNames} style={style}>
         {label && (
-          <label className={labelClassNames}>
+          <label
+            id={labelId}
+            className={labelClassNames}
+            // 네이티브 select 는 htmlFor 로 연결한다. 커스텀 콤보박스는 label 이
+            // 가리킬 수 있는 요소가 아니므로 aria-labelledby 로 잇고, 클릭 시
+            // 포커스만 옮겨 준다.
+            htmlFor={useNative ? nativeId : undefined}
+            onClick={useNative ? undefined : () => triggerRef.current?.focus()}
+          >
             {label}
             {required && <span className={styles.requiredAsterisk}> *</span>}
           </label>
@@ -661,6 +714,12 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
           aria-expanded={useNative ? undefined : isOpen}
           aria-haspopup={useNative ? undefined : 'listbox'}
           aria-controls={useNative ? undefined : (isOpen ? listboxId : undefined)}
+          aria-labelledby={useNative || !label ? undefined : labelId}
+          aria-label={useNative || label ? undefined : ariaLabel}
+          aria-describedby={useNative || !errorMessage ? undefined : errorId}
+          aria-invalid={useNative ? undefined : isError || undefined}
+          aria-required={useNative ? undefined : required || undefined}
+          aria-activedescendant={useNative || searchable ? undefined : activeDescendant}
           aria-disabled={disabled || undefined}
           tabIndex={useNative ? -1 : (disabled ? -1 : 0)}
           className={triggerClassNames}
@@ -677,7 +736,11 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
               value={singleValue || ''}
               onChange={handleNativeChange}
               disabled={disabled}
-              aria-label={placeholder}
+              id={nativeId}
+              required={required}
+              aria-label={label ? undefined : (ariaLabel ?? placeholder)}
+              aria-describedby={errorMessage ? errorId : undefined}
+              aria-invalid={isError || undefined}
             >
               {!singleValue && <option value="" disabled>{placeholder}</option>}
               {options.map((opt) => (
@@ -690,7 +753,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
         </div>
 
         {errorMessage && (
-          <p className={styles.errorMessage} role="alert">
+          <p className={styles.errorMessage} id={errorId} role="alert">
             {errorMessage}
           </p>
         )}
