@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import styles from './Chip.module.css';
+import { useMessages } from '../../providers/LocaleProvider';
 
 export interface ChipProps {
   /** Visual fill style */
@@ -48,6 +49,7 @@ export function Chip({
   style,
 }: ChipProps) {
   // Map public variant names to internal CSS class names
+  const t = useMessages();
   const cssVariant =
     variant === 'solid' ? 'filled' : variant === 'outline' ? 'outlined' : variant;
 
@@ -90,7 +92,7 @@ export function Chip({
             e.stopPropagation();
             onDelete();
           }}
-          aria-label="Remove"
+          aria-label={t.chip.remove}
         >
           <DeleteIcon />
         </button>

@@ -15,6 +15,7 @@ import { formatDate, getMonthLabel, isDateInRange, parseDateInputValue } from '.
 import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
 import { Dialog } from '../Dialog';
 import { useAnchoredLayer } from '../../hooks/useAnchoredLayer';
+import { useMessages } from '../../providers/LocaleProvider';
 
 export interface DateRange {
   start: Date | null;
@@ -203,6 +204,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
     const isError = error || !!errorMessage;
 
     const fieldId = useId();
+    const t = useMessages();
     const labelId = `${fieldId}-label`;
     const errorId = `${fieldId}-error`;
     const nativeId = `${fieldId}-native`;
@@ -497,7 +499,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
               min={minDate ? formatDate(minDate, 'yyyy-MM-dd') : undefined}
               max={maxDate ? formatDate(maxDate, 'yyyy-MM-dd') : undefined}
               disabled={disabled}
-              aria-label="Start date"
+              aria-label={t.dateRangePicker.startDate}
             />
             <input
               type="date"
@@ -514,7 +516,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
               min={startStr || (minDate ? formatDate(minDate, 'yyyy-MM-dd') : undefined)}
               max={maxDate ? formatDate(maxDate, 'yyyy-MM-dd') : undefined}
               disabled={disabled}
-              aria-label="End date"
+              aria-label={t.dateRangePicker.endDate}
             />
           </div>
           {errorMessage && (
@@ -581,7 +583,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
                   type="button"
                   className={styles.navButton}
                   onClick={goToPrevMobileMonth}
-                  aria-label="Previous month"
+                  aria-label={t.dateRangePicker.previousMonth}
                 >
                   <ChevronLeftIcon />
                 </button>
@@ -590,13 +592,13 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
                   type="button"
                   className={styles.navButton}
                   onClick={goToNextMobileMonth}
-                  aria-label="Next month"
+                  aria-label={t.dateRangePicker.nextMonth}
                 >
                   <ChevronRightIcon />
                 </button>
               </div>
               <p className={styles.mobileHint}>
-                {mobileStep === 'start' ? 'Select start date' : 'Select end date'}
+                {mobileStep === 'start' ? t.dateRangePicker.selectStartDate : t.dateRangePicker.selectEndDate}
               </p>
               <Calendar
                 currentMonth={mobileMonth}
@@ -686,7 +688,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
               className={styles.popup}
               style={popupStyle}
               role="dialog"
-              aria-label="Date range picker"
+              aria-label={t.dateRangePicker.label}
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
                   e.preventDefault();
@@ -724,7 +726,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
                         e.stopPropagation();
                         goToPrevMonth();
                       }}
-                      aria-label="Previous month"
+                      aria-label={t.dateRangePicker.previousMonth}
                     >
                       <ChevronLeftIcon />
                     </button>
@@ -766,7 +768,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
                         e.stopPropagation();
                         goToNextMonth();
                       }}
-                      aria-label="Next month"
+                      aria-label={t.dateRangePicker.nextMonth}
                     >
                       <ChevronRightIcon />
                     </button>

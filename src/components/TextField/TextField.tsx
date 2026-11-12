@@ -19,6 +19,7 @@ import {
   formatDecimal,
   unformatDecimal,
 } from './formatters';
+import { useMessages } from '../../providers/LocaleProvider';
 
 type InputBaseProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -148,6 +149,7 @@ export const TextField = forwardRef<
     ref,
   ) => {
     const uid = useId();
+    const t = useMessages();
     // 사용자가 id를 직접 넘기면 그 값을 쓴다. label의 htmlFor와 항상 같은 값을 참조해야 하므로
     // rest 스프레드가 뒤에서 덮어쓰지 못하도록 여기서 미리 구조분해해 둔다.
     const inputId = idProp ?? `${uid}-input`;
@@ -344,7 +346,7 @@ export const TextField = forwardRef<
           type="button"
           className={styles.visibilityToggle}
           onClick={() => setShowPassword((prev) => !prev)}
-          aria-label="Show password"
+          aria-label={t.textField.showPassword}
           aria-pressed={showPassword}
         >
           {showPassword ? <EyeOffIcon /> : <EyeIcon />}

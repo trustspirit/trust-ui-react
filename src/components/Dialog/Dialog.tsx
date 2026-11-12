@@ -16,6 +16,7 @@ import {
 import styles from './Dialog.module.css';
 import { BottomSheet } from '../BottomSheet';
 import { acquireScrollLock, releaseScrollLock } from '../../utils/scrollLock';
+import { useMessages } from '../../providers/LocaleProvider';
 
 /* ── Context ── */
 
@@ -312,6 +313,7 @@ function DialogTitle({
   ...rest
 }: DialogTitleProps) {
   const classNames = [styles.title, className].filter(Boolean).join(' ');
+  const t = useMessages();
   const dialog = useContext(DialogContext);
   const registerTitle = dialog?.registerTitle;
 
@@ -332,7 +334,7 @@ function DialogTitle({
           type="button"
           className={styles.closeButton}
           onClick={onClose ?? dialog?.onClose}
-          aria-label="Close dialog"
+          aria-label={t.dialog.close}
         >
           <svg
             width="16"

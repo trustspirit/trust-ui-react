@@ -3,6 +3,7 @@ import type { FileUploadFile } from './types';
 import { formatFileSize } from './utils';
 import { FileIcon, CheckCircleIcon, AlertCircleIcon, CloseIcon } from './icons';
 import styles from './FileUpload.module.css';
+import { useMessages } from '../../providers/LocaleProvider';
 
 const PREVIEWABLE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
@@ -19,6 +20,7 @@ export function FileUploadGridItem({
   disabled,
   renderPreview,
 }: FileUploadGridItemProps) {
+  const t = useMessages();
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   const isPreviewable =
@@ -85,7 +87,7 @@ export function FileUploadGridItem({
               className={styles.removeButton}
               onClick={() => onRemove(file)}
               disabled={disabled}
-              aria-label={`Remove ${file.name}`}
+              aria-label={t.fileUpload.remove(file.name)}
             >
               <CloseIcon />
             </button>
@@ -116,7 +118,7 @@ export function FileUploadGridItem({
             className={styles.gridItemProgress}
             value={file.progress ?? 0}
             max={100}
-            aria-label={`Uploading ${file.name}: ${file.progress ?? 0}%`}
+            aria-label={t.fileUpload.uploading(file.name, file.progress ?? 0)}
           />
         )}
       </div>

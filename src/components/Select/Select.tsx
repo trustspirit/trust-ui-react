@@ -13,6 +13,7 @@ import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
 import { useAnchoredLayer } from '../../hooks/useAnchoredLayer';
 import { getLayerContainer } from '../../utils/anchoredPosition';
 import styles from './Select.module.css';
+import { useMessages } from '../../providers/LocaleProvider';
 
 export interface SelectOption {
   value: string;
@@ -142,6 +143,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
     ref,
   ) => {
     const baseId = useId();
+    const t = useMessages();
     const listboxId = `${baseId}-listbox`;
     const labelId = `${baseId}-label`;
     const errorId = `${baseId}-error`;
@@ -425,7 +427,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
                   className={styles.chipRemove}
                   onClick={(e) => handleChipRemove(val, e)}
                   disabled={disabled}
-                  aria-label={`Remove ${getLabel(val)}`}
+                  aria-label={t.select.remove(getLabel(val))}
                 >
                   <CloseIcon />
                 </button>
@@ -494,10 +496,10 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
                 className={styles.mobileSheetSearchInput}
                 type="text"
                 role="searchbox"
-                aria-label="Search options"
+                aria-label={t.select.search}
                 aria-controls={listboxId}
                 aria-activedescendant={activeDescendant}
-                placeholder="Search..."
+                placeholder={t.select.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -515,7 +517,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
               aria-multiselectable={multiple || undefined}
             >
               {filteredOptions.length === 0 ? (
-                <div className={styles.mobileNoResults}>No options found</div>
+                <div className={styles.mobileNoResults}>{t.select.noOptions}</div>
               ) : (
                 filteredOptions.map((option, index) => {
                   const isSelected = selectedValues.includes(option.value);
@@ -576,10 +578,10 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
                 className={styles.searchInput}
                 type="text"
                 role="searchbox"
-                aria-label="Search options"
+                aria-label={t.select.search}
                 aria-controls={listboxId}
                 aria-activedescendant={activeDescendant}
-                placeholder="Search..."
+                placeholder={t.select.searchPlaceholder}
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
@@ -598,7 +600,7 @@ export const Select = forwardRef<HTMLDivElement, SelectProps>(
             aria-multiselectable={multiple || undefined}
           >
             {filteredOptions.length === 0 ? (
-              <div className={styles.noResults}>No options found</div>
+              <div className={styles.noResults}>{t.select.noOptions}</div>
             ) : (
               filteredOptions.map((option, index) => {
                 const isSelected = selectedValues.includes(option.value);

@@ -7,6 +7,7 @@ import {
   isDateInRange,
   isDateBetween,
 } from './utils';
+import { useMessages } from '../../providers/LocaleProvider';
 
 export interface CalendarProps {
   currentMonth: number; // 0-indexed
@@ -52,6 +53,7 @@ export function Calendar({
   className,
 }: CalendarProps) {
   const gridRef = useRef<HTMLDivElement>(null);
+  const t = useMessages();
   // 부모가 focusedDate 를 관리하지 않을 때 쓰는 내부 포커스 위치.
   const [internalFocus, setInternalFocus] = useState<Date | null>(null);
   const inMonth = (d: Date | null | undefined): d is Date =>
@@ -238,7 +240,7 @@ export function Calendar({
   }
 
   return (
-    <div ref={gridRef} className={classNames} role="grid" aria-label="Calendar">
+    <div ref={gridRef} className={classNames} role="grid" aria-label={t.datePicker.calendar}>
       <div className={styles.weekHeader} role="row">
         {dayLabels.map((label) => (
           <div key={label} className={styles.weekLabel} role="columnheader">

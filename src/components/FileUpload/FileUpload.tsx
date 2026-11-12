@@ -4,6 +4,7 @@ import { formatFileSize } from './utils';
 import { FileUploadFileItem } from './FileUploadFileItem';
 import { FileUploadGridItem } from './FileUploadGridItem';
 import styles from './FileUpload.module.css';
+import { useMessages } from '../../providers/LocaleProvider';
 
 function UploadIcon() {
   return (
@@ -71,6 +72,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
   style,
   mobileVariant = 'dropzone',
 }: FileUploadProps, ref) {
+  const t = useMessages();
   const inputRef = useRef<HTMLInputElement>(null);
   const dragCounterRef = useRef(0);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -93,7 +95,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
           errors.push({
             file,
             type: 'file-invalid-type',
-            message: `File type "${file.type || file.name}" is not accepted`,
+            message: t.fileUpload.typeNotAccepted(file.type || file.name),
           });
           continue;
         }
@@ -103,7 +105,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
           errors.push({
             file,
             type: 'file-too-large',
-            message: `File "${file.name}" exceeds the maximum size of ${formatFileSize(maxFileSize)}`,
+            message: t.fileUpload.tooLarge(file.name, formatFileSize(maxFileSize)),
           });
           continue;
         }
@@ -121,7 +123,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
           errors.push({
             file,
             type: 'too-many-files',
-            message: `Maximum of ${maxFiles} files allowed`,
+            message: t.fileUpload.tooMany(maxFiles),
           });
         }
 
@@ -130,7 +132,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
 
       return { valid, errors };
     },
-    [accept, maxFileSize, maxFiles, fileList],
+    [accept, maxFileSize, maxFiles, fileList, t],
   );
 
   const handleFiles = useCallback(
@@ -303,7 +305,7 @@ export const FileUpload = forwardRef<HTMLDivElement, FileUploadProps>(function F
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           aria-disabled={disabled}
-          aria-label={placeholder || 'Upload files'}
+          aria-label={placeholder || t.fileUpload.label}
         >
           {variant === 'area' && (
             <span className={styles.uploadIcon}>

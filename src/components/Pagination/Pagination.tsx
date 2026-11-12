@@ -1,5 +1,6 @@
 import { useMemo, type CSSProperties } from 'react';
 import styles from './Pagination.module.css';
+import { useMessages } from '../../providers/LocaleProvider';
 
 /* ── Types ── */
 
@@ -104,6 +105,7 @@ export function Pagination({
   className,
   style,
 }: PaginationProps) {
+  const t = useMessages();
   const pages = useMemo(
     () => buildPageRange(totalPages, currentPage, siblingCount),
     [totalPages, currentPage, siblingCount],
@@ -118,7 +120,7 @@ export function Pagination({
 
   if (variant === 'simple') {
     return (
-      <nav aria-label="pagination" className={classNames} style={style}>
+      <nav aria-label={t.pagination.label} className={classNames} style={style}>
         <ul className={styles.list}>
           <li>
             <button
@@ -126,10 +128,10 @@ export function Pagination({
               className={[styles.button, styles.navButton].join(' ')}
               onClick={() => onChange(currentPage - 1)}
               disabled={disabled || isFirst}
-              aria-label="Previous page"
+              aria-label={t.pagination.previousPage}
             >
               <ChevronLeft />
-              <span>Previous</span>
+              <span>{t.pagination.previous}</span>
             </button>
           </li>
           <li>
@@ -143,9 +145,9 @@ export function Pagination({
               className={[styles.button, styles.navButton].join(' ')}
               onClick={() => onChange(currentPage + 1)}
               disabled={disabled || isLast}
-              aria-label="Next page"
+              aria-label={t.pagination.nextPage}
             >
-              <span>Next</span>
+              <span>{t.pagination.next}</span>
               <ChevronRight />
             </button>
           </li>
@@ -155,7 +157,7 @@ export function Pagination({
   }
 
   return (
-    <nav aria-label="pagination" className={classNames} style={style}>
+    <nav aria-label={t.pagination.label} className={classNames} style={style}>
       <ul className={styles.list}>
         <li>
           <button
@@ -163,7 +165,7 @@ export function Pagination({
             className={[styles.button, styles.navButton].join(' ')}
             onClick={() => onChange(currentPage - 1)}
             disabled={disabled || isFirst}
-            aria-label="Previous page"
+            aria-label={t.pagination.previousPage}
           >
             <ChevronLeft />
           </button>
@@ -173,7 +175,7 @@ export function Pagination({
           if (item === 'ellipsis-start' || item === 'ellipsis-end') {
             return (
               <li key={item}>
-                <span className={styles.ellipsis} role="separator" aria-label="more pages">
+                <span className={styles.ellipsis} role="separator" aria-label={t.pagination.morePages}>
                   ...
                 </span>
               </li>
@@ -196,7 +198,7 @@ export function Pagination({
                   .join(' ')}
                 onClick={() => onChange(page)}
                 disabled={disabled}
-                aria-label={`Page ${page}`}
+                aria-label={t.pagination.page(page)}
                 aria-current={isActive ? 'page' : undefined}
               >
                 {page}
@@ -211,7 +213,7 @@ export function Pagination({
             className={[styles.button, styles.navButton].join(' ')}
             onClick={() => onChange(currentPage + 1)}
             disabled={disabled || isLast}
-            aria-label="Next page"
+            aria-label={t.pagination.nextPage}
           >
             <ChevronRight />
           </button>

@@ -16,6 +16,7 @@ import { formatDate, getMonthLabel, isDateInRange, parseDateInputValue } from '.
 import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
 import { Dialog } from '../Dialog';
 import { useAnchoredLayer } from '../../hooks/useAnchoredLayer';
+import { useMessages } from '../../providers/LocaleProvider';
 
 export interface DatePickerProps {
   /** Controlled selected date */
@@ -182,6 +183,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
     const isError = error || !!errorMessage;
 
     const fieldId = useId();
+    const t = useMessages();
     const labelId = `${fieldId}-label`;
     const errorId = `${fieldId}-error`;
     const nativeId = `${fieldId}-native`;
@@ -428,7 +430,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
           )}
           <Dialog open={isOpen} onClose={() => setIsOpen(false)} mobileVariant="fullscreen">
             {/* 제목 줄의 닫기 버튼이 유일한 "고르지 않고 나가기" 수단이다. */}
-            <Dialog.Title>{label ?? 'Select date'}</Dialog.Title>
+            <Dialog.Title>{label ?? t.datePicker.selectDate}</Dialog.Title>
             <div className={styles.navHeader}>
               <button
                 type="button"
@@ -437,7 +439,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                   if (showYearGrid) setYearRangeStart((s) => s - 12);
                   else goToPrevMonth();
                 }}
-                aria-label="Previous"
+                aria-label={t.datePicker.previous}
               >
                 <ChevronLeftIcon />
               </button>
@@ -460,7 +462,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                   if (showYearGrid) setYearRangeStart((s) => s + 12);
                   else goToNextMonth();
                 }}
-                aria-label="Next"
+                aria-label={t.datePicker.next}
               >
                 <ChevronRightIcon />
               </button>
@@ -560,7 +562,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
               className={styles.popup}
               style={popupStyle}
               role="dialog"
-              aria-label="Date picker"
+              aria-label={t.datePicker.label}
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
                   e.preventDefault();
@@ -581,7 +583,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                       goToPrevMonth();
                     }
                   }}
-                  aria-label="Previous"
+                  aria-label={t.datePicker.previous}
                 >
                   <ChevronLeftIcon />
                 </button>
@@ -611,7 +613,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                       goToNextMonth();
                     }
                   }}
-                  aria-label="Next"
+                  aria-label={t.datePicker.next}
                 >
                   <ChevronRightIcon />
                 </button>

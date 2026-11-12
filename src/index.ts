@@ -10,6 +10,9 @@ import './styles/reset.css';
 // Providers
 export { ThemeProvider } from './providers/ThemeProvider';
 export type { Theme, Density, Market, ThemeContextValue } from './providers/ThemeProvider';
+export { LocaleProvider, useMessages } from './providers/LocaleProvider';
+export type { LocaleProviderProps } from './providers/LocaleProvider';
+export type { Messages, MessagesOverride, Locale } from './locales/messages';
 export { ToastProvider } from './providers/ToastProvider';
 export type { ToastPosition, ToastData, ToastContextValue } from './providers/ToastProvider';
 

@@ -20,6 +20,7 @@ import { useTouchDevice } from '../../hooks/touch/useTouchDevice';
 import { ActionSheet } from '../ActionSheet';
 import { useAnchoredLayer } from '../../hooks/useAnchoredLayer';
 import styles from './Menu.module.css';
+import { useMessages } from '../../providers/LocaleProvider';
 
 /** Fragment 로 묶인 자식까지 한 겹으로 펼친다. */
 function flattenChildren(children: ReactNode): ReactNode[] {
@@ -159,6 +160,7 @@ function MenuContent({
   const { open, setOpen, triggerRef, triggerId, mobileVariant } = useMenuContext();
   const isTouch = useTouchDevice();
   const contentRef = useRef<HTMLDivElement>(null);
+  const t = useMessages();
   // 위치·포털 대상·화면 충돌 처리는 공용 훅이 맡는다.
   const layer = useAnchoredLayer({
     open: open && !(mobileVariant === 'sheet' && isTouch),
@@ -279,7 +281,7 @@ function MenuContent({
         open={open}
         onClose={() => setOpen(false)}
         actions={actions}
-        cancelLabel="Cancel"
+        cancelLabel={t.menu.cancel}
       />
     );
   }

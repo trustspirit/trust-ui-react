@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef,
   useState, type CSSProperties } from 'react';
 import styles from './Toast.module.css';
+import { useMessages } from '../../providers/LocaleProvider';
 
 export type ToastVariant = 'success' | 'danger' | 'warning' | 'info';
 
@@ -86,6 +87,7 @@ export function Toast({
   style,
 }: ToastProps) {
   const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const t = useMessages();
   const onCloseRef = useRef(onClose);
   useLayoutEffect(() => {
     onCloseRef.current = onClose;
@@ -144,7 +146,7 @@ export function Toast({
         type="button"
         className={styles.closeButton}
         onClick={onClose}
-        aria-label="Close notification"
+        aria-label={t.toast.close}
       >
         <svg
           width="14"

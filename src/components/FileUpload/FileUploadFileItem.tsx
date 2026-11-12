@@ -2,6 +2,7 @@ import type { FileUploadFile } from './types';
 import { formatFileSize } from './utils';
 import { FileIcon, CheckCircleIcon, AlertCircleIcon, CloseIcon } from './icons';
 import styles from './FileUpload.module.css';
+import { useMessages } from '../../providers/LocaleProvider';
 
 interface FileUploadFileItemProps {
   file: FileUploadFile;
@@ -14,6 +15,7 @@ export function FileUploadFileItem({
   onRemove,
   disabled,
 }: FileUploadFileItemProps) {
+  const t = useMessages();
   const isError = file.status === 'error';
   const isSuccess = file.status === 'success';
   const isUploading = file.status === 'uploading';
@@ -45,7 +47,7 @@ export function FileUploadFileItem({
             className={styles.fileItemProgress}
             value={file.progress ?? 0}
             max={100}
-            aria-label={`Uploading ${file.name}: ${file.progress ?? 0}%`}
+            aria-label={t.fileUpload.uploading(file.name, file.progress ?? 0)}
           />
         )}
 
@@ -69,7 +71,7 @@ export function FileUploadFileItem({
           className={styles.removeButton}
           onClick={() => onRemove(file)}
           disabled={disabled}
-          aria-label={`Remove ${file.name}`}
+          aria-label={t.fileUpload.remove(file.name)}
         >
           <CloseIcon />
         </button>
