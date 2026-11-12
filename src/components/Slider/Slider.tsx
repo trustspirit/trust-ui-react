@@ -1,4 +1,5 @@
-import { forwardRef, useState, useCallback, useMemo } from 'react';
+import { forwardRef, useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import { isRtl } from '../../utils/direction';
 import styles from './Slider.module.css';
 
 export interface SliderProps {
@@ -63,6 +64,21 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
   ) => {
     const [internalValue, setInternalValue] = useState(defaultValue ?? min);
 
+    // range input 은 RTL 에서 최솟값이 오른쪽에 온다. 채움도 그쪽에서 시작해야 한다.
+    const inputRef = useRef<HTMLInputElement | null>(null);
+    const [rtl, setRtl] = useState(false);
+    useEffect(() => {
+      setRtl(isRtl(inputRef.current));
+    });
+    const setRefs = useCallback(
+      (node: HTMLInputElement | null) => {
+        inputRef.current = node;
+        if (typeof ref === 'function') ref(node);
+        else if (ref) (ref as React.MutableRefObject<HTMLInputElement | null>).current = node;
+      },
+      [ref],
+    );
+
     const isControlled = controlledValue !== undefined;
     const currentValue = isControlled ? controlledValue : internalValue;
 
@@ -87,8 +103,8 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
     // 채움 비율을 그라데이션으로 표현한다 — 장식이 아니라 트랙을 채우는 기법이다.
     const trackBackground = useMemo(() => {
       const variantColor = variant === 'primary' ? 'var(--tui-accent)' : 'var(--tui-ink-2)';
-      return `linear-gradient(to right, ${variantColor} 0%, ${variantColor} ${fillPercent}%, var(--tui-rule) ${fillPercent}%, var(--tui-rule) 100%)`;
-    }, [variant, fillPercent]);
+      return `linear-gradient(${rtl ? 'to left' : 'to right'}, ${variantColor} 0%, ${variantColor} ${fillPercent}%, var(--tui-rule) ${fillPercent}%, var(--tui-rule) 100%)`;
+    }, [variant, fillPercent, rtl]);
 
     const containerClassNames = [
       styles.container,
@@ -105,7 +121,7 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
       <div className={containerClassNames} style={style}>
         <div className={styles.sliderWrapper}>
           <input
-            ref={ref}
+            ref={setRefs}
             type="range"
             className={sliderClassNames}
             min={min}
@@ -122,12 +138,8 @@ export const Slider = forwardRef<HTMLInputElement, SliderProps>(
             aria-valuenow={currentValue}
             aria-valuemin={min}
             aria-valuemax={max}
-            style={
-              {
-                background: trackBackground,
-                borderRadius: 'var(--tui-radius-full)',
-              } as React.CSSProperties
-            }
+            // 채움은 트랙 의사 요소가 그린다(Slider.module.css). 값만 넘긴다.
+            style={{ '--tui-slider-track': trackBackground } as React.CSSProperties}
           />
           {showValue && (
             <span className={styles.valueLabel}>{currentValue}</span>

@@ -91,6 +91,15 @@ describe('Slider / Progress', () => {
     expect(slider).toHaveAttribute('name', 'volume');
   });
 
+  // 채움 비율은 input 의 배경이 아니라 트랙이 그린다. input 배경으로 그리면 터치용으로
+  // input 높이를 44px 로 키울 때 채움도 44px 두께가 된다.
+  it('Slider 는 채움 비율을 트랙용 커스텀 프로퍼티로 넘긴다', () => {
+    render(<Slider aria-label="음량" value={25} onChange={() => {}} />);
+    const slider = screen.getByRole('slider') as HTMLInputElement;
+    expect(slider.style.getPropertyValue('--tui-slider-track')).toContain('25%');
+    expect(slider.style.background).toBe('');
+  });
+
   it('Progress 에 이름을 줄 수 있다', () => {
     render(<Progress aria-label="업로드 진행률" value={40} />);
     expect(screen.getByRole('progressbar', { name: '업로드 진행률' })).toBeInTheDocument();

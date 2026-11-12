@@ -20,6 +20,9 @@
 
 /* ── Native range input ── */
 .slider {
+  /* Slider.tsx 가 인라인으로 덮어쓴다. 기본값은 빈 트랙 색이다. */
+  --tui-slider-track: var(--tui-rule);
+
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
@@ -36,13 +39,15 @@
   outline: none;
 }
 
-/* ── Track - WebKit — 여기서 background 를 지정하면 안 된다. 이 의사 요소는
-   자기 자신의 배경을 그리는데, 그러면 Slider.tsx 가 input 자체에 인라인으로
-   건 채움 비율 그라데이션(트랙 쉬는 상태와 같은 --tui-rule 을 빈 구간에
-   쓴다)을 완전히 덮어버려 채워진 부분이 보이지 않는다. 직접 확인한 결과다. ── */
+/* ── Track - WebKit ──
+   WebKit 은 채워진 구간을 따로 그리는 의사 요소가 없다. Slider.tsx 가 채움 비율을
+   담은 배경을 --tui-slider-track 으로 넘기고, 트랙이 그것을 자기 배경으로 그린다.
+   input 자체의 배경으로 그리지 않는 이유: 터치에서 input 높이를 44px 로 키워도
+   채움은 트랙 두께 그대로여야 한다. ── */
 .slider::-webkit-slider-runnable-track {
   width: 100%;
   border-radius: var(--tui-radius-full);
+  background: var(--tui-slider-track);
 }
 
 .sm .slider::-webkit-slider-runnable-track {
@@ -218,6 +223,11 @@
  * 모르는 쪽 때문에 규칙 전체를 버린다.
  */
 @media (pointer: coarse) {
+  /* 썸은 작아도 손가락이 닿는 영역은 44px 이다. 트랙과 썸은 그 안에서 세로 가운데에 놓인다. */
+  .slider {
+    height: 44px;
+  }
+
   .sm .slider::-webkit-slider-thumb {
     width: 20px;
     height: 20px;
@@ -255,7 +265,7 @@
   color: var(--tui-ink);
   text-align: center;
   min-width: 32px;
-  margin-left: var(--tui-gap-2);
+  margin-inline-start: var(--tui-gap-2);
   flex-shrink: 0;
   font-variant-numeric: tabular-nums;
 }
