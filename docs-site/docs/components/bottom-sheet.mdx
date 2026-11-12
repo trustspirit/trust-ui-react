@@ -57,7 +57,7 @@ export const BasicSheet = () => {
 </BottomSheet>
 ```
 
-This gives a 3-position sheet — peek (25%), default (50%), and fullscreen (90%). The user can drag the handle between any of them. Dragging below the smallest snap (or beyond 50% past it) calls `onClose`.
+This gives a 3-position sheet — peek (25%), default (50%), and fullscreen (90%). The user can drag the handle between any of them. Releasing the sheet with less than 60% of the smallest snap still visible, or flicking it downward while it rests at the smallest snap, calls `onClose`. A downward flick from a taller snap only steps down one position.
 
 ### Picking snap points
 

@@ -101,6 +101,15 @@ export const DisabledDemo = () => {
   <DisabledDemo />
 </ComponentPreview>
 
+## Accessibility
+
+A segmented control picks one value from a few; it has no panels to switch. It is therefore exposed as a `radiogroup` of `radio` buttons rather than tabs. Give the group a name with `aria-label`.
+
+- One tab stop: `Tab` lands on the selected segment.
+- `←` `→` (or `↑` `↓`) select the previous / next segment, wrapping around and skipping disabled ones. `Home` / `End` select the first / last.
+
+For switching between content panels, use [Tabs](./tabs.mdx).
+
 ## When to use which
 
 | Component | Best for |

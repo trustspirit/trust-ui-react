@@ -57,6 +57,22 @@ A standalone calendar grid used internally by DatePicker and DateRangePicker. Ca
   />
 </ComponentPreview>
 
+## Keyboard
+
+The grid has a single tab stop: the selected date, otherwise today, otherwise the first of the month.
+
+| Key | Action |
+|---|---|
+| `←` `→` | Previous / next day |
+| `↑` `↓` | Previous / next week |
+| `Home` `End` | Start / end of the week |
+| `PageUp` `PageDown` | Previous / next month (with `Shift`: year) |
+| `Enter` `Space` | Select the focused date |
+
+Dates outside `minDate` / `maxDate` can receive focus but cannot be selected. Each cell is announced with its full date in the given `locale`.
+
+When you render `Calendar` yourself and want arrow keys to cross month boundaries, pass `focusedDate` and `onFocusedDateChange` and update `currentMonth` / `currentYear` from the date you receive. `DatePicker` and `DateRangePicker` already do this.
+
 ## Mobile considerations
 
 - Day cells scale to a 44×44px minimum on `pointer:coarse` so each date is finger-tappable.

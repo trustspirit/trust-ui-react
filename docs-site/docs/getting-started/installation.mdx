@@ -74,6 +74,29 @@ function App() {
 
 `ThemeProvider` reflects its state onto three attributes on `<html>` — `data-theme`, `data-density`, and `data-market` — which is what every CSS token in the library actually keys off of. All three props are optional; see [Theming](./theming.mdx) for how the axes and layers behind them work, and for switching them at runtime with `useTheme()`.
 
+### Next.js App Router
+
+The bundle starts with `"use client"`, so components can be imported directly from Server Components. Providers hold state, so render them from a Client Component boundary as usual:
+
+```tsx
+// app/providers.tsx
+'use client';
+
+import { ThemeProvider, ToastProvider } from 'trust-ui-react';
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeProvider defaultTheme="light">
+      <ToastProvider>{children}</ToastProvider>
+    </ThemeProvider>
+  );
+}
+```
+
+Pass `defaultTheme` when rendering on the server. Without it the server renders `light` and the browser then follows the system setting, which can differ.
+
+Both ES modules and CommonJS (`require('trust-ui-react')`) are supported.
+
 ## Usage
 
 ```tsx

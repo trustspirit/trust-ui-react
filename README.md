@@ -2,7 +2,7 @@
 
 A lightweight, themeable React UI component library built with TypeScript and CSS Modules.
 
-`trust-ui-react` provides 30 production-ready components with built-in dark/light mode support, CSS Custom Properties for easy theming, and full TypeScript type definitions. Every component is designed with accessibility in mind and follows consistent API patterns.
+`trust-ui-react` provides 48 production-ready components with built-in dark/light mode support, CSS Custom Properties for easy theming, and full TypeScript type definitions. Every component is designed with accessibility in mind and follows consistent API patterns.
 
 **[Documentation & Live Examples](https://trustspirit.github.io/trust-ui-react/)**
 
@@ -10,7 +10,7 @@ A lightweight, themeable React UI component library built with TypeScript and CS
 
 ## Features
 
-- **30 ready-to-use components** -- buttons, forms, file upload, data display, dialogs, date pickers, mobile primitives, and more
+- **48 ready-to-use components** -- buttons, forms, file upload, data display, dialogs, date pickers, mobile primitives, and more
 - **Dark / Light mode** -- toggle themes via `data-theme` attribute with `ThemeProvider`
 - **CSS Custom Properties** -- all visual tokens (`--tui-*`) are overridable for full brand customization
 - **TypeScript first** -- every component exports its prop types for a great DX
@@ -122,6 +122,30 @@ export default App;
 | `Slider`     | Range input with value label, min/max/step support                 |
 | `SegmentedControl` | iOS-style pill control for 2-4 mutually exclusive options      |
 | `FileUpload` | Drag-and-drop file upload with list/grid display, image preview, and validation |
+
+### Added in 2.1
+
+| Component | Description |
+| --------- | ----------- |
+| `Stack`, `HStack`, `VStack` | Flexbox layout with gaps from the spacing scale |
+| `Grid` | CSS grid with fixed or responsive columns that collapse on narrow screens |
+| `Divider` | Horizontal or vertical rule, optionally with a label |
+| `Field` | Label, helper text and error wiring for any custom control |
+| `NumberInput` | Numeric input with stepping, clamping and locale formatting |
+| `Combobox` | Searchable single-select for large or asynchronously loaded lists |
+| `TimeInput` | Segmented time field on desktop, native picker on touch |
+| `VisuallyHidden` | Text for assistive technology only |
+| `Banner` | Persistent message at the top of a page or section |
+| `EmptyState` | Placeholder for an area with no data |
+| `Skeleton`, `Spinner` | Loading placeholders for known and unknown dimensions |
+| `StatusDot` | Small labelled dot for presence or severity |
+| `Popover` | Click-triggered overlay anchored to a trigger; a sheet on touch |
+| `Drawer` | Modal side panel |
+| `BottomNav` | Mobile bottom navigation bar |
+| `Stepper` | Progress through numbered steps |
+| `Breadcrumbs` | Trail of links to the current page |
+
+`LocaleProvider` sets the language (`en`, `ko`) of the strings components produce themselves. See the [documentation](https://trustspirit.github.io/trust-ui-react/) for each component.
 
 ### Feedback
 

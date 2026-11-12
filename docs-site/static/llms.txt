@@ -1,0 +1,74 @@
+# trust-ui-react
+
+> A mobile-optimized, themeable React UI library: CSS Modules, CSS-variable tokens, no runtime styling. Install `trust-ui-react`, import `trust-ui-react/styles.css` once, and import components by name.
+
+## Getting started
+
+- [Installation](https://trustspirit.github.io/trust-ui-react/docs/getting-started/installation): npm install trust-ui-react
+- [Localization](https://trustspirit.github.io/trust-ui-react/docs/getting-started/localization): Some strings are produced by the components themselves rather than passed in by you: accessible names (Close dialog, Next page), empty states (No options found) and built-in button labels. LocaleProvider sets their language.
+- [Migrating from v1](https://trustspirit.github.io/trust-ui-react/docs/getting-started/migration-v1-to-v2): Almost every breaking change between v1 and v2 fails to compile. elevation, gradient, size, variant, zebra, and the mobileVariant="stacked" value are gone from the component types — TypeScript, or your editor, will stop you at every call site that used them. Fix those and you're done with them.
+- [Theming](https://trustspirit.github.io/trust-ui-react/docs/getting-started/theming): trust-ui v2 theming is plain CSS custom properties keyed off a handful of data-* attributes on <html>. There is no runtime color computation — nothing derives a hover shade or a tint from a base color for you. Every state a component can render has to resolve to a token that's actually defined somewhere in the cascade.
+
+## Components
+
+- [ActionSheet](https://trustspirit.github.io/trust-ui-react/docs/components/action-sheet): A pre-styled action picker built on top of BottomSheet. Renders a vertical list of buttons with optional title and Cancel — modeled after iOS UIActionSheet. Use it when the user needs to pick one action from a short list (3-6 items), typically as a "more actions" or "share" picker.
+- [Avatar](https://trustspirit.github.io/trust-ui-react/docs/components/avatar): Displays a user image, initials fallback, or a default icon.
+- [Badge](https://trustspirit.github.io/trust-ui-react/docs/components/badge): A small label used to highlight status, counts, or categories.
+- [Banner](https://trustspirit.github.io/trust-ui-react/docs/components/banner): A persistent message at the top of a page or section. Unlike a Toast, it stays until the condition it describes is resolved or the user dismisses it.
+- [BottomNav](https://trustspirit.github.io/trust-ui-react/docs/components/bottom-nav): A bottom bar for switching between the 2–5 top-level destinations of a mobile app. It is navigation, not a set of tabs: for switching panels inside one screen use Tabs.
+- [BottomSheet](https://trustspirit.github.io/trust-ui-react/docs/components/bottom-sheet): A bottom-anchored modal panel native to mobile UX. Supports multiple snap points, drag-to-resize, swipe-to-dismiss, and backdrop tap dismiss. Use it for filter panels, detail pages, comment lists, action confirmations — anywhere a centered modal would feel out of place on touch.
+- [Breadcrumbs](https://trustspirit.github.io/trust-ui-react/docs/components/breadcrumbs): Shows where the current page sits in a hierarchy and links back to each ancestor.
+- [Button](https://trustspirit.github.io/trust-ui-react/docs/components/button): A clickable button with multiple variants, sizes, shapes, and loading state.
+- [Calendar](https://trustspirit.github.io/trust-ui-react/docs/components/calendar): A standalone calendar grid used internally by DatePicker and DateRangePicker. Can also be used independently to display a month view.
+- [Checkbox](https://trustspirit.github.io/trust-ui-react/docs/components/checkbox): A toggle control that allows users to select one or more options.
+- [Chip](https://trustspirit.github.io/trust-ui-react/docs/components/chip): A compact element for tags, filters, or selections. Supports delete and click actions.
+- [Combobox](https://trustspirit.github.io/trust-ui-react/docs/components/combobox): A searchable single-select where the user types freely and picks from a filtered list. Use it for long or server-backed lists; for a short static list, Select with searchable is enough.
+- [DatePicker](https://trustspirit.github.io/trust-ui-react/docs/components/date-picker): A date input with a popup calendar for selecting a single date. Supports year navigation and date constraints.
+- [DateRangePicker](https://trustspirit.github.io/trust-ui-react/docs/components/date-range-picker): A date input for selecting a range of dates. Displays two side-by-side calendars and supports preset ranges.
+- [Dialog](https://trustspirit.github.io/trust-ui-react/docs/components/dialog): A modal dialog overlay for confirmations, forms, or important content. Built on the native <dialog> element.
+- [Divider](https://trustspirit.github.io/trust-ui-react/docs/components/divider): A hairline that separates sections of content or items in a row.
+- [Drawer](https://trustspirit.github.io/trust-ui-react/docs/components/drawer): A full-height modal panel that slides in from the side of the screen. Use it for detail views, filters and edit forms that should keep the page behind in context. For a short confirmation use Dialog; for a thumb-reachable panel on phones use BottomSheet.
+- [EmptyState](https://trustspirit.github.io/trust-ui-react/docs/components/empty-state): A placeholder for an area that has no data yet — an empty list, a search with no results, a feature that has not been set up.
+- [Expander](https://trustspirit.github.io/trust-ui-react/docs/components/expander): An accordion component for collapsible content sections. Supports single and multiple expansion modes.
+- [Field](https://trustspirit.github.io/trust-ui-react/docs/components/field): A low-level shell that gives any custom control a label, helper text, a required marker and an error message, with the ARIA wiring done for you. NumberInput, Combobox and TimeInput are built on it. Reach for it when you wrap a control the library does not provide.
+- [FileUpload](https://trustspirit.github.io/trust-ui-react/docs/components/file-upload): A file upload component with drag-and-drop support, file validation, and preview functionality.
+- [Grid](https://trustspirit.github.io/trust-ui-react/docs/components/grid): A CSS grid layout primitive. By default it is responsive without media queries: it fits as many columns as the container allows and collapses to a single column when space runs out.
+- [KeyboardAvoidingView](https://trustspirit.github.io/trust-ui-react/docs/components/keyboard-avoiding-view): A container that adds bottom padding equal to the on-screen keyboard height when the keyboard is open. Use it for chat input rows, multi-step forms, and any layout that must stay visible above the keyboard.
+- [Menu](https://trustspirit.github.io/trust-ui-react/docs/components/menu): A dropdown menu triggered by a button click. Supports keyboard navigation, disabled items, and dividers.
+- [NumberInput](https://trustspirit.github.io/trust-ui-react/docs/components/number-input): A numeric field with keyboard stepping, range clamping and optional locale formatting. The value is a number (or null when empty), not a string.
+- [Pagination](https://trustspirit.github.io/trust-ui-react/docs/components/pagination): Navigation controls for paging through data. Supports numbered pages and a simple previous/next variant.
+- [Popover](https://trustspirit.github.io/trust-ui-react/docs/components/popover): A click-triggered overlay anchored to its trigger, for secondary content: an explanation, a short form, a handful of options. It is non-modal — the page behind stays usable. For a list of actions use Menu; for a hover hint use Tooltip; for a task that must be finished or dismissed use Dialog.
+- [Progress](https://trustspirit.github.io/trust-ui-react/docs/components/progress): A horizontal bar that indicates the completion of a task or process.
+- [Radio](https://trustspirit.github.io/trust-ui-react/docs/components/radio): A set of mutually exclusive options. Use RadioGroup to wrap multiple Radio components.
+- [SafeAreaView](https://trustspirit.github.io/trust-ui-react/docs/components/safe-area-view): A layout primitive that applies env(safe-area-inset-*) padding to its edges. Use it at the root of fullscreen mobile screens, custom modals, and any element near the iOS notch (top) or home indicator (bottom).
+- [SegmentedControl](https://trustspirit.github.io/trust-ui-react/docs/components/segmented-control): A compact, equal-width control for switching between 2-4 mutually exclusive options. Inspired by iOS UISegmentedControl — ideal for view toggles, filter sets, and grouped selectors where Radio would feel too loose and Tabs too heavy.
+- [Select](https://trustspirit.github.io/trust-ui-react/docs/components/select): A dropdown component for selecting one or more options from a list. Supports search, multi-select, and keyboard navigation.
+- [Skeleton](https://trustspirit.github.io/trust-ui-react/docs/components/skeleton): A placeholder that mirrors the shape of content while it loads. Use it when you know the layout that is coming (a list row, a card, a paragraph); use Spinner when you do not.
+- [Slider](https://trustspirit.github.io/trust-ui-react/docs/components/slider): A range input for selecting a numeric value within a given range.
+- [Spinner](https://trustspirit.github.io/trust-ui-react/docs/components/spinner): An indeterminate loading indicator for content whose shape or duration is not known. When the layout is known, prefer Skeleton; when progress is measurable, prefer Progress.
+- [Stack](https://trustspirit.github.io/trust-ui-react/docs/components/stack): A flexbox layout primitive that spaces its children with a step from the spacing scale. Use it instead of hand-written display: flex wrappers so every gap in the app comes from --tui-gap-1 … --tui-gap-6.
+- [StatusDot](https://trustspirit.github.io/trust-ui-react/docs/components/status-dot): A small dot that shows presence or severity next to a name, a row or a heading.
+- [Stepper](https://trustspirit.github.io/trust-ui-react/docs/components/stepper): Shows progress through a sequence of numbered steps. Steps before activeStep are complete, the active one is current, the rest are upcoming.
+- [StickyFooter](https://trustspirit.github.io/trust-ui-react/docs/components/sticky-footer): A sticky bottom container with thumb-zone-safe padding and built-in safe-area handling. Use it for primary CTAs in mobile forms (e.g., "Continue" at the bottom of a wizard, "Save" on an edit screen) — always reachable by the thumb.
+- [Switch](https://trustspirit.github.io/trust-ui-react/docs/components/switch): A toggle switch for binary on/off states.
+- [Table](https://trustspirit.github.io/trust-ui-react/docs/components/table): A data table with sorting, custom cell rendering, a total row, and a narrow-viewport summary layout.
+- [Tabs](https://trustspirit.github.io/trust-ui-react/docs/components/tabs): Organizes content into tabbed sections. Supports underline and pill variants with keyboard navigation.
+- [TextField](https://trustspirit.github.io/trust-ui-react/docs/components/text-field): A versatile text input supporting labels, helper text, validation, passwords, multiline, and number formatting.
+- [TimeInput](https://trustspirit.github.io/trust-ui-react/docs/components/time-input): A time-of-day field. The value is always a 24-hour 'HH:mm' string (or null), whatever clock is displayed.
+- [Toast](https://trustspirit.github.io/trust-ui-react/docs/components/toast): A notification message that appears temporarily to provide feedback about an action.
+- [Tooltip](https://trustspirit.github.io/trust-ui-react/docs/components/tooltip): A popup that displays informative text when hovering or focusing on a trigger element.
+- [VisuallyHidden](https://trustspirit.github.io/trust-ui-react/docs/components/visually-hidden): Text that is invisible on screen but still read by screen readers. Use it to name icon-only controls, add context that sighted users get from layout, or keep a heading in the document outline without showing it.
+
+## Guides
+
+- [Accessibility](https://trustspirit.github.io/trust-ui-react/docs/guides/accessibility): What the components do for you, what stays your job, and the keys each widget responds to.
+- [Layers](https://trustspirit.github.io/trust-ui-react/docs/guides/layers): trust-ui v2 ships as one required stylesheet plus a small set of optional layers you turn on only if your product needs them. This page is the entry point: answer the questions below about your own product, and each answer tells you exactly what to import or set — nothing more.
+- [Mobile patterns](https://trustspirit.github.io/trust-ui-react/docs/guides/mobile-patterns): trust-ui v2 is mobile-optimized, not just responsive: several of its rendering decisions depend on which *pointer* is in use, not just how wide the viewport is. This guide covers the mechanics — density vs. pointer, how Table behaves under 640px, safe areas, horizontal scroll, and why form inputs never trigger iOS's auto-zoom.
+
+## Design tokens
+
+- [Colors](https://trustspirit.github.io/trust-ui-react/docs/design-tokens/colors): trust-ui v2 splits color into three layers. Each layer has exactly one job, and components only ever read from the last one.
+- [Elevation](https://trustspirit.github.io/trust-ui-react/docs/design-tokens/elevation): trust-ui v2 has exactly one shadow.
+- [Motion](https://trustspirit.github.io/trust-ui-react/docs/design-tokens/motion): trust-ui v2 motion answers user actions. It does not decorate.
+- [Spacing & Radius](https://trustspirit.github.io/trust-ui-react/docs/design-tokens/spacing): Spacing splits into two independent scales — one tied to density, one fixed — because they answer two different questions.
+- [Typography](https://trustspirit.github.io/trust-ui-react/docs/design-tokens/typography): trust-ui v2 sets one typeface — Pretendard — for everything: UI chrome, body copy, and numeric figures alike. There is no separate mono stack and no second brand face.

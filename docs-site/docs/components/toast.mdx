@@ -71,6 +71,13 @@ Set `showProgress` to draw a 1px rule along the bottom edge that drains from ful
 - On `prefers-reduced-motion: reduce`, there's no component-level fade to replace the slide-in with — the global rule in `src/styles/tokens.css` collapses the animation duration to near-zero, so the toast just appears instead of sliding in.
 - Toast container should be wrapped in [`<SafeAreaView edges={['top']}>`](../design-tokens/spacing.mdx#touch-targets--safe-area) so notifications clear iOS notch / status bar.
 
+## Accessibility
+
+- Success and info toasts are announced politely (`role="status"`); warning and danger toasts interrupt (`role="alert"`).
+- The dismiss timer pauses while the pointer is over a toast or keyboard focus is inside it, and resumes with the time that was left.
+- `ToastProvider` shows at most `max` toasts (default 5) and drops the oldest first.
+- Toasts stay readable and dismissible while a `BottomSheet` or `Drawer` is open.
+
 ## Usage
 
 `ToastProvider` owns the toast queue and renders the container into a portal; `useToast` gives you the `toast`/`dismiss`/`dismissAll` handles from anywhere inside it.

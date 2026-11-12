@@ -1,0 +1,71 @@
+---
+sidebar_position: 3
+title: Accessibility
+---
+
+# Accessibility
+
+What the components do for you, what stays your job, and the keys each widget responds to.
+
+## What the library handles
+
+- **Names and descriptions.** A `label` prop becomes the control's accessible name. `errorMessage` is linked with `aria-describedby` and sets `aria-invalid`; `required` reaches the native control or `aria-required`.
+- **Focus.** Overlays move focus inside when they open and return it to the trigger when they close. Dialogs, sheets and drawers keep Tab inside.
+- **Focus indicator.** Every interactive element shows a ring on `:focus-visible`. In forced-colors mode (Windows High Contrast) the ring is redrawn as an outline in the system highlight colour.
+- **Touch targets.** On coarse pointers, controls are at least 44px in both directions, including small icon buttons.
+- **Motion.** With `prefers-reduced-motion: reduce`, transitions and animations are effectively instant.
+- **Timing.** Toasts pause while hovered or focused.
+- **Composition input.** Keyboard shortcuts inside text inputs are ignored while an IME is composing, so typing Korean, Japanese or Chinese does not trigger navigation.
+
+## What you need to provide
+
+- A name for controls rendered without a visible label: pass `aria-label` (`Slider`, `Progress`, a `Switch` or `Select` without `label`, icon-only `Button`s).
+- `Dialog.Title`, or `aria-label` on a `Dialog` without one.
+- Meaningful `alt` text on `Avatar` images, and labels on `StatusDot`.
+- A text alternative when colour carries meaning, such as table tones.
+
+## Keyboard
+
+### Overlays
+
+| Component | Keys |
+|---|---|
+| Dialog, Drawer | `Esc` closes. `Tab` / `Shift+Tab` stay inside. |
+| BottomSheet, ActionSheet | `Esc` closes the top-most sheet only. `Tab` stays inside. |
+| Menu | On the trigger: `Enter`, `Space`, `↓` open. In the menu: `↓` `↑` move (wrapping), `Home` / `End` jump, `Enter` / `Space` choose, `Esc` closes and returns to the trigger, `Tab` closes and moves on. |
+| Popover | `Enter` / `Space` on the trigger toggles. `Esc` closes. Tabbing out closes. |
+| Tooltip | Shown on keyboard focus. `Esc` hides it. |
+| Toast | No keys of its own. The dismiss timer pauses while focus is inside. |
+
+### Selection
+
+| Component | Keys |
+|---|---|
+| Select | `Enter`, `Space`, `↓` open. `↓` `↑` move the highlight (skipping disabled options), `Enter` selects, `Esc` closes, `Tab` closes and moves on. |
+| Combobox | Type to filter. `↓` `↑` move, `Home` / `End` jump, `Enter` selects, `Esc` closes. |
+| DatePicker, DateRangePicker | `Enter`, `Space`, `↓` open and focus the calendar. See Calendar. `Esc` closes and returns to the field. |
+| Calendar | `←` `→` previous / next day. `↑` `↓` previous / next week. `Home` / `End` start / end of the week. `PageUp` / `PageDown` previous / next month, with `Shift` previous / next year. `Enter` / `Space` select. |
+| SegmentedControl | One tab stop. `←` `→` (or `↑` `↓`) select the previous / next segment, wrapping and skipping disabled ones. `Home` / `End` first / last. |
+| Tabs | One tab stop. `←` `→` move between tabs, `Home` / `End` first / last. |
+| Slider | Native range keys: arrows, `Home` / `End`, `PageUp` / `PageDown`. |
+| NumberInput | `↑` `↓` step, `PageUp` / `PageDown` step ×10, `Home` / `End` to min / max. |
+| Checkbox, Switch | `Space` toggles. |
+| RadioGroup | One tab stop. Arrow keys move and select. |
+
+### Disclosure and navigation
+
+| Component | Keys |
+|---|---|
+| Expander | `Enter` / `Space` on a header toggles its panel. Collapsed panels are removed from the tab order. |
+| Pagination, Breadcrumbs, BottomNav | Links and buttons in reading order; `Enter` activates. The current item carries `aria-current`. |
+| Table | Sortable headers are buttons: `Enter` / `Space` cycles ascending, descending, unsorted. The header exposes `aria-sort`. |
+
+## Announcements
+
+- Toasts use `role="status"` for success and info, and `role="alert"` for warning and danger.
+- Error messages on form controls use `role="alert"`, so a message that appears after validation is announced.
+- A `Banner` is static content by default. Pass `role="status"` or `role="alert"` only when you insert it in response to something the user did.
+
+## Testing your screens
+
+The library's own checks cover the components, not your pages. Run an automated checker (axe, Lighthouse) on real screens, then tab through each flow once with the keyboard and once with a screen reader.

@@ -1,0 +1,91 @@
+---
+sidebar_position: 4
+title: Localization
+---
+
+# Localization
+
+Some strings are produced by the components themselves rather than passed in by you: accessible names (`Close dialog`, `Next page`), empty states (`No options found`) and built-in button labels. `LocaleProvider` sets their language.
+
+```tsx
+import { LocaleProvider } from 'trust-ui-react';
+
+<LocaleProvider locale="ko">
+  <App />
+</LocaleProvider>
+```
+
+Two catalogs ship with the library: `en` and `ko`.
+
+## Without a provider
+
+Every string stays exactly as it was in 2.0: English everywhere, except the Table's mobile sort sheet, which was Korean. Add a provider to make all of them one language.
+
+## Overriding individual strings
+
+`messages` replaces single entries. Everything you leave out keeps the catalog's value.
+
+```tsx
+<LocaleProvider
+  locale="en"
+  messages={{
+    dialog: { close: 'Dismiss' },
+    pagination: { page: (n) => `Go to page ${n}` },
+  }}
+>
+  <App />
+</LocaleProvider>
+```
+
+Entries that include a value are functions: `select.remove(label)`, `pagination.page(page)`, `fileUpload.uploading(fileName, percent)`.
+
+## Another language
+
+Start from a built-in catalog and override what you need, or pass every section:
+
+```tsx
+import type { MessagesOverride } from 'trust-ui-react';
+
+const ja: MessagesOverride = {
+  dialog: { close: '閉じる' },
+  toast: { close: '通知を閉じる' },
+  // …
+};
+
+<LocaleProvider locale="en" messages={ja}>
+  <App />
+</LocaleProvider>
+```
+
+The `Messages` type lists every key, so TypeScript tells you what is left.
+
+## Nesting
+
+Providers nest. An inner provider with a `locale` starts from that catalog; without one it inherits the outer provider's strings and applies its own `messages` on top.
+
+```tsx
+<LocaleProvider locale="ko">
+  <LocaleProvider messages={{ dialog: { close: '창 닫기' } }}>
+    <Checkout />
+  </LocaleProvider>
+</LocaleProvider>
+```
+
+## Reading the strings yourself
+
+`useMessages()` returns the strings in effect, which is useful when you build your own component next to the library's.
+
+```tsx
+import { useMessages } from 'trust-ui-react';
+
+function CloseButton(props) {
+  const t = useMessages();
+  return <button aria-label={t.dialog.close} {...props} />;
+}
+```
+
+## What is not covered
+
+- Text you pass as props (`label`, `placeholder`, `errorMessage`, …) is yours to translate.
+- Dates: `DatePicker`, `DateRangePicker` and `Calendar` take a separate `locale` prop (a BCP 47 tag such as `ko-KR`) for month names, weekday labels and the full date read by screen readers.
+- Text direction: the library does not mirror for right-to-left languages yet.
