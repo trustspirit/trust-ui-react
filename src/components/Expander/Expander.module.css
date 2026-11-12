@@ -119,6 +119,15 @@
 
 .contentInner {
   overflow: hidden;
+  /* inert 를 지원하지 않는 브라우저와 하이드레이션 전 상태를 위한 안전망.
+     접히는 애니메이션이 끝난 뒤에 숨겨, 닫히는 동안에는 내용이 보인다. */
+  visibility: hidden;
+  transition: visibility 0s linear var(--tui-duration-base);
+}
+
+.contentWrapperOpen > .contentInner {
+  visibility: visible;
+  transition-delay: 0s;
 }
 
 /* ── Content ── */

@@ -183,6 +183,9 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
       selectedRange.start ? selectedRange.start.getFullYear() : now.getFullYear(),
     );
 
+    // 키보드 포커스가 있어야 할 날짜. 두 달력이 함께 받아, 자기 달이면 포커스를 가져간다.
+    const [focusDate, setFocusDate] = useState<Date | null>(null);
+
     // Right month is always leftMonth + 1
     const rightMonth = leftMonth === 11 ? 0 : leftMonth + 1;
     const rightYear = leftMonth === 11 ? leftYear + 1 : leftYear;
@@ -248,12 +251,36 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
       const d = selectedRange.start ?? new Date();
       setLeftMonth(d.getMonth());
       setLeftYear(d.getFullYear());
+      // 팝업은 문서 끝에 포털되므로 포커스를 직접 넣어 주지 않으면 키보드로 닿을 수 없다.
+      setFocusDate(d);
     }, [disabled, updatePosition, selectedRange.start]);
 
     const closePopup = useCallback(() => {
       setIsOpen(false);
       setHoverDate(null);
+      setFocusDate(null);
     }, []);
+
+    // 키보드로 옮긴 날짜가 보이는 두 달 밖이면 보기를 그쪽으로 옮긴다.
+    const handleFocusedDateChange = useCallback(
+      (date: Date) => {
+        setFocusDate(date);
+        const monthIndex = date.getFullYear() * 12 + date.getMonth();
+        const leftIndex = leftYear * 12 + leftMonth;
+        if (monthIndex < leftIndex) {
+          setLeftMonth(date.getMonth());
+          setLeftYear(date.getFullYear());
+        } else if (monthIndex > leftIndex + 1) {
+          // 새 달이 오른쪽 달력에 오도록 한 달 앞을 왼쪽에 둔다.
+          const left = new Date(date.getFullYear(), date.getMonth() - 1, 1);
+          setLeftMonth(left.getMonth());
+          setLeftYear(left.getFullYear());
+        }
+        // 범위 미리보기가 마우스 없이도 따라오게 한다.
+        if (!selectingStart) setHoverDate(date);
+      },
+      [leftYear, leftMonth, selectingStart],
+    );
 
     // Click outside
     useEffect(() => {
@@ -286,46 +313,30 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
     }, [isOpen, updatePosition]);
 
     // Navigation
-    const goToPrevMonth = useCallback(() => {
-      setLeftMonth((m) => {
-        if (m === 0) {
-          setLeftYear((y) => y - 1);
-          return 11;
-        }
-        return m - 1;
-      });
-    }, []);
-
-    const goToNextMonth = useCallback(() => {
-      setLeftMonth((m) => {
-        if (m === 11) {
-          setLeftYear((y) => y + 1);
-          return 0;
-        }
-        return m + 1;
-      });
-    }, []);
+    // 한 setState 의 updater 안에서 다른 setState 를 부르지 않는다. StrictMode 는
+    // updater 를 두 번 호출하므로 연도가 두 번 바뀐다.
+    const shiftLeftMonth = useCallback(
+      (delta: number) => {
+        const next = new Date(leftYear, leftMonth + delta, 1);
+        setLeftMonth(next.getMonth());
+        setLeftYear(next.getFullYear());
+      },
+      [leftYear, leftMonth],
+    );
+    const goToPrevMonth = useCallback(() => shiftLeftMonth(-1), [shiftLeftMonth]);
+    const goToNextMonth = useCallback(() => shiftLeftMonth(1), [shiftLeftMonth]);
 
     // Mobile calendar navigation
-    const goToPrevMobileMonth = useCallback(() => {
-      setMobileMonth((m) => {
-        if (m === 0) {
-          setMobileYear((y) => y - 1);
-          return 11;
-        }
-        return m - 1;
-      });
-    }, []);
-
-    const goToNextMobileMonth = useCallback(() => {
-      setMobileMonth((m) => {
-        if (m === 11) {
-          setMobileYear((y) => y + 1);
-          return 0;
-        }
-        return m + 1;
-      });
-    }, []);
+    const shiftMobileMonth = useCallback(
+      (delta: number) => {
+        const next = new Date(mobileYear, mobileMonth + delta, 1);
+        setMobileMonth(next.getMonth());
+        setMobileYear(next.getFullYear());
+      },
+      [mobileYear, mobileMonth],
+    );
+    const goToPrevMobileMonth = useCallback(() => shiftMobileMonth(-1), [shiftMobileMonth]);
+    const goToNextMobileMonth = useCallback(() => shiftMobileMonth(1), [shiftMobileMonth]);
 
     // Date selection (desktop)
     const handleDateClick = useCallback(
@@ -358,6 +369,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
           setSelectingStart(true);
           setHoverDate(null);
           closePopup();
+          triggerRef.current?.focus();
         }
       },
       [selectingStart, selectedRange.start, isControlled, onChange, closePopup],
@@ -653,7 +665,7 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
               e.preventDefault();
               closePopup();
             }
-            if (e.key === 'Enter' && !isOpen) {
+            if ((e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') && !isOpen) {
               e.preventDefault();
               openPopup();
             }
@@ -750,6 +762,8 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
                     maxDate={maxDate}
                     onDateClick={handleDateClick}
                     onDateHover={handleDateHover}
+                    focusedDate={focusDate}
+                    onFocusedDateChange={handleFocusedDateChange}
                     locale={locale}
                   />
                 </div>
@@ -784,6 +798,8 @@ export const DateRangePicker = forwardRef<HTMLDivElement, DateRangePickerProps>(
                     maxDate={maxDate}
                     onDateClick={handleDateClick}
                     onDateHover={handleDateHover}
+                    focusedDate={focusDate}
+                    onFocusedDateChange={handleFocusedDateChange}
                     locale={locale}
                   />
                 </div>

@@ -165,6 +165,9 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       Math.floor((selectedDate?.getFullYear() ?? now.getFullYear()) / 12) * 12,
     );
 
+    // 키보드 포커스가 있어야 할 날짜. 팝업을 열 때와 달 경계를 넘을 때 쓴다.
+    const [focusDate, setFocusDate] = useState<Date | null>(null);
+
     const triggerRef = useRef<HTMLDivElement>(null);
     const popupRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -221,11 +224,21 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
       const d = selectedDate ?? new Date();
       setViewMonth(d.getMonth());
       setViewYear(d.getFullYear());
+      // 팝업은 문서 끝에 포털되므로 포커스를 직접 넣어 주지 않으면 키보드로 닿을 수 없다.
+      setFocusDate(d);
     }, [disabled, updatePosition, selectedDate]);
 
     const closePopup = useCallback(() => {
       setIsOpen(false);
       setShowYearGrid(false);
+      setFocusDate(null);
+    }, []);
+
+    // 키보드로 다른 날짜로 옮길 때: 달이 바뀌면 보기도 따라간다.
+    const handleFocusedDateChange = useCallback((date: Date) => {
+      setFocusDate(date);
+      setViewMonth(date.getMonth());
+      setViewYear(date.getFullYear());
     }, []);
 
     // Click outside
@@ -265,32 +278,25 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
         closePopup();
         inputRef.current?.focus();
       }
-      if (e.key === 'Enter' && !isOpen) {
+      if ((e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') && !isOpen) {
         e.preventDefault();
         openPopup();
       }
     };
 
     // Navigation
-    const goToPrevMonth = useCallback(() => {
-      setViewMonth((m) => {
-        if (m === 0) {
-          setViewYear((y) => y - 1);
-          return 11;
-        }
-        return m - 1;
-      });
-    }, []);
-
-    const goToNextMonth = useCallback(() => {
-      setViewMonth((m) => {
-        if (m === 11) {
-          setViewYear((y) => y + 1);
-          return 0;
-        }
-        return m + 1;
-      });
-    }, []);
+    // 한 setState 의 updater 안에서 다른 setState 를 부르지 않는다. StrictMode 는
+    // updater 를 두 번 호출하므로 연도가 두 번 바뀐다.
+    const shiftViewMonth = useCallback(
+      (delta: number) => {
+        const next = new Date(viewYear, viewMonth + delta, 1);
+        setViewMonth(next.getMonth());
+        setViewYear(next.getFullYear());
+      },
+      [viewYear, viewMonth],
+    );
+    const goToPrevMonth = useCallback(() => shiftViewMonth(-1), [shiftViewMonth]);
+    const goToNextMonth = useCallback(() => shiftViewMonth(1), [shiftViewMonth]);
 
     // Date selection
     const handleDateClick = useCallback(
@@ -300,6 +306,7 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
         }
         onChange?.(date);
         closePopup();
+        triggerRef.current?.focus();
       },
       [isControlled, onChange, closePopup],
     );
@@ -505,6 +512,8 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                 minDate={minDate}
                 maxDate={maxDate}
                 onDateClick={handleDateClick}
+                focusedDate={focusDate}
+                onFocusedDateChange={handleFocusedDateChange}
                 locale={locale}
               />
             )}
@@ -657,6 +666,8 @@ export const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(
                   minDate={minDate}
                   maxDate={maxDate}
                   onDateClick={handleDateClick}
+                  focusedDate={focusDate}
+                  onFocusedDateChange={handleFocusedDateChange}
                   locale={locale}
                 />
               )}

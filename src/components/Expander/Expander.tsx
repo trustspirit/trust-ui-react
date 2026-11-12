@@ -2,7 +2,9 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useId,
+  useRef,
   useState,
   type CSSProperties,
   type ReactNode,
@@ -273,8 +275,17 @@ function ExpanderContent({ children, className }: ExpanderContentProps) {
     .filter(Boolean)
     .join(' ');
 
+  // 접힌 패널은 높이 0 으로 가려질 뿐이라 안의 링크·버튼이 Tab 순서에 남는다.
+  // inert 로 포커스와 접근성 트리에서 함께 뺀다. React 18 은 inert prop 을
+  // 모르므로 속성을 직접 다룬다.
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    wrapperRef.current?.toggleAttribute('inert', !isOpen);
+  }, [isOpen]);
+
   return (
     <div
+      ref={wrapperRef}
       id={contentId}
       className={wrapperClassNames}
       role="region"
