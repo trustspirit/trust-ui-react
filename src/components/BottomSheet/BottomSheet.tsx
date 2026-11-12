@@ -13,6 +13,7 @@ import { useSnapPoints } from '../../hooks/touch/useSnapPoints';
 import { useFocusTrap } from '../../hooks/useFocusTrap';
 import { acquireScrollLock, releaseScrollLock } from '../../utils/scrollLock';
 import { acquireBackgroundInert, releaseBackgroundInert } from '../../utils/backgroundInert';
+import { shouldDismiss, FLING_THRESHOLD } from './dismiss';
 import styles from './BottomSheet.module.css';
 
 // inert(또는 미지원 시 aria-hidden 폴백)는 aria-hidden 인 경우 스크린리더 등
@@ -190,7 +191,7 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
     const dragEnabled = dismissible || snapPoints.length > 1;
 
     // Snap math
-    const { findTarget } = useSnapPoints({ points: snapPoints, flingThreshold: 0.5 });
+    const { findTarget } = useSnapPoints({ points: snapPoints, flingThreshold: FLING_THRESHOLD });
 
     // Static (non-drag) translate computation — used for snap rest position
     const maxSnap = Math.max(...snapPoints);
@@ -227,23 +228,33 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
         setIsDragging(false);
         const vh = viewportHeightRef.current || 1;
         const currentFraction = snapPoints[currentSnapIdx] - dragDeltaRef.current / vh;
-        // Velocity sign: downward drag is positive y; for snap math we want
-        // "upward" (toward bigger snap) as positive, so negate.
-        const result = findTarget(currentFraction, -velocity.y * 1000);
+        // useDrag 는 px/ms 를 준다. 스냅 계산은 "뷰포트 높이/초" 단위를 쓰고,
+        // 위쪽(스냅이 커지는 방향)을 양수로 본다.
+        const flingVelocity = (-velocity.y * 1000) / vh;
 
-        const smallestSnap = Math.min(...snapPoints);
-        const dismissThreshold = smallestSnap * 0.6;
-        if (dismissible && result.target < dismissThreshold) {
+        if (
+          dismissible &&
+          shouldDismiss({
+            currentFraction,
+            smallestSnap: Math.min(...snapPoints),
+            velocity: flingVelocity,
+          })
+        ) {
           onClose();
           dragDeltaRef.current = 0;
           return;
         }
+        const result = findTarget(currentFraction, flingVelocity);
         const newIdx = snapPoints.indexOf(result.target);
-        if (newIdx >= 0) setCurrentSnapIdx(newIdx);
+        const restIdx = newIdx >= 0 ? newIdx : currentSnapIdx;
+        if (restIdx !== currentSnapIdx) setCurrentSnapIdx(restIdx);
         dragDeltaRef.current = 0;
-        // Reset inline transform so the rendered baseTranslateY (with new snap) takes over via CSS transition
+        // 목표 위치를 직접 써 넣는다. 같은 스냅으로 되돌아오는 경우 style prop 값이
+        // 바뀌지 않아 React 가 DOM 을 다시 쓰지 않으므로, 여기서 비워 두면 시트가
+        // 최대 높이로 튄다.
         if (sheetRef.current) {
-          sheetRef.current.style.transform = '';
+          const rest = (Math.max(...snapPoints) - snapPoints[restIdx]) * vh;
+          sheetRef.current.style.transform = `translateY(${rest}px)`;
         }
       },
       [snapPoints, currentSnapIdx, findTarget, dismissible, onClose],
@@ -254,6 +265,8 @@ export const BottomSheet = forwardRef<HTMLDivElement, BottomSheetProps>(
       onDragStart,
       onDrag: onDragMove,
       onDragEnd,
+      // 핸들은 mounted 가 된 뒤에야 DOM 에 생긴다.
+      enabled: mounted && dragEnabled,
     });
 
     if (!mounted || typeof document === 'undefined') return null;
